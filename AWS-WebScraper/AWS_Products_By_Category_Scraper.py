@@ -17,8 +17,10 @@ soup.prettify()
 category = []
 name = []
 description = []
+isFAQAvailable = []
 url = []
 
+isValidURL = []
 
 # Extracting the categories of all products
 for target_div in soup.find_all("div", {"class": "lb-item-wrapper"}):
@@ -33,7 +35,7 @@ for target_div in soup.find_all("div", {"class": "lb-item-wrapper"}):
     # Extracting features (category, name, description and URL) of each product
     
     for item in target_div.find_all("div", {"class", "lb-content-item"}):
-        print(item)
+        # print(item)
         
         # Extract the name of the product
         my_str = str(item)
@@ -49,10 +51,22 @@ for target_div in soup.find_all("div", {"class": "lb-item-wrapper"}):
         my_str = str(item)
         my_str = my_str.split('href="')[1]
         my_str = my_str.split('/')[1]
+        
+        # First find out if the specified URL is valid or not
+        
+        product_url = "https://aws.amazon.com/" + my_str
+        product_data = urllib.request.urlopen(product_url)
+        product_soup = BeautifulSoup(product_data, 'html.parser')
+        product_soup.prettify()
+        found = str(product_soup).split('data-lb-page-path="')[1]
+        print(found)
+        
+        # If valid then append to the url
         url.append("https://aws.amazon.com/" + my_str + "/faqs")
+        
+        # Add the category as well
         category.append(cat)
-    
-    
+
         # Finally, adding the resultant data to the CSV file
         with open('AWS_Products_By_Category.csv', 'a', newline='') as csv_file:
             writer = csv.writer(csv_file)

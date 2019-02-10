@@ -1,0 +1,72 @@
+question,answer
+Q: What is Amazon RDS on VMware?,"
+A: Amazon RDS on VMware is a service currently in preview that delivers AWS-managed relational databases in on-premises VMware environments. Managing relational databases is complex and time-consuming, and RDS on VMware makes it easy to set up, scale, and operate relational databases in your VMware vSphere clusters. RDS on VMware uses the same simple interface as <a href=""/rds/"">Amazon RDS</a>, which you can use to manage databases both on-premises and in AWS.
+"
+Q: Which relational database engines does Amazon RDS on VMware support?,"
+A: Amazon RDS on VMware will support Microsoft SQL Server, MySQL, PostgreSQL, and MariaDB database engines, with Oracle to follow in the future. We add engines based on customer demand, so please let us know if you’re interested in using RDS on VMware with another database engine.  
+"
+Q: What does Amazon RDS on VMware manage on my behalf?,"
+A: Amazon RDS on VMware automates the provisioning of new database instances on-premises; the patching of the on-premises operating systems and database engines; online backups based on retention policies of databases both on-premises and in AWS; point-in-time restore from on-premises and cloud backups; read replica creation on-premises and in AWS; and storage, CPU, and memory scaling of your databases, all through a dedicated VPN tunnel.
+"
+Q: Can I keep all of my data in Amazon RDS on VMware on-premises?,"
+A: Yes, this is Amazon RDS on VMware’s default behavior. Unless you explicitly enable one of the hybrid cloud features for a given database, all of its data stays in your data center.
+"
+Q: What hybrid capabilities does Amazon RDS on VMware support?,"
+A: Although Amazon RDS on vSphere keeps all of your data in your data center by default, it also makes it simple to take advantage of AWS scale for disaster recovery, backup retention, and migration. Per-database backup retention policies allow you to specify how long to keep daily snapshots on-premises, if and when to replicate them to AWS, and how long to retain them in the cloud. AWS-based RDS read replicas of your on-premises RDS on VMware databases can be used for disaster recovery or easy migration with single-click read replica promotion, or to provide geo-proximal replicas of your database in any AWS region.
+"
+Q: Does Amazon RDS on VMware support Amazon Aurora?,"
+A: We don’t have plans to support Amazon Aurora on-premises at this time. Aurora’s database architecture is built for the cloud, where storage is distributed across hundreds or thousands of nodes in a region to provide very high availability and durability. This cannot be easily replicated on-premises.
+"
+Q: Can Amazon RDS on VMware reduce the time it takes me to provision a database for my users?,"
+A: Yes. Amazon RDS on VMware will typically have a new database server built, running, and listening for connections in under 10 minutes, depending on your environment and storage requirements. You can also create new, completely independent databases from the backup of a master database, from any point in time, or as a asynchronously replicating read replica.
+"
+Q: Can Amazon RDS on VMware help me move to the cloud?,"
+A: Yes. With Amazon RDS on VMware’s single-click read replica promotion feature, you can move your on-premises workload to AWS without reconfiguring your application and with minimal interruption. Moving to the cloud is as simple as creating a read replica of your database in an AWS Region and a single click to promote the read replica to the primary instance.
+"
+Q: What AWS Regions is Amazon RDS on VMware available in?,"
+A: Amazon RDS on VMware will be available in us-east-1 (Northern Virginia), us-west-2 (Oregon), eu-central-1 (Frankfurt), and ap-northeast-1 (Tokyo).
+"
+Q: What do I need before I get started with Amazon RDS on VMware?,"
+A: To get started, you need a VMware vSphere 6.5+ cluster with active VMware support and outbound connectivity to the Internet, administrative privileges to the cluster, and an AWS account in good standing. 
+"
+Q: How do I get started with Amazon RDS on VMware?,"
+A: Amazon RDS on VMware is currently in preview and you can register to participate <a href=""https://aws.amazon.com/rds/vmware/"">here</a>. If you are selected for participation in the preview, we will reach out to you with further instructions.
+"
+Q: Where do I go to create or manage a database?,"
+A: You can create, modify, and manage your Amazon RDS on VMware databases through the RDS Console, APIs, and CLI.
+"
+Q: Can I use my own Microsoft SQL Server and Oracle licenses with Amazon RDS on VMware?,"
+A: Yes. You will be required to use your own Microsoft SQL Server and Oracle licenses to use Amazon RDS on VMware for those commercial databases.
+"
+Q: How does Amazon RDS on VMware help manage my on-premises databases?,"
+A: Amazon RDS on VMware leverages the functionality and operational experience built into Amazon RDS to provision, monitor, and operate relational databases in your on-premises VMware vSphere environment. By downloading and installing the RDS Connector vApp, you can connect any vSphere 6.5+ cluster to the closest AWS region and take advantage of fully managed RDS databases in your private data center. The RDS Connector packages many of the technologies at the core of RDS, allowing the regional RDS control plane to coordinate database creation, OS and database engine patching, online backups, point-in-time restores, read replica creation and maintenance, and storage, CPU, and memory scaling of your databases through a dedicated VPN tunnel. All of this functionality is available through the Amazon RDS Console, APIs, and CLI, so you can create new databases with a few clicks, a quick script, or by integrating with existing automation, and spend the time you save building awesome things for your customers.
+"
+Q: What happens to Amazon RDS on VMware when I lose Internet connectivity?,"
+A: All Amazon RDS on VMware features requiring outbound Internet / VPN access will recover automatically but will not work if their connectivity is unavailable. Note that, since RDS on VMware dual-publishes metrics to vROps and Amazon CloudWatch, your vROps console will always contain current database health / performance information regardless of outbound connectivity.
+"
+Q: What’s the largest database server I can create with Amazon RDS on VMware?,"
+A: Amazon RDS on VMware supports a maximum database size of 16TB. 
+"
+"Q: Can Amazon RDS on VMware perform my backups and, if necessary, my restores?","
+A: Yes. The Amazon RDS on VMware backup / restore system enables point-in-time restore for all supported engines and allows you to specify an automated backup retention period of up to 35 days for each database in your fleet. It is important to note that the RDS on VMware restore mechanism does not perform in-place replacement of existing databases. RDS on VMware creates a new database instance and restores your data to new volumes, allowing you to decide the best path forward in your specific situation. You can also save user snapshots that will be retained until you delete them.
+RDS on VMware backups have two components: an incremental volume snapshot, and the database's write-ahead logs. Volume snapshots are incremental, stored as .vmdk files in the same cluster as the database, and are taken every day during the database's configurable backup window. The database’s write-ahead log files are copied from the database instance into a local RDS on VMware-managed object store whenever they are closed, or every 5 minutes, whichever is more frequent.
+The restore process uses both snapshots and write-ahead logs. First, it selects the newest snapshot that is older than the requested point in time and clones it to a new volume. In parallel, it creates a new database instance with the appropriate configuration (engine, version, OS, VM, configuration items, plug-ins / extensions that match the snapshot), and mounts the new volume under it. Finally, the database is started and the relevant logs are played back to it, after which the new database is available for use. RDS on VMware backups are fully compatible with Amazon RDS backups in AWS. 
+"
+"Q: Can I keep my databases on-premises indefinitely, without being pressured to migrate them to AWS?","
+A: Yes. Amazon RDS on VMware doesn't force you to migrate or to store any of your data in the AWS cloud. Although we believe that most IT workloads can be more efficiently served in the AWS cloud, we also believe that the best way to earn your trust is to help you build and grow your business wherever your applications live. We hope that you'll benefit from Amazon RDS on VMware whether you want to migrate to AWS tomorrow, next year, or have no cloud migration plans. 
+"
+Q: Does Amazon RDS on VMware patch my databases?,"
+A: Yes. Amazon RDS on VMware takes care of both OS and database engine patching with minimal downtime. Patching happens during a configurable 30-minute maintenance window or when you request an immediate patching action. When a patch becomes available, you may opt individual databases in for immediate, next-window, or specified-date patching. You can also configure individual databases to automatically receive minor version upgrades as they become available. 
+"
+Q: Does Amazon RDS on VMware provide availability protection for my databases?,"
+A: Yes, every Amazon RDS on VMware instance benefits from health monitoring and availability management. When an unhealthy database instance is detected, RDS on VMware will automatically replace it using the same storage volume and restart the database engine so that it can perform recovery. 
+"
+Q: Will AWS and VMware support my managed environment and databases?,"
+A: Yes. You will be able to contact VMware's Global Support Services (GSS) team or AWS Support for assistance with your vSphere environment and Amazon RDS on VMware databases. If your issue is specific to RDS on VMware, Amazon RDS, or one of the services involved in delivering the hybrid cloud features, we recommend that you open a case directly with AWS Support. Otherwise, we recommend starting with the VMware GSS. In either case, the team you contact will escalate your issue to the other on your behalf if necessary.
+"
+Q: Will AWS and VMware proactively monitor my Amazon RDS on VMware environment?,"
+A: Yes. Amazon RDS on VMware environments and infrastructure will be continuously monitored, and AWS and VMware will proactively engage if we detect issues. Most issues will be resolved without requiring your involvement. In rare circumstances, an AWS engineer may need access to your database server to diagnose or fix an issue. In no cases will AWS or VMware access or manipulate your data without your express consent. All access to your database servers will be logged to a user-configurable audit server (by default, CloudWatch Logs) so you have visibility and auditability for any accesses.
+"
+Q: Will anyone get alerted if something in my Amazon RDS on VMware environment is broken? ,"
+A: Yes. Amazon RDS on VMware’s automation will resolve most issues without human interaction. When it encounters a situation that cannot be addressed automatically, it will alert AWS, VMware, and/or you, depending on the situation and your alerting configuration. 
+"
