@@ -1,0 +1,1078 @@
+label	description
+PHP Development	"Keep alive message timeout
+Today i was testing the publish message from AWS server to my device. What i found was that if the device connect to the AWS server and never send any communication message for about 5 minutes to the AWS server and send the message after 5 minutes from the AWS server then the device did not receive any messages.
+
+Default keep alive message is set to every 10 minutes.  But interesting part is that the server send the message after receiving the keep alive message that send from the device.
+
+If i set 5 minutes keep alive message then it is fine. Is there any particular reason?"
+PHP Development	"Cognito user enable MFA
+How can I enable SMS MFA for cognito user? I have tried several APIs from Python and Golang and all of them are implementation of AdminSetUserMFAPreference. I call it like that for Golang:
+enableMFAStatus, err := cogIProv.AdminSetUserMFAPreferenceWithContext(ctx, &cip.AdminSetUserMFAPreferenceInput{
+		UserPoolId: aws.String(userPoolID),
+		Username:   aws.String(username),
+		SMSMfaSettings: &cip.SMSMfaSettingsType{
+			Enabled:      aws.Bool(true),
+			PreferredMfa: aws.Bool(true),
+		},
+	})
+
+And the next way for Python:
+response = self.cognitoClient.admin_set_user_mfa_preference(
+                        SMSMfaSettings={
+                            'Enabled': True,
+                            'PreferredMfa': True
+                        },
+                        UserPoolId=self.userPoolID,
+                        Username=userID,
+                    )
+
+And I receive success result and no errors but nothing changes. Maybe there are other ways to enable SMS MFA for user? Please help me."
+PHP Development	"VMware-Go-KCL: Kinesis Client Library for Go
+Discover how VMware-Go-KCL delivers the Go/Kubernetes community and Go native language implementation of Kinesis Client Library withoutthe resource overhead of installing Java-based MultiLangDaemon.
+
+https://blogs.vmware.com/opensource/2018/09/13/vmware-go-kcl-kinesis-client-library/
+https://github.com/vmware/vmware-go-kcl
+
+Edited by: puzzle2 on Oct 7, 2018 4:27 PM"
+PHP Development	"Getting NextToken in cloudWatchLogs go sdk
+I am trying to describe all log groups in my lambda log group, I have to pass ""NextToken"", which I don't have.
+svc.DescribeLogGroups(&cloudwatchlogs.DescribeLogGroupsInput{
+		Limit:              aws.Int64(1),
+		LogGroupNamePrefix: aws.String(""prefix""),
+		NextToken:          aws.String(""nextToken"")
+})
+
+what should my log prefix and nextToken be,  if I have to  get all log groups
+
+Edited by: krazybee on Jul 24, 2018 4:57 AM"
+PHP Development	"Gorilla/mux cannot return a value for path parameter.
+Hi,
+I’ve been using multiplexer from Gorilla/mux for a while and happy about it. Until suddenly it’s not working anymore when I redeployed my app to AWS Beanstalk.
+Every time that I try to access a path with parameter, the value of the parameter is always empty. But that’s not the case if the path doesn’t have a parameter.
+
+For example, given the URL of http://www.mydomain.net/myresource/{id}, the value of {id} is empty.
+But it works if I have a path without parameter like the following example:
+http://www.mydomain.net/myresource.
+
+This is only happening if I do deployment from AWS CodePipeline which kicks of CodeBuild, and deploys directly to AWS Beanstalk. If I build from my local box and deploy it to AWS Beanstalk it will work. I can also run it it in my local box.
+It seems there is something not right in AWS CodeBuild. I run dep, so the package that’s put in the vendor folder is the same version as what I have in my local box, and I have double checked to make sure they are identical.  Out of curiosity, I have also tried to update using other multiplexer and it gave the same result.  No error whatsoever, and I check the length of mux.Vars is 0
+
+My question, what steps that I need to do to troubleshooting this?  I've been stuck with this for two days already.
+
+Thanks
+
+Edited by: edisonltan on Jul 6, 2018 7:31 PM"
+PHP Development	"403 Access Denied using Go rdsutils example
+I have been struggling with this for a while now.  I am trying to get this simple example to work locally on my laptop: https://github.com/aws/aws-sdk-go/blob/master/example/service/rds/rdsutils/authentication/iam_authentication.go
+sess := session.Must(session.NewSession())
+creds := stscreds.NewCredentials(sess, ""arn:aws:iam::12345678910:role/my-rds-role"")
+authToken, err := rdsutils.BuildAuthToken(dbEndpoint, region, dbUser, creds)
+
+I simply want to connect to my Postgres RDS db instance using the Go SDK.  I am able to connect to it via pgAdmin.
+
+I have created an IAM user, stored that user's creds locally using the 'aws configure' via CLI.  
+I have created a policy to allow AssumeRole and assigned it to that user.
+
+When I run the sample code, I can see it gets my creds and signs the request.  But, when it calls out to POST https://sts.amazonaws.com I always get a 403 Access Denied response: AccessDenied: Access denied
+	status code: 403, request id: af2d97d6-27e7-11e9-bef0-114765d449cd
+
+I am assuming this is the step where it wants to verify that my user, as defined by my locally stored creds, has access to assume the role ARN that I pasted into the example code
+
+Can someone please help me figure this out?  Is there a way to get more info about the 403?  Does this not work when running from my local machine?  Can I debug this access endpoint in Postman?  Am I missing a key IAM policy?  Thanks for any guidance."
+PHP Development	"Re: 403 Access Denied using Go rdsutils example
+I was able to figure this out, finally.  I came across Jeff's answer here: https://forums.aws.amazon.com/thread.jspa?threadID=234281
+My problem was that I needed to add my account as principal to the role's trust relationships policy.
+{
+            ""Effect"": ""Allow"",
+            ""Principal"": {
+                ""AWS"": ""12345678910""
+            },
+            ""Action"": ""sts:AssumeRole""
+        }
+
+I am now able to generate auth tokens in my local dev environment."
+PHP Development	"How can a Lambda assume an IAM role and connect to Postgres a RDS on AWS
+We have a SAM-generated API-Gateway - Lambda integration stack that needs to access an RDS Database (Postgres).
+
+SAM is creating the necessary CF template with the custom role and attendant policies for our functions: ('AWSLambdaVPCAccessExecutionRole' & 'AmazonRDSReadOnlyAccess')
+
+We've configured the functions that need to connect to the DB with the subnetIDs and security Group of the DBs VPC and are attempting to connect using **IAM authentication**.
+
+We've created the PG user account in the target DB with rds_admin role grant as per: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html
+
+What we are not able to do is to connect to the RDS DB using the AWS SDK for **Go**.
+
+It looks like the role ARN is a requirement to do so:
+
+from the docs, link here:
+https://docs.aws.amazon.com/sdk-for-go/api/service/rds/rdsutils/
+    authToken, err := BuildAuthToken(dbEndpoint, awsRegion, dbUser, awsCreds)
+    
+    // Create the MySQL DNS string for the DB connection
+    // user:password@protocol(endpoint)/dbname?<params>
+    connectStr = fmt.Sprintf(""%s:%s@tcp(%s)/%s?allowCleartextPasswords=true&tls=rds"",
+       dbUser, authToken, dbEndpoint, dbName,
+    )
+    
+    // Use db to perform SQL operations on database
+    db, err := sql.Open(""mysql"", connectStr)
+
+..except we'd use a Postgres connection string.
+
+But without creating a 'long-form' CFN template and passing the roleARN as an environment variable to our lambda function we can't work out how to configure the SDK to assume the same role as the executing lambda function.
+
+If anyone can help work this out with me I'd be very grateful! 
+
+Thanks in advance"
+PHP Development	"CloudHSM SDK
+Are there any guides that describe how to get started developing applications using the CloudHSM SDK? Particularly the Go version
+
+I'm stuck at the first hurdle: how to I develop code on my laptop to run against an HSM that is tucked away in the private subnet of a VPC?
+
+Edited by: longwave on Dec 7, 2018 1:41 AM
+
+Edited by: longwave on Dec 7, 2018 1:42 AM"
+PHP Development	"Keep alive message timeout
+Today i was testing the publish message from AWS server to my device. What i found was that if the device connect to the AWS server and never send any communication message for about 5 minutes to the AWS server and send the message after 5 minutes from the AWS server then the device did not receive any messages.
+
+Default keep alive message is set to every 10 minutes.  But interesting part is that the server send the message after receiving the keep alive message that send from the device.
+
+If i set 5 minutes keep alive message then it is fine. Is there any particular reason?"
+PHP Development	"How do I handle cognito redirects in a lambda function?
+I am trying to set up a basic authentication flow for my app using the API Gateway, Cognito, and Lambda services.
+
+I was hoping I could have the Cognito login page redirect to the API Gateway, which then passes the request on to lambda returning a cookie that the client can then use for authorizing future requests, but I'm not sure how to actually exchange the authorization code for a token in a lambda function, nor am I sure how to then ensure that the response is a cookie."
+PHP Development	"Cognito user enable MFA
+How can I enable SMS MFA for cognito user? I have tried several APIs from Python and Golang and all of them are implementation of AdminSetUserMFAPreference. I call it like that for Golang:
+enableMFAStatus, err := cogIProv.AdminSetUserMFAPreferenceWithContext(ctx, &cip.AdminSetUserMFAPreferenceInput{
+		UserPoolId: aws.String(userPoolID),
+		Username:   aws.String(username),
+		SMSMfaSettings: &cip.SMSMfaSettingsType{
+			Enabled:      aws.Bool(true),
+			PreferredMfa: aws.Bool(true),
+		},
+	})
+
+And the next way for Python:
+response = self.cognitoClient.admin_set_user_mfa_preference(
+                        SMSMfaSettings={
+                            'Enabled': True,
+                            'PreferredMfa': True
+                        },
+                        UserPoolId=self.userPoolID,
+                        Username=userID,
+                    )
+
+And I receive success result and no errors but nothing changes. Maybe there are other ways to enable SMS MFA for user? Please help me."
+PHP Development	"VMware-Go-KCL: Kinesis Client Library for Go
+Discover how VMware-Go-KCL delivers the Go/Kubernetes community and Go native language implementation of Kinesis Client Library withoutthe resource overhead of installing Java-based MultiLangDaemon.
+
+https://blogs.vmware.com/opensource/2018/09/13/vmware-go-kcl-kinesis-client-library/
+https://github.com/vmware/vmware-go-kcl
+
+Edited by: puzzle2 on Oct 7, 2018 4:27 PM"
+PHP Development	"Go SDK FIPS certified?
+Hey all I was wondering if the aws go sdk is FIPS certified?
+
+Thanks all"
+PHP Development	"SNS/SQS messaging issue
+Hello,
+
+I am trying to write and read messages through  SNS / SQS. I followed the instructions at https://docs.aws.amazon.com/sns/latest/dg/SendMessageToSQS.html , https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/sqs-example-receive-message.html etc.).  The message posting to SNS seems to work, and I can see the message count in SQS ( Messages in Flight (Not Visible)) going up each time when I post a new message to the SNS topic. However, the messages are not being received on the listener process.  Any suggestions on what could be wrong here?
+
+For running code:
+
+Create a SNS topic using AWS console
+Update the SNS topic arn for topicToListen 
+Update the IAM user arn for topicToListen 
+Make sure that the AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY environment variables are set
+go build
+to start the receiver, call    <pgm name>  -r   (wait for about 30+ seconds for the listner to be ready)
+to start the receiver, call    <pgm name>  -s  (this will send the message to the SNS topic)
+You can see that the receiver does not receive the message. However, the SQS console will show the increase in Messages in Flight (Not Visible)
+
+
+package main
+ 
+import (
+	""bufio""
+	""flag""
+	""fmt""
+	""os""
+	""os/user""
+	""strings""
+	""sync""
+	""time""
+ 
+	""github.com/aws/aws-sdk-go/aws""
+	""github.com/aws/aws-sdk-go/aws/session""
+	""github.com/aws/aws-sdk-go/service/sns""
+	""github.com/aws/aws-sdk-go/service/sqs""
+)
+ 
+// This program requires two environment variables to be set
+// AWS_ACCESS_KEY_ID
+// AWS_SECRET_ACCESS_KEY
+ 
+const topicToListen = ""arn for the SNS topic""
+const awsUserArn = ""arn for the IAM user""
+const awsRegion = ""ap-southeast-2""
+ 
+var waitGrp sync.WaitGroup
+var waitMore = true
+ 
+func main() {
+ 
+	sendPtr := flag.Bool(""s"", false, ""send message"")
+	receivePtr := flag.Bool(""r"", false, ""receive message"")
+	flag.Parse()
+ 
+	send := *sendPtr
+	receive := *receivePtr
+ 
+	exePath, _ := os.Executable()
+	idx := strings.LastIndex(exePath, string(os.PathSeparator))
+	if idx > 0 {
+		exePath = exePath[idx+1:]
+	}
+ 
+	if send == false && receive == false {
+		fmt.Printf(""Usage:\n%v -s [to send message]\nOR\n%v -r [to receive message]"",
+			exePath, exePath)
+		os.Exit(1)
+	}
+ 
+	if send == true && receive == true {
+		fmt.Printf(""\nOnly one flag -s or -r is allowed at a time\nUsage:\n%v -s [to send message]\nOR\n%v -r [to receive message]"",
+			exePath, exePath)
+		os.Exit(1)
+	}
+ 
+	sess := session.New(&aws.Config{
+		Region: aws.String(awsRegion),
+	})
+ 
+	if send == true {
+		fmt.Printf(""\nSending message...\n"")
+		sendMessage(sess)
+ 
+	} else if receive == true {
+		fmt.Printf(""\nReceiving messages...\n"")
+ 
+		go waitForMessages(sess)
+ 
+		fmt.Printf(""\nWaiting...\n"")
+		reader := bufio.NewReader(os.Stdin)
+ 
+		for inp := """"; inp != ""q""; {
+			fmt.Print(""Enter q to quit: "")
+			inp, _ = reader.ReadString('\n')
+			inp = strings.ToLower(strings.TrimSpace(inp))
+		}
+ 
+		waitMore = false
+		waitGrp.Wait()
+	}
+ 
+	fmt.Printf(""\nDone\n"")
+}
+ 
+func sendMessage(sess *session.Session) {
+ 
+	snsClnt := sns.New(sess)
+ 
+	timeStr := time.Now().Format(time.RFC3339Nano)
+	customMsg := fmt.Sprintf(""Test message at: %v"", timeStr)
+	msgToSend := fmt.Sprintf(`{
+				""default"": ""%v"", 
+				""sqs"": ""%v""
+				}`, customMsg, customMsg)
+ 
+	pubOut, err := snsClnt.Publish(&sns.PublishInput{
+		TopicArn:         aws.String(topicToListen),
+		Message:          aws.String(msgToSend),
+		MessageStructure: aws.String(""json""),
+	})
+ 
+	if err != nil {
+		fmt.Printf(""\nError in SNS Publish: %v"", err.Error())
+		return
+	}
+ 
+	fmt.Printf(""\nSNS Publish message id: %v to topic:%v"", *(pubOut.MessageId), topicToListen)
+}
+ 
+func waitForMessages(sess *session.Session) {
+ 
+	waitGrp.Add(1)
+ 
+	var queQurl *string = nil
+	var snsUnsubscInp *sns.UnsubscribeInput = nil
+	sqsClnt := sqs.New(sess)
+	snsClnt := sns.New(sess)
+ 
+	defer func(sqsClnt *sqs.SQS) {
+ 
+		if snsUnsubscInp != nil {
+			fmt.Printf(""\nUnsubscribing from SNS URL: %v"", *(snsUnsubscInp.SubscriptionArn))
+			_, err := snsClnt.Unsubscribe(snsUnsubscInp)
+			if err != nil {
+				fmt.Printf(""\nError in SNS Unsubscribe: %v"", err.Error())
+			}
+		}
+ 
+		if queQurl != nil {
+			fmt.Printf(""\nDeleting SQS URL: %v"", *(queQurl))
+			sqsDelInp := &sqs.DeleteQueueInput{
+				QueueUrl: queQurl,
+			}
+			_, err := sqsClnt.DeleteQueue(sqsDelInp)
+			if err != nil {
+				fmt.Printf(""\nError in DeleteQueue: %v"", err.Error())
+			}
+		} else {
+			fmt.Printf(""\nSQS URL is nil, not deleted: %v"", queQurl)
+		}
+ 
+		waitGrp.Done()
+ 
+	}(sqsClnt)
+ 
+	hostName, _ := os.Hostname()
+	usr, _ := user.Current()
+	usrName := usr.Username
+	if strings.HasPrefix(usrName, hostName) == true {
+		hostName = """"
+	}
+ 
+	serverID := ""sqs-"" +
+		hostName + ""-"" + usrName + ""-"" +
+		time.Now().Format(time.RFC3339Nano)
+	serverID = strings.Replace(serverID, "":"", ""-"", -1)
+	serverID = strings.Replace(serverID, ""."", ""-"", -1)
+	serverID = strings.Replace(serverID, ""\\"", ""-"", -1)
+	serverID = strings.Replace(serverID, ""/"", ""-"", -1)
+ 
+	queueName := strings.ToLower(serverID)
+ 
+	fmt.Printf(""\nServer: %v\nSession:%v"", serverID, sess)
+ 
+	sqsInp := &sqs.CreateQueueInput{
+		QueueName: aws.String(queueName),
+	}
+ 
+	sqsOutp, err := sqsClnt.CreateQueue(sqsInp)
+	if err != nil {
+		fmt.Printf(""\nError in CreateQueue: %v"", err.Error())
+		return
+	}
+ 
+	queQurl = sqsOutp.QueueUrl
+ 
+	tempStr := *(queQurl)
+	tempStr = strings.Replace(tempStr, ""https://sqs."", """", -1)
+	tempStr = strings.Replace(tempStr, "".amazonaws.com"", """", -1)
+	tempStr = strings.Replace(tempStr, ""/"", "":"", -1)
+ 
+	sqsArn := ""arn:aws:sqs:"" + tempStr
+ 
+	fmt.Printf(""\nSQS arn: %v"", sqsArn)
+ 
+	policyFmt := `{
+  ""Version"": ""2012-10-17"",
+  ""Id"": ""Queue_Policy"",
+  ""Statement"": [
+    {
+      ""Sid"": ""sqs_permissions_policy_writer"",
+      ""Effect"": ""Allow"",
+      ""Principal"": ""*"",
+      ""Action"": ""SQS:SendMessage"",
+      ""Resource"": ""%v"",
+      ""Condition"": {
+        ""ArnEquals"": {
+          ""aws:SourceArn"": ""%v""
+        }
+      }
+    },
+    {
+      ""Sid"": ""sqs_permissions_policy_reader"",
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""AWS"": ""%v""
+      },
+      ""Action"": ""SQS:*"",
+      ""Resource"": ""%v""
+    }
+  ]
+}`
+ 
+	policyStr := fmt.Sprintf(policyFmt, sqsArn, topicToListen, awsUserArn, sqsArn)
+ 
+	sqsAttrInp := &sqs.SetQueueAttributesInput{
+		QueueUrl: sqsOutp.QueueUrl,
+		Attributes: map[string]*string{
+			""Policy"": aws.String(policyStr),
+		},
+	}
+ 
+	_, err = sqsClnt.SetQueueAttributes(sqsAttrInp)
+	if err != nil {
+		fmt.Printf(""\nError in SetQueueAttributes: %v"", err.Error())
+		return
+	}
+ 
+	subscInp := &sns.SubscribeInput{
+		Endpoint: aws.String(sqsArn),
+		Protocol: aws.String(""sqs""),
+		TopicArn: aws.String(topicToListen),
+	}
+ 
+	subscOutp, err := snsClnt.Subscribe(subscInp)
+	if err != nil {
+		fmt.Printf(""\nError in Subscribe: %v"", err.Error())
+		return
+	}
+ 
+	fmt.Printf(""\nSubscriptionArn: %v"", *(subscOutp.SubscriptionArn))
+	fmt.Printf(""\nWaiting for AWS to be ready..."")
+	time.Sleep(30 * time.Second)
+ 
+	snsUnsubscInp = &sns.UnsubscribeInput{
+		SubscriptionArn: subscOutp.SubscriptionArn,
+	}
+ 
+	urlOutp, err := sqsClnt.GetQueueUrl(&sqs.GetQueueUrlInput{
+		QueueName: aws.String(queueName),
+	})
+	if err != nil {
+		fmt.Printf(""\nError in GetQueueUrl: %v"", err.Error())
+		return
+	}
+ 
+	var msgWaitSecs int64 = 10
+	queueUrlToListen := urlOutp.QueueUrl
+ 
+	msgInp := &sqs.ReceiveMessageInput{
+		QueueUrl: queueUrlToListen,
+		AttributeNames: aws.StringSlice([]string{
+			""SentTimestamp"",
+		}),
+		MaxNumberOfMessages: aws.Int64(1),
+		MessageAttributeNames: aws.StringSlice([]string{
+			""All"",
+		}),
+		WaitTimeSeconds: &msgWaitSecs,
+	}
+ 
+	for {
+ 
+		msgOutp, err := sqsClnt.ReceiveMessage(msgInp)
+		if err != nil {
+			fmt.Printf(""\nError in ReceiveMessage: %v"", err.Error())
+			return
+		}
+ 
+		if msgOutp.Messages == nil || len(msgOutp.Messages) == 0 {
+			fmt.Printf(""\nNo messages received : %v queQurl:%v"", msgOutp, *queueUrlToListen)
+		} else {
+			for idx, msg := range msgOutp.Messages {
+				msgBody := *(msg.Body)
+				fmt.Sprintf(""Message(%v):%v"", idx, msgBody)
+			}
+		}
+ 
+		if waitMore == false {
+			return
+		}
+	}
+}"
+PHP Development	"Re: SNS/SQS messaging issue
+I would bust the code up into two, very simple, apps.
+
+
+One that sends a message
+One that receives messages
+
+
+Whether they run forever until interrupted or just one time is up to you. 
+
+I would also create a third app that monitors the queue for messages.
+Again, whether it runs until interrupt is up to you.
+
+Run each in separate windows so you can follow what's going on.
+
+Get them to work, then merge them into one if you want."
+PHP Development	"Start EC2 instances for specified ECS cluster via SDK
+Hello!
+I've faced with almost same problem as here https://forums.aws.amazon.com/thread.jspa?threadID=230632 but I am using GO SDK for creating cluster. 
+So my problem is when I create new EC2 amazon-ecs-optimized instance it attached to 'defalut' cluster. How can I add new instances to specified cluster? There is ability for aws-cli tool by 
+#!/bin/bash
+echo ECS_CLUSTER=your_cluster_name >> /etc/ecs/ecs.config
+
+
+Is there possibility to specify ECS_CLUSTER while calling EC2.RunInstances https://docs.aws.amazon.com/sdk-for-go/api/service/ec2/#EC2.RunInstances
+
+Also, if there no possibility to specify cluster while start new instance, how can I create cluster with predefined servicecontainers via Go SDK?"
+PHP Development	"EC2 Service Client Lifecycle
+What is the lifecycle of an EC2 service client created by the Golang SDK? For the Java SDK, it is mentioned that the clients are long lived (https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/creating-clients.html)
+
+I use the New function to create a new client (https://docs.aws.amazon.com/sdk-for-go/api/service/ec2/#New) as
+svc := ec2.New(sess, aws.NewConfig().WithRegion(region))
+
+
+I wanted to know whether there is any timeout or expiration of the client after which it is not useable and I need to create a new service client?"
+PHP Development	"Getting NextToken in cloudWatchLogs go sdk
+I am trying to describe all log groups in my lambda log group, I have to pass ""NextToken"", which I don't have.
+svc.DescribeLogGroups(&cloudwatchlogs.DescribeLogGroupsInput{
+		Limit:              aws.Int64(1),
+		LogGroupNamePrefix: aws.String(""prefix""),
+		NextToken:          aws.String(""nextToken"")
+})
+
+what should my log prefix and nextToken be,  if I have to  get all log groups
+
+Edited by: krazybee on Jul 24, 2018 4:57 AM"
+PHP Development	"Gorilla/mux cannot return a value for path parameter.
+Hi,
+I’ve been using multiplexer from Gorilla/mux for a while and happy about it. Until suddenly it’s not working anymore when I redeployed my app to AWS Beanstalk.
+Every time that I try to access a path with parameter, the value of the parameter is always empty. But that’s not the case if the path doesn’t have a parameter.
+
+For example, given the URL of http://www.mydomain.net/myresource/{id}, the value of {id} is empty.
+But it works if I have a path without parameter like the following example:
+http://www.mydomain.net/myresource.
+
+This is only happening if I do deployment from AWS CodePipeline which kicks of CodeBuild, and deploys directly to AWS Beanstalk. If I build from my local box and deploy it to AWS Beanstalk it will work. I can also run it it in my local box.
+It seems there is something not right in AWS CodeBuild. I run dep, so the package that’s put in the vendor folder is the same version as what I have in my local box, and I have double checked to make sure they are identical.  Out of curiosity, I have also tried to update using other multiplexer and it gave the same result.  No error whatsoever, and I check the length of mux.Vars is 0
+
+My question, what steps that I need to do to troubleshooting this?  I've been stuck with this for two days already.
+
+Thanks
+
+Edited by: edisonltan on Jul 6, 2018 7:31 PM"
+PHP Development	"`go get` and `vgo` can't fetch a library from codecommit
+I've tested with several different git credentials setups:
+1. ssh keys
+2. git-credential-libsecret
+3. aws codecommit credential-helper
+4. cache (helper)
+
+etc.
+
+However, `go get` and `vgo build` always fail.
+
+$ go get git-codecommit.us-east-1.amazonaws.com/v1/repos/libfoo
+package git-codecommit.us-east-1.amazonaws.com/v1/repos/libfoo: unrecognized import path ""git-codecommit.us-east-1.amazonaws.com/v1/repos/libfoo"" (parse https://git-codecommit.us-east-1.amazonaws.com/v1/repos/libfoo?go-get=1: no go-import meta tags ())
+
+
+$ vgo build
+vgo: resolving import ""git-codecommit.us-east-1.amazonaws.com/v1/repos/libfoo""
+vgo: import ""git-codecommit.us-east-1.amazonaws.com/v1/repos/bar"" ->
+	import ""git-codecommit.us-east-1.amazonaws.com/v1/repos/libfoo"": unknown module git-codecommit.us-east-1.amazonaws.com/v1/repos/libfoo: no go-import tags
+
+
+Originally I thought this to be a problem with vgo, and had created a ticket https://github.com/golang/go/issues/25792, where I was informed that the failure is earlier in the fetching process than I thought. The problem isn't authentication, it's strictly that `go` is unable to detect that the codecommit repository is in fact a go package repository.
+
+Does anyone have any tips, maybe on the codecommit admin side for opening up these `meta tags`?
+
+Thanks
+
+ -- Ben"
+PHP Development	"Process exited before completing request for aws lambda using Go
+I have using following code in go with aws lambda:
+
+package main
+
+import (
+        ""log""       
+        ""github.com/aws/aws-lambda-go/lambda""
+)
+
+func HandleRequest() {
+        log.Print(""Hello from Lambda"")
+}
+
+func main() {
+        log.Print(""Hello from Lambda"")
+        lambda.Start(HandleRequest)
+} 
+
+Attaching the zip file for reference.When i test it gives me following error message 
+
+{
+  ""errorMessage"": ""RequestId: 16796b81-63fa-11e8-8072-d71ac5248dba Process exited before completing request""
+}
+
+Log Output:
+
+START RequestId: 16796b81-63fa-11e8-8072-d71ac5248dba Version: $LATEST
+END RequestId: 16796b81-63fa-11e8-8072-d71ac5248dba
+REPORT RequestId: 16796b81-63fa-11e8-8072-d71ac5248dba	Duration: 101.31 ms	Billed Duration: 200 ms 	Memory Size: 704 MB	Max Memory Used: 14 MB	
+RequestId: 16796b81-63fa-11e8-8072-d71ac5248dba Process exited before completing request
+
+What could be the reason for above issue?"
+PHP Development	"Re: Process exited before completing request for aws lambda using Go
+I couldn't see the zip package to download it, but one potential reason could be that you forgot to compile the Go program for Linux using the GOOS environment variable."
+PHP Development	"Golang S3 Uploader
+Hello,
+
+I have not been able to find many resources that describe a start-to-finish Golang Lambda deployment, so I thought I would see if any forum members have any suggestions or feedback for our intended architecture.
+
+We have an OCR application that exists in a Fargate task definition. Using environment variables set with the task launch, it retrieves PDF files from an S3 bucket, performs image pre-processing and deskew functions, then OCRs the entire PDF with reassembled text layers.
+
+I need some ability to securely upload those PDF files to S3; everything has to be SSL encrypted.
+
+From what I've read, the best way to accomplish this would be using Amazon API Gateway to build a REST API that is SSL-encrypted, and with a Lambda trigger (we want to use Golang) that handles the incoming POST, writes the file to S3, and then launches the Fargate OCR process with environment variables that specify the uploaded filename for the PDF.
+
+So for starters, are there any resources that describe this POST functionality with API Gateway and the Golang Lambda function? Seems like this should be a fairly simple implementation?
+
+Thanks in advance"
+PHP Development	"Re: Golang S3 Uploader
+I've never tried upload via API Gateway/Lambda combo tbh, thought that the memory restrictions for Lambda meant this ruled out most options for this?
+
+Does the application only exist within your own company? If that's the case, you could look at setting up an EC2 instance reverse proxy with a role to access S3 which performs the upload. Using this method you can also have it writing to multiple buckets based on the url passed from the file source."
+PHP Development	"Unable to access the service from outside the instance.
+Hello,
+
+  My service is running on port 8181 and under security group added ""Custome TCP Rule"" saying port 8181 is available from every where. But still it's unavailable.
+
+  Am I missing any other required steps.
+
+Thanks!!"
+PHP Development	"setup aws certification for a web page
+I have a web page i would like to work with ssl (https)
+
+for now it is working but with the private certification which alerts the user of ""connection is not secure"".
+
+I issued a aws certification by following the link :
+https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html#dns-add-cname
+
+And set my tomcat server to work with certificate by as shown in this link
+http://techtracer.com/2007/09/12/setting-up-ssl-on-tomcat-in-3-easy-steps/
+
+but i can not seem to get ride of the ""connection is not secure"" issue"
+PHP Development	"Single sdk api to list all keys across all regions
+Is there an api (in golang) to list all the kms keys across all regions? or do i have to create per region service client and get the keys via that."
+PHP Development	"Bug:  CognitoIdentityID/CognitoIdentityPoolID is empty on lambda invoke
+The CognitoIdentityID field in the lambda context structure for Go seems not to be working. These are direct invocations of lambda functions forwarded from Cloudfront. API Gateway is not being used.
+
+I am sure the CognitoIdentity is part of my request, direct lambda calls are protected by IAM security.  So I had to get through the IAM encryption check in order to invoke the lambda. I dumped my context.Context from go:
+{
+    ""AwsRequestID"": ""92db745e-183c-11e8-be7d-c53e91fb11c8"",
+    ""InvokedFunctionArn"": ""arn:aws:lambda:us-east-1:xxxxx:function:digi2API-dev-world"",
+    ""Identity"": {
+        ""CognitoIdentityID"": """",
+        ""CognitoIdentityPoolID"": """"
+    },
+    ""ClientContext"": {
+        ""Client"": {
+            ""installation_id"": """",
+            ""app_title"": """",
+            ""app_version_code"": """",
+            ""app_package_name"": """"
+        },
+        ""env"": null,
+        ""custom"": null
+    }
+}
+
+When I make a similar call from the same front-end to a lambda written in node.js, the context looks like this, only change was editing the function name to call a different lambda.
+{
+    ""callbackWaitsForEmptyEventLoop"": true,
+    ""logGroupName"": ""/aws/lambda/digiAPI-dev-items"",
+    ""logStreamName"": ""2018/02/21/[$LATEST]a8178cf4ab4a4108b285267bddd9a5d6"",
+    ""functionName"": ""digiAPI-dev-items"",
+    ""memoryLimitInMB"": ""512"",
+    ""functionVersion"": ""$LATEST"",
+    ""identity"": {
+        ""cognitoIdentityId"": ""us-east-1:73134712-adbb-4432-8cfe-246a8eae6fab"",
+        ""cognitoIdentityPoolId"": ""us-east-1:4f3f4619-737b-41ed-b0dd-8875cfcf27ab""
+    },
+    ""invokeid"": ""e8e1d8dc-175e-11e8-a83c-39c3312d1082"",
+    ""awsRequestId"": ""e8e1d8dc-175e-11e8-a83c-39c3312d1082"",
+    ""invokedFunctionArn"": ""arn:aws:lambda:us-east-1:xxxxxxxx:function:digiAPI-dev-items
+}
+
+
+The example for this in the documentation also does not work for the same reason. Note the variable name is misspelled in the documentation.
+https://docs.aws.amazon.com/lambda/latest/dg/lambda-dg.pdf
+
+Accessing Invoke Context Information
+Lambda functions have access to metadata about their environment and the invocation request. This
+can be accessed at Package context. Should your handler include context.Context as a parameter,
+Lambda will insert information about your function into the context's Value property. Note that you
+need to import the lambdacontext library to access the contents of the context.Context object.
+package main
+import (
+ ""context""
+ ""log""
+ ""github.com/aws/aws-lambda-go/lambda""
+ ""github.com/aws/aws-lambda-go/lambdacontext""
+)
+func CognitoHandler(ctx context.Context) {
+ lc, _ := lambdacontext.FromContext(ctx)
+ log.Print(lc.Identity.CognitoPoolID)
+}
+func main() {
+ lambda.Start(CognitoHandler)
+}
+In the example above, lc is the variable used to consume the information that the context object
+captured and log.Print(lc.Identity.CognitoPoolID) prints that information, in this case, the
+CognitoPoolID.
+ 
+
+
+Edited by: jonsmirl2 on Feb 23, 2018 9:28 AM"
+PHP Development	"Re: Bug:  CognitoIdentityID/CognitoIdentityPoolID is empty on lambda invoke
+This is broken in the go lambda run-time, since I have the source I've hacked in a fix, aws-lambda-go/lambda/function.go in Invoke() is missing a couple of assignments. I am just starting with Go and can't figure out the correct syntax for adding the assignment in the initializer, but this hack works.
+
+lc := &lambdacontext.LambdaContext{
+	AwsRequestID:       req.RequestId,
+	InvokedFunctionArn: req.InvokedFunctionArn,
+}
+lc.Identity.CognitoIdentityID = req.CognitoIdentityId
+lc.Identity.CognitoIdentityPoolID = req.CognitoIdentityPoolId"
+PHP Development	"How to make sender name dynamic while sending emails through command line ?
+Hello!
+I am working on a SAAS project. The project uses angular at its front end that use REST API to connect to database. The REST API of the application is written in Go. 
+
+The emails through command line are sending but its sender name is something that matches to my server name like ubuntu@ip-https://forums.aws.amazon.com/.us-east-2.compute.internal . Its sender name is showing as Ubuntu in my mail inbox. 
+I fixed it by passing additional headers in mail command for sender. Now its displaying the customized sender name. Following is the code
+
+mail -a ""MIME-Version: 1.0"" -a ""Content-Type: text/html; charset=""UTF-8"""" -a ""From:SENDERNAME<sender@example.com>"" -s ""$(echo ""subject""  )""  test@example.com, body
+
+But I want to know does AWS provide any additional settings or something like that so that I can control it through settings not the code?? If yes, then please provide me the details for such settings.
+
+Thanks!"
+PHP Development	"Update CLI help and official docs
+Hi,
+
+I've been told to post my request here, the relevant GH issue is https://github.com/aws/aws-sdk-go/issues/1772 but I'm pasting the text below.
+
+Thanks,
+Daniel
+
+**********************************************************************************
+This is just a doc update, please update the file service/sns/api.go, line 5360 to
+
+// Valid values: DeliveryPolicy | FilterPolicy | RawMessageDelivery
+
+
+i.e. add the new attribute FilterPolicy to the doc. Please also update the corresponding HTML documentation."
+PHP Development	"Re: Update CLI help and official docs
+This is the Go forum. You want the SNS forum: https://forums.aws.amazon.com/forum.jspa?forumID=72"
+PHP Development	"grouping similar cloudwatch logs alarms
+Hello everyone,
+I've recently integrated a laravel project to logs directly to cloudwatch, now I need to create an alarm to send notifications to slack about logs with level error or warning. i have a simple lambda function that sends a message/notification to slack using webhook. i added a subscription to the log group to invoke the lambda function if log level is error or warning and this works perfectly. my question here is that if there is any easy way to to group similar messages i.e. there are 5 entries with error level and all of them are identical. i want to send only 1 message that can contain errors count = x (in this case x = 5).
+for the current solution if there are many similar errors it will spam slack channel with messages about same error."
+PHP Development	"Disable ""T2/T3 Unlimited"" on instance launch
+I need to launch EC2 instances with the ""T2/T3 Unlimited"" setting set to false/disabled.
+If I'm not wrong, I have to use the CreditSpecification parameter. I think I'm doing it right, but in the AWS console ""T2/T3 Unlimited"" is still set to ""enabled"".
+This is my code:
+$ec2Client->runInstances([
+    'ClientToken' => $clientToken,
+    'CreditSpecification' => [
+        'CpuCredits' => 'standard', // REQUIRED
+    ],
+    'ImageId' => $awsAmiId,
+    'InstanceInitiatedShutdownBehavior' => 'terminate',
+    'InstanceType' => $awsInstanceType,
+    'MaxCount' => 1, // REQUIRED
+    'MinCount' => 1, // REQUIRED
+    'Monitoring' => [
+        'Enabled' => true, // REQUIRED
+    ],
+    'SecurityGroupIds' => [$awsSecurityGroupId],
+    'SubnetId' => $awsSubnetId,
+    'TagSpecifications' => [
+        [
+            'ResourceType' => 'instance',
+            'Tags' => $tags
+        ]
+    ]
+]);
+
+What am I doing wrong or missing?
+Thank you."
+PHP Development	"Extreme S3 latency since 2 days
+Since 8 years, I have a script running on an EC2 instance that download about 5000 files from S3 several time a day (all within the AWS network).
+
+It usually complete in few minutes but since yesterday, the same operation take about 1 hour, no network errors involved, transfer time looks good but getting answer from the API take about 1 sec fore each file.
+
+I'm using the old PHP SDK (v2), can it be part of the problem or there is something going wrong with S3 ? The very same script runned for years without trouble.
+
+Many thanks"
+PHP Development	"Re: Extreme S3 latency since 2 days
+Still not answer but the S3 behavior is back to normal. Nothing changed on our side but the transfer is now fast again. Probably a glitch on the network on the AWS side."
+PHP Development	"Amazon Linux 2 and PHP 5.6
+It seems that the default PHP install with Amazon Linux is 5.4 which is already long past EoL.
+
+Using amazon-linux-extras I was able to get 7.2 installed and working.
+
+However, I'm working on a project that requires 5.x and would prefer to run PHP 5.6 since it is still receiving security updates.
+
+Anyone able to get PHP 5.6 installed on Amazon Linux 2? I suppose I could download and compile it but it's been quite awhile since I've done that... stupid convenient repos!"
+PHP Development	"Re: Amazon Linux 2 and PHP 5.6
+Thanks for using Amazon Linux 2. I have forwarded your request to appropriate team internally.
+
+-Praveen"
+PHP Development	"Re: Amazon Linux 2 and PHP 5.6
+i too would like to run php 5.6 ... is there a solution to this yet?"
+PHP Development	"Re: Amazon Linux 2 and PHP 5.6
+sudo amazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2
+the above command install the lamp server with php 7.2 on linux 2. You can try to install php5.6 instead php7.2"
+PHP Development	"Re: Amazon Linux 2 and PHP 5.6
+Good morning,
+any news on this? I'd like to run PHP 5.6 but I can't seem to find a way. Unfortunately I can't install PHP 7 for we have a legacy website that needs PHP 5 in order to run. But I'd like to at least be able to run the latest PHP 5 version, and not a really outdated one...."
+PHP Development	"Re: Amazon Linux 2 and PHP 5.6
+Try this:
+	sudo yum -y update
+	sudo yum install –y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+	sudo wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+	sudo wget https://centos7.iuscommunity.org/ius-release.rpm
+	sudo rpm -Uvh ius-release*.rpm
+	sudo yum -y update
+
+	# When you install the package you'll need to add a u to the end of php56. Here is an example of some packages you could install.
+
+	sudo yum -y install php56u php56u-opcache php56u-xml php56u-mcrypt php56u-gd php56u-devel php56u-mysql php56u-intl php56u-mbstring php56u-bcmath php56u-soap"
+PHP Development	"Re: Amazon Linux 2 and PHP 5.6
+Hi All,
+Is there any news on this. I too need to install PHP 5.6 on Amazon Linux 2
+
+@NigleG1
+Thanks.
+Is this setup good to go for Prod envs.
+What does the ""u"" stand for here.
+
+Or is there any other way to do.
+
+Cheers
+
+Edited by: Harb on Aug 7, 2018 1:57 AM"
+PHP Development	"Re: Amazon Linux 2 and PHP 5.6
+Thank you for the solution! Works for me."
+PHP Development	"Re: Amazon Linux 2 and PHP 5.6
+Hi,
+
+I'm trying NigelG1 workaround but it doesn't work for me.
+
+Examining /var/tmp/yum-root-K7YhYD/epel-release-latest-7.noarch.rpm: epel-release-7-11.noarch
+/var/tmp/yum-root-K7YhYD/epel-release-latest-7.noarch.rpm: does not update installed package.
+
+sudo rpm -Uvh ius-release*.rpm
+warning: ius-release.rpm: Header V4 DSA/SHA1 Signature, key ID 9cd4953f: NOKEY
+Preparing...                          ################################# https://forums.aws.amazon.com/
+        package ius-release-1.0-15.ius.centos7.noarch is already installed
+
+sudo yum -y install php56u
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+276 packages excluded due to repository priority protections
+No package php56u available.
+Error: Nothing to do
+
+I really need to install php5 for me to work on old websites.
+
+Thank you in advance."
+PHP Development	"Re: Amazon Linux 2 and PHP 5.6
+php56 is no longer in the main repository try this:
+
+sudo yum install --enablerepo=ius-archive php56u
+
+
+Edited by: dbailey668 on Feb 21, 2019 11:35 AM"
+PHP Development	"XML extension on PHP 7.2
+I need to install XML extensions with DOM for PHP 7.2 from amzn2extra-php7.2 but the dependencies seems to be broken.
+How can I fix this issue??
+Thanks
+
+yum install php-xml
+Loaded plugins: langpacks, priorities, update-motd
+amzn2-core                                                                                      | 2.0 kB  00:00:00
+48 packages excluded due to repository priority protections
+Resolving Dependencies
+--> Running transaction check
+---> Package php-xml.x86_64 0:5.4.16-43.amzn2.0.1 will be installed
+--> Processing Dependency: php-common(x86-64) = 5.4.16-43.amzn2.0.1 for package: php-xml-5.4.16-43.amzn2.0.1.x86_64
+--> Processing Dependency: libxslt.so.1(LIBXML2_1.0.24)(64bit) for package: php-xml-5.4.16-43.amzn2.0.1.x86_64
+--> Processing Dependency: libxslt.so.1(LIBXML2_1.0.22)(64bit) for package: php-xml-5.4.16-43.amzn2.0.1.x86_64
+--> Processing Dependency: libxslt.so.1(LIBXML2_1.0.18)(64bit) for package: php-xml-5.4.16-43.amzn2.0.1.x86_64
+--> Processing Dependency: libxslt.so.1(LIBXML2_1.0.13)(64bit) for package: php-xml-5.4.16-43.amzn2.0.1.x86_64
+--> Processing Dependency: libxslt.so.1(LIBXML2_1.0.11)(64bit) for package: php-xml-5.4.16-43.amzn2.0.1.x86_64
+--> Processing Dependency: libxslt.so.1()(64bit) for package: php-xml-5.4.16-43.amzn2.0.1.x86_64
+--> Processing Dependency: libexslt.so.0()(64bit) for package: php-xml-5.4.16-43.amzn2.0.1.x86_64
+--> Running transaction check
+---> Package libxslt.x86_64 0:1.1.28-5.amzn2 will be installed
+---> Package php-xml.x86_64 0:5.4.16-43.amzn2.0.1 will be installed
+--> Processing Dependency: php-common(x86-64) = 5.4.16-43.amzn2.0.1 for package: php-xml-5.4.16-43.amzn2.0.1.x86_64
+--> Finished Dependency Resolution
+Error: Package: php-xml-5.4.16-43.amzn2.0.1.x86_64 (amzn2-core)
+           Requires: php-common(x86-64) = 5.4.16-43.amzn2.0.1
+           Installed: php-common-7.2.0-3.amzn2.1.x86_64 (@amzn2extra-php7.2)
+               php-common(x86-64) = 7.2.0-3.amzn2.1
+           Available: php-common-5.4.16-43.amzn2.x86_64 (amzn2-core)
+               php-common(x86-64) = 5.4.16-43.amzn2
+           Available: php-common-5.4.16-43.amzn2.0.1.x86_64 (amzn2-core)
+               php-common(x86-64) = 5.4.16-43.amzn2.0.1
+ You could try using --skip-broken to work around the problem
+ You could try running: rpm -Va --nofiles --nodigest"
+PHP Development	"Re: XML extension on PHP 7.2
+Up..
+
+Hi,
+is there any chance to include php-xml on the next server update.??
+We are upgrading a website that use DOM function extensively and we are in stale because of this.
+
+Thank you
+Andrew"
+PHP Development	"Re: XML extension on PHP 7.2
+Up,
+
+nobody here use xml extensions?
+
+Andrew"
+PHP Development	"Re: XML extension on PHP 7.2
+I am having a similar problem with the zip extension to PHP 7.2. I solved my XML problem by first writing this test then flailing about:
+
+<?php 
+echo ""xml: "", extension_loaded('xml') ? 'OK' : 'MISSING', '<br>';
+echo ""zip: "", extension_loaded('zip') ? 'OK' : 'MISSING', '<br>';
+?>
+
+php -m provides a long list with xml present (though zip is absent). I got the xml module after restarting my EC2 instance. Or editing php.ini file to add extension=xml.so (after verifying the xml.so in extension_dir). The docs indicate i didn't need to edit php.ini, but the xml extension wouldn't load until after I did that and rebooted. (yes, I had been restarting httpd all along.) Maybe it was good after I did a ""sudo yum install php-xml"" and it just needed that reboot, idunno.
+
+If anyone can help me figure out the zip extension, I'd be much obliged"
+PHP Development	"Re: XML extension on PHP 7.2
+Hi,
+
+you can try with ""yum list php*"" to see the packages availables
+
+ yum list php*
+Loaded plugins: langpacks, priorities, update-motd
+48 packages excluded due to repository priority protections
+Installed Packages
+php-cli.x86_64                   7.2.0-3.amzn2.1              @amzn2extra-php7.2
+php-common.x86_64                7.2.0-3.amzn2.1              @amzn2extra-php7.2
+php-fpm.x86_64                   7.2.0-3.amzn2.1              @amzn2extra-php7.2
+php-json.x86_64                  7.2.0-3.amzn2.1              @amzn2extra-php7.2
+php-mbstring.x86_64              7.2.0-3.amzn2.1              @amzn2extra-php7.2
+php-mysqlnd.x86_64               7.2.0-3.amzn2.1              @amzn2extra-php7.2
+php-pdo.x86_64                   7.2.0-3.amzn2.1              @amzn2extra-php7.2
+Available Packages
+php.x86_64                       5.4.16-43.amzn2.0.1          amzn2-core
+php-bcmath.x86_64                5.4.16-43.amzn2.0.1          amzn2-core
+php-dba.x86_64                   5.4.16-43.amzn2.0.1          amzn2-core
+php-dbg.x86_64                   7.2.0-3.amzn2.1              amzn2extra-php7.2
+php-devel.x86_64                 5.4.16-43.amzn2.0.1          amzn2-core
+php-embedded.x86_64              5.4.16-43.amzn2.0.1          amzn2-core
+php-enchant.x86_64               5.4.16-43.amzn2.0.1          amzn2-core
+php-gd.x86_64                    5.4.16-43.amzn2.0.1          amzn2-core
+php-gmp.x86_64                   7.2.0-3.amzn2.1              amzn2extra-php7.2
+php-intl.x86_64                  5.4.16-43.amzn2.0.1          amzn2-core
+php-ldap.x86_64                  5.4.16-43.amzn2.0.1          amzn2-core
+php-mysql.x86_64                 5.4.16-43.amzn2              amzn2-core
+php-odbc.x86_64                  5.4.16-43.amzn2.0.1          amzn2-core
+php-opcache.x86_64               7.2.0-3.amzn2.1              amzn2extra-php7.2
+php-pear.noarch                  1:1.10.5-7.amzn2.0.1         amzn2-core
+php-pecl-memcache.x86_64         3.0.8-4.amzn2                amzn2-core
+php-pgsql.x86_64                 5.4.16-43.amzn2.0.1          amzn2-core
+php-process.x86_64               5.4.16-43.amzn2.0.1          amzn2-core
+php-pspell.x86_64                5.4.16-43.amzn2.0.1          amzn2-core
+php-recode.x86_64                5.4.16-43.amzn2.0.1          amzn2-core
+php-snmp.x86_64                  5.4.16-43.amzn2.0.1          amzn2-core
+php-soap.x86_64                  5.4.16-43.amzn2.0.1          amzn2-core
+php-xml.x86_64                   5.4.16-43.amzn2.0.1          amzn2-core
+php-xmlrpc.x86_64                5.4.16-43.amzn2.0.1          amzn2-core
+
+
+with a result like this one.. As you can see the php-xml packages is present but is for a 5.4.16 version, not for a 7.2 version, this is why when you try to install the package there's a broken link.
+
+Your zip packages is not present"
+PHP Development	"Re: XML extension on PHP 7.2
+up"
+PHP Development	"Re: XML extension on PHP 7.2
+php72-xml
+php72-xmlrc"
+PHP Development	"Re: XML extension on PHP 7.2
+I'm not seeing these extensions on ALI 2 when I run yum list php*
+ or try to install it"
+PHP Development	"Re: XML extension on PHP 7.2
+Hi 
+
+I just did 
+sudo yum install php-xml
+
+It picked up and installed 
+Installing:
+ php-xml            x86_64            7.2.11-1.amzn2.0.1            amzn2extra-lamp-mariadb10.2-php7.2
+
+Rebooted and jobs a gooden"
+PHP Development	"Re: XML extension on PHP 7.2
+#My development environment CentOS7 php7.2.15 Apache2.4.6 MariaDB10.2.22
+#pLs designation php vresion
+#ex) php72
+#yum install --enablerepo=remi-php72 php-xml
+#yum install --enablerepo=remi-php72 php-xml
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+ * base: ftp.iij.ad.jp
+ * epel: ftp.riken.jp
+ * extras: ftp.iij.ad.jp
+ * remi-php72: ftp.riken.jp
+ * remi-safe: ftp.riken.jp
+ * updates: ftp.iij.ad.jp
+Resolving Dependencies
+--> Running transaction check
+---> Package php-xml.x86_64 0:7.2.15-1.el7.remi will be installed
+--> Finished Dependency Resolution
+ 
+Dependencies Resolved
+ 
+=======================================================================================================================================================
+ Package                          Arch                            Version                                    Repository                           Size
+=======================================================================================================================================================
+Installing:
+ php-xml                          x86_64                          7.2.15-1.el7.remi                          remi-php72                          206 k
+ 
+Transaction Summary
+=======================================================================================================================================================
+Install  1 Package
+ 
+Total download size: 206 k
+Installed size: 855 k
+Is this ok [y/d/N]: y
+Downloading packages:
+php-xml-7.2.15-1.el7.remi.x86_64.rpm                                                                                            | 206 kB  00:00:00     
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : php-xml-7.2.15-1.el7.remi.x86_64                                                                                                    1/1 
+  Verifying  : php-xml-7.2.15-1.el7.remi.x86_64                                                                                                    1/1 
+ 
+Installed:
+  php-xml.x86_64 0:7.2.15-1.el7.remi                                                                                                                   
+ 
+Complete!"
+PHP Development	"Amazon Linux 2 igbinary and memcached out-of-date
+On the latest Amazon Linux 2.8.6 PHP 7.1 image , is it possible to get the latest stable igbinary and memcached?
+
+igbinary: The default igbinary php extensions provided (1.1.2) is not compatible with PHP 7.1 . It's only supported starting  igbinary 2.0.1[1] 
+memcached: it would be also awesome to have the latest stable version (3.1.3)
+
+When I've tried to upgrade both via pecl7 (with the ebextension), it results of a segmentation fault for both packages. (pecl7 upgrade , or pecl7 uninstall+pecl7 install)
+
+Any on idea on how to upgrade the packages properly this, or know when a working version will come out? Thanks a lot!
+
+[1] https://github.com/igbinary/igbinary/releases?after=release-2.0.1
+
+Edited by: eric-sre on Jan 25, 2019 9:45 AM"
+PHP Development	".htaccess not deploying
+Hi
+This isn't really a PHP question, but I thought this might be the best place to ask the question.
+I'm using AWS Codestar, with my Git repository, to auto-deploy my web application. As part of the web app, it uses .htaccess files and mod_rewrite - all standard stuff. However, for some reason, the deploy/build etc doesn't seem to deploy the .htaccess file.
+My guess is, it's being ignored by the git pull somehow; however when I push a change to the .htaccess file, the deployment process sees it, and builds/deploys the change.
+
+Any advice/help gratefully received 
+
+Thanks
+James"

@@ -1,0 +1,2627 @@
+label	description
+PowerShell Scripting	"What am I missing? Pick up file from S3 bucket using Assume Role approach
+Hello esteemed experts --
+
+I'm at a loss as to what I'm missing in my understanding of how to do this. Basically, I was given access to an S3 bucket at a client site, and they've applied an S3ReadOnly role to my access. My job: pick up the file using PowerShell and save it locally.
+
+Note: I can do this perfectly in the standard (non role-based) case, but I keep encountering errors when trying with the IAM role I have been given. I must be missing something in how to assume the role and then get the file. Reading up on the web has resulted in no help.
+
+Below is the basic script. For sake of clarity in this example, I'm putting everything into variables rather than using any persisted credentials, and I've triple-checked all of the values the client provided for the various variables below.
+
+Set-AWSCredential -StoreAs myprofile -AccessKey $accessKey -SecretKey $secretKey
+Set-AWSCredential -StoreAs myassumedroleprofile -SourceProfile myprofile -RoleArn $roleARN
+ 
+Get-AWSCredential -ProfileName myassumedroleprofile
+ 
+Get-S3BucketLocation -ProfileName myassumedroleprofile -bucket $bucketName
+ 
+Copy-S3Object -ProfileName myassumedroleprofile -BucketName $bucketName -Key $keyName -LocalFolder $localPath
+
+
+The Sets work fine, and Get returns values as expected. As soon as I try to do anything with the bucket, however, I get ""InvalidOperation"" errors. Even a simple ""get location"" call fails:
+
+Get-S3BucketLocation : Error calling AssumeRole for role +<<arn redacted>>+
+At line:13 char:1
++ Get-S3BucketLocation -ProfileName myassumedroleprofile -bucket $bucke ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (Amazon.PowerShe...tLocationCmdlet:GetS3BucketLocationCmdlet) [Get-S3BucketLocation], InvalidOperationException
+    + FullyQualifiedErrorId : Amazon.Runtime.AmazonClientException,Amazon.PowerShell.Cmdlets.S3.GetS3BucketLocationCmdlet
+ 
+Copy-S3Object : Error calling AssumeRole for role +<<arn redacted>>+
+At line:15 char:1
++ Copy-S3Object -ProfileName myassumedroleprofile -BucketName $bucketNa ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (Amazon.PowerShe...yS3ObjectCmdlet:CopyS3ObjectCmdlet) [Copy-S3Object], InvalidOperationException
+    + FullyQualifiedErrorId : Amazon.Runtime.AmazonClientException,Amazon.PowerShell.Cmdlets.S3.CopyS3ObjectCmdlet
+
+
+I did find reference to another approach, but it sended up generating  ""Signature Does Not Match"" errors. This other approach used the following code:
+
+$newRole = (Use-STSRole -Region us-west-1 -RoleArn $roleARN -RoleSessionName 'sess').Credentials
+ 
+$credentials = New-AWSCredential -AccessKey $newRole.AccessKeyId -SecretKey 
+   $newRole.SecretAccessKey -SessionToken $newRole.SessionToken
+
+
+This approach produced the following error:
+
+Use-STSRole : The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. Consult the service 
+documentation for details.
+At line:14 char:13
++ $newRole = (Use-STSRole -Region us-west-1 -RoleArn $roleARN -RoleSess ...
++             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (Amazon.PowerShe...seSTSRoleCmdlet:UseSTSRoleCmdlet) [Use-STSRole], InvalidOperationException
+    + FullyQualifiedErrorId : Amazon.SecurityToken.AmazonSecurityTokenServiceException,Amazon.PowerShell.Cmdlets.STS.UseSTSRoleCmdlet
+
+
+I have checked the accessKey and secretKey like 50 times now, and they are consistent with what I was sent from the client. I suppose it's possible they sent a typo, but it's very unlikely.
+
+This second approach seems to be the preferred method, after reading some more pages.
+
+Any explanations or ideas would be very much appreciated. I've got to believe this is a fairly standard use case, but I haven't found a single script on the web that does something like this.
+
+Thanks!
+Bruce
+
+Edited by: bbergman on Feb 21, 2019 3:36 PM - Added second method code."
+PowerShell Scripting	"Re: What am I missing? Pick up file from S3 bucket using Assume Role approach
+I'm going to answer my own question here, since no one beat me to it.
+
+First, the Signature Does Not Match errors were due to a typo in the keys. Everything I had read online about this error seemed to be pointed in that direction, but since I had checked the keys a good dozen times and saw no mismatches, I didn't believe that was the issue. In our case, the client required us to transpose the keys off of an image of the keys, rather than text, and this is where the typo occurred. When they read them off to me verbally on the phone, letter by letter, there was one very non-obvious mismatch on one letter, which in the image was indistinguishable, and that was the problem. Once the correct key was entered, that particular error went away.
+
+Now, the bigger question of how to get the file programmatically using PowerShell remained. As it turned out, it wasn't too difficult. For the sake of helping someone else in the future, here's the relevant section of code I created:
+
+$accessKey = ""<<your key here>>""
+$secretKey = ""<<your key here>>""
+$region = ""us-east-1""    # supplied region (this should match bucket region)
+ 
+# Specify the supplied Role ARN here
+$roleARN = ""<<your arn here>>""
+ 
+# What are we getting, and from where?
+$bucketName = ""<<bucket name>>""  # name of customer bucket
+$keyName = ""<<key/file name>>""      # if only getting a single file, specify it here, or use wildcards
+ 
+# Where should the captured file(s) be placed?
+$localPath = ""c:\""                     # a writeable directory that can be guaranteed to exist
+$finalPath = ""<<directory>>""         # what directory should file be placed in?
+$finalFilename = ""<<file>>""           # destination filename
+ 
+# Use-STSRole takes the regular AWS credentials and assumes another role. In this case, plug in the
+# provided values and get temporary token-based credentials back from AWS in the (now) assumed role.
+ 
+$newrole = (Use-STSRole -RoleArn $roleARN -RoleSessionName session-assume-role -AccessKey $accessKey -SecretKey $secretKey -region $region).Credentials
+ 
+# Now that we have a temporary set of credentials, use them to pull from the bucket.
+# The S3 copy will overwrite any files found in the localPath directory.
+ 
+Copy-S3Object -AccessKey $newrole.AccessKeyId -SecretKey $newrole.SecretAccessKey -Region $region -SessionToken $newrole.SessionToken -BucketName $bucketName -Key $keyName -LocalFolder $localPath
+
+
+Note that a better approach would be to use protected NetSDK stores for the keys, rather than inline in the script, but this was a design decision we were stuck with. Hope this is helpful to someone else.
+
+Thanks,
+Bruce"
+PowerShell Scripting	"Error Message using Set-AWSSamlRoleProfile cmdlet
+I am attempting to use federated ADFS to connect to my AWS instance using the AWS Powershell Tools.  I'm following the instructions linked here: http://docs.aws.amazon.com/powershell/latest/userguide/saml-pst.html
+
+I have successfully used these instructions on a Windows 7 machine, but on a Windows 2012 R2 server I get an error message when I run the Set-AWSSamlRoleProfile cmdlet:
+
+$endpoint = ""https://<MY.ADFS.SERVER>/adfs/ls/IdpInitiatedSignOn.aspx?loginToRp=urn:amazon:webservices""
+$epName = Set-AWSSamlEndpoint -Endpoint $endpoint -StoreAs MyADFS -AuthenticationType NTLM
+Set-AWSSamlRoleProfile -StoreAs MySAMLProfile -EndpointName $epName
+
+
+The error message is:
+Set-AWSSamlRoleProfile : Unable to set credentials: Root element is missing.
+At line:1 char:1
++ Set-AWSSamlRoleProfile -StoreAs MySAMLProfile -EndpointName $epName
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (Amazon.PowerShe...leProfileCmdlet:SetSamlRoleProfileCmdlet) [Set-AWSSamlRoleProfile], ArgumentException
+    + FullyQualifiedErrorId : ArgumentException,Amazon.PowerShell.Common.SetSamlRoleProfileCmdlet
+ 
+
+
+I must be missing something simple, can someone please help?
+
+Edited by: dsimon065 on Dec 22, 2017 7:54 AM"
+PowerShell Scripting	"Re: Error Message using Set-AWSSamlRoleProfile cmdlet
+I've updated PowerShell to version 5.1 by installing the Windows Management Framework and that hasn't resolved the issue.  I've tried to run these commands on multiple 2012 R2 servers with the same result, ""Unable to set credentials:  Root element is missing"".  Has anyone successfully used these cmdlets on Windows Server 2012 R2 with federated ADFS?  I'm not sure what I'm missing here.  On Windows 7 with WMF 5.1 this works fine."
+PowerShell Scripting	"Re: Error Message using Set-AWSSamlRoleProfile cmdlet
+I am having the same issue.  Did you find a solution? 
+
+Thanks!"
+PowerShell Scripting	"AWSPowershell module slow to load.
+Hi,
+
+When I time the following statement on my machine:
+
+Import-Module AwsPowershell
+
+
+It takes about 5.4 seconds. This is version 3.3.143.0
+
+I have an I5 CPU with 8GB of RAM. 
+
+Is this normal? 
+
+thanks
+
+Avner"
+PowerShell Scripting	"Re: AWSPowershell module slow to load.
+Similar configuration and same result...
+
+PS C:\Users\user\Desktop> measure-command {Import-Module AWSPowerShell }
+TotalMilliseconds : 6003,3711"
+PowerShell Scripting	"Re: AWSPowershell module slow to load.
+Historically I've seen load times from 4 secs and up. That being said, as we've become better PS  citizens (explicitly listing exported cmdlets and aliases in the module manifest, adding value completers etc) I have noticed a small slowdown over time but nothing excessive I could find a culprit for.
+
+On my newly reimaged laptop, I ran the command you showed:
+
+measure-command {Import-Module AWSPowerShell }
+ 
+Seconds           : 3
+Milliseconds      : 655
+TotalMilliseconds : 3655.5987
+
+
+This is the best I've seen for a while, guess I should reimage more frequently"
+PowerShell Scripting	"Re: AWSPowershell module slow to load.
+The problem is still here 
+
+measure-command {Import-Module AWSPowerShell }
+ 
+Milliseconds      : 515
+TotalMilliseconds : 2515,1075
+
+
+I would like to set the default AWS region in my profile.ps1 file, 
+Set-DefaultAWSRegion eu-west-1
+
+
+but opening a console goes up quite a bit.
+It would great if there was an other way of setting the default region without importing the whole PS module.
+
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+ 
+Loading personal and system profiles took 3104ms."
+PowerShell Scripting	"Query a postgresdb
+I am a newbie to powershell and was trying to create a script for querying a postgres db.
+
+Are there any sample scripts available?
+
+This is what I am trying to use, but keep getting an error -
+Invoke-RDSDSqlStatement -SqlStatement ""create table test1 (firstname varchar(30));"" -Database ""mydb"" -DbClusterOrInstanceArn ""<ARN>"" -AwsSecretStoreArn ""arn:aws:secretsmanager:<ARN>""
+
+Thanks you for your help."
+PowerShell Scripting	"Add IAM User to role
+I need to add IAM User to IAM Role using Powershell
+
+I am using below command but it's giving error
+
+$policyDoc9=@""
+{
+  ""Version"": ""2012-10-17"",
+  ""Statement"": {
+    ""Effect"": ""Allow"",
+    ""Principal"": {""User"": ""test_iam_user""},
+    ""Action"": ""sts:AssumeRole""
+""Resource"":""arn:aws:s3:::gaganbucket12345""
+  }
+}
+""@
+
+New-IAMRole -roleName ""gagan_role_power"" -assumeRolePolicyDocument $policyDoc9
+
+Can you please let me know what's wrong with this?
+
+Thanks
+Gagan"
+PowerShell Scripting	"Get-ECRImageMetadata with ImageId doesn't work - complains about MaxResult
+I'm using Get-ECRImageMetadata to get all tags for an image. The documentation says I can't specify MaxResult when calling this method with an ImageId, which I don't. But I get an error saying MaxResult is specified. Here's the code:
+$Image = Get-ECRImageBatch -ImageId @{ imageTag=$PackageVersion } -RepositoryName $RepositoryName
+ 
+$ImageDetails = Get-ECRImageMetadata -RepositoryName $RepositoryName -ImageId @{ imageDigest=$Image.Images[0].ImageId.ImageDigest }
+
+Looking at ILSpy I can see that the code seems erroneous, it forces the MaxResult property to 100 even it's null, which isn't correct."
+PowerShell Scripting	"Set-AWSCredential doesnt work within a function
+When I run ""Set-AWSCredential -profilename default"" within a shell, I can successfully run other AWS commands (e.g. Get-EC2Instance). 
+
+If I place the command within a script, it also works. 
+
+However as soon I place the same commands within a function, run said function, then attempt to run a command requiring credentials to be set (e.g. Get-EC2Instance) it fails
+
+Example:
+
+function SelectCredentials
+{
+	Set-AWSCredential -ProfileName default -Verbose
+}
+ 
+
+Results:
+
+PS  C:\WINDOWS\system32> SelectCredentials
+VERBOSE: Credentials loaded from stored profile named 'default'.
+ 
+PS  C:\WINDOWS\system32> Get-EC2Instance
+Get-EC2Instance : No credentials specified or obtained from persisted/shell defaults.
+At line:1 char:1
++ Get-EC2Instance
++ ~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (Amazon.PowerShe...2InstanceCmdlet:GetEC2InstanceCmdlet) [Get 
+   -EC2Instance], InvalidOperationException
+    + FullyQualifiedErrorId : InvalidOperationException,Amazon.PowerShell.Cmdlets.EC2.GetEC2InstanceCmdlet
+ 
+ 
+
+I notice that when I manually run ""Set-AWSCredential default"", variable $StoredAWSCredentials gets set to Default, but when run via a function it does not get set. Setting StoredAWSCredentials manually has no effect - only when Set-AWSCredential is run via the shell does it set the credentials and allows other commands to work. 
+
+What is going on here?
+
+Edited by: OwenB85 on Jul 13, 2017 7:21 PM"
+PowerShell Scripting	"Re: Set-AWSCredential doesnt work within a function
+Appears to be the same issue as this: https://forums.aws.amazon.com/thread.jspa?threadID=259093&tstart=0
+
+Steve@AWS ""This looks like we have a bug in scoping for the variable we set up that holds details of the credentials in use ($StoredAWSCredentials) such that it is getting set only for function scope. I'll take a look but I don't have an ETA for a fix. """
+PowerShell Scripting	"Re: Set-AWSCredential doesnt work within a function
+Seems there is also a scoping issue with set-awsproxy as well. Run it in a function and it doesn't get set. Commands such as get-ec2instance will return websocket errors. 
+
+Run set-awsproxy manually and subsequent commands it works fine. 
+
+Makes automation a pain, so will use something else.
+
+Edited by: OwenB85 on Jul 19, 2017 4:01 PM"
+PowerShell Scripting	"Re: Set-AWSCredential doesnt work within a function
+We haven't managed to get to look at this issue with scoping yet, so I'll add this to the existing backlog issue. 
+
+All these commands are doing is effectively setting a shell variable - maybe as a workaround you could copy the variable to the global scope. I don't know if it works, just making a suggestion that might be worth a quick test. Hopefully it won't be too much longer before this gets to the top of our backlog.
+
+The variables in question are $StoredAWSCredentials and $AWSProxy."
+PowerShell Scripting	"Re: Set-AWSCredential doesnt work within a function
+Thanks Steve. I have previously attempted to manually set the variable StoredAWSCredentials but didnt have any luck, will have another go.
+
+Edited by: OwenB85 on Jul 19, 2017 9:09 PM"
+PowerShell Scripting	"Re: Set-AWSCredential doesnt work within a function
+Hi,
+
+I have been trying to overcome this issue by setting the variable. But the variable isn't just a string. I tried to construct this object but no luck.
+
+C:\> ((Get-Variable -Name StoredAWSCredentials).Value).gettype()
+ 
+IsPublic IsSerial Name                                     BaseType
+-------- -------- ----                                     --------
+True     False    AWSPSCredentials                         System.Object
+
+
+The issue regarding Set-AWSCredentials cmdlet still persists and has not been fixed.
+
+Does someone have a way to bypass this bug ?
+
+Edit: here is a trick to bypass the issue
+
+Set-Variable -Name StoredAWSCredentials -Value $(Out-AWSCredentials -ProfileName testprofile -ProfileLocation ""$($env:userprofile)\.aws\credentials"") -Option None -Visibility Public
+ 
+Function Out-AWSCredentials {
+    param(
+        [Parameter(Mandatory)][string] $ProfileName,
+        [Parameter(Mandatory)][string] $ProfileLocation
+    )
+    Set-AWSCredentials @PSBoundParameters
+    return (Get-Variable -Name StoredAWSCredentials).Value
+}
+
+
+Edited by: cla on Jan 28, 2019 12:59 PM"
+PowerShell Scripting	"Re: Set-AWSCredential doesnt work within a function
+Sheesh...an issue since 2017 ??
+
+C'mon, AWS. That's ridiculous."
+PowerShell Scripting	"Canonical request using powershell
+Hi Team
+I'm facing a problem to calculate the CANONICAL REQUEST to generate a signature, i am developing in PowerShell code
+I have followed the same steps used in Python example for Query API  but in anyway i am not able to get it (I get the message ""AWS was not able to validate the provided access creden
+tials"").
+Have build the canonical request to DescribeRegions and send the request using curl .
+Anyone could help me here?
+This is my code:                                                                                                                        $method = 'GET'
+$service = 'ec2'
+$host1 = 'ec2.ap-south-1.amazonaws.com'
+$region = 'ap-south-1'
+$endpoint = 'https://ec2.ap-south-1.amazonaws.com'
+ 
+function HmacSHA256($message, $secret){
+   <#$hmacsha = New-Object System.Security.Cryptography.HMACSHA256
+    $hmacsha.key = [Text.Encoding]::UTF8.GetBytes($secret)
+    #$hmacsha.key = $secret
+    $signature = $hmacsha.ComputeHash([Text.Encoding]::UTF8.GetBytes($message))
+    $signature = [Convert]::ToBase64String($signature)
+   #>
+    $hmacsha = New-Object System.Security.Cryptography.HMACSHA256
+ 
+    $hmacsha.Key = @($secret -split '(?<=\G..)(?=.)'|ForEach-Object {[byte]::Parse($_,'HexNumber')})
+ 
+    $sign = [BitConverter]::ToString($hmacsha.ComputeHash([Text.Encoding]::UTF8.GetBytes($message))).Replace('-','').ToLower()
+ 
+    return $sign
+}
+ 
+function getSignatureKey($key, $dateStamp, $regionName, $serviceName)
+{
+    $kSecret = [Text.Encoding]::UTF8.GetBytes((""AWS4"" + $key).toCharArray())
+    $kDate = HmacSHA256 $dateStamp $kSecret;
+    $kRegion = HmacSHA256 $regionName $kDate ;
+    $kService = HmacSHA256 $serviceName $kRegion ;
+    $kSigning = HmacSHA256 ""aws4_request"" $kService ;
+ 
+    return $kSigning;
+ 
+ 
+}
+ 
+ 
+ 
+$access_key = 'qweeoirooyt'
+$secret_key = 'iiryrtttydudifdof'
+ 
+$amz_date = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ')
+$datestamp = [DateTime]::UtcNow.ToString('yyyyMMdd')
+ 
+$canonical_uri = '/'
+$canonical_headers = 'host:' + $host1 + ""`n""
+$signed_headers = 'host'
+ 
+$algorithm = 'AWS4-HMAC-SHA256'
+$credential_scope = $datestamp + '/' + $region + '/' + $service + '/' + 'aws4_request'
+ 
+$canonical_querystring = 'Action=DescribeRegions&Version=2016-11-15'
+$canonical_querystring += '&X-Amz-Algorithm=AWS4-HMAC-SHA256'
+$canonical_querystring += '&X-Amz-Credential=' + [uri]::EscapeDataString(($access_key + '/' + $credential_scope))
+$canonical_querystring += '&X-Amz-Date=' + $amz_date
+$canonical_querystring += '&X-Amz-Expires=86400'
+$canonical_querystring += '&X-Amz-SignedHeaders=' + $signed_headers
+ 
+ 
+$payload_hash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+ 
+$canonical_request1 = $method + ""`n"" +$canonical_uri + ""`n"" + $canonical_querystring + ""`n"" + $canonical_headers + ""`n"" + $signed_headers + ""`n"" + $payload_hash
+Write-Host $canonical_request1
+ 
+function hash($request) {
+ 
+ 
+$hasher = [System.Security.Cryptography.SHA256]::Create()
+$content = [Text.Encoding]::UTF8.GetBytes($request)
+$hash = [System.Convert]::ToBase64String($hasher.ComputeHash($content))
+return $hash
+ 
+}
+ 
+$canonical_request = hash -request $canonical_request1
+$string_to_sign = $algorithm + ""`n"" +  $amz_date + ""`n"" +  $credential_scope + ""`n"" +  $canonical_request
+ 
+ 
+$signing_key = getSignatureKey $secret_key $datestamp $region $service
+$signature =  HmacSHA256 -secret $signing_key -message $string_to_sign
+ 
+ 
+$canonical_querystring += '&X-Amz-Signature=' + $signature
+ 
+$request_url = $endpoint + ""?"" + $canonical_querystring
+Write-Host $request_url
+ 
+$CurlArgument = '-s', '-X', 'GET', $request_url
+$CURLEXE = 'C:\Program Files\Git\mingw64\bin\curl.exe'
+& $CURLEXE @CurlArgument"
+PowerShell Scripting	"Re: Canonical request using powershell
+AWS Tools for Windows PowerShell [1] provies an Get-EC2Region PowerShell cmdlets that does exactly what you are attempting to do and does the signing for you. If you are able to use that, it's simpler than writing your own signing logic.
+
+If you're not able to use those cmdlets for one reason or another, another approach is to load the AWS SDK for .NET [2], then instantiate AmazonEC2Client and invoke its DescribeRegions method.
+
+Finally, if neither of the above is a possibility, you may be able to compare your signing code to the signing code [3] that AWS SDK for .NET uses and identify if what you are doing is consistent with our implementation.
+
+Last note: you're writing this in PowerShell, so instead of shelling out to curl it may be easier to use the existing Invoke-WebRequest cmdlet to make the HTTP request.
+
+1 - https://aws.amazon.com/powershell/
+2 - https://aws.amazon.com/sdk-for-net/
+3 - https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Core/Amazon.Runtime/Internal/Auth/AWS4Signer.cs
+4 - https://msdn.microsoft.com/powershell/reference/5.1/microsoft.powershell.utility/Invoke-WebRequest"
+PowerShell Scripting	"Re: Canonical request using powershell
+abhaya, did you ever get this working?"
+PowerShell Scripting	"Powershell script to reboot AWS Workspaces.
+Hi all
+
+I'm wondering if its possible to create a PowerShell script that I can set up in task scheduler to get to run every night at 23:59 and restart our AWS workspaces.
+
+We have workspaces that have been up for 30 plus days.
+
+What I would like to happen is when the script launches it sees what workspaces are active and restarts all active workspaces.
+
+I could set up a script and list the individual workspaces ID but we have new staff leaving and starting every day so that's not ideal.
+
+I'm fairly new to PowerShell so please bear with me.
+
+Many thanks in advance 
+
+Si"
+PowerShell Scripting	"Inventory from all regions
+I am trying to run a powershell function to retrieve Ec2 inventory from all regions but I only get it from one region. Any ideas?
+
+Function Inventory ($Instances)
+{
+$Instances = (Get-EC2Instance).instances
+$VPCS = Get-EC2Vpc
+foreach ($VPC in $VPCS) {
+     $Instances | Where-Object {$_.VpcId -eq $VPC.VpcId} | foreach {
+			New-Object -TypeName PSObject -Property @{
+			'VpcId' = $_.VpcId
+            'VPCName' = ($VPC.Tags | Where-Object {$_.Key -eq 'Name'}).Value
+            'InstanceId' = $_.InstanceId
+            'InstanceName' = ($_.Tags | Where-Object {$_.Key -eq 'Name'}).Value
+            'LaunchTime' = $_.LaunchTime
+            'State' = $_.State.Name
+            'KeyName' = $_.KeyName
+			'InstanceType' = $_.InstanceType
+			'Private IP Address' = $_.PrivateIpAddress
+			'Platform' = $_.Platform
+			'Placement' = $_.Placement.AvailabilityZone
+
+			}
+		}
+	}
+}
+Inventory | export-csv -Path 'C:\Temp\inventory.csv'-UseCulture -NoTypeInformation
+
+Edited by: leapex on Oct 6, 2017 2:07 PM"
+PowerShell Scripting	"Re: Inventory from all regions
+(Get-EC2Instance).Instances only retrieves instances from your 'current' region, defined as the region passed to the cmdlet, or found in shell defaults or (if running on an EC2 instance) the region the instance is in.
+
+You need a pipeline to run the query against each region, passing the region value to the cmdlet. Something similar to this:
+
+Get-AWSRegion | % { ""Region $_.Region""; (Get-EC2Instance -Region $_.Region).Instances }
+
+
+HTH"
+PowerShell Scripting	"Re: Inventory from all regions
+Thanks. I am still getting output from one region only.
+
+Function Inventory ($Instances)
+{
+	$Instances = Get-AWSRegion | % {""Region $_.Region""; (get-Ec2Instance -region $_.region).Instances}
+	$VPCS = Get-EC2Vpc
+foreach ($VPC in $VPCS) {
+     $Instances | Where-Object {$_.VpcId -eq $VPC.VpcId} | foreach {
+			New-Object -TypeName PSObject -Property @{
+			'VpcId' = $_.VpcId
+            'VPCName' = ($VPC.Tags | Where-Object {$_.Key -eq 'Name'}).Value
+            'InstanceId' = $_.InstanceId
+            'InstanceName' = ($_.Tags | Where-Object {$_.Key -eq 'Name'}).Value
+            'LaunchTime' = $_.LaunchTime
+            'State' = $_.State.Name
+            'KeyName' = $_.KeyName
+			'InstanceType' = $_.InstanceType
+			'Private IP Address' = $_.PrivateIpAddress
+			'Platform' = $_.Platform
+			'Placement' = $_.Placement.AvailabilityZone
+
+				}
+			}
+		}
+	}
+
+Inventory | select instancename"
+PowerShell Scripting	"Re: Inventory from all regions
+Well, don't forget you'll need to also add the region to the Get-EC2Vpc call too. Right now your function looks like its getting all instances across all regions and then filtering down to only those that are running in vpc(s) in your default region."
+PowerShell Scripting	"Re: Inventory from all regions
+Thank you. The information was helpful and worked for me."
+PowerShell Scripting	"Re: Inventory from all regions
+Hi leapex,
+
+Requesting you to could you please post the full code which is helped you to get Inventory from all regions."
+PowerShell Scripting	"About error handling when using AWS CLI with Powershell script
+I am using the AWS CLI from the Powershell script.
+
+<Purpose>
+I want to implement the following error handling.
+
+1. I want to output the error contents to the console.
+2. I want to stop processing at the point where an error occurred.
+
+<What I tried>
+Open script file (ErrorTest.ps1) from Powershell ISE and execute
+
+＜ErrorTest.ps1＞
+$ErrorActionPreference = ""Stop""
+ 
+trap {
+    $error[0] | Format-List -Force
+}
+ 
+aws events disable-rule --name Test --profile not_exist_profile
+ 
+Write-Host Finished
+
+
+<Expected>
+""The config profile (not_exist_profile) could not be found"" is output to the console and processing stops.
+
+<Actual>
+To the console, the following is output. ""The config profile (not_exist_profile) could not be found"" is not output.
+
+Exception             : System.Management.Automation.RemoteException
+TargetObject          : 
+CategoryInfo          : NotSpecified: (:String) [], RemoteException
+FullyQualifiedErrorId : NativeCommandError
+ErrorDetails          : 
+InvocationInfo        : System.Management.Automation.InvocationInfo
+ScriptStackTrace      : <ScriptBlock>、C:\Users\xxx\Desktop\ErrorTest.ps1: 行 8
+                        <ScriptBlock>、C:\Users\xxx\Desktop\無題10.ps1: 行 19
+PipelineIterationInfo : {}
+PSMessageDetails      : 
+
+<Question>
+How do I get it to behave as expected?
+
+I also post the same question to Stackoverflow.
+https://stackoverflow.com/questions/54124658/about-error-handling-when-using-aws-cli-with-powershell-script
+
+Edited by: jhashimoto on Jan 10, 2019 12:43 AM"
+PowerShell Scripting	"Re: About error handling when using AWS CLI with Powershell script
+solved. I decided to rewrite it using AWS Tools for PowerShell."
+PowerShell Scripting	"How to provide an ImadeId to Remove-ECRImageBatch
+Hello,
+
+I am trying to remove an image using Remove-ECRImageBatch, but whatever I provide as ImageId cannot be converted into ImageIdentifier. Here is what I try:
+
+Get-ECRImage myrepository
+ImageDigest                                                             ImageTag
+-----------                                                             --------
+sha256:cb8b86dc5d07eae1f8bdd1907fc0171606fa21ef75d2a9d906024377ea22cd47 test
+...
+ 
+Remove-ECRImageBatch imageTag=test -RepositoryName myrepository
+
+
+Now I get the (German) error message that the parameter ImageId of type System.String with value ""imageTag=test"" cannot be converted into the type ""Amazon.ECR.Model.ImageIdentifier"".
+
+I also tried to use imageDigest instead of imageTag, add the optional ""-ImageId""...
+
+How do I have to use this command?
+
+Thanks,
+
+Thomas Mischke"
+PowerShell Scripting	"SAML Exception - set-awssamlroleprofile : Unable to set credentials
+I'm trying to set up AWS Tools for Windows Powershell to integrate with our corporate SAML provider (Ping Identity) using the instructions here: https://aws.amazon.com/blogs/security/how-to-set-up-federated-api-access-to-aws-by-using-windows-powershell/
+
+When invoking Set-AWSSamlRoleProfile -StoreAs SAMLDemoProfile -EndpointName $epName I get what appears to be an unhandled exception inside the Powershell command:
+```
+set-awssamlroleprofile : Unable to set credentials: An item with the same key has already been added.
+At line:1 char:1
++ set-awssamlroleprofile -EndpointName $epname
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (Amazon.PowerShe...leProfileCmdlet:SetSamlRoleProfileCmdlet) [Set-AWSSa
+   mlRoleProfile], ArgumentException
+    + FullyQualifiedErrorId : ArgumentException,Amazon.PowerShell.Common.SetSamlRoleProfileCmdlet
+```
+
+Our corporate use of AWS has a large number of accounts (30+) with common roles across them (""Dev"", ""DevOps"", ""AppAdmins"") and I'm in roles with the same name across multiple accounts. What I believe is happening is that the Set-AwsSamlRoleProfile command has a bug where it's trying to setup a dictionary of values based on the role name, then crashing with an unhandled exception when the role name already exists.
+
+Is there a way to get official (paid) support for AWS Tools for Windows Powershell or have proper support for SAML federation across multiple accounts added?"
+PowerShell Scripting	"Set-AWSSamlRoleProfile - unable to set credentials - 401 unauthorized
+Hello,
+I'm trying to use my federated credentials to connect to AWS via AWSPowershell. We are using simplesamlphp for federation with AWS and not ADFS. below are the commands I'm running to setup my AWS credentials profile.
+$awsepurl = ""https://<FQDN of SAML Service Host>/saml2/idp/SSOService.php?spentityid=urn:amazon:webservices""
+$awsep = Set-AWSSamlEndpoint -Endpoint $awsepurl -StoreAs AWS-EP
+Set-AWSSamlRoleProfile -EndpointName $awsep -StoreAs ExpProfile
+
+The Set-AWSSamlRoleProfile command gives the following error. 
+Set-AWSSamlRoleProfile : Unable to set credentials: System.Net.WebException: The remote server returned an error: 
+(401) Unauthorized.
+   at System.Net.HttpWebRequest.GetResponse()
+   at Amazon.SecurityToken.SAML.AdfsAuthenticationController.QueryProvider(Uri identityProvider, String 
+authenticationType, WebProxy proxySettings)
+   at Amazon.SecurityToken.SAML.AdfsAuthenticationController.Authenticate(Uri identityProvider, ICredentials 
+credentials, String authenticationType, WebProxy proxySettings)
+At line:1 char:1
++ Set-AWSSamlRoleProfile -EndpointName $awsep -StoreAs ExpProfile
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (Amazon.PowerShe...leProfileCmdlet:SetSamlRoleProfileCmdlet) [Set-AWSSa 
+   mlRoleProfile], ArgumentException
+    + FullyQualifiedErrorId : ArgumentException,Amazon.PowerShell.Common.SetSamlRoleProfileCmdlet
+
+I've tried searching about this for 2 days but couldn't find anything that worked. I wanted to know if it's possible to use SAML profiles for connecting to AWS when the SAML service is not ADFS. I'm able to connect and work with the AWS management console by using the same URL.
+Any help is greatly appreciated.
+Thank you
+Aravind"
+PowerShell Scripting	"Re: Set-AWSSamlRoleProfile - unable to set credentials - 401 unauthorized
+At this time ADFS is the only officially supported federation provider in the tools. 
+
+We've been looking at a bug fix recently related to Kereberos auth (the default auth mode for the tools) not working and returning a 401 error. We have a fix pending, that we're doing backwards compatibility checks against. It may be that if the system you are using behaves the same way in the auth flow triggered by the call to the endpoint as ADFS, and is expecting or using Kereberos, then perhaps our fix will enable it to work for you. No guarantees, but if you want to send me a PM I'll send you a link to the test build.
+
+By 'works in the same way as ADFS' I mean that when the auth flow triggers, credentials can be passed in the HTTPS request. Some systems use a page to accept a user id, then navigate to another in the flow to accept the password, necessitating scraping of the pages to determine when to supply the username and password values - we don't work with these systems currently.
+
+The code to initiate and get the response from the auth flow is actually in the underlying AWS SDK for .NET and can be viewed at https://github.com/aws/aws-sdk-net/tree/master/sdk/src/Services/SecurityToken/Custom/_bcl/SAML. 
+
+The pending bug fix I mentioned is to the QueryProvider method in ADFSAuthenticationHandlers.cs. Investigation showed setting up a new credential cache for some reason prevents Kerberos auth from operating correctly, reported by a user on Windows 10. Our pending fix is to remove this code and simply use the UseDefaultCredentials property. That seems from testing to satisfy both Kerberos and NTLM auth schemes, with domain-joined and non-domain-joined usage. When we're satisfied we're not going to break anyone on versions of Windows other than 10 we'll be releasing that change."
+PowerShell Scripting	"Re: Set-AWSSamlRoleProfile - unable to set credentials - 401 unauthorized
+Hello Steve,
+
+The system we use is similar to ADFS in the way it handles credentials. I'd like to see if the fix solves the problem. 
+
+Thanks,
+Aravind"
+PowerShell Scripting	"Re: Set-AWSSamlRoleProfile - unable to set credentials - 401 unauthorized
+PM sent"
+PowerShell Scripting	"Re: Set-AWSSamlRoleProfile - unable to set credentials - 401 unauthorized
+Thank you Steve. I tried the link but i guess it expired. I'm working in India time zone. Can you provide the link again so I'll be able to get the test build.
+
+My bad. Got the link. I'm testing the build now. will post on the progress. 
+
+Thanks,
+Aravind.
+
+Edited by: Gosukond on Jul 25, 2017 11:57 PM
+
+Edited by: Gosukond on Jul 26, 2017 12:01 AM"
+PowerShell Scripting	"Re: Set-AWSSamlRoleProfile - unable to set credentials - 401 unauthorized
+Thank you Steve. I've been able to login with the new build and I have all the roles available to me in powershell now. 
+
+Thanks,
+Aravind."
+PowerShell Scripting	"Re: Set-AWSSamlRoleProfile - unable to set credentials - 401 unauthorized
+That's great news!
+
+I'll make a start on getting this included in the next public release."
+PowerShell Scripting	"Re: Set-AWSSamlRoleProfile - unable to set credentials - 401 unauthorized
+v3.3.130.0 with the update is now publicly released, to both the PowerShell Gallery [1] and our usual tools installer [2]
+
+[1] https://www.powershellgallery.com/packages/AWSPowerShell/
+[2] https://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi"
+PowerShell Scripting	"Re: Set-AWSSamlRoleProfile - unable to set credentials - 401 unauthorized
+Hello All,
+
+I have installed everything on ADFS side and http://ADFS/adfs/ls/IdpInitiatedSignOn.aspx is working fine with AWS console.IAM roles and AD groups are working fine in web based console.
+
+Now, I am trying ADFS - AD access for AWS via CLI and powershell where I am following AWS documentation from below - 
+link - https://aws.amazon.com/premiumsupport/knowledge-center/adfs-grant-ad-access-api-cli/
+
+But,I am also facing AWS Powershell issues whenever I am trying to use below command-
+Set-AWSSamlRoleProfile -EndpointName $EndpointName -StoreAs SamlUser.
+
+Error is - 
+Set-AWSSamlRoleProfile : Unable to set credentials: ""choices"" should have at least one element.
+Parameter name: choices
+At line:1 char:1
++ Set-AWSSamlRoleProfile -EndpointName $EndpointName -StoreAs ExpProfile
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (Amazon.PowerShe...leProfileCmdlet:SetSamlRoleProfileCmdlet) https://forums.aws.amazon.com/, ArgumentException
+    + FullyQualifiedErrorId : ArgumentException,Amazon.PowerShell.Common.SetSamlRoleProfileCmdlet 
+
+(PFA screenshot)
+
+Help is much appreciated !!!
+
+Note- I have tried both latest and previous Powershell versions but still issue is not resolved and I am stuck here.
+
+Edited by: Dhanashri on Dec 29, 2018 2:20 AM"
+PowerShell Scripting	"Endpoints for Powershell
+Hello,
+
+Am fairly new to AWS and even newer to using powershell with AWS.  I am currently tying to use custom endpoints with powershell to retrieve information (ex s3 bucket list).  Researched online and found this document for powershell on how to setup the endpoints. (https://docs.aws.amazon.com/powershell/latest/userguide/aws-pst-ug.pdf)  I am able to get the correct data if I use the endpointurl parameter (p.25 of doc).  Tried to set the default AWS region to the custom region I need to use for S3 using the aws cmdlet but when I try to retrieve the bucket list, I receive error below:
+
+""Name resolution failure attempting to reach service in region xxxxxxx (as supplied to the -Region parameter or from configured shell default).
+The remote name could not be resolved: 's3.amazonaws.com'""
+
+Is there a way to setup/configure powershell to use custom region endpoints without having to type the endpointurl parameter with the custom region every time?  If so, will this require .NET code modification?  If so, how would this be done?  Am not a developer so if coding is required, so if you could provide and example and specific steps, it would be greatly appreciated.  Thank you.
+
+Edited by: L2S1234 on Dec 26, 2018 12:52 PM"
+PowerShell Scripting	"SQL Server backups using Powershell, Python/CPU
+I just migrated a bunch of physical SQL Server servers to EC2 and am running database backups by creating them locally in the EC2 instance and then copying them to S3 using Powershell.  Yesterday I noticed that python.exe was using 20% of my CPU on one of my SQL servers and that was pushing it to 100%, so I killed the python process in Task Manager and renamed python.exe since I didn't know what was calling it.  Since then the backup copy fails but my server hasn't hit 100% CPU.  Firstly, why does the AWSPowershell module use python, and how does it even know the C:\Program Files\Amazon\AWSCLI\runtime path even exists?  Secondly, should I not be using Powershell to copy to S3 from this server because of the CPU involved?"
+PowerShell Scripting	"Re: SQL Server backups using Powershell, Python/CPU
+Doh! I forgot the command in my SQL job is ""aws s3 cp"" so it is actually Python and not Powershell.  I'm still curious why Python uses so much CPU."
+PowerShell Scripting	"Get assigned memory to EC2 (PowerShell)
+Hi all,
+
+I'm trying to get assigned memory (RAM) to EC2 instance with Powershell but is impossible.
+
+I've checked with several cmdlet without success, I'm going crazy 
+
+Please, does anyone know how I can get this parameter? 
+
+Thanks in advance.
+Juanma"
+PowerShell Scripting	"CmdLets for working with Route 53 Resolver resources
+Hi there,
+I'm having difficulty matching the items in the R53 Resolver Console to AWSPowerShell cmdlets. In particular, I'm trying to script the creation of ""Outbound Endpoints"" and ""Rules"".  I've had no trouble using the module for VPC and EC2 resources and in general the Web GUI names/labels match the cmdlets.  But I cannot find/discover any CmdLets for Resolver resources - is it even possible to script those items?
+
+Pete
+
+Edited by: petermcevoy on Dec 10, 2018 9:43 AM"
+PowerShell Scripting	"Send-SSMCommand AWS-RunPowerShellScript gets error InvalidInstanceId
+I am trying to execute a script on an ec2 instance using Powershell. I am using this guide (https://docs.aws.amazon.com/systems-manager/latest/userguide/walkthrough-powershell.html#walkthrough-powershell-run-script) and I have copied an example almost directly from there:
+$runPSCommand=Send-SSMCommand -InstanceId @('i-MyInstanceId') -DocumentName AWS-RunPowerShellScript -Comment 'Demo AWS-RunPowerShellScript with two instances' -Parameter @{'commands'=@('dir C:\Users', 'dir C:\')}
+
+And it gets the error The service returned an error with Error Code InvalidInstanceId
+
+However I can see the EC2 instance using the Get-EC2Instance cmdlet:
+Get-EC2Instance -InstanceId ""i-MyInstanceId""
+
+
+Why am I able to see the instance but Send-SSMCommand can't send commands to it? Is it a permissions issue disguised by this error?"
+PowerShell Scripting	"Re: Send-SSMCommand AWS-RunPowerShellScript gets error InvalidInstanceId
+Have you tried running this without the @() around the instance id string?  As you only have one item you don't need the array syntax."
+PowerShell Scripting	"Re: Send-SSMCommand AWS-RunPowerShellScript gets error InvalidInstanceId
+InvalidInstanceId is can have many common reasons, one of the most common is wrong region. 
+Can you try with the region parameter? 
+
+$runPSCommand=Send-SSMCommand -Region 'eu-west-1' -InstanceId @('i-MyInstanceId') -DocumentName AWS-RunPowerShellScript -Comment 'Demo AWS-RunPowerShellScript with two instances' -Parameter @{'commands'=@('dir C:\Users', 'dir C:\')}
+
+The command in the documentation assumes you have been through credentials and region config:
+
+Set-DefaultAWSRegion -Region us-east-2"
+PowerShell Scripting	"Credential generation from SAML Authentication Failed
+We have integrated ADFS for AWS authentication and the browser access works good. However we have problems with accessing through powershell or AWS CLI.It works on some servers and not on others (all use the same AWS version) We use proxy to connect to AWS.
+
+used the following for Powershell....
+
+$endpoint = ""https://<our ADFS Server>/adfs/ls/idpinitiatedsignon.aspx?loginToRp=urn:amazon:webservices""
+$epName = Set-AWSSamlEndpoint -Endpoint $endpoint -StoreAs ADFS -AuthenticationType NTLM
+Set-AWSSamlRoleProfile -StoreAs SAMLProfile -EndpointName $epName
+Set-AWSCredentials –ProfileName SAMLProfile
+Get-s3bucket
+
+The error i get for this is 
+get-s3bucket : Credential generation from SAML authentication failed.
+At line:1 char:1
+ get-s3bucket+
+ ~~~~~~~~~~~~+
+ CategoryInfo          : InvalidOperation: (Amazon.PowerShe...tS3BucketCmdlet:GetS3BucketCmdlet) https://forums.aws.amazon.com/, InvalidOperationException+
+ FullyQualifiedErrorId : Amazon.Runtime.AmazonClientException,Amazon.PowerShell.Cmdlets.S3.GetS3BucketCmdlet+
+
+CLI
+
+I also tried to write the parameter values onto the credentials file using the getcredentials() method. (For example for access key, i used 'aws_access_key_id'=(Get-AWSCredential -ProfileName SAMLProfile).GetCredentials().AccessKey , then i get an error ""Exception calling ""GetCredentials"" with ""0"" argument(s): ""Credential generation from SAML authentication failed.""
+
+Appreciate any help on this issue.
+
+Edited by: ksv on Nov 13, 2018 8:04 PM"
+PowerShell Scripting	"How to identify the Lifecycle Actions / Hooks configured on a EC2 instance?
+Hi All,
+I'm looking for help to find out how to identify the name of a CompleteLifecycleAction that’s set against an EC2 instance.
+
+My scenario:
+Single Application Scaling Group (ASG) with lifecycle hooks setup on it (Inital and a normal hook)
+The first run of the ASG spins up a new instance and waits for CompleteLifecycleAction to be sent.
+I use the PowerShell cmdlet below to complete the Lifecycle Action as part of the userdata. 
+Complete-ASLifecycleAction -LifecycleHookName asg-$service-$environment-lifecycle-initial-hook -AutoScalingGroupName $AsgName -LifecycleActionResult CONTINUE -InstanceId $Current_InstanceId -verbose
+
+This works perfectly for the initial machine in the ASG but any subsequent machines that are spun up, need to use the normal hook command when sending the Complete LifecycleAction. 
+Complete-ASLifecycleAction -LifecycleHookName asg-$service-$environment-lifecycle-hook -AutoScalingGroupName $AsgName -LifecycleActionResult CONTINUE -InstanceId $Current_InstanceId -verbose
+
+So, the challenge I have is knowing whether to complete with the lifecycle-initial-hook or lifecycle-hook.
+What I'd like to do is query the EC2 instance and identify which hook started the machine, so I can then correctly issue the appropriate hook command.
+
+I've tried things like matching the lifecycle names or counting the number names currently created on the ASG but because both hooks exist at various points of the ASG life, it’s not reliable enough.
+
+$Current_InstanceId = (Invoke-WebRequest '169.254.169.254/latest/meta-data/instance-id').Content
+$AvailabilityZone = (Invoke-WebRequest '169.254.169.254/latest/meta-data/placement/availability-zone').Content
+$Region = $AvailabilityZone.Substring(0, $AvailabilityZone.Length - 1)
+$instance = (Get-EC2Instance -InstanceId $Current_InstanceId).Instances[0]
+$AsgName = ($instance.Tags | ? { $_.Key -eq ""aws:autoscaling:groupName""} | select -expand Value)
+$hooktype = (Get-ASLifecycleHook -AutoScalingGroupName $AsgName).LifecycleHookName
+ 
+if (($hooktype).count -le ""1"") {
+Complete-ASLifecycleAction -LifecycleHookName asg-$service-$environment-lifecycle-initial-hook -AutoScalingGroupName $AsgName -LifecycleActionResult CONTINUE -InstanceId $Current_InstanceId -verbose
+} else {
+Complete-ASLifecycleAction -LifecycleHookName asg-$service-$environment-lifecycle-hook -AutoScalingGroupName $AsgName -LifecycleActionResult CONTINUE -InstanceId $Current_InstanceId -verbose
+}
+
+
+In the end I've given up and I send both commands, which works but obviously isn’t ideal. It also shows that the EC2 instance is aware that a lifecycle Action isn’t registered against a instance. Which suggest I should be able to find the information of registers actions against an instance before sending the command but that's where I am really stuck.
+
+Error mesage that suggest the information is stored somewhere...
+Telling AWS API to now put machine in to service
+VERBOSE: Performing the operation ""Complete-ASLifecycleAction (CompleteLifecycleAction)"" on target ""asg-website-development-20181029112450972200000001"".
+VERBOSE: Invoking Auto Scaling operation 'CompleteLifecycleAction' in region 'eu-west-1'
+VERBOSE: Performing the operation ""Complete-ASLifecycleAction (CompleteLifecycleAction)"" on target ""asg-website-development-20181029112450972200000001"".
+VERBOSE: Invoking Auto Scaling operation 'CompleteLifecycleAction' in region 'eu-west-1'
+<div class=""jive-quote""><div class=""jive-quote"">TerminatingError(Complete-ASLifecycleAction): ""No active Lifecycle Action found with instance ID i-074761607c8ae95a4 and HookName asg-website-development-lifecycle-hook""</div></div>
+Complete-ASLifecycleAction : No active Lifecycle Action found with instance ID i-074761607c8ae85a4 and HookName 
+asg-website-development-lifecycle-hook
+At C:\Windows\TEMP\UserScript.ps1:207 char:1
++ Complete-ASLifecycleAction -LifecycleHookName asg-$service-$environme ...
+
+
+Thanks in advance,
+Gareth
+
+Edited by: Spacey on Oct 29, 2018 3:22 PM"
+PowerShell Scripting	"Re: How to identify the Lifecycle Actions / Hooks configured on a EC2 instance?
+Turned out that this was nothing to do with AWS. Terraform has concept of initial lifecycle hook and just the normal lifecycle hook resource. I mistakenly thought that you had to use both. However using the initial lifecycle hook actually applies to the initial machines as well as subsequent machines the ASG builds."
+PowerShell Scripting	"Getting decrypted file instead of KMS encrypted file
+Hi i have used AWS KMS (sse-kms) for upload the object into s3. 
+aws s3 cp C:/xxxxx/testkms2.txt s3://xxxbucket/ --sse aws:kms --sse-kms-key-id arn:aws:kms:eu-west-2:6xxx72xxxxxx4:key/rrrrrr-xxxxx-xxx-yyyy-xxxxxxx
+But again when i download using below command giving decrypted file instead of encrypted file.
+aws s3 cp s3://xxxbucket/ C:\Users\yyyyy\Pictures\temp --recursive
+
+Is this is the expected behavior? unfortunately i have tried same with java using aws sdk all files are uploaded as encrypted using AWS KMS key but again when i tried to download the same files using aws s3 cp command it is downloading as encrypted file only . 
+
+I would like to know why the inconsistent behavior in upload and downloading?"
+PowerShell Scripting	"Cmdlet for Data Lifecycle Manager
+Is there a cmdlet for Data Lifecycle Manager (DLM)? There is a .net sdk for it https://docs.aws.amazon.com/sdkfornet/v3/apidocs/index.html?page=DLM/MDLMCreateLifecyclePolicyCreateLifecyclePolicyRequest.html  but I cannot find the cmdlet."
+PowerShell Scripting	"Alternative to Get-R53HostedZoneList that shows if hosted zone is private
+Good Morning,
+I have used Get-R53HostedZoneList for a long time to get a list of hosted Zones on my AWS account but recently I've started to used and need private zones. These obviously share the same name as the public zone. So, when I use Get-R53HostedZoneList to get a list of Zones and ID's but I have no foolproof way of telling which is the Zone ID for the Private and which is public.
+Get-R53HostedZoneList
+ 
+Id                     : /hostedzone/ZY3NSS0L789VC
+Name                   : domaintest1.com.
+CallerReference        : SNIPPED
+Config                 : Amazon.Route53.Model.HostedZoneConfig
+ResourceRecordSetCount : 16
+LinkedService          :
+ 
+Id                     : /hostedzone/Z2OX3COGDF7825
+Name                   : domaintest1.com.
+CallerReference        : SNIPPED
+Config                 : Amazon.Route53.Model.HostedZoneConfig
+ResourceRecordSetCount : 3
+LinkedService          :
+ 
+
+I've worked around it currently by saying the private will always have less records then public but it’s far from ideal and clearly wont always be the case. Guess I could add Private to the comment but again isn't ideal as I've not found a way of reading the comment but if I did it would probably be better then basing the decision on number of records.
+
+I can see the aws cli has a Boolean that gets populated “""PrivateZone"": false” does anybody know of a way of seeing this via PowerShell? Different cmdlet maybe? 
+
+Thanks in advance 
+Gareth
+
+-----------------
+Think I've found the answer...
+Looks like  (Get-R53HostedZone -Id $ID).HostedZone.config.PrivateZone
+Shows if a zone is Private or not.
+----------------
+
+
+Edited by: Spacey on Oct 25, 2018 11:52 AM
+
+Edited by: Spacey on Oct 25, 2018 11:55 AM
+
+Edited by: Spacey on Oct 25, 2018 1:09 PM
+
+Edited by: Spacey on Oct 25, 2018 1:11 PM"
+PowerShell Scripting	"keep gettting (AWS was not able to validate the provided access credentials
+I keep getting this error in powershell
+
+AWS was not able to validate tjhe provided access credentials
+
+I download the key/secret key from aws as a csv but cannot get it orking
+
+I am on osX"
+PowerShell Scripting	"Import-ACMCertificate
+Hello,
+
+Summary: Wanting to utilize Import-ACMCertificate to upload certificates into AWS and apply to resources.
+
+Issue: Whenever attempting to import either via ""file://"" or storing the Base64 PEM formatted contents as a variable I receive the following error:
+""Cannot bind parameter 'Certificate'. Cannot convert value ""file://XXXXXXX.pem"" to type ""System.Byte"". Error: ""Input string was not in a correct format.""
+
+Attempted scripts:
+1) 
+Import-ACMCertificate -Certificate file://XXXXX.pem -CertificateChain file://DigiCert-Chain-Standard_SSL.pem -PrivateKey file://XXXXX.key
+
+2) 
+$cert = gc XXXX.pem
+$chain = gc DigiCert-Chain-Standard_SSL.pem
+$key = gc XXXX.key
+Import-ACMCertificate -Certificate $cert -CertificateChain $chain -PrivateKey $key
+
+Maybe I am missing something, but cannot figure out what is going any help would be greatly appreciated.
+
+Thank you,
+James"
+PowerShell Scripting	"Re: Import-ACMCertificate
+To let others know. It was a conversion issue, obviously, however I did not know how to resolve.
+
+Below reads in the file and converts to Bytes:
+        $Blob= @{
+
+          CertificateARN = http://System.IO.File::ReadAllBytes(""$($ARN)"")
+          Certificate = http://System.IO.File::ReadAllBytes(""$($CertBlob)"")
+          CertificateChain = http://System.IO.File::ReadAllBytes(""$($ChainBlob)"")
+          PrivateKey = http://System.IO.File::ReadAllBytes(""$($KeyBlob)"")
+
+        }"
+PowerShell Scripting	"Re: Import-ACMCertificate
+RESOLVED:  Documentation does not articulate all the info that the Windows/Powershell SDK developer could use to save 12 hours of trial and error.  
+1.  FOR SDK:  When segregating the cert using powershell - add the line feed to each line (""`n"")
+2.  Write each cert part (privkey, cert body, cert chain) to a .pem file
+3.  Apply the  'System.IO.File::ReadAllByteseadAllBytes('c:\temp\xxxx.pem')  when bringing the .pem file back into a variable for the Import-ACMCertificate
+
+Side Note:  the CLI (not the PS SDK) is not very picky about the format and will upload an invalid certificate, but not display it on the cert manager.  However, a bad cert will be displayed when attempting to add it to a load balancer
+
+Here's a complete PS-SDK script with the only assumption being the location of the openssl.exe module:
+clear
+Add-Type -AssemblyName System.Windows.Forms
+$FileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
+    Multiselect = $false # Multiple files can be chosen
+	Filter = 'Personal Information Exchange (*.pfx, .pem)|.pfx;*.pem' # Specified file types
+    InitialDirectory = ""C:\temp""
+}
+
+https://forums.aws.amazon.com/$FileBrowser.ShowDialog()
+
+$file = $FileBrowser.FileName;
+
+If($FileBrowser.FileNames -like ""*\*"") {
+
+	# Do something 
+	$FileBrowser.FileName #Lists selected files (optional)
+}
+
+else {
+    Write-Host ""Cancelled by user""
+}
+$pfxfile = $FileBrowser.FileName
+$pemfile = $pfxfile -replace ""pfx"",""pem""
+set-location -Path ""C:\Program Files\xxxxxxxxx\""
+.\openssl.exe pkcs12 -in $pfxfile -out $pemfile -passin pass:""xxxxxxx"" -nodes  
+$pemsplit = get-content $pemfile
+$linect = 0
+https://forums.aws.amazon.com/$privkey = """"
+https://forums.aws.amazon.com/$certbody = """"
+https://forums.aws.amazon.com/$certchain = """"
+#get private key
+do {
+    $linect = $linect + 1
+} until ($pemsplithttps://forums.aws.amazon.com/ -eq ""-----BEGIN PRIVATE KEY-----"")
+$privkey = $pemsplithttps://forums.aws.amazon.com/ + ""`n""
+do {    
+    $linect = $linect + 1
+    $privkey = $privkey + $pemsplithttps://forums.aws.amazon.com/ + ""`n""
+} until ($pemsplithttps://forums.aws.amazon.com/ -eq ""-----END PRIVATE KEY-----"")
+set-content -path ""c:\temp\priv.pem"" -Value $privkey
+$privbin = http://System.IO.File::ReadAllBytes('c:\temp\priv.pem') 
+
+
+get certificate body
+
+do {
+    $linect = $linect + 1
+} until ($pemsplithttps://forums.aws.amazon.com/ -eq ""-----BEGIN CERTIFICATE-----"")
+
+$certbody = $pemsplithttps://forums.aws.amazon.com/  + ""`n""
+do {    
+    $linect = $linect + 1
+    $certbody = $certbody + $pemsplithttps://forums.aws.amazon.com/ + ""`n""
+} until ($pemsplithttps://forums.aws.amazon.com/ -eq ""-----END CERTIFICATE-----"")
+set-content -path ""c:\temp\body.pem"" -Value $certbody
+$bodybin = http://System.IO.File::ReadAllBytes('c:\temp\body.pem')
+
+
+get certificate chain
+
+do {
+    $linect = $linect + 1
+} until ($pemsplithttps://forums.aws.amazon.com/ -eq ""-----BEGIN CERTIFICATE-----"")
+$certchain = $pemsplithttps://forums.aws.amazon.com/ + ""`n""
+
+do {    
+    $linect = $linect + 1
+    $certchain = $certchain + $pemsplithttps://forums.aws.amazon.com/ + ""`n""
+} until ($pemsplithttps://forums.aws.amazon.com/ -eq ""-----END CERTIFICATE-----"")
+do {    
+    $linect = $linect + 1
+    $certchain = $certchain + $pemsplithttps://forums.aws.amazon.com/ + ""`n""
+} until ($pemsplithttps://forums.aws.amazon.com/ -eq ""-----END CERTIFICATE-----"")
+set-content -path ""c:\temp\chain.pem"" -Value $certchain
+$chainbin = http://System.IO.File::ReadAllBytes('c:\temp\chain.pem')
+
+$credid = ""xxxxxxxxxxxxxxxx""
+$credkey = ""xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx""
+$Credentials = Set-AWSCredential -AccessKey $credid -SecretKey $credkey
+Import-ACMCertificate -PrivateKey $privbin -Certificate $bodybin -CertificateChain $chainbin -region us-west-1
+
+Edited by: mdavidx8 on Oct 22, 2018 2:37 AM
+
+Edited by: mdavidx8 on Oct 22, 2018 2:39 AM
+
+Edited by: mdavidx8 on Oct 22, 2018 2:40 AM"
+PowerShell Scripting	"Cannot bind parameter 'Certificate'
+Hi,
+
+I'm getting the following error when using AWS tools for PowerShell:
+
+PS C:\Users\Administrator> $list = Add-ELB2ListenerCertificate -Certificate @($elb2cert)
+Add-ELB2ListenerCertificate : Cannot bind parameter 'Certificate'. Cannot convert the
+""Amazon.ElasticLoadBalancingV2.Model.Certificate"" value of type ""Amazon.ElasticLoadBalancingV2.Model.Certificate"" to
+type ""Amazon.ElasticLoadBalancingV2.Model.Certificate"".
+At line:1 char:50
++ $list = Add-ELB2ListenerCertificate -Certificate @($elb2cert)
++                                                  ~~~~~~~~~~~~
++ CategoryInfo          : InvalidArgument: (:) https://forums.aws.amazon.com/, ParameterBindingException
++ FullyQualifiedErrorId : CannotConvertArgumentNoMessage,Amazon.PowerShell.Cmdlets.ELB2.AddELB2ListenerCertificate
+Cmdlet
+
+Any ideas?"
+PowerShell Scripting	"Re: Cannot bind parameter 'Certificate'
+Guessing you don't have the right type of object for the $elb2cert.  Guessing you have to go one property deeper.  Also not sure why you're wrapping that in @(), while I don't think it's causing an issue, I'm thinking it's not necessary."
+PowerShell Scripting	"Re: Cannot bind parameter 'Certificate'
+Environment is Server 2016 running AWS Powershell toolkit:
+
+AWS Tools for Windows PowerShell
+Version 3.3.365.0
+
+Amazon Web Services SDK for .NET
+Core Runtime Version 3.3.25.3
+
+I ended up going back to a classic ELB and still running into a similar cannot bind to parameter error:
+
+$httpsListener = New-Object Amazon.ElasticLoadBalancing.Model.Listener
+$httpsListener.Protocol = ""https""
+$httpsListener.LoadBalancerPort = 8443
+$httpsListener.InstanceProtocol = ""https""
+$httpsListener.InstancePort = 8443
+$cert = Get-IAMServerCertificate -ServerCertificateName xxxx
+$httpsListener.SSLCertificateId = $cert.ServerCertificateMetadata.Arn
+New-ELBLoadBalancerListener -LoadBalancerName myelb -Listener $httpsListener
+
+New-ELBLoadBalancerListener : Cannot bind parameter 'Listener'. Cannot convert the
+""Amazon.ElasticLoadBalancing.Model.Listener"" value of type ""Amazon.ElasticLoadBalancing.Model.Listener"" to type
+""Amazon.ElasticLoadBalancing.Model.Listener"".
+At line:1 char:73
++ ... erListener -LoadBalancerName myelb -Listener $httpsListener
++                                                            ~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) https://forums.aws.amazon.com/, ParameterBindingException
+    + FullyQualifiedErrorId : CannotConvertArgumentNoMessage,Amazon.PowerShell.Cmdlets.ELB.NewELBLoadBalancerListenerC
+   mdlet"
+PowerShell Scripting	"Powershell command to query all the resources for an AWS account
+Is there a powershell command to get all the resources and its parameters for an AWS account that can be filtered with a tag?"
+PowerShell Scripting	"Re: Powershell command to query all the resources for an AWS account
+Not thinking that this is possible as each service has their own commands for listing information.  Outside of PowerShell the closest thing your going to get to this is Resource Groups, which don't support all resources.  There's no CLI/PowerShell way to manage resource groups that I can find."
+PowerShell Scripting	"Problems with get-s3object returning objects
+I understand that this is a usage issue but I am confused
+
+I have created a bucket and put one file in it then I use get-s3object to list it :
+
+PS C:\users\kevin> (Get-S3Object -bucketname kagjcm-dev-data)
+ETag         : ""2bf7b027b99a3e446a032bc926e32b0d""
+BucketName   : kagjcm-dev-data
+Key          : just a file.log
+LastModified : 28/09/2018 12:51:58 PM
+Owner        : Amazon.S3.Model.Owner
+Size         : 3906
+StorageClass : STANDARD
+
+
+And then I use it with key toisolate the file name and all isworking fine
+
+PS C:\users\kevin> (Get-S3Object -bucketname kagjcm-dev-data).key
+just a file.log
+PS C:\users\kevin> 
+
+
+I then add a file to the bucket and I repeat the commands:
+
+PS C:\users\kevin> (Get-S3Object -bucketname kagjcm-dev-data)
+ETag         : ""455b91cfa6e39847941727529100bdaa""
+BucketName   : kagjcm-dev-data
+Key          : S3FileSync.ps1
+LastModified : 28/09/2018 4:00:16 PM
+Owner        : Amazon.S3.Model.Owner
+Size         : 7706
+StorageClass : STANDARD
+ 
+ETag         : ""2bf7b027b99a3e446a032bc926e32b0d""
+BucketName   : kagjcm-dev-data
+Key          : just a file.log
+LastModified : 28/09/2018 12:51:58 PM
+Owner        : Amazon.S3.Model.Owner
+Size         : 3906
+StorageClass : STANDARD
+
+
+Which shows the 2 files but when I do it selecting the filename I get no file names .... what am I missing?
+
+PS C:\users\kevin> (Get-S3Object -bucketname kagjcm-dev-data).key
+PS C:\users\kevin>"
+PowerShell Scripting	"Re: Problems with get-s3object returning objects
+I can't recreate your scenario...what version of the AWSPowerShell module are you using?  I tested with 3.3.270.0 of the AWSPowerShell module and 3.3.365.0 of AWSPowerShell.NetCore.  Created a bucket uploaded one file ran the get-s3object command with .key at the end and got one filename, added a second file and ran the same command again and got two files."
+PowerShell Scripting	"Profile driving me nuts
+Hi,
+
+I have two IAM user accounts with the same name but for diffrenet environments prd and dev.  I add the default profile witg access and secret key like so  
+
+Initialize-AWSDefaultConfiguration -Region someregion -AccessKey akey -SecretKey asecret
+and prd as so 
+Set-AWSCredential -AccessKey accesskey -SecretKey password -StoreAs prd
+
+Seems to work I can gather info from dfault account then prd account using -profile prd.
+
+Then wehn I switch back to default I get 
+""<title localize=""http://authentication_failed.httpMessage"">Access Denied</title>""
+after which if I try and use the prd profile I get the same thing
+""<title localize=""http://authentication_failed.httpMessage"">Access Denied</title>""
+
+If I remove the prd profile and re-add seems to work again, not even sure if this is the reason or just after a while it starts to work.
+
+Can anyone help with why this is happening? or ideas on troubleshooting the issue
+
+Thanks
+
+*****
+Just a quick update, was happily switching between profiles left it for five minutes ran the same command with the -profile switch for prd and received the auth failed message flipped back to default that also failed left 20mins came back and its working again
+
+Is this normal??
+
+Edited by: jc66 on Oct 16, 2018 12:56 AM
+
+Edited by: jc66 on Oct 16, 2018 1:34 AM"
+PowerShell Scripting	"Implications of removing Snapshot/Volume/Image with -Force option
+Hello Experts,
+
+Am writing few scripts to automate the removal of un-required snapshots/volumes/images in PowerShell and definitely as we do not want to have manual intervention of confirming (pressing Yes) for each resource deletion, am planning to use the -Force option.
+
+So can someone please suggest :
+(1) If -Force option of Remove-EC2Volume/Remove-EC2Snapshot/Unregister-EC2Image cmdlets is the only way to suppress confirmation or there are other options?
+(2) Does -Force have any negative effects?
+(3) Will -Force option prevent deletion of a resource which may be used/connected somewhere (for e.g. deleting a snapshot which may be related to an AMI, then will the usage of -Force cause such snapshot to be deleted even-though it's referenced in an existing AMI or it will just give an error and NOT delete such a snapshot)?
+
+Thanks in advance for all the help."
+PowerShell Scripting	"DELETE ME
+DELETE ME
+
+Edited by: tam_le on Sep 20, 2018 9:24 PM"
+PowerShell Scripting	"Formatting
+I am using the command as follows
+
+		Foreach ($i in $acl){
+			 Get-ec2networkacl -networkaclid $i.networkaclid  | % {
+https://forums.aws.amazon.com/@{
+			   networkaclid = $i.networkaclid
+			   VpcId = $_.vpcid
+			   CidrBlock = $_.entries.cidrblock
+
+			 } 
+			 }  | ft
+			 } 
+And the result as below
+networkaclid                  VpcId                                   CidrBlock
+
+
+
+acl-xxx                         vpc-xxx                                {0.0.0.0/0, 0.0.0.0/0, 0.0.0.0/0, 0.0.0.0/0}
+
+How do can i format the table to as follows
+
+networkaclid                   VpcId                                  CidrBlock
+
+
+
+acl-xxx                        vpc-xxx                                 {0.0.0.0/0,
+                                                                                 0.0.0.0/0,
+                                                                                0.0.0.0/0,
+                                                                                0.0.0.0/0}"
+PowerShell Scripting	"Re: Formatting
+How about this:
+foreach($acl in Get-EC2NetworkAcl) { 
+    Write-Host ( ""{0} {1} {{{2}}}"" -f 
+        $acl.NetworkAclId, 
+        $acl.VpcId, 
+        (($acl.Entries | Select-Object CidrBlock).CidrBlock -join "",`n"") 
+        ) 
+    }"
+PowerShell Scripting	"Re: Formatting
+Hi Jaredko,
+
+thank you for the help. 
+However i would like the formatting to be like attached image.
+Anyway i can do it?
+
+Thank you"
+PowerShell Scripting	"Re: Formatting
+Sorry - nothing comes immediately to mind. It looks like you want a new row for each CidrBlock/Egress with no repeating information on NetworkAclId/VpcId (those are just headers). I don't think there's a built-in way to do this (meaning you'd have to go row-by-row for conditional formatting).
+
+The best alternative could be a ""normalized"" approach that repeats all of the ""header"" information on each row.
+$acls = @()
+foreach($acl in Get-EC2NetworkAcl) { 
+    foreach($entry in $acl.Entries){
+        $acls += [PSCustomObject][ordered]@{ NetworkAclId = $acl.NetworkAclId
+                    VpcId = $acl.VpcId
+                    CidrBlock = $entry.CidrBlock
+                    Egress  = $entry.Egress }
+        }
+    } 
+$acls"
+PowerShell Scripting	"Re: Formatting
+Nice!
+Thank you so much, just what i needed!"
+PowerShell Scripting	"Module not loading cmdlets
+I need to start this by saying this problem has me absolutely tearing my hair out and I've tried everything I can possibly think of but still am none the wiser as to what's going on!
+
+I've used the AWS PowerShell cmdlets for a long time now, however just recently on one particular machine I'm now not able to load them and I have no idea why. Basically what seems to happen (i.e. if I use ""Import-Module AWSPowerShell -Verbose -Force"") is that all I get are the legacy aliases (i.e. Set-AWSCredentials etc) but none of the actual cmdlets they point to. There are no errors at all, I just get a load of aliases and no actual cmdlets. For example, after loading the module (either automatically or manually), you see the following from ""Get-Command -Module AWSPowershell"":
+
+CommandType     Name                                               Version    Source
+
+    ----
+
+Alias           Add-ASInstances                                    3.3.210.0  AWSPowerShell
+Alias           Add-CTTag                                          3.3.210.0  AWSPowerShell
+Alias           Add-DPTags                                         3.3.210.0  AWSPowerShell
+Alias           Add-DSIpRoutes                                     3.3.210.0  AWSPowerShell
+Alias           Add-ELBTags                                        3.3.210.0  AWSPowerShell
+Alias           Add-EMRTag                                         3.3.210.0  AWSPowerShell
+Alias           Add-ESTag                                          3.3.210.0  AWSPowerShell
+Alias           Add-MLTag                                          3.3.210.0  AWSPowerShell
+Alias           Clear-AWSCredentials                               3.3.210.0  AWSPowerShell
+Alias           Clear-AWSDefaults                                  3.3.210.0  AWSPowerShell
+Alias           Dismount-ASInstances                               3.3.210.0  AWSPowerShell
+Alias           Edit-EC2Hosts                                      3.3.210.0  AWSPowerShell
+Alias           Edit-RSClusterIamRoles                             3.3.210.0  AWSPowerShell
+Alias           Enable-ORGAllFeatures                              3.3.210.0  AWSPowerShell
+Alias           Find-CTEvents                                      3.3.210.0  AWSPowerShell
+Alias           Get-ASACases                                       3.3.210.0  AWSPowerShell
+Alias           Get-ASAccountLimits                                3.3.210.0  AWSPowerShell
+Alias           Get-ASACommunications                              3.3.210.0  AWSPowerShell
+Alias           Get-ASAServices                                    3.3.210.0  AWSPowerShell
+Alias           Get-ASASeverityLevels                              3.3.210.0  AWSPowerShell
+Alias           Get-ASATrustedAdvisorCheckRefreshStatuses          3.3.210.0  AWSPowerShell
+Alias           Get-ASATrustedAdvisorChecks                        3.3.210.0  AWSPowerShell
+Alias           Get-ASATrustedAdvisorCheckSummaries                3.3.210.0  AWSPowerShell
+Alias           Get-ASLifecycleHooks                               3.3.210.0  AWSPowerShell
+Alias           Get-ASLifecycleHookTypes                           3.3.210.0  AWSPowerShell
+Alias           Get-AWSCredentials                                 3.3.210.0  AWSPowerShell
+Alias           Get-CDApplications                                 3.3.210.0  AWSPowerShell
+Alias           Get-CDDeployments                                  3.3.210.0  AWSPowerShell
+Alias           Get-CFCloudFrontOriginAccessIdentities             3.3.210.0  AWSPowerShell
+Alias           Get-CFDistributions                                3.3.210.0  AWSPowerShell
+Alias           Get-CFGConfigRules                                 3.3.210.0  AWSPowerShell
+Alias           Get-CFGConfigurationRecorders                      3.3.210.0  AWSPowerShell
+Alias           Get-CFGDeliveryChannels                            3.3.210.0  AWSPowerShell
+Alias           Get-CFInvalidations                                3.3.210.0  AWSPowerShell
+Alias           Get-CFNAccountLimits                               3.3.210.0  AWSPowerShell
+Alias           Get-CFNStackEvents                                 3.3.210.0  AWSPowerShell
+Alias           Get-CFNStackResources                              3.3.210.0  AWSPowerShell
+Alias           Get-CFNStackResourceSummaries                      3.3.210.0  AWSPowerShell
+Alias           Get-CFNStackSummaries                              3.3.210.0  AWSPowerShell
+Alias           Get-CFStreamingDistributions                       3.3.210.0  AWSPowerShell
+Alias           Get-CPActionableJobs                               3.3.210.0  AWSPowerShell
+Alias           Get-CPActionableThirdPartyJobs                     3.3.210.0  AWSPowerShell
+Alias           Get-CPJobDetails                                   3.3.210.0  AWSPowerShell
+Alias           Get-CPThirdPartyJobDetails                         3.3.210.0  AWSPowerShell
+Alias           Get-CSAnalysisSchemes                              3.3.210.0  AWSPowerShell
+Alias           Get-CSAvailabilityOptions                          3.3.210.0  AWSPowerShell
+Alias           Get-CSDSuggestions                                 3.3.210.0  AWSPowerShell
+Alias           Get-CSIndexFields                                  3.3.210.0  AWSPowerShell
+Alias           Get-CSListDomainNames                              3.3.210.0  AWSPowerShell
+Alias           Get-CSScalingParameters                            3.3.210.0  AWSPowerShell
+Alias           Get-CSServiceAccessPolicies                        3.3.210.0  AWSPowerShell
+Alias           Get-CTEventSelectors                               3.3.210.0  AWSPowerShell
+Alias           Get-CTTag                                          3.3.210.0  AWSPowerShell
+Alias           Get-CURReportDefinitions                           3.3.210.0  AWSPowerShell
+Alias           Get-CWLExportTasks                                 3.3.210.0  AWSPowerShell
+Alias           Get-CWLLogEvents                                   3.3.210.0  AWSPowerShell
+Alias           Get-CWLLogGroups                                   3.3.210.0  AWSPowerShell
+Alias           Get-CWLLogStreams                                  3.3.210.0  AWSPowerShell
+Alias           Get-CWLMetricFilters                               3.3.210.0  AWSPowerShell
+Alias           Get-CWLSubscriptionFilters                         3.3.210.0  AWSPowerShell
+Alias           Get-CWMetrics                                      3.3.210.0  AWSPowerShell
+Alias           Get-CWMetricStatistics                             3.3.210.0  AWSPowerShell
+Alias           Get-DCLocations                                    3.3.210.0  AWSPowerShell
+Alias           Get-DDBTables                                      3.3.210.0  AWSPowerShell
+Alias           Get-DSIpRoutes                                     3.3.210.0  AWSPowerShell
+Alias           Get-EBApplications                                 3.3.210.0  AWSPowerShell
+Alias           Get-EBApplicationVersions                          3.3.210.0  AWSPowerShell
+Alias           Get-EBAvailableSolutionStack                       3.3.210.0  AWSPowerShell
+Alias           Get-EBConfigurationOptions                         3.3.210.0  AWSPowerShell
+Alias           Get-EBConfigurationSettings                        3.3.210.0  AWSPowerShell
+Alias           Get-EBEnvironmentResources                         3.3.210.0  AWSPowerShell
+Alias           Get-EC2AccountAttributes                           3.3.210.0  AWSPowerShell
+Alias           Get-EC2ExportTasks                                 3.3.210.0  AWSPowerShell
+Alias           Get-EC2FlowLogs                                    3.3.210.0  AWSPowerShell
+Alias           Get-EC2Hosts                                       3.3.210.0  AWSPowerShell
+Alias           Get-EC2ReservedInstancesModifications              3.3.210.0  AWSPowerShell
+Alias           Get-EC2VpcPeeringConnections                       3.3.210.0  AWSPowerShell
+Alias           Get-ECCacheEngineVersions                          3.3.210.0  AWSPowerShell
+Alias           Get-ECCacheSubnetGroups                            3.3.210.0  AWSPowerShell
+Alias           Get-ECReplicationGroups                            3.3.210.0  AWSPowerShell
+Alias           Get-ECSClusters                                    3.3.210.0  AWSPowerShell
+Alias           Get-ECSContainerInstances                          3.3.210.0  AWSPowerShell
+Alias           Get-ECSnapshots                                    3.3.210.0  AWSPowerShell
+Alias           Get-ECSTaskDefinitionFamilies                      3.3.210.0  AWSPowerShell
+Alias           Get-ECSTaskDefinitions                             3.3.210.0  AWSPowerShell
+Alias           Get-ECSTasks                                       3.3.210.0  AWSPowerShell
+Alias           Get-ELBTags                                        3.3.210.0  AWSPowerShell
+Alias           Get-EMRBootstrapActions                            3.3.210.0  AWSPowerShell
+Alias           Get-EMRClusters                                    3.3.210.0  AWSPowerShell
+Alias           Get-EMRInstanceFleets                              3.3.210.0  AWSPowerShell
+Alias           Get-EMRInstanceGroups                              3.3.210.0  AWSPowerShell
+Alias           Get-EMRInstances                                   3.3.210.0  AWSPowerShell
+Alias           Get-EMRSteps                                       3.3.210.0  AWSPowerShell
+Alias           Get-ESTag                                          3.3.210.0  AWSPowerShell
+Alias           Get-HSMAvailableZones                              3.3.210.0  AWSPowerShell
+Alias           Get-IAMAccountAuthorizationDetails                 3.3.210.0  AWSPowerShell
+Alias           Get-IAMAttachedGroupPolicies                       3.3.210.0  AWSPowerShell
+Alias           Get-IAMAttachedRolePolicies                        3.3.210.0  AWSPowerShell
+Alias           Get-IAMAttachedUserPolicies                        3.3.210.0  AWSPowerShell
+Alias           Get-IAMGroupPolicies                               3.3.210.0  AWSPowerShell
+Alias           Get-IAMGroups                                      3.3.210.0  AWSPowerShell
+Alias           Get-IAMInstanceProfiles                            3.3.210.0  AWSPowerShell
+Alias           Get-IAMOpenIDConnectProviders                      3.3.210.0  AWSPowerShell
+Alias           Get-IAMPolicies                                    3.3.210.0  AWSPowerShell
+Alias           Get-IAMPolicyVersions                              3.3.210.0  AWSPowerShell
+Alias           Get-IAMRolePolicies                                3.3.210.0  AWSPowerShell
+Alias           Get-IAMRoles                                       3.3.210.0  AWSPowerShell
+Alias           Get-IAMSAMLProviders                               3.3.210.0  AWSPowerShell
+Alias           Get-IAMServerCertificates                          3.3.210.0  AWSPowerShell
+Alias           Get-IAMUserPolicies                                3.3.210.0  AWSPowerShell
+Alias           Get-IAMUsers                                       3.3.210.0  AWSPowerShell
+Alias           Get-IOTLoggingOptions                              3.3.210.0  AWSPowerShell
+Alias           Get-KINStreams                                     3.3.210.0  AWSPowerShell
+Alias           Get-KMSAliases                                     3.3.210.0  AWSPowerShell
+Alias           Get-KMSGrants                                      3.3.210.0  AWSPowerShell
+Alias           Get-KMSKeyPolicies                                 3.3.210.0  AWSPowerShell
+Alias           Get-KMSKeys                                        3.3.210.0  AWSPowerShell
+Alias           Get-LMEventSourceMappings                          3.3.210.0  AWSPowerShell
+Alias           Get-LMFunctions                                    3.3.210.0  AWSPowerShell
+Alias           Get-MLBatchPredictions                             3.3.210.0  AWSPowerShell
+Alias           Get-MLDataSources                                  3.3.210.0  AWSPowerShell
+Alias           Get-MLEvaluations                                  3.3.210.0  AWSPowerShell
+Alias           Get-MLModels                                       3.3.210.0  AWSPowerShell
+Alias           Get-MLTag                                          3.3.210.0  AWSPowerShell
+Alias           Get-OPSApps                                        3.3.210.0  AWSPowerShell
+Alias           Get-OPSCommands                                    3.3.210.0  AWSPowerShell
+Alias           Get-OPSDeployments                                 3.3.210.0  AWSPowerShell
+Alias           Get-OPSElasticIps                                  3.3.210.0  AWSPowerShell
+Alias           Get-OPSElasticLoadBalancers                        3.3.210.0  AWSPowerShell
+Alias           Get-OPSInstances                                   3.3.210.0  AWSPowerShell
+Alias           Get-OPSLayers                                      3.3.210.0  AWSPowerShell
+Alias           Get-OPSPermissions                                 3.3.210.0  AWSPowerShell
+Alias           Get-OPSRaidArrays                                  3.3.210.0  AWSPowerShell
+Alias           Get-OPSRdsDbInstances                              3.3.210.0  AWSPowerShell
+Alias           Get-OPSServiceErrors                               3.3.210.0  AWSPowerShell
+Alias           Get-OPSStackProvisioningParameters                 3.3.210.0  AWSPowerShell
+Alias           Get-OPSStacks                                      3.3.210.0  AWSPowerShell
+Alias           Get-OPSUserProfiles                                3.3.210.0  AWSPowerShell
+Alias           Get-OPSVolumes                                     3.3.210.0  AWSPowerShell
+Alias           Get-R53CheckerIpRanges                             3.3.210.0  AWSPowerShell
+Alias           Get-R53DDomainAvailability                         3.3.210.0  AWSPowerShell
+Alias           Get-R53DDomains                                    3.3.210.0  AWSPowerShell
+Alias           Get-R53DOperations                                 3.3.210.0  AWSPowerShell
+Alias           Get-R53GeoLocations                                3.3.210.0  AWSPowerShell
+Alias           Get-R53HealthChecks                                3.3.210.0  AWSPowerShell
+Alias           Get-R53HostedZones                                 3.3.210.0  AWSPowerShell
+Alias           Get-R53ReusableDelegationSets                      3.3.210.0  AWSPowerShell
+Alias           Get-R53TagsForResources                            3.3.210.0  AWSPowerShell
+Alias           Get-R53TrafficPolicies                             3.3.210.0  AWSPowerShell
+Alias           Get-R53TrafficPolicyInstances                      3.3.210.0  AWSPowerShell
+Alias           Get-R53TrafficPolicyVersions                       3.3.210.0  AWSPowerShell
+Alias           Get-RDSAccountAttributes                           3.3.210.0  AWSPowerShell
+Alias           Get-RDSCertificates                                3.3.210.0  AWSPowerShell
+Alias           Get-RDSDBLogFiles                                  3.3.210.0  AWSPowerShell
+Alias           Get-RDSDBSnapshotAttributes                        3.3.210.0  AWSPowerShell
+Alias           Get-RDSEventCategories                             3.3.210.0  AWSPowerShell
+Alias           Get-RDSEventSubscriptions                          3.3.210.0  AWSPowerShell
+Alias           Get-RDSPendingMaintenanceActions                   3.3.210.0  AWSPowerShell
+Alias           Get-RDSReservedDBInstancesOfferings                3.3.210.0  AWSPowerShell
+Alias           Get-RSClusterParameterGroups                       3.3.210.0  AWSPowerShell
+Alias           Get-RSClusterParameters                            3.3.210.0  AWSPowerShell
+Alias           Get-RSClusters                                     3.3.210.0  AWSPowerShell
+Alias           Get-RSClusterSecurityGroups                        3.3.210.0  AWSPowerShell
+Alias           Get-RSClusterSnapshots                             3.3.210.0  AWSPowerShell
+Alias           Get-RSClusterSubnetGroups                          3.3.210.0  AWSPowerShell
+Alias           Get-RSClusterVersions                              3.3.210.0  AWSPowerShell
+Alias           Get-RSDefaultClusterParameters                     3.3.210.0  AWSPowerShell
+Alias           Get-RSEventCategories                              3.3.210.0  AWSPowerShell
+Alias           Get-RSEvents                                       3.3.210.0  AWSPowerShell
+Alias           Get-RSEventSubscriptions                           3.3.210.0  AWSPowerShell
+Alias           Get-RSHsmClientCertificates                        3.3.210.0  AWSPowerShell
+Alias           Get-RSHsmConfigurations                            3.3.210.0  AWSPowerShell
+Alias           Get-RSOrderableClusterOptions                      3.3.210.0  AWSPowerShell
+Alias           Get-RSReservedNodeOfferings                        3.3.210.0  AWSPowerShell
+Alias           Get-RSReservedNodes                                3.3.210.0  AWSPowerShell
+Alias           Get-RSTags                                         3.3.210.0  AWSPowerShell
+Alias           Get-SESIdentityMailFromDomainAttributes            3.3.210.0  AWSPowerShell
+Alias           Get-SESReceiptFilters                              3.3.210.0  AWSPowerShell
+Alias           Get-SESReceiptRuleSets                             3.3.210.0  AWSPowerShell
+Alias           Get-SESSendStatistics                              3.3.210.0  AWSPowerShell
+Alias           Get-SGChapCredentials                              3.3.210.0  AWSPowerShell
+Alias           Get-SGResourceTags                                 3.3.210.0  AWSPowerShell
+Alias           Get-SGTapeArchives                                 3.3.210.0  AWSPowerShell
+Alias           Get-SGTapeRecoveryPoints                           3.3.210.0  AWSPowerShell
+Alias           Get-SGTapes                                        3.3.210.0  AWSPowerShell
+Alias           Get-SGVolumeInitiators                             3.3.210.0  AWSPowerShell
+Alias           Get-SGVTLDevices                                   3.3.210.0  AWSPowerShell
+Alias           Get-SNSEndpointAttributes                          3.3.210.0  AWSPowerShell
+Alias           Get-SNSPlatformApplicationAttributes               3.3.210.0  AWSPowerShell
+Alias           Get-SNSPlatformApplications                        3.3.210.0  AWSPowerShell
+Alias           Get-SNSSMSAttributes                               3.3.210.0  AWSPowerShell
+Alias           Get-SQSDeadLetterSourceQueues                      3.3.210.0  AWSPowerShell
+Alias           Get-SSMMaintenanceWindowTargets                    3.3.210.0  AWSPowerShell
+Alias           Get-SSMParameterNameList                           3.3.210.0  AWSPowerShell
+Alias           Get-WKSWorkspaceBundles                            3.3.210.0  AWSPowerShell
+Alias           Get-WKSWorkspaceDirectories                        3.3.210.0  AWSPowerShell
+Alias           Get-WKSWorkspaces                                  3.3.210.0  AWSPowerShell
+Alias           Initialize-AWSDefaults                             3.3.210.0  AWSPowerShell
+Alias           New-AWSCredentials                                 3.3.210.0  AWSPowerShell
+Alias           New-EC2FlowLogs                                    3.3.210.0  AWSPowerShell
+Alias           New-EC2Hosts                                       3.3.210.0  AWSPowerShell
+Alias           New-RSTags                                         3.3.210.0  AWSPowerShell
+Alias           New-SGTapes                                        3.3.210.0  AWSPowerShell
+Alias           Remove-ADSApplications                             3.3.210.0  AWSPowerShell
+Alias           Remove-CTTag                                       3.3.210.0  AWSPowerShell
+Alias           Remove-DPTags                                      3.3.210.0  AWSPowerShell
+Alias           Remove-DSIpRoutes                                  3.3.210.0  AWSPowerShell
+Alias           Remove-EC2FlowLogs                                 3.3.210.0  AWSPowerShell
+Alias           Remove-ELBTags                                     3.3.210.0  AWSPowerShell
+Alias           Remove-EMRTag                                      3.3.210.0  AWSPowerShell
+Alias           Remove-ESTag                                       3.3.210.0  AWSPowerShell
+Alias           Remove-MLTag                                       3.3.210.0  AWSPowerShell
+Alias           Remove-RSTags                                      3.3.210.0  AWSPowerShell
+Alias           Remove-S3MultipartUploads                          3.3.210.0  AWSPowerShell
+Alias           Remove-SGChapCredentials                           3.3.210.0  AWSPowerShell
+Alias           Search-CSDDocuments                                3.3.210.0  AWSPowerShell
+Alias           Set-AWSCredentials                                 3.3.210.0  AWSPowerShell
+Alias           Set-EBEnvironmentCNAMEs                            3.3.210.0  AWSPowerShell
+Alias           Set-EMRVisibleToAllUsers                           3.3.210.0  AWSPowerShell
+Alias           Set-IOTLoggingOptions                              3.3.210.0  AWSPowerShell
+Alias           Set-SNSEndpointAttributes                          3.3.210.0  AWSPowerShell
+Alias           Set-SNSPlatformApplicationAttributes               3.3.210.0  AWSPowerShell
+Alias           Set-SNSSMSAttributes                               3.3.210.0  AWSPowerShell
+Alias           Stop-EMRSteps                                      3.3.210.0  AWSPowerShell
+Alias           Test-EBConfigurationSettings                       3.3.210.0  AWSPowerShell
+Alias           Update-CSAvailabilityOptions                       3.3.210.0  AWSPowerShell
+Alias           Update-CSScalingParameters                         3.3.210.0  AWSPowerShell
+Alias           Update-CSServiceAccessPolicies                     3.3.210.0  AWSPowerShell
+Alias           Update-ETSPipelineNotifications                    3.3.210.0  AWSPowerShell
+Alias           Update-R53DDomainNameservers                       3.3.210.0  AWSPowerShell
+Alias           Update-SGChapCredentials                           3.3.210.0  AWSPowerShell
+Alias           Write-AASScalingPolicy                             3.3.210.0  AWSPowerShell
+Alias           Write-CFGEvaluations                               3.3.210.0  AWSPowerShell
+Alias           Write-CSDDocuments                                 3.3.210.0  AWSPowerShell
+Alias           Write-CTEventSelectors                             3.3.210.0  AWSPowerShell
+Alias           Write-CWLLogEvents                                 3.3.210.0  AWSPowerShell
+
+That's it, no actual cmdlets at all.
+
+I've re-installed everything and still the same problem. I even downgraded to an old version and still the same problem. I also uninstalled completely and then installed via ""Install-Module"" instead and still the same thing. Obviously something has changed on my machine but I cannot for the life of me think what!
+
+I'm running the latest Windows 10 Pro build (1709) and my PSVersionTable is:
+
+Name                           Value
+----
+PSVersion                      5.1.16299.98
+PSEdition                      Desktop
+PSCompatibleVersions           {1.0, 2.0, 3.0, 4.0...}
+BuildVersion                   10.0.16299.98
+CLRVersion                     4.0.30319.42000
+WSManStackVersion              3.0
+PSRemotingProtocolVersion      2.3
+SerializationVersion           1.1.0.1
+
+Please help!"
+PowerShell Scripting	"Re: Module not loading cmdlets
+I can't repro any issues on my systems so nothing concrete I can point at. The runtime dependencies of the tools haven't changed for quite some time, although we have obviously been adding new sdk assemblies for new services that get launched.
+
+Outside our sdk assemblies the tools rely on having the .net 3.5 framework installed - is it possible you don't have that on this particular system?"
+PowerShell Scripting	"Re: Module not loading cmdlets
+Thanks for the reply Steve. Unfortunately I've already checked that and - as far as I can see - version 3.5 of the framework is installed"
+PowerShell Scripting	"Re: Module not loading cmdlets
+What's the execution policy on the system?"
+PowerShell Scripting	"Re: Module not loading cmdlets
+Yeah I thought of that, set to Unrestricted for both CurrentUser and LocalMachine"
+PowerShell Scripting	"Re: Module not loading cmdlets
+How did you install the module onto the target system? Did you use our Windows installer, from the PowerShell gallery, or some other mechanism? 
+
+I ask as I've seen cases where I've sent test versions of the module to users as a zip file downloaded from S3 and said users forgot to unblock the zip file (https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/unblock-file?view=powershell-5.1) before extracting the content. The resulting scenario is similar to what you are reporting, the module appears to import by the blocked content gets, well, blocked."
+PowerShell Scripting	"Re: Module not loading cmdlets
+I've tried both installing via the installer and using Install-Package, both unfortunately have the same result.
+
+I tried unblocking every file under ""C:\Program Files\WindowsPowerShell\Modules\AWSPowerShell\3.3.210.0"" using the Unblock-File cmdlet but unfortunately it doesn't appear to have made a difference"
+PowerShell Scripting	"Re: Module not loading cmdlets
+I'm experiencing the exact same issue and have spent almost 2 days and not sorted it out!  It seems to have coincided with Windows 10 forcing me to update to the cumulative update v 1709.
+
+@CWD, were you ever able to sort this out?  I've also tried uninstalling/re-installing many versions of the package, .NET 3.5, setting all scopes of execution policies to Unrestricted, ensured I'm running as Administrator, all to no avail."
+PowerShell Scripting	"Re: Module not loading cmdlets
+Try downloading/installing the latest version of .net framework (currently 4.7.2) here:  https://www.microsoft.com/net/download/dotnet-framework-runtime 
+
+I've lost many days trying to figure this out, and made many changes. However, in the past 24 hours, the only changes were:
+1. Go to add/remove programs; remove PowerShell; add PowerShell (didn't seem to make a difference)
+2. Install latest version of .Net Framework (magically working again)."
+PowerShell Scripting	"Re: Module not loading cmdlets
+Thanks @jaredko!  I couldn't quite do that, but the solution for me was along the same lines:
+
+1) I'm running Windows 10, so the dot net framework is a core part and I couldn't find any way to reinstall.  I did find some older .NET 3.5 related options that I uninstalled/reinstalled, but that didn't help.
+
+2) I then tried to run the Microsoft .NET Framework Repair Tool. https://www.microsoft.com/en-us/download/details.aspx?id=30135 but that also didn't help me.
+
+3) I ensured I had installed all available updates but still no luck.
+
+4) I ran the Windows 10 Update Assistant. https://www.microsoft.com/en-us/download/details.aspx?id=30135  Apparently I had never received, or had failed to install, the April 2018 major update (v 1803) to Win 10.  After this update assistant ran and installed April's major update, AWSPowerShell was finally able to load correctly.
+
+So while your suggestion didn't work for me, it definitely points to some issue with the .NET framework."
+PowerShell Scripting	"Re: Module not loading cmdlets
+Thank you for all the tips, it helped us track down a fix in the end. We also ran into this infuriating issue and it took up quite a few days to resolve. Unfortunately none of the tips worked for our situation, but they pointed in the right direction: some form of corruption of the latest .NET install.
+
+In the end, what worked for us was a Repair Install of Windows 10: https://neosmart.net/wiki/windows-10-repair-installation/#How_Windows_10_Repair_Install_Works. I recommend this step if the others don't work. The Repair Install will let you hold on to your data and apps.
+
+Some other observations:
+
+Import still worked if you forced usage of powershell version 2 (powershell.exe -version 2`)
+
+
+
+At first the Import would fail because it couldn't find the System.Management.Automation.dll version 1.0.0.0, which implies a deeper corruption of the .NET or Powershell installation. I eventually resolved this by uninstalling and reinstalling the Windows Feature ""Powershell Engine 2.0"".
+
+
+
+I suspect this corruption is linked to the fact that this is an older pc, originally with windows 7 installed and lots of updates since then. This seemed to cause some sort of conflict or incongruity from all the different .NET installations.
+
+
+
+I could not find much info elsewhere online on this issue except here: https://superuser.com/questions/1328129/powershell-sqlserver-module-only-imports-functions-and-aliases-but-no-cmdlets
+
+
+Edited by: ysalmi on Sep 7, 2018 2:40 AM"
+PowerShell Scripting	"Re: Module not loading cmdlets
+Thanks @ysalmi. Hopefully all of our different experiences help others that may see this in the future.
+
+Question to everyone responding: In my situation, I only experienced problems with AWS Tools; everything else in PowerShell continued to work. Did everyone else observe the same behavior?"
+PowerShell Scripting	"Re: Module not loading cmdlets
+Yes, that was my experience as well."
+PowerShell Scripting	"Re: Module not loading cmdlets
+Same here although I did not test other modules extensively. Another user reported similar problems with the SqlServer module though: https://superuser.com/questions/1328129/powershell-sqlserver-module-only-imports-functions-and-aliases-but-no-cmdlets/1356087#1356087"
+PowerShell Scripting	"How to get powershell 5.1 cli access to aws working on windows 10?
+I installed the download from https://aws.amazon.com/powershell/, started the installed 'Windows Powershell for AWS' as administrator, and got the error ""& : The 'Initialize-AWSDefaultConfiguration' command was found in the module 'AWSPowerShell', but the module could not
+be loaded. For more information, run 'Import-Module AWSPowerShell'.
+At line:1 char:3
++ & Initialize-AWSDefaultConfiguration
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Initialize-AWSDefaultConfiguration:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CouldNotAutoloadMatchingModule""
+
+Then I ran:
+PS C:\WINDOWS\system32> Import-Module AWSPowerShell
+Import-Module : File C:\Program Files\WindowsPowerShell\Modules\AWSPowerShell\3.3.343.0\AWSPowerShellCompleters.psm1
+cannot be loaded because running scripts is disabled on this system. For more information, see
+about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170.
+At line:1 char:1
++ Import-Module AWSPowerShell
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : SecurityError: (:) https://forums.aws.amazon.com/, PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess,Microsoft.PowerShell.Commands.ImportModuleCommand
+PS C:\WINDOWS\system32> set-executionpolicy remotesigned
+
+Execution Policy Change
+The execution policy helps protect you from scripts that you do not trust. Changing the execution policy might expose
+you to the security risks described in the about_Execution_Policies help topic at
+https:/go.microsoft.com/fwlink/?LinkID=135170. Do you want to change the execution policy?
+[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is ""N""): y
+PS C:\WINDOWS\system32> Import-Module AWSPowerShell
+PS C:\WINDOWS\system32> aws s3 ls
+aws : The term 'aws' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the
+spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ aws s3 ls
++ ~~~
+    + CategoryInfo          : ObjectNotFound: (aws:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\WINDOWS\system32> Get-AWSPowerShellVersion -ListServiceVersionInfo
+
+AWS Tools for Windows PowerShell
+Version 3.3.343.0
+Copyright 2012-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+Amazon Web Services SDK for .NET
+Core Runtime Version 3.3.24.8
+Copyright 2009-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+Release notes: https://aws.amazon.com/releasenotes/PowerShell
+
+This software includes third party software subject to the following copyrights:
+
+Logging from log4net, Apache License
+
+http://logging.apache.org/log4net/license.html
+
+Service                                               Noun Prefix API Version
+
+
+-----------
+AWS AppStream                                         APS         2016-12-01
+AWS AppSync                                           ASYN        2017-07-25
+AWS Batch                                             BAT         2016-08-10
+AWS Budgets                                           BGT         2016-10-20
+AWS Certificate Manager                               ACM         2015-12-08
+AWS Certificate Manager Private Certificate Authority PCA         2017-08-22
+AWS Cloud Directory                                   CDIR        2017-01-11
+AWS Cloud HSM                                         HSM         2014-05-30
+AWS Cloud HSM V2                                      HSM2        2017-04-28
+AWS Cloud9                                            C9          2017-09-23
+AWS CloudFormation                                    CFN         2010-05-15
+AWS CloudTrail                                        CT          2013-11-01
+AWS CodeBuild                                         CB          2016-10-06
+AWS CodeCommit                                        CC          2015-04-13
+AWS CodeDeploy                                        CD          2014-10-06
+AWS CodePipeline                                      CP          2015-07-09
+AWS CodeStar                                          CST         2017-04-19
+AWS Config                                            CFG         2014-11-12
+AWS Cost Explorer                                     CE          2017-10-25
+AWS Cost and Usage Report                             CUR         2017-01-06
+AWS Data Pipeline                                     DP          2012-10-29
+AWS Database Migration Service                        DMS         2016-01-01
+AWS Device Farm                                       DF          2015-06-23
+AWS Direct Connect                                    DC          2012-10-25
+AWS Directory Service                                 DS          2015-04-16
+AWS Elastic Beanstalk                                 EB          2010-12-01
+AWS Elemental MediaConvert                            EMC         2017-08-29
+AWS Elemental MediaLive                               EML         2017-10-14
+AWS Elemental MediaPackage                            EMP         2017-10-12
+AWS Elemental MediaStore                              EMS         2017-09-01
+AWS Elemental MediaStore Data Plane                   EMSD        2017-09-01
+AWS Glue                                              GLUE        2017-03-31
+AWS Greengrass                                        GG          2017-06-07
+AWS Health                                            HLTH        2016-08-04
+AWS Identity and Access Management                    IAM         2010-05-08
+AWS Import/Export                                     IE          2010-06-01
+AWS Import/Export Snowball                            SNOW        2016-06-30
+AWS IoT                                               IOT         2015-05-28
+AWS IoT Jobs Data Plane                               IOTJ        2017-09-29
+AWS Key Management Service                            KMS         2014-11-01
+AWS Lambda                                            LM          2015-03-31
+AWS Marketplace Commerce Analytics                    MCA         2015-07-01
+AWS Marketplace Entitlement Service                   MES         2017-01-11
+AWS Marketplace Metering                              MM          2016-01-14
+AWS Migration Hub                                     MH          2017-05-31
+AWS OpsWorks                                          OPS         2013-02-18
+AWS OpsWorksCM                                        OWCM        2016-11-01
+AWS Organizations                                     ORG         2016-11-28
+AWS Price List Service                                PLS         2017-10-15
+AWS Resource Groups                                   RG          2017-11-27
+AWS Resource Groups Tagging API                       RGT         2017-01-26
+AWS Secrets Manager                                   SEC         2017-10-17
+AWS Security Token Service                            STS         2011-06-15
+AWS Serverless Application Repository                 SAR         2017-09-08
+AWS Service Catalog                                   SC          2015-12-10
+AWS Shield                                            SHLD        2016-06-02
+AWS Step Functions                                    SFN         2016-11-23
+AWS Storage Gateway                                   SG          2013-06-30
+AWS Support API                                       ASA         2013-04-15
+AWS Systems Manager                                   SSM         2014-11-06
+AWS WAF                                               WAF         2015-08-24
+AWS WAF Regional                                      WAFR        2016-11-28
+AWS X-Ray                                             XR          2016-04-12
+Alexa For Business                                    ALXB        2017-11-09
+Amazon API Gateway                                    AG          2015-07-09
+Amazon Athena                                         ATH         2017-05-18
+Amazon CloudFront                                     CF          2018-06-18
+Amazon CloudSearch                                    CS          2013-01-01
+Amazon CloudSearchDomain                              CSD         2013-01-01
+Amazon CloudWatch                                     CW          2010-08-01
+Amazon CloudWatch Events                              CWE         2015-10-07
+Amazon CloudWatch Logs                                CWL         2014-03-28
+Amazon Cognito Identity                               CGI         2014-06-30
+Amazon Cognito Identity Provider                      CGIP        2016-04-18
+Amazon Comprehend                                     COMP        2017-11-27
+Amazon DynamoDB                                       DDB         2012-08-10
+Amazon DynamoDB Accelerator (DAX)                     DAX         2017-04-19
+Amazon EC2 Container Registry                         ECR         2015-09-21
+Amazon EC2 Container Service                          ECS         2014-11-13
+Amazon ElastiCache                                    EC          2015-02-02
+Amazon Elastic Compute Cloud                          EC2         2016-11-15
+Amazon Elastic File System                            EFS         2015-02-01
+Amazon Elastic MapReduce                              EMR         2009-03-31
+Amazon Elastic Transcoder                             ETS         2012-09-25
+Amazon Elasticsearch                                  ES          2015-01-01
+Amazon GameLift Service                               GML         2015-10-01
+Amazon GuardDuty                                      GD          2017-11-28
+Amazon Inspector                                      INS         2016-02-16
+Amazon Kinesis                                        KIN         2013-12-02
+Amazon Kinesis Analytics                              KINA        2015-08-14
+Amazon Kinesis Firehose                               KINF        2015-08-04
+Amazon Kinesis Video Streams                          KV          2017-09-30
+Amazon Kinesis Video Streams Media                    KVM         2017-09-30
+Amazon Lex                                            LEX         2016-11-28
+Amazon Lex Model Building Service                     LMB         2017-04-19
+Amazon Lightsail                                      LS          2016-11-28
+Amazon MQ                                             MQ          2017-11-27
+Amazon MTurk Service                                  MTR         2017-01-17
+Amazon Machine Learning                               ML          2014-12-12
+Amazon Pinpoint                                       PIN         2016-12-01
+Amazon Polly                                          POL         2016-06-10
+Amazon Redshift                                       RS          2012-12-01
+Amazon Rekognition                                    REK         2016-06-27
+Amazon Relational Database Service                    RDS         2014-10-31
+Amazon Route 53                                       R53         2013-04-01
+Amazon Route 53 Auto Naming                           SD          2017-03-14
+Amazon Route 53 Domains                               R53D        2014-05-15
+Amazon SageMaker Runtime                              SMR         2017-05-13
+Amazon SageMaker Service                              SM          2017-07-24
+Amazon Server Migration Service                       SMS         2016-10-24
+Amazon Simple Email Service                           SES         2010-12-01
+Amazon Simple Notification Service                    SNS         2010-03-31
+Amazon Simple Queue Service                           SQS         2012-11-05
+Amazon Simple Storage Service                         S3          2006-03-01
+Amazon Transcribe Service                             TRS         2017-10-26
+Amazon Translate                                      TRN         2017-07-01
+Amazon WorkDocs                                       WD          2016-05-01
+Amazon WorkMail                                       WM          2017-10-01
+Amazon WorkSpaces                                     WKS         2015-04-08
+Application Auto Scaling                              AAS         2016-02-06
+Application Discovery Service                         ADS         2015-11-01
+Auto Scaling                                          AS          2011-01-01
+Elastic Load Balancing                                ELB         2012-06-01
+Elastic Load Balancing V2                             ELB2        2015-12-01
+Firewall Management Service                           FMS         2018-01-01
+
+I find the fuzzy https://docs.aws.amazon.com/powershell/latest/userguide/pstools-getting-set-up-windows.html/ instructions hard to decipher. 
+
+Why doesn't the installed 'Windows Powershell for AWS"" have the aws.exe application installed and not run aws commands...?
+
+How to install aws.exe?
+
+PS C:\WINDOWS\system32> get-command aws
+
+CommandType     Name                                               Version    Source
+
+    ----
+
+Alias           Clear-AWSCredentials                               3.3.343.0  AWSPowerShell
+Alias           Clear-AWSCredentials                               3.3.343.0  AWSPowerShell.NetCore
+Alias           Clear-AWSDefaults                                  3.3.343.0  AWSPowerShell
+Alias           Clear-AWSDefaults                                  3.3.343.0  AWSPowerShell.NetCore
+Alias           Get-AWSCredentials                                 3.3.343.0  AWSPowerShell
+Alias           Get-AWSCredentials                                 3.3.343.0  AWSPowerShell.NetCore
+Alias           Initialize-AWSDefaults                             3.3.343.0  AWSPowerShell
+Alias           Initialize-AWSDefaults                             3.3.343.0  AWSPowerShell.NetCore
+Alias           New-AWSCredentials                                 3.3.343.0  AWSPowerShell
+Alias           New-AWSCredentials                                 3.3.343.0  AWSPowerShell.NetCore
+Alias           Set-AWSCredentials                                 3.3.343.0  AWSPowerShell
+Alias           Set-AWSCredentials                                 3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Add-AWSLoggingListener                             3.3.343.0  AWSPowerShell
+Cmdlet          Clear-AWSCredential                                3.3.343.0  AWSPowerShell
+Cmdlet          Clear-AWSCredential                                3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Clear-AWSDefaultConfiguration                      3.3.343.0  AWSPowerShell
+Cmdlet          Clear-AWSDefaultConfiguration                      3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Clear-AWSHistory                                   3.3.343.0  AWSPowerShell
+Cmdlet          Clear-AWSHistory                                   3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Clear-AWSProxy                                     3.3.343.0  AWSPowerShell
+Cmdlet          Clear-DefaultAWSRegion                             3.3.343.0  AWSPowerShell
+Cmdlet          Clear-DefaultAWSRegion                             3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Disable-AWSMetricsLogging                          3.3.343.0  AWSPowerShell
+Cmdlet          Disable-ORGAWSServiceAccess                        3.3.343.0  AWSPowerShell
+Cmdlet          Disable-ORGAWSServiceAccess                        3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Enable-AWSMetricsLogging                           3.3.343.0  AWSPowerShell
+Cmdlet          Enable-ORGAWSServiceAccess                         3.3.343.0  AWSPowerShell
+Cmdlet          Enable-ORGAWSServiceAccess                         3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Get-AWSCmdletName                                  3.3.343.0  AWSPowerShell
+Cmdlet          Get-AWSCmdletName                                  3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Get-AWSCredential                                  3.3.343.0  AWSPowerShell
+Cmdlet          Get-AWSCredential                                  3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Get-AWSPowerShellVersion                           3.3.343.0  AWSPowerShell
+Cmdlet          Get-AWSPowerShellVersion                           3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Get-AWSPublicIpAddressRange                        3.3.343.0  AWSPowerShell
+Cmdlet          Get-AWSPublicIpAddressRange                        3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Get-AWSRegion                                      3.3.343.0  AWSPowerShell
+Cmdlet          Get-AWSRegion                                      3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Get-DefaultAWSRegion                               3.3.343.0  AWSPowerShell
+Cmdlet          Get-DefaultAWSRegion                               3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Get-ORGAWSServiceAccessForOrganization             3.3.343.0  AWSPowerShell
+Cmdlet          Get-ORGAWSServiceAccessForOrganization             3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Initialize-AWSDefaultConfiguration                 3.3.343.0  AWSPowerShell
+Cmdlet          Initialize-AWSDefaultConfiguration                 3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          New-AWSCredential                                  3.3.343.0  AWSPowerShell
+Cmdlet          New-AWSCredential                                  3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Remove-AWSCredentialProfile                        3.3.343.0  AWSPowerShell
+Cmdlet          Remove-AWSCredentialProfile                        3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Remove-AWSLoggingListener                          3.3.343.0  AWSPowerShell
+Cmdlet          Set-AWSCredential                                  3.3.343.0  AWSPowerShell
+Cmdlet          Set-AWSCredential                                  3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Set-AWSHistoryConfiguration                        3.3.343.0  AWSPowerShell
+Cmdlet          Set-AWSHistoryConfiguration                        3.3.343.0  AWSPowerShell.NetCore
+Cmdlet          Set-AWSProxy                                       3.3.343.0  AWSPowerShell
+Cmdlet          Set-AWSResponseLogging                             3.3.343.0  AWSPowerShell
+Cmdlet          Set-AWSSamlEndpoint                                3.3.343.0  AWSPowerShell
+Cmdlet          Set-AWSSamlRoleProfile                             3.3.343.0  AWSPowerShell
+Cmdlet          Set-DefaultAWSRegion                               3.3.343.0  AWSPowerShell
+Cmdlet          Set-DefaultAWSRegion                               3.3.343.0  AWSPowerShell.NetCore
+
+
+Edited by: gfl on Sep 17, 2018 7:24 AM
+
+Edited by: gfl on Sep 17, 2018 8:16 AM"
+PowerShell Scripting	"Permanently store AWS credentials on macOS?
+I am trying to permanently store AWS credentials on a Mac. I tried Initialize-AWSDefaults and Initialize-AWSDefaultConfiguration. However, whenever I close the PowerShell session and start it again the AWS credentials are not loaded again."
+PowerShell Scripting	"Set-AWSSamlRoleProfile with Okta
+I am trying to use the federated login for AWS with Okta as IdP (instead of ADFS).
+My steps
+
+ $ep = https://COMPANY.okta.com/home/amazon_aws/0oafz3qyd456wj6fN0h7/952""
+$epName = Set-AWSSamlEndpoint -Endpoint $ep -StoreAs Okta-Demo -AuthenticationType NTLM
+Set-AWSSamlRoleProfile -StoreAs OktaProfile -EndpointName $epName
+
+and I am running into below error, can anyone help?
+
+Set-AWSSamlRoleProfile : Unable to set credentials: Root element is missing.
+At line:1 char:1
+
+I believe the issue is with multiple redirects to get user authenticated with their logged in windows credentials."
+PowerShell Scripting	"Re: Set-AWSSamlRoleProfile with Okta
+I believe that was designed strictly around ADFS. I would suggest looking at this script.
+https://www.powershellgallery.com/packages/OktaAWSToken/0.0.39/Content/OktaAWSToken.psm1
+
+While it didn't work for me as-is, I was able to learn quite a bit from it and build a working script from scratch. But it's still a hack.
+
+I have been asking Okta to write and publish something that would be able to supply raw SAML from PowerShell (and provide functionality for MFA and IWA), but have been unsuccessful so far. Once you have the SAML, it would be easy to pass to the AWS commands.
+
+If you agree with me that Okta should provide something in PowerShell to get the SAML document so we can supply to AWS (or anything else), please push it through your account team. Hopefully they will understand the demand is there."
+PowerShell Scripting	"""Credential generation from SAML authentication failed"" assistance
+This error message has been posted before, but never really solved.  The error message we're receiving is:  
+Credential generation from SAML authentication failed
+
+These are the commands we're running:
+Clear-AWSCredentials
+Set-DefaultAWSRegion ""ap-southeast-2""
+$endpoint = ""https://adfs.company.com/adfs/ls/IdpInitiatedSignOn.aspx?loginToRp=urn:amazon:webservices""
+$ADFSendpoint = Set-AWSSamlEndpoint -Endpoint $endpoint -StoreAs ADFSendpoint
+Set-AWSSamlRoleProfile -EndpointName $ADFSendpoint -StoreAllRoles
+$ProfileName = (Get-AWSCredential -ListProfileDetail).ProfileName
+Set-AWSCredentials -ProfileName $ProfileName
+$RoleARN = ""arn:aws:iam::{0}"" -f $ProfileName
+$CredentialAws = (Use-STSRole -RoleArn $RoleArn -RoleSessionName ""Session"").Credentials
+
+We are running the latest version of the AWS PowerShell cmdlets (v3.3.343.0), and we also sit behind a proxy server.  The ADFS servers are v3.0.
+
+This could be a red herring, but when I ran the commands through Fiddler (which I don't have a lot of experience using) I noticed an error message ""RoleSessionName is required in AuthnResponse"".  Could be nothing but the more information the better.
+
+I'm not sure if I'm missing another command, or if there is something else going on.  Any help would be appreciated."
+PowerShell Scripting	"Re: ""Credential generation from SAML authentication failed"" assistance
+The fiddler output ""RoleSessionName is required in AuthnResponse"" ended up tipping me off to the issue.  
+
+When we configured ADFS, the RoleSessionName was configured to use the 'e-mail address' attribute.  The user/service account we were using was not configured with an e-mail address.  Once we switched over the attribute to 'userprincipalname' the issue was resolved.
+
+My next question would be, is there any problem with switching the attribute from e-mail to UPN?"
+PowerShell Scripting	"New-CFNChangeSet missing parameter for ChangeSetType
+New-CFNChangeSet does not provide a way to set the ChangeSetType on CreateChangeSetRequest to CREATE.
+
+It is needed to create a stack that uses Transform."
+PowerShell Scripting	"Re: New-CFNChangeSet missing parameter for ChangeSetType
+We saw this reported by a user on Reddit last week and a fix should be available later today (Aug 13)."
+PowerShell Scripting	"Re: New-CFNChangeSet missing parameter for ChangeSetType
+v3.3.335.0 with the fix is now released."
+PowerShell Scripting	"Get Problem in quickstart of Connect a IOT device
+Dear All,
+
+I am a beginner for AWS IOT . I get stucked in the 5-minutes quickstart.
+I believe it is a problem in PowerShell AWS.
+""unzip"" is not recognized as a cmdlet. "".\start.ps1"" is not working.
+Plus, I am using Windows PowerShell for AWS using Java Windows SDK.
+
+I am waiting for response, please..."
+PowerShell Scripting	"Get-CWLFilteredLogEvent not working with a forward slash in LogGroupName
+I'm currently logging some activity to CloudWatchLogs with a log group that is in the format of ""Application/Environment"". 
+
+When I query to return logs via the Get-CWLFilteredLogEvent powershell command, it always returns no results, even if I don't have a FilterPattern set.  I can make a query using the same parameters with the AWS CLI and everything is returned as expected.
+
+If I modify my logger to use a hyphen instead of a forward slash, e.g ""Application-Environment"" then the Powershell command against this new log group returns results.
+
+An example Powershell query that doesn't work:
+
+Get-CWLFilteredLogEvent -LogGroupName ""Application/Environment"" -Region us-east-1 
+    -ProfileName dev
+
+
+The same query works using the CLI:
+
+aws logs filter-log-events --log-group-name ""Application/Environment"" --region us-east-1
+     --profile dev 
+
+
+If I swap out the ""/"" in the LogGroupName for ""-"" it then works in both Powershell and the CLI.
+
+Is this a bug in the powershell tools?  Or am I missing something with the parameters?
+
+Edited by: mdo77 on Aug 1, 2018 11:47 AM
+
+Edited by: mdo77 on Aug 1, 2018 11:48 AM"
+PowerShell Scripting	"Re: Get-CWLFilteredLogEvent not working with a forward slash in LogGroupName
+Is this the correct place where I should be posting bugs? Or should I be reporting this elsewhere?
+
+Just haven't seen any movement here and I'd like to see if it's an actual bug."
+PowerShell Scripting	"Write-S3Object throwing exception for non existing method
+I tried my best to find workaround over simple call
+like 
+Write-S3Object  -BucketName ""bucket"" -Force -Credential $S3Credentials   -Key ""/file.txt"" -File ""C:\file.txt"" 
+
+Exception is 
+
+Write-S3Object : Method not found: 'Void 
+Amazon.S3.Transfer.TransferUtilityUploadRequest.set_TagSet(System.Collections.Generic.List`1<Amazon.S3.Model.Tag>)'.
+At D:\xxxxx.ps1:58 char:4
++    Write-S3Object  -BucketName bucket"" -Force -Credential $S3Credentials   ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) https://forums.aws.amazon.com/, MissingMethodException
+    + FullyQualifiedErrorId : System.MissingMethodException,Amazon.PowerShell.Cmdlets.S3.WriteS3ObjectCmdlet
+
+Version of installed AWSTools - latest  ( 3.3.152.0  AWSPowerShell )
+Also I updated AWSPowerShell.NetCore according to reference http://docs.aws.amazon.com/powershell/latest/userguide/pstools-getting-set-up.html#updating-the-twplong-and-aws-tools-for-powershell-core
+
+What's interesting 
+Read-S3Object with exactly the same parameters - are working.
+PS. Machine rebooted.
+
+Looks like a bug.
+Any ideas ?"
+PowerShell Scripting	"Re: Write-S3Object throwing exception for non existing method
+Issue solved.
+
+Apparently AWS installer for SDK does not update properly assemblies in GAC. 
+As result installed SDK might have different version of assemblies with inconsistent signatures as well (my case)
+Solution. 
+ Kill processes locked dll.
+ Uninstall and reinstall SDK"
+PowerShell Scripting	"Re: Write-S3Object throwing exception for non existing method
+You have probably already tried this but I've seen odd responses when out of region buckets. Try -Region ""And the region name of the bucket"" to the command. You can check which region the bucket was created in via:
+
+Get-S3BucketLocation -BucketName  ""bucket"";
+
+The other oddity I have seen is the order of flags and arguments passed. For example the -Region if put at the end of the statement might not work like it does early in the statement (don't ask, I can't remember the exact sequence.  I just look for it and shuffle things around when I get an odd response and laugh when it works)."
+PowerShell Scripting	"Re: Write-S3Object throwing exception for non existing method
+I'm getting the same error message trying to upload a file via powershell. When you updated the files int eh GAC, was re-intalling the AWS Powershell tools enough to get it working again?
+
+Attached is the error i keeping geting despite my best efforts."
+PowerShell Scripting	"Re: Write-S3Object throwing exception for non existing method
+Hi,
+
+We have exactly same issue on one of our servers. What process did you kill making it works again? How did you find these processes locking and what are these dll being locked? Thank you."
+PowerShell Scripting	"Managing IAM Access Key via powershell
+I am new to powershell (usually live in Perl) and I'm trying to script access key rotation.  I'm able to list the keys for a given user, but when I got to remove them, I get the following error:
+
+Remove-IAMAccessKey : Cannot bind parameter because parameter 'AccessKeyId' is specified more than once. To provide multiple values to parameters that can accept multiple values, use the array syntax. For example, ""-parameter value1,value2,value3"".
+At line:1 char:74
++ ... ccessKeyId *removed* -UserName bob_test -AccessKey *removed*
++                                                        ~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Update-IAMAccessKey], ParameterBindingException
+    + FullyQualifiedErrorId : ParameterAlreadyBound,Amazon.PowerShell.Cmdlets.IAM.UpdateIAMAccessKeyCmdlet
+
+
+The command I'm running is:
+Remove-IAMAccessKey -AccessKeyId *access1* -UserName bob_test -AccessKey *access2* -SecretKey *secret2*
+
+where *access1*
+ is the access key I want to delete, *access2*
+ is the access key I'm authenticating with, *secret2*
+ is the secret I'm authenticating with, and the authentication is associated to a different IAM user than thew key I'm trying to remove.
+
+It seems like -AccessKeyId and -AccessKey are resolving to the same parameter, although the docs (https://docs.aws.amazon.com/powershell/latest/reference/items/Remove-IAMAccessKey.html) indicate that both are valid parameters.  Oddly, if I remove either the -AccessKey or -AccessKeyId parameter, I get a message of 'no credentials specified'.
+
+Any help is appreciated."
+PowerShell Scripting	"Thank you AWS!
+Thanks for AWS Powershell!
+
+After spending time in AWS on Python and PowerShell, I can tell you that PowerShell is far more intuitive than Python (especially for S3).
+
+Last week, we found it easier to write a script in PowerShell before porting it over to Python as debugging/cmdlets were far more intuitive."
+PowerShell Scripting	"Managing credentials in PowerShell
+I am looking to improve and simplify two PowerShell scripts. As requirements evolved, so did the scripts. However, I think they are more complex than they need to be but somewhat stumped. My goals are a) load credentials the best way from SAML so that they can be used as the default profile with the PowerShell tools, be available in the .NET SDK for Visual Studio, and usable by Terraform/Packer.
+
+1. The first script is to set up the credentials from a SAML assertion. Because the initial use-case was for Terraform/Packer, I originally was just setting the environment variables. In order to add support for Visual Studio, I then added a profile. Should I be doing anything differently to store the credentials as the default profile within PowerShell?
+$resp = Use-STSRoleWithSAML -PrincipalArn $PrincipalArn -RoleArn $RoleArn  -SAMLAssertion $SamlResponse -DurationInSeconds $duration
+Set-AWSCredential -AccessKey $resp.Credentials.AccessKeyId -SecretKey $resp.Credentials.SecretAccessKey -SessionToken $resp.Credentials.SessionToken -StoreAs SAMLsession
+$env:AWS_ACCESS_KEY_ID = $resp.Credentials.AccessKeyId
+$env:AWS_SECRET_ACCESS_KEY = $resp.Credentials.SecretAccessKey
+$env:AWS_SESSION_TOKEN = $resp.Credentials.SessionToken
+
+
+2. Now that I have credentials, I often switch roles. Currently, I obtain the credentials and pass via the -Credential switch. However, if I forget to include the switch, I interact with the wrong account. Is there a better way to set the temporary credentials as the default and restore the original later? This is often done because I can assume role into multiple accounts from the master, and I often will iterate through them. In this case, I only care about the PowerShell profile as I don’t need this iteration for Visual Studio and saving the environment variables should be easy enough.
+$awsaccounts = Get-ORGAccountList | Where-Object {$_.Status -eq ""ACTIVE""}
+ForEach ($awsaccount in $awsaccounts) { 
+	$Creds = (Use-STSRole -RoleArn ""arn:aws:iam::$($awsaccount.Id):role/OrganizationAccountAccessRole"" -RoleSessionName ""$env:USERNAME"").Credentials
+	$instances = Get-EC2Instance -Credential $Creds
+	#Stuff
+}"
+PowerShell Scripting	"Re: Managing credentials in PowerShell
+At this time our Visual Studio toolkit does not support credential profiles based on SAML or other temporary credentials. The only profiles it will show are those containing long-term access and secret keys. We have a backlog item to expand this, but no ETA that I can share at this time.
+
+If you are using SAML in conjunction with ADFS and our Windows PowerShell module (AWSPowerShell) then the tools contain a couple of cmdlets to make working with federated credentials easier than having to poke them into environment variables and manage the rotation yourself. Take a look at Set-AWSSamlEndpoint and  Set-AWSSamlRoleProfile. These take your federated identity and create a credential profile that will
+
+(1) prompt you for a password if not domain joined, when credentials need to be generated
+(2) automatically refresh when the generated credentials expire
+
+You use the profile they create in the same way as other credential profiles with the PowerShell tools. These docs - https://docs.aws.amazon.com/powershell/latest/userguide/saml-pst.html - and an (old) blog post may help - https://aws.amazon.com/blogs/developer/new-support-for-federated-users-in-the-aws-tools-for-windows-powershell/"
+PowerShell Scripting	"Re: Managing credentials in PowerShell
+We are unfortunately not using ADFS. 
+
+I believe I solved the issue for my use case. I definitely have some cleaning up to do, but I think this is 95% of the way there. Please critique.
+
+When getting credentials, in addition to save the credentials as SAMLsession, I can save it without -StoreAs. This will set it as the default credentials for PowerShell.
+resp = Use-STSRoleWithSAML -PrincipalArn $PrincipalArn -RoleArn $RoleArn  -SAMLAssertion $SamlResponse -DurationInSeconds $duration
+Set-AWSCredential -AccessKey $resp.Credentials.AccessKeyId -SecretKey $resp.Credentials.SecretAccessKey -SessionToken $resp.Credentials.SessionToken -StoreAs SAMLsession
+Set-AWSCredential -AccessKey $resp.Credentials.AccessKeyId -SecretKey resp.Credentials.SecretAccessKey -SessionToken $resp.Credentials.SessionToken
+$env:AWS_ACCESS_KEY_ID = $resp.Credentials.AccessKeyId
+$env:AWS_SECRET_ACCESS_KEY = $resp.Credentials.SecretAccessKey
+$env:AWS_SESSION_TOKEN = $resp.Credentials.SessionToken
+
+Every time I assume role, I can use Set-AWSCredentials again to move the assumed role into the default
+$awsaccounts = Get-ORGAccountList | Where-Object {$_.Status -eq ""ACTIVE""}
+ForEach ($awsaccount in $awsaccounts) {
+	$Creds = (Use-STSRole -RoleArn ""arn:aws:iam::$($awsaccount.Id):role/OrganizationAccountAccessRole"" -RoleSessionName ""$env:USERNAME"").Credentials
+	Set-AWSCredentials -Credential $Creds
+	$instances = Get-EC2Instance
+	#Stuff
+}
+
+After I'm done looping, I can copy the SAMLsession back into the default and reset the environment variables as well.
+Set-AWSCredentials -Credential (Get-AWSCredential -ProfileName SAMLsession)
+$env:AWS_ACCESS_KEY_ID = (Get-AWSCredential -ProfileName SAMLsession).GetCredentials().AccessKey
+$env:AWS_SECRET_ACCESS_KEY = (Get-AWSCredential -ProfileName SAMLsession).GetCredentials().SecretKey
+$env:AWS_SESSION_TOKEN = (Get-AWSCredential -ProfileName SAMLsession).GetCredentials().Token
+
+Again, I'm happy to take feedback on this."
+PowerShell Scripting	"Encrypted boot volume
+I'm working on creating a fully scripted environment deployment. One requirement that is catching me is I need encrypted boot volumes for compliance. My machines are based on the base image AMI for Server 2012 R2 and will be redeployed on a weekly basis. From what I can tell, I need to spin up a server from the base AMI, take a snapshot, copy that snapshot with encryption, create a custom AMI based on that copy of the snapshot, then spin up new servers based on my encrypted AMI. Then afterwards do cleanup of all the servers, snapshots, and custom AMI that I created. Is there a non complicated way to simply spin up an encrypted server? It just seems like it's an excessive amount of work for something that should be standard."
+PowerShell Scripting	"Re: Encrypted boot volume
+I am in the same exact situation and cannot find an answer either."
+PowerShell Scripting	"Re: Encrypted boot volume
+I'm sure you already figured this out by now, but currently this is the only process that works. I would suggest using Packer to create the encrypted AMI as it is a pretty easy to set up and ensures consistency."
+PowerShell Scripting	"Script to run through AWS environment to pull version info
+$ImportGuy = Import-csv C:\thing
+##imports a CSV file containing AWS tags and instance IDS
+##confirmed this step works in powershell
+$InstanceArray = $ImportGuy.""Instance_ID""
+##Takes one data type of the imported CSV and stores it in an array
+##confirmed this is working as intended
+$z = $InstanceArray.count() - 1
+$sentinel = 0
+
+Do
+{
+$InstanceString = $InstanceArrayhttps://forums.aws.amazon.com/
+##Gets single instance ID at array position
+##confirmed this works
+$commandobj = aws ssm send-command --document-name ""Get Version"" --instance-ids $instanceString --parameters '{}' --timeout-seconds 3600 --region us-east-1
+##This line does not recognize the Instance ID used
+##Timeout is to give the SSM document time to return info
+
+$commandobj.StandardOutputContent |Out-File -FilePath C:\temp\Versions.txt -Append
+##attempt to output information into TXT file
+
+$x = $x+1
+##increase sentinel value
+While($x -le $z)
+
+
+
+
+when run I receive the error below
+
+
+
+##An error occured <InvalidInstanceID> when calling the SendCommand operation
+
+
+
+{
+  ""schemaVersion"": ""1.2"",
+  ""description"": ""Run a PowerShell script to identify host name and Program version."",
+  ""runtimeConfig"": {
+    ""aws:runPowerShellScript"": {
+      ""properties"": [
+        {
+          ""id"": ""0.aws:runPowerShellScript"",
+          ""runCommand"": [
+            ""hostname"",
+            ""if (Test-Path 'D:Program Files\\CompanyNameProgram NameVersion.dll') {(Get-Item 'D:Program Files\\CompanyNameProgram NameVersion.dll').VersionInfo.FileVersion}"",
+            ""elseif (Test-Path 'D:Program Files (x86)\\CompanyNameProgram NameVersion.dll') {(Get-Item 'D:Program Files (x86)\\CompanyNameProgram NameVersion.dll').VersionInfo.FileVersion}"",
+            ""elseif (Test-Path 'C:Program Files (x86)\\CompanyNameProgram NameVersion.dll') {(Get-Item 'C:Program Files (x86)\\CompanyNameProgram NameVersion.dll').VersionInfo.FileVersion}"",
+            ""elseif (Test-Path 'C:Program Files\\CompanyNameProgram NameVersion.dll') {(Get-Item 'C:Program Files\\CompanyNameProgram NameVersion.dll').VersionInfo.FileVersion}""
+
+          ]
+        }
+      ]
+    }
+  }
+}
+##output confirmed when run as a command in the console.
+
+I'm not quite sure why AWS CLI isn't accepting my Instance IDs. I have even tried to use the .ToString() command on the variable. I have also tried to manually enter in an Instance ID copied from aws into the command Obj line and that does not work.
+
+This script was running a few months ago without issue.
+
+Edited by: DougBell on Jun 19, 2018 9:08 AM"
+PowerShell Scripting	"Add new SMTP domain using powershell
+Hello,
+
+I am having a hard time to get this script working. Basically, this will add new smtp domain and will add a smarthost which is dummy.google.com. I have validated this JSON using https://jsonlint.com/. Everything looks ok. But when I tried to run this I got plenty of errors.
+Appreciate your help on this issue. 
+###############################
+{
+	""schemaVersion"": ""2.2"",
+	""description"": ""Create new SMTP domain"",
+	""parameters"": {
+		""Message"": {
+			""type"": ""String"",
+			""description"": ""SMTP"",
+			""default"": ""SMTP""
+		}
+	},
+	""mainSteps"": [{
+		""action"": ""aws:runPowerShellScript"",
+		""name"": ""addSMTPDomain"",
+		""inputs"": {
+			""runCommand"": [
+				""$smtpDomains = https://forums.aws.amazon.com/'\u0027rootMicrosoftIISv2:IIsSmtpDomain'"",
+				""$newSMTPDomain = $smtpDomains.CreateInstance()"",
+				""$newSMTPDomain.Name = 'SmtpSvc/1/Domain/google.com/'"",
+				""$newSMTPDomain.Put()  | Out-Null"",
+				""$Root ='ROOTMicrosoftIISv2'"",
+				""$virtualSMTPServer = Get-WmiObject IISSmtpdomainSetting -namespace $Root | Where-Object { $_.name -like 'SmtpSvc/1/Domain/google.com/' }"",
+				""$virtualSMTPServer.RouteAction= 268"",
+				""$routestring = dummy.google.com"",
+				""$virtualSMTPServer.RouteActionString= $routestring"",
+				""$virtualSMTPServer.Put() | Out-Null""
+
+			]
+		}
+	}]
+}
+
+##################################
+
+Error encountered
+
+############
+
+----------ERROR-------
+At C:\ProgramData\Amazon\SSM\InstanceData\i-0b63ffa70366ffdd3\document\orchestr
+ation\cd2ddd53-6fe2-4526-8e11-850238cbed94\addSMTPDomain\_script.ps1:6 char:135
++ ... in/google.com/' }
++                    ~~~
+The string is missing the terminator: '.
+At C:\ProgramData\Amazon\SSM\InstanceData\i-0b63ffa70366ffdd3\document\orchestr
+ation\cd2ddd53-6fe2-4526-8e11-850238cbed94\addSMTPDomain\_script.ps1:1 char:28
++ $smtpDomains = 'https://forums.aws.amazon.com/'root\MicrosoftIISv2:IIsSmtpDomain'
++                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unexpected token 'root\MicrosoftIISv2:IIsSmtpDomain'
+$newSMTPDomain = $smtpDomains.CreateInstance()
+$newSMTPDomain.Name = 'SmtpSvc/1/Domain/google.com/'
+$newSMTPDomain.Put()  | Out-Null
+$Root ='ROOT\MicrosoftIISv2'
+$virtualSMTPServer = Get-WmiObject IISSmtpdomainSetting -namespace $Root | 
+Where-Object { $_.name -like 'SmtpSvc/1/Domain/google.com/' }
+$virtualSMTPServer.RouteAction= 268
+$routestring = dummy.infor.com
+$virtualSMTPServer.RouteActionString= $routestring
+$virtualSMTPServer.Put() | Out-Null
+' in expression or statement.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordEx 
+   ception
+    + FullyQualifiedErrorId : TerminatorExpectedAtEndOfString
+
+###########
+
+Thank you in advance."
+PowerShell Scripting	"Re: Add new SMTP domain using powershell
+The answer really is in the error, The string is missing the terminator: '
+
+I've not got iis on my system, so cant say about the rest of your code, but can say your first line has invalid syntax. You have three sets of single quotes (split to show you with new lines). You need each separate string to be surround in quotes, so you need 4.
+
+$smtpDomains = 
+'
+https://forums.aws.amazon.com/
+'
+root\MicrosoftIISv2:IIsSmtpDomain
+'
+
+Edited by: Granville on May 24, 2018 5:44 AM
+
+Edited by: Granville on May 24, 2018 5:45 AM"
+PowerShell Scripting	"Re: Add new SMTP domain using powershell
+I managed to fix the code  
+
+Some ‘ is missing. Appreciate your comment on this"
+PowerShell Scripting	"Powershell signature version 4 on S3 not working as expected
+I'm seeing a lot of information on signature version 4 that appears to contradict itself. Much of the AWS documentation is saying that SDKs do the heavy lifting for you as far as signature V4 is concerned, however when I try to run my backup script in Canada, I am getting failures stating ""The authorization mechanism you have provided is not supported""
+
+The relevant part of my code right now is doing:
+ Write-S3Object -BucketName $bucket -File $file.zip -Key $file -ServerSideEncryption AES256 -region $region
+
+Is there something else I need to add in there to use signature V4 or am I doing something else wrong here to get this error? Is Powershell tools not counted as an SDK possibly? I can't seem to find anything about Signature Version 4 in the powershell tools reference page for S3."
+PowerShell Scripting	"Re: Powershell signature version 4 on S3 not working as expected
+Hey Dennis,
+
+I had a look at the code, and saw the problem, which is with the syntax.
+
+Replace :-
+
+Write-S3Object -BucketName $bucket -File $file.zip -Key $file -ServerSideEncryption AES256 -region $region
+
+with
+
+Write-S3Object -BucketName $bucket -File ""$($file).zip"" -Key $file -ServerSideEncryption AES256 -region $region
+
+There's a couple of things here:
+
+1) If you are doing any kind of string expansion, it's recommended to use quotes.
+2) If you're combining string expansion with normal characters, it's a good idea to check to see if the string could be processed differently than you'd expect (in this case the period) You can instruct PowerShell to process the expansion first by surrounding the string to be expanded in brackets, and prefixing it with a $. 
+
+cheers,
+
+Tim"
+PowerShell Scripting	"PowerShell returning different results between ISE & Console
+Hi All,
+
+I'm experiencing a very confusing behavior: I have a script that simply checks the latest file in S3 and writes the date to a file as you can see below. 
+
+import-module ""C:\Program Files (x86)\AWS Tools\PowerShell\AWSPowerShell\AWSPowerShell.psd1""
+ 
+$oldestbackup = Get-S3Object -BucketName backups -Region us-west-1 -AccessKey blahbahblah -SecretKey blahbahblah | Where-Object {$_.Key -like ""blah*7z""}| Sort-Object LastAccessTime -Descending | Select-Object -last 1
+$oldestbackupdate = $oldestbackup.lastmodified
+$howoldisbackup = (get-date) - $oldestbackupdate
+$age = $howoldisbackup.TotalHours
+$age =[int]$age
+ 
+ 
+if($age -le 25) {
+echo ""backup ok, $oldestbackupdate"" > C:\scripts\backupfile.txt
+}
+else 
+{echo ""backup not ok, $oldestbackupdate"" > C:\scripts\backupfile.txt}
+ 
+
+When I run this file on PowerShellISE, I get the correct date for the latest backup but when I run this as a scheduled task, or through PS console, I get the backup that's 5 days old (there are a total of 7 files at any given time on that S3 bucket).
+
+Even though it's not secure, I still included the accesskey/secretkey combo in the script just to eliminate the possibility of PS profiles getting in the way.
+
+I can't explain why it selects the wrong object when I run this on PS console. Any ideas?"
+PowerShell Scripting	"Re: PowerShell returning different results between ISE & Console
+Interesting one. 
+
+You've done the right thing from a debugging point of view of using your keys in the script, but naturally take care on who's seeing your code.
+
+You've got a bit of a pipeline in place there. I'd suggest a good way to proceed would be splitting them a bit more into separate various whilst debugging, and logging them to file in the script to give you a bit more to go on. That'll give you an idea where things are not happening and can take it from there.
+
+What context is your scheduled task/powershell console running in? Is it any different to the one your ISE is running in by any chance? Are you coping and pasting the code, running it with powershell.exe, or running it from a ps1 file?"
+PowerShell Scripting	"fail using cmdlet Get-CECostAndUsage
+Hi All.
+
+I run this cmdlet:
+
+Get-CECostAndUsage -TimePeriod 2017-01-01 2017-05-01
+
+but I get this Error 
+
+""Cannot bind parameter 'TimePeriod'. Cannot convert the ""2017-01-01"" value of type ""System.String"" to type ""Amazon.CostExplorer.Model.DateInterval""""
+
+I want to know what is right way."
+PowerShell Scripting	"Re: fail using cmdlet Get-CECostAndUsage
+Check this: 
+Link: https://blogs.msdn.microsoft.com/neo/2018/04/21/aws-obtain-blendedcost-billing-data/
+
+Please note that Cost Explorer APIs are chargeable:
+Link: https://aws.amazon.com/aws-cost-management/pricing/"
+PowerShell Scripting	"Re: fail using cmdlet Get-CECostAndUsage
+As per above blog
+
+ 
+#Print cost details for the Account for current month
+$currDate = Get-Date
+$firstDay = Get-Date $currDate -Day 1 -Hour 0 -Minute 0 -Second 0
+$lastDay = Get-Date $firstDay.AddMonths(1).AddSeconds(-1)
+$firstDayFormat = Get-Date $firstDay -Format 'yyyy-MM-dd'
+$lastDayFormat = Get-Date $lastDay -Format 'yyyy-MM-dd'
+ 
+$interval = New-Object Amazon.CostExplorer.Model.DateInterval
+$interval.Start = $firstDayFormat
+$interval.End = $lastDayFormat
+ 
+$costUsage = Get-CECostAndUsage -TimePeriod $interval -Granularity MONTHLY -Metric BlendedCost
+ 
+$costUsage.ResultsByTime.Total[""BlendedCost""]"
+PowerShell Scripting	"connecting to dynamo DB via SOAP UI Groovy script and powershell
+I've been recently given the task of connecting to dynamo DB via SOAP UI in order to assert that my companies APIs are creating the correct content. After hitting a number of brick walls attempting to access Dynamo DB data, we've settled on connecting via a groovy script using Windows PowerShell to utilise AWS CLI and it's authorization provided by Amazon.
+
+I have gone through and configured the AWS CLI, and am able to run commands as expected via power shell, for example:
+		$ aws dynamodb scan --table-name Accounts
+		$ aws dynamodb get-item --table-name Accounts --key '{\""id\"":{\""S\"":\""3b7e2c4a-f672-4a12-b2bc-7313b60b0a9a\""}}'
+
+When switching over to groovy scripts in SOAP UI, the first query works as expected, but the second issue throws the error: ""Error parsing parameter '--key': Invalid JSON: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)""
+
+Here is a snipet of the code of cobbled together from various internet sources that  i've been using to run the powershell command:
+
+		import java.io.BufferedReader;
+		import java.io.IOException;
+		import java.io.InputStreamReader;
+
+		//Get details and Build the command
+		String powerShellCommand = context.expand( '${#TestCase#PowerShellCommand}' )
+		String command = ""powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile  -Command \""${powerShellCommand}\""""
+
+		// Executing the command
+		Process powerShellProcess = Runtime.getRuntime().exec(command);
+
+		// Getting the results
+		powerShellProcess.getOutputStream().close();
+		String line;
+		//-----------------------------------------------
+		//Run Querry
+				BufferedReader stdout = new BufferedReader(new InputStreamReader(
+					powerShellProcess.getInputStream()));
+				String jsonString = """";
+					while ((line = stdout.readLine()) != null) {
+							jsonString = jsonString.concat(line);
+					}
+				stdout.close();
+		//-----------------------------------------------
+		//Error stuff:
+				BufferedReader stderr = new BufferedReader(new InputStreamReader(
+						powerShellProcess.getErrorStream()));
+						while ((line = stderr.readLine()) != null) {
+								log.info(line);
+						}
+				stderr.close();
+		//-----------------------------------------------
+		log.info(jsonString);
+
+I belive it may have somthing to do witht he placment of quotes and exscapes but as yet have not found the corret combination, i belive this to be my current input into powershell:	
+
+		powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile  -Command ""aws dynamodb get-item --table-name Platform.Accounts --key '{\""id\"":{\""S\"":\""3b7e2c4a-f672-4a12-b2bc-7313b60b0a9a\""}}'""
+
+I have even tried a modified version of the code above where I would post in just the AWS command but this just returns a different error: Error parsing parameter '--key': Expected: '=', received: ''' for input:
+
+The reason this has stumped me is that this command works as expected when going directly to Windows PowerShell"
+PowerShell Scripting	"How to force Write-S3Object not to use multipart upload?
+I've been heavily looking around and still have not found any guide on this on any of the documentations or notes from AWS. 
+
+I want to upload files into S3 bucket using a Powershell script. My files are certainly less than 5 GB. but it seems that the Write-S3Object is using multipart upload for files bigger than 16 MB. 
+
+The reason I don't want to use the multipart upload is that I need to get the correct ETag from AWS that is exactly equal to MD5 of the file."
+PowerShell Scripting	"Re: How to force Write-S3Object not to use multipart upload?
+Write-S3Object doesn't currently expose any parameters that allow you to control whether it uses multipart or singlepart upload. All the decisions are based off of file size in the underlying AWS SDK for .NET (Write-S3Object simply forwards the request to the SDK's TransferManager helper).
+
+You are welcome to open a feature request in the SDK's GitHub repo: https://github.com/aws/aws-sdk-net/issues (the PowerShell tools themselves are not yet open source so don't have a repo of their own). I'm not able to give an estimate on how long it might take to get such a switch implemented into production at this time however."
+PowerShell Scripting	"Re: How to force Write-S3Object not to use multipart upload?
+Hi Steve,
+
+Thanks for your response. So do you think the best solution to have the ETag equal to MD5 for uploading files less than 5GB is to use CLI s3api Put-Object in my powershell script??"
+PowerShell Scripting	"Re: How to force Write-S3Object not to use multipart upload?
+If you already have the CLI and it behaves the way you need then sure  
+
+If you are using PowerShell already you could also just script up a function to use the PutObject api directly from our .NET SDK S3 assembly."
+PowerShell Scripting	"Re: How to force Write-S3Object not to use multipart upload?
+Thanks for your response Steve. 
+
+Just to make sure myself, and also it may be a help for other people with the same needs, 
+
+the data to be uploaded to S3 is important for us so I want the script to verify the integrity of the upload. Searching for a couple of days, I found that the ETag could be useful for this matter as it contains the MD5 of the uploaded file. 
+
+BUT for a multipart upload the ETag is not equal to MD5 and is instead calculated from the MD5s of the parts. So how can a verification of integrity be done with a multipart upload then?"
+PowerShell Scripting	"AWS Default Region and Scope in PowerShell Functions
+I am running into a weird situation and I am hoping someone here can help explain or tell me that I am doing something wrong.
+
+If I set the default AWS region in the main code Powershell routine, it is set properly.
+If I set it in a function (or dot-sourced function) it is set properly in the function but when I return the to main code it is no longer set.
+
+The example below should reproduce this behavior.  The default region is set in the main code as well as in a function.  The result is shown below.  Note that I am not catching the error when the region is not set.
+
+I appreciate any suggestions you may have or workarounds I could try.
+
+Thank you,
+Dan
+
+ Function DoInFunction
+{
+    Write-Host ""`n`n---------- START Setting Region IN FUNCTION ------------------""
+    Set-DefaultAWSRegion -Region ""us-east-1""
+    Get-DefaultAWSRegion
+    Write-Host ""---------- END Setting Region IN FUNCTION ------------------""
+ 
+}
+ 
+# ##################################
+# ## START HERE
+ 
+Write-Host ""`n`n---------- START Setting Region ------------------""
+Set-DefaultAWSRegion -Region ""us-east-1""
+(Get-DefaultAWSRegion).Region
+Write-Host ""---------- END Setting Region ------------------""
+ 
+ 
+Write-Host ""`n`n---------- START Clearing Region ------------------""
+Clear-DefaultAWSRegion
+(Get-DefaultAWSRegion).Region
+Write-Host ""---------- END Clearing Region ------------------""
+ 
+# Now set the region in a function
+DoInFunction
+ 
+# Then show the region set in the function - for some reason it is no longer set
+Write-Host ""`n`n --------------- Show Region Set in FUNCTION ---- ""
+(Get-DefaultAWSRegion).Region
+Write-Host ""--------------- END Region Set in FUNCTION ---- ""
+
+
+The resultant output is:
+PS C:\Users\Administrator\Desktop\AWS\PS> .\test1.ps1
+ 
+ 
+---------- START Setting Region ------------------
+us-east-1
+---------- END Setting Region ------------------
+ 
+ 
+---------- START Clearing Region ------------------
+Property 'Region' cannot be found on this object. Make sure that it exists.
+At C:\Users\Administrator\Desktop\AWS\PS\test1.ps1:21 char:25
++ $(Get-DefaultAWSRegion). <<<< Region
+    + CategoryInfo          : InvalidOperation: (.:OperatorToken) [], RuntimeException
+    + FullyQualifiedErrorId : PropertyNotFoundStrict
+ 
+---------- END Clearing Region ------------------
+ 
+ 
+---------- START Setting Region IN FUNCTION ------------------
+ 
+Region                                  Name                                                             IsShellDefault
+------                                  ----                                                             --------------
+us-east-1                               US East (Virginia)                                                        False
+---------- END Setting Region IN FUNCTION ------------------
+ 
+ 
+ --------------- Show Region Set in FUNCTION ----
+Property 'Region' cannot be found on this object. Make sure that it exists.
+At C:\Users\Administrator\Desktop\AWS\PS\test1.ps1:29 char:24
++ (Get-DefaultAWSRegion). <<<< Region
+    + CategoryInfo          : InvalidOperation: (.:OperatorToken) [], RuntimeException
+    + FullyQualifiedErrorId : PropertyNotFoundStrict
+
+
+Edited by: lostmandan on Mar 2, 2014 1:55 PM
+Errant $ on line 21 of source.  No change of behavior."
+PowerShell Scripting	"Re: AWS Default Region and Scope in PowerShell Functions
+This has to do with scope in PowerShell. The region is stored as a variable. When you invoke Set-DefaultAWSRegion, we store the passed-in value into a specially-named variable which is then consumed either by Get-DefaultAWSRegion or the service cmdlets.
+
+If you call Set-DefaultAWSRegion inside a function, the variable that is set is scoped to the function. So when you leave that function, the region variable isn't available to the caller.
+
+To get around this, you must invoke the function with dot source notation:
+. DoInFunction
+
+
+For reference, here is a TechNet page discussing scope in a bit of detail."
+PowerShell Scripting	"Re: AWS Default Region and Scope in PowerShell Functions
+Another solution is to do this instead:
+$Global:StoredAWSRegion = ""us-east-1"""
+PowerShell Scripting	"Re: AWS Default Region and Scope in PowerShell Functions
+These functions no longer seem to scope the credentials to the function when run with PowerShell Core i.e. they work without needing a proceeding dot.
+
+So either you have a bug in AWSPowerShell.Core (3.3.225.1) or PowerShell Core (6.0.1) has a regression with scoping.
+
+I actually find this behavior a lot more intuitive though."
+PowerShell Scripting	"Re: AWS Default Region and Scope in PowerShell Functions
+I can't reproduce the issue:
+
+28APR2018:123640 /:> $PSVersionTable.PSVersion
+ 
+Major  Minor  Build  Revision
+-----  -----  -----  --------
+5      1      16299  251
+ 
+28APR2018:123640 /:> .\testSetRegion.ps1
+ 
+ 
+---------- START Setting Region ------------------
+us-east-1
+---------- END Setting Region ------------------
+ 
+ 
+---------- START Clearing Region ------------------
+---------- END Clearing Region ------------------
+ 
+ 
+---------- START Setting Region IN FUNCTION ------------------
+ 
+---------- END Setting Region IN FUNCTION ------------------
+ 
+ 
+ --------------- Show Region Set in FUNCTION ----
+--------------- END Region Set in FUNCTION ----
+Region    Name               IsShellDefault
+------    ----               --------------
+us-east-1 US East (Virginia) True"
+PowerShell Scripting	"AWS Tools for Windows - Incorrect PSModule Path Set by Installer
+Good Day,
+
+I was installing the AWS Tools for Windows on a fresh Windows 10 Enterprise x64 machine today, and was unable to load the AWSPowerShell module.  I noticed that the installer (AWSToolsAndSDKForNet_sdk-3.3.249.0_ps-3.3.245.0_tk-1.14.1.6.msi) seems to put the wrong path in the PSModulePath environment variable.  The path the installer added was:
+C:\Program Files (x86)\AWS Tools\PowerShell\
+
+I found that the following path allowed the module to load:
+C:\Program Files (x86)\AWS Tools\PowerShell\AWSPowerShell
+
+Just wanted to pass this along in case it helps anyone else out.
+
+Thanks,
+Larry"
+PowerShell Scripting	"Re: AWS Tools for Windows - Incorrect PSModule Path Set by Installer
+The initial path (without the AWSPowerShell suffix) is correct. It's what I have on my system and import of the module (automatic or forced) works fine. 
+
+Sometimes, for reasons we don't yet know, the update to the PSModulePath by the installer doesn't seem to take effect immediately in new shells and a restart is required. That might have been the case here too.
+
+When I get some free time I'll make another test setup and see if I can repro."
+PowerShell Scripting	"Re: AWS Tools for Windows - Incorrect PSModule Path Set by Installer
+The path indeed appears to be the correct path, as per the Module path documentation for PowerShell: Link: https://msdn.microsoft.com/en-us/library/dd878350(v=vs.85).aspx
+
+The module is ""AWSPowerShell"" which contains AWSPowerShell.psd1 and the PSModulePath is (the parent of the 'AWSPowerShell' folder) C:\Program Files (x86)\AWS Tools\PowerShell\
+
+If I start 'powershell.exe -noprofile' on my Win10Entx64 and run Get-Module --> it does list AWSPowerShell and I can use AWS cmdlets."
+PowerShell Scripting	"How to verify the upload to S3 with Powershell script
+I'm writting a powershell script to move all text files in a directory to the S3 on a daily basis. I don't know how I can track the progress of upload and verify if the files have successfully been uploaded???  Is only a try, catch enough for this matter? Is there any specific way to check the progress?
+
+I was thinking of doing it this way using the ETag and compare it with the MD5 code of the file:
+
+
+    $relevantFiles = Get-ChildItem -Path $docDirectory -Include $fileExtension -Recurse    
+ 
+    Foreach ($f in $relevantFiles)
+ 
+    {
+ 
+        #create MD5 code of the file
+ 
+        $md5 = New-Object System.Security.Cryptography.MD5CryptoServiceProvider
+ 
+        $hash = [System.BitConverter]::ToString($md5.ComputeHash([System.IO.File]::ReadAllBytes($f))).Replace(""-"", """").ToLower()
+ 
+ 
+        $key = $date + $f.Name
+ 
+        Write-S3Object -BucketName $S3Bucket -File $f -Key $key
+ 
+        #get ETag of the file in the S3 bucket
+ 
+        $etag = (Get-S3Object -BucketName $S3Bucket -Key $key)[0].ETag
+ 
+        $etag = $etag.Trim('""') # remove quotes from etag
+ 
+        if ($etag -eq $hash)
+ 
+        {
+ 
+                    $movedFiles.Add($f)
+ 
+            WriteLog ""SUCCESS: File $f was successfully moved to S3 bucket with key $key""
+ 
+        }
+ 
+        else
+ 
+        {
+ 
+            WriteLog ""ERROR: Detected some integrity issues on file $f because The MD5 hash code of the file differs from the bucket ETag. File not removed.""
+ 
+        }       
+ 
+    }
+ 
+
+
+But I realized that if the file is bigger than 16MB the ETag is not equal to the MD5 code.
+
+In general how can we check if the file has definitely been uploaded?
+
+Edited by: marji on Apr 27, 2018 6:53 AM"
+PowerShell Scripting	"Write-s3object cmdlet high cpu writing large files.
+Can the powershell team look at the Write-s3object cmdlet and possibly optimize it better to use less cpu.  It uses an exorbant amount of cpu.
+
+thanks"
+PowerShell Scripting	"Re: Write-s3object cmdlet high cpu writing large files.
+if you see the screenshot, the writes3object maxing out gp2 disk (top half) reading the file to put into s3, and the bottom part is the cpu increase."
+PowerShell Scripting	"Re: Write-s3object cmdlet high cpu writing large files.
+The cmdlet uses the Transfer Utility in the underlying AWS SDK for .NET to do the work of uploading. In its default configuration this utility will inspect the size of the file and if larger than 16MB, break it into a series of parts limited by the maximum number of parts S3 allows (10000) for an upload. It then spawns a series of tasks to process the upload queue to completion.
+
+It is possible to throttle back the transfer operation at the cmdlet level using the -ConcurrentServiceRequest parameter. This defaults to 10 in the utility if not otherwise overridden. It would be worth adding this, at a lower value (say 5 to start)  to see if you can get a better balance for your particular hardware or setup."
+PowerShell Scripting	"Re: Write-s3object cmdlet high cpu writing large files.
+I had the same problem.  When I added -ConcurrentServiceRequest 1
+ the CPU was reduced significantly.  Any value above 1 was unacceptably high on CPU."

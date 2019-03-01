@@ -1,0 +1,1548 @@
+label	description
+Amazon FreeRTOS	"Same MQTT Handle for publishing messages and OTA
+Hello,
+
+Is it logical to have the same MQTT handle for publishing messages to AWS and for OTA updates?
+
+I am using ESP32 and running into a memory issues and trying to figure out where to optimize. And so far I had all other custom apps running and MQTT publisher app and then additionally I was just using OTA demo task for updates.  
+
+Thanks
+
+Edited by: FreeOurToes on Feb 26, 2019 7:39 AM
+
+Edited by: FreeOurToes on Feb 26, 2019 7:40 AM"
+Amazon FreeRTOS	"Re: Same MQTT Handle for publishing messages and OTA
+Hi,
+
+Yes, you can reuse the same MQTT handle for both OTA and publishing messages to AWS.
+
+Please let us know if you run into any issue.
+
+Thanks."
+Amazon FreeRTOS	"How to detect MQTT disconnections when using Shadow API
+My device code is based on the Shadow Demo, that is, it is using Shadow API.
+I need to identify connection lost and then to react on it.
+I see in aws_api.c prvShadowMQTTCallback that if the MQTT event is eMQTTAgentDisconnect then the code resets the subscriptions to update\get\delete and return with no additional actions.
+My questions here are:
+1. How can I know that there was a disconnection?
+2. Is there any mechanism that I can use to automatically try to resubscribe?"
+Amazon FreeRTOS	"Re: How to detect MQTT disconnections when using Shadow API
+Please see the response here: https://github.com/aws/amazon-freertos/issues/326#issuecomment-465749771
+
+Please let us know if you have any feedback about the new library. We are very interested in your feedback.
+
+Thanks."
+Amazon FreeRTOS	"Amazon Freertos Espressif ESP32 DevKitC demo is failing to connect
+I am trying to get the demo to run correctly and hitting ttwo errors
+1. Failing to connect 
+2. failing to find SPIFFS partition.
+
+here is the log
+................
+LD build/aws_demos.elf
+esptool.py v2.2.1
+Flashing binaries to serial port /dev/ttyUSB0 (app at offset 0x10000)...
+esptool.py v2.2.1
+Connecting........_____....._
+Chip is ESP32D0WDQ5 (revision (unknown 0xa))
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 921600
+Changed.
+Configuring flash size...
+Auto-detected Flash size: 4MB
+Compressed 21952 bytes to 13045...
+Wrote 21952 bytes (13045 compressed) at 0x00001000 in 0.2 seconds (effective 1150.7 kbit/s)...
+Hash of data verified.
+Compressed 596272 bytes to 378049...
+Wrote 596272 bytes (378049 compressed) at 0x00010000 in 5.4 seconds (effective 882.3 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 82...
+Wrote 3072 bytes (82 compressed) at 0x00008000 in 0.0 seconds (effective 6164.3 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting...
+MONITOR
+
+
+
+
+
+idf_monitor on /dev/ttyUSB0 115200 ---
+Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H ---
+
+
+
+
+
+ets Jun  8 2016 00:22:57
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0018,len:4
+load:0x3fff001c,len:6064
+ho 0 tail 12 room 4
+load:0x40078000,len:0
+load:0x40078000,len:15784
+entry 0x400792e8
+I (30) boot: ESP-IDF v3.1-dev-322-gf307f41-dirty 2nd stage bootloader
+I (30) boot: compile time 19:22:47
+I (31) boot: Enabling RNG early entropy source...
+I (36) boot: SPI Speed      : 40MHz
+I (40) boot: SPI Mode       : DIO
+I (44) boot: SPI Flash Size : 4MB
+I (48) boot: Partition Table:
+I (52) boot: ## Label            Usage          Type ST Offset   Length
+I (59) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (67) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (74) boot:  2 factory          factory app      00 00 00010000 00100000
+I (82) boot: End of partition table
+I (86) esp_image: segment 0: paddr=0x00010020 vaddr=0x3f400020 size=0x12b2c ( 76588) map
+I (121) esp_image: segment 1: paddr=0x00022b54 vaddr=0x3ffb0000 size=0x02424 (  9252) load
+I (125) esp_image: segment 2: paddr=0x00024f80 vaddr=0x40080000 size=0x00400 (  1024) load
+0x40080000: _iram_start at /home/owais/Documents/freeRTOS/amazon-freertos/lib/FreeRTOS/portable/ThirdParty/GCC/Xtensa_ESP32/xtensa_vectors.S:1685
+
+I (128) esp_image: segment 3: paddr=0x00025388 vaddr=0x40080400 size=0x0ac88 ( 44168) load
+I (155) esp_image: segment 4: paddr=0x00030018 vaddr=0x400d0018 size=0x6e600 (452096) map
+0x400d0018: _stext at ??:?
+
+I (312) esp_image: segment 5: paddr=0x0009e620 vaddr=0x4008b088 size=0x032dc ( 13020) load
+0x4008b088: _frxt_task_coproc_state at /home/owais/Documents/freeRTOS/amazon-freertos/lib/FreeRTOS/portable/ThirdParty/GCC/Xtensa_ESP32/portasm.S:647
+
+I (318) esp_image: segment 6: paddr=0x000a1904 vaddr=0x400c0000 size=0x00000 (     0) load
+I (327) boot: Loaded app from partition at offset 0x10000
+I (327) boot: Disabling RNG early entropy source...
+I (331) cpu_start: Pro cpu up.
+I (334) cpu_start: Single core mode
+I (339) heap_init: Initializing. RAM available for dynamic allocation:
+I (346) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM
+I (352) heap_init: At 3FFC07A8 len 0001F858 (126 KiB): DRAM
+I (358) heap_init: At 3FFE0440 len 00003BC0 (14 KiB): D/IRAM
+I (364) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM
+I (371) heap_init: At 4008E364 len 00011C9C (71 KiB): IRAM
+I (377) cpu_start: Pro cpu start user code
+I (59) cpu_start: Starting scheduler on PRO CPU.
+I (84) wifi: wifi firmware version: f79168c
+I (84) wifi: config NVS flash: enabled
+I (84) wifi: config nano formating: disabled
+I (84) system_api: Base MAC address is not set, read default base MAC address from BLK0 of EFUSE
+I (94) system_api: Base MAC address is not set, read default base MAC address from BLK0 of EFUSE
+I (104) wifi: Init dynamic tx buffer num: 32
+I (104) wifi: Init data frame dynamic rx buffer num: 32
+I (114) wifi: Init management frame dynamic rx buffer num: 32
+I (114) wifi: wifi driver task: 3ffc73d8, prio:23, stack:4096
+I (124) wifi: Init static rx buffer num: 10
+I (124) wifi: Init dynamic rx buffer num: 32
+I (134) wifi: wifi power manager task: 0x3ffcc018 prio: 21 stack: 2560
+0 6 https://forums.aws.amazon.com/ WiFi module initialized. Connecting to AP insta...
+I (194) phy: phy_version: 383.0, 79a622c, Jan 30 2018, 15:38:06, 0, 0
+I (194) wifi: mode : sta (30:ae:a4:dd:8b:b4)
+I (194) WIFI: SYSTEM_EVENT_STA_START
+I (1524) wifi: n:11 0, o:1 0, ap:255 255, sta:11 0, prof:1
+I (2504) wifi: state: init -> auth (b0)
+I (2514) wifi: state: auth -> assoc (0)
+I (2514) wifi: state: assoc -> run (10)
+I (2534) wifi: connected with insta, channel 11
+I (2534) WIFI: SYSTEM_EVENT_STA_CONNECTED
+1 301 https://forums.aws.amazon.com/ vDHCPProcess: offer c0a801f4ip
+I (3104) event: sta ip: 192.168.1.244, mask: 255.255.255.0, gw: 192.168.1.1
+I (3104) WIFI: SYSTEM_EVENT_STA_GOT_IP
+2 303 https://forums.aws.amazon.com/ vDHCPProcess: offer c0a801f4ip
+3 303 https://forums.aws.amazon.com/ WiFi Connected to AP. Creating tasks which use network...
+4 304 https://forums.aws.amazon.com/ Write code signing certificate...
+I (3124) PKCS11: Initializing SPIFFS
+E (3124) SPIFFS: spiffs partition could not be found
+E (3124) PKCS11: Failed to find SPIFFS partition
+5 306 https://forums.aws.amazon.com/ Key provisioning done...
+6 306 https://forums.aws.amazon.com/ Creating MQTT Echo Task...
+7 307 https://forums.aws.amazon.com/ MQTT echo attempting to connect to a19lc3yo4jfkf5.iot.us-east-1.amazonaws.com.
+I (3254) PKCS11: Initializing SPIFFS
+E (3254) SPIFFS: spiffs partition could not be found
+E (3254) PKCS11: Failed to find SPIFFS partition
+8 318 https://forums.aws.amazon.com/ ERROR: Object with label Device Priv TLS Key not found. 
+9 319 https://forums.aws.amazon.com/ ERROR:  MQTT echo failed to connect with error 1.
+10 319 https://forums.aws.amazon.com/ MQTT echo test could not connect to broker.
+11 320 https://forums.aws.amazon.com/ MQTT echo demo finished.
+12 320 https://forums.aws.amazon.com/ ----Demo finished----
+I (5514) wifi: pm start, type:0"
+Amazon FreeRTOS	"Re: Amazon Freertos Espressif ESP32 DevKitC demo is failing to connect
+Hey,
+
+Have you set up esp IDF path to user profleas in https://docs.espressif.com/projects/esp-idf/en/latest/get-started/add-idf_path-to-profile.html ?
+""export IDF_PATH=~/esp/esp-idf""
+Because you don't need to.
+Try ""make clean"" and then recompile your project and do ""make erase_flash"" before flashing new firmware."
+Amazon FreeRTOS	"Re: Amazon Freertos Espressif ESP32 DevKitC demo is failing to connect
+no, IDF_PATH is not defined.
+doing the other items described did not help. fails the same way."
+Amazon FreeRTOS	"Re: Amazon Freertos Espressif ESP32 DevKitC demo is failing to connect
+Hi sblu,
+
+To to re-iterate what FreeOurToes has suggested:
+
+1. Make sure that IDF_PATH is not defined in your system environment variables.
+2. Run ""make erase_flash"" before running ""make flash monitor"".
+
+I see the error message ""ERROR: Object with label Device Priv TLS Key not found."" As you may already know, that is probably related to the SPIFFS unable to mount and so the keys could not not be written. 
+
+I have a ESP32DevKitC and I am running the latest version of Amazon FreeRTOS from https://github.com/aws/amazon-freertos. The only files I have updated are: aws_clientcredential.h. aws_clientcredential_keys.h, and sdkconfig with only my serial port.
+
+Here are my commands and the output following in the msys32 terminal:
+
+sarem@DOMAIN MINGW32 /c/amazon-freertos/demos/espressif/esp32_devkitc_esp_wrover_kit/make
+$ make erase_flash
+Erasing entire flash...
+esptool.py v2.2.1
+Connecting........_
+Chip is ESP32D0WDQ5 (revision 0)
+Uploading stub...
+Running stub...
+Stub running...
+Erasing flash (this may take a while)...
+Chip erase completed successfully in 3.2s
+Hard resetting...
+ 
+sarem@DOMAIN MINGW32 /c/amazon-freertos/demos/espressif/esp32_devkitc_esp_wrover_kit/make
+$ make flash monitor
+Flashing binaries to serial port COM31 (app at offset 0x20000)...
+esptool.py v2.2.1
+Connecting....
+Chip is ESP32D0WDQ5 (revision 0)
+Uploading stub...
+Running stub...
+Stub running...
+Configuring flash size...
+Auto-detected Flash size: 4MB
+Flash params set to 0x0220
+Compressed 21872 bytes to 13022...
+Wrote 21872 bytes (13022 compressed) at 0x00001000 in 1.2 seconds (effective 152.0 kbit/s)...
+Hash of data verified.
+Compressed 595072 bytes to 377858...
+Wrote 595072 bytes (377858 compressed) at 0x00020000 in 33.5 seconds (effective 142.0 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 119...
+Wrote 3072 bytes (119 compressed) at 0x00008000 in 0.0 seconds (effective 1441.7 kbit/s)...
+Hash of data verified.
+ 
+Leaving...
+Hard resetting...
+MONITOR
+--- idf_monitor on COM31 115200 ---
+--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H ---
+ets Jun  8 2016 00:22:57
+ 
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+ets Jun  8 2016 00:22:57
+ 
+rst:0x10 (RTCWDT_RTC_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0018,len:4
+load:0x3fff001c,len:5988
+load:0x40078000,len:0
+load:0x40078000,len:15784
+entry 0x400792e8
+I (28) boot: ESP-IDF v3.1-dev-322-gf307f41-dirty 2nd stage bootloader
+I (28) boot: compile time 13:47:58
+I (29) boot: Enabling RNG early entropy source...
+I (35) boot: SPI Speed      : 40MHz
+I (39) boot: SPI Mode       : DIO
+I (43) boot: SPI Flash Size : 4MB
+I (47) boot: Partition Table:
+I (50) boot: ## Label            Usage          Type ST Offset   Length
+I (58) boot:  0 nvs              WiFi data        01 02 00010000 00006000
+I (65) boot:  1 otadata          OTA data         01 00 00016000 00002000
+I (73) boot:  2 phy_init         RF data          01 01 00018000 00001000
+I (80) boot:  3 ota_0            OTA app          00 10 00020000 00100000
+I (88) boot:  4 ota_1            OTA app          00 11 00120000 00100000
+I (95) boot:  5 storage          Unknown data     01 82 00220000 00010000
+I (103) boot: End of partition table
+I (107) esp_image: segment 0: paddr=0x00020020 vaddr=0x3f400020 size=0x126b0 ( 75440) map
+I (142) esp_image: segment 1: paddr=0x000326d8 vaddr=0x3ffb0000 size=0x023f0 (  9200) load
+I (146) esp_image: segment 2: paddr=0x00034ad0 vaddr=0x40080000 size=0x00400 (  1024) load
+0x40080000: _iram_start at C:/b/amazon-freertos/lib/FreeRTOS/portable/ThirdParty/GCC/Xtensa_ESP32/xtensa_vectors.S:1
+685
+ 
+I (149) esp_image: segment 3: paddr=0x00034ed8 vaddr=0x40080400 size=0x0b138 ( 45368) load
+I (176) esp_image: segment 4: paddr=0x00040018 vaddr=0x400d0018 size=0x6e604 (452100) map
+0x400d0018: _stext at ??:?
+ 
+I (334) esp_image: segment 5: paddr=0x000ae624 vaddr=0x4008b538 size=0x02e2c ( 11820) load
+0x4008b538: xStreamBufferGenericCreate at C:/b/amazon-freertos/lib/FreeRTOS/stream_buffer.c:636
+ 
+I (339) esp_image: segment 6: paddr=0x000b1458 vaddr=0x400c0000 size=0x00000 (     0) load
+I (349) boot: Loaded app from partition at offset 0x20000
+I (349) boot: ota rollback check done
+I (351) boot: Disabling RNG early entropy source...
+I (357) cpu_start: Pro cpu up.
+I (360) cpu_start: Single core mode
+I (365) heap_init: Initializing. RAM available for dynamic allocation:
+I (371) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM
+I (377) heap_init: At 3FFC0778 len 0001F888 (126 KiB): DRAM
+I (384) heap_init: At 3FFE0440 len 00003BC0 (14 KiB): D/IRAM
+I (390) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM
+I (396) heap_init: At 4008E364 len 00011C9C (71 KiB): IRAM
+I (403) cpu_start: Pro cpu start user code
+I (85) cpu_start: Starting scheduler on PRO CPU.
+I (109) wifi: wifi firmware version: f79168c
+I (109) wifi: config NVS flash: enabled
+I (109) wifi: config nano formating: disabled
+I (109) system_api: Base MAC address is not set, read default base MAC address from BLK0 of EFUSE
+I (119) system_api: Base MAC address is not set, read default base MAC address from BLK0 of EFUSE
+I (129) wifi: Init dynamic tx buffer num: 32
+I (139) wifi: Init data frame dynamic rx buffer num: 32
+I (139) wifi: Init management frame dynamic rx buffer num: 32
+I (139) wifi: wifi driver task: 3ffc742c, prio:23, stack:4096
+I (149) wifi: Init static rx buffer num: 10
+I (149) wifi: Init dynamic rx buffer num: 32
+I (159) wifi: wifi power manager task: 0x3ffcc06c prio: 21 stack: 2560
+0 6 [main] WiFi module initialized. Connecting to AP Mobile...
+I (229) phy: phy_version: 383.0, 79a622c, Jan 30 2018, 15:38:06, 0, 0
+I (229) wifi: mode : sta (30:ae:a4:80:21:08)
+I (229) WIFI: SYSTEM_EVENT_STA_START
+I (349) wifi: n:1 0, o:1 0, ap:255 255, sta:1 0, prof:1
+I (1339) wifi: state: init -> auth (b0)
+I (1339) wifi: state: auth -> assoc (0)
+I (1339) wifi: state: assoc -> run (10)
+I (1359) wifi: connected with Mobile, channel 1
+I (1359) WIFI: SYSTEM_EVENT_STA_CONNECTED
+1 402 [IP-task] vDHCPProcess: offer c0a83683ip
+I (4119) event: sta ip: 192.168.54.131, mask: 255.255.224.0, gw: 192.168.32.1
+I (4119) WIFI: SYSTEM_EVENT_STA_GOT_IP
+2 402 [IP-task] vDHCPProcess: offer c0a83683ip
+3 403 [main] WiFi Connected to AP. Creating tasks which use network...
+4 404 [main] Write code signing certificate...
+I (4139) PKCS11: Initializing SPIFFS
+W (4139) SPIFFS: mount failed, -10025. formatting...
+I (4449) wifi: pm start, type:0
+ 
+I (4449) PKCS11: Partition size: total: 52961, used: 0
+5 436 [main] Write device private key...
+I (4569) PKCS11: Initializing SPIFFS
+6 448 [main] Key provisioning done...
+7 448 [main] Creating MQTT Echo Task...
+8 448 [MQTTEcho] MQTT echo attempting to connect to a2zk5tjv9x07ct.iot.us-west-2.amazonaws.com.
+I (9619) PKCS11: Initializing SPIFFS
+I (9619) PKCS11: Initializing SPIFFS
+I (9729) PKCS11: Initializing SPIFFS
+I (9729) PKCS11: Initializing SPIFFS
+I (9729) PKCS11: Initializing SPIFFS
+I (12729) PKCS11: Initializing SPIFFS
+9 1441 [MQTTEcho] MQTT echo connected.
+10 1441 [MQTTEcho] MQTT echo test echoing task created.
+11 1444 [MQTTEcho] MQTT Echo demo subscribed to freertos/demos/echo
+12 1447 [MQTTEcho] Echo successfully published 'Hello World 0'
+13 1454 [Echoing] Message returned with ACK: 'Hello World 0 ACK'
+14 1949 [MQTTEcho] Echo successfully published 'Hello World 1'
+15 1955 [Echoing] Message returned with ACK: 'Hello World 1 ACK'
+16 2451 [MQTTEcho] Echo successfully published 'Hello World 2'
+17 2458 [Echoing] Message returned with ACK: 'Hello World 2 ACK'
+18 2953 [MQTTEcho] Echo successfully published 'Hello World 3'
+19 2960 [Echoing] Message returned with ACK: 'Hello World 3 ACK'
+20 3455 [MQTTEcho] Echo successfully published 'Hello World 4'
+21 3461 [Echoing] Message returned with ACK: 'Hello World 4 ACK'
+22 3957 [MQTTEcho] Echo successfully published 'Hello World 5'
+23 3963 [Echoing] Message returned with ACK: 'Hello World 5 ACK'
+24 4459 [MQTTEcho] Echo successfully published 'Hello World 6'
+25 4465 [Echoing] Message returned with ACK: 'Hello World 6 ACK'
+26 4961 [MQTTEcho] Echo successfully published 'Hello World 7'
+27 4967 [Echoing] Message returned with ACK: 'Hello World 7 ACK'
+28 5466 [MQTTEcho] Echo successfully published 'Hello World 8'
+29 5473 [Echoing] Message returned with ACK: 'Hello World 8 ACK'
+30 5969 [MQTTEcho] Echo successfully published 'Hello World 9'
+31 5976 [Echoing] Message returned with ACK: 'Hello World 9 ACK'
+32 6474 [MQTTEcho] Echo successfully published 'Hello World 10'
+33 6481 [Echoing] Message returned with ACK: 'Hello World 10 ACK'
+34 6976 [MQTTEcho] Echo successfully published 'Hello World 11'
+35 6982 [Echoing] Message returned with ACK: 'Hello World 11 ACK'
+36 7479 [MQTTEcho] MQTT echo demo finished.
+37 7479 [MQTTEcho] ----Demo finished----"
+Amazon FreeRTOS	"Re: Amazon Freertos Espressif ESP32 DevKitC demo is failing to connect
+hi, I followed all your steps, but it did not help.  I'm wanting to start from scratch again, but there is a hangup in a policy that is not allowing the setup to execute properly.  How do I delete this policy or find the culprit?
+
+owais@ub:~/Documents/amazon-freertos/tools/aws_config_quick_start$ python SetupAWS.py setup
+Traceback (most recent call last):
+File ""SetupAWS.py"", line 198, in <module>
+setup()
+File ""SetupAWS.py"", line 150, in setup
+prereq()
+File ""SetupAWS.py"", line 64, in prereq
+policy_obj.create()
+File ""/home/owais/Documents/amazon-freertos/tools/aws_config_quick_start/policy.py"", line 14, in create
+assert self.exists() == False, ""Policy already exists""
+AssertionError: Policy already exists"
+Amazon FreeRTOS	"Re: Amazon Freertos Espressif ESP32 DevKitC demo is failing to connect
+Hello, the setup script is to configure the Thing, Policy and Certificate for the 1st time. It looks like your Policy is already created. Try running `python SetupAWS.py cleanup` and then `python SetupAWS.py setup`. Please follow the README in https://github.com/aws/amazon-freertos/tree/master/tools/aws_config_quick_start."
+Amazon FreeRTOS	"Re: Amazon Freertos Espressif ESP32 DevKitC demo is failing to connect
+got it.  In the meantime, i just worked around it by renaming my thing so that the policy name was different.
+it is now working!
+
+33 6351 https://forums.aws.amazon.com/ Message returned with ACK: 'Hello World 10 ACK'
+34 6845 https://forums.aws.amazon.com/ Echo successfully published 'Hello World 11'
+35 6857 https://forums.aws.amazon.com/ Message returned with ACK: 'Hello World 11 ACK'
+36 7355 https://forums.aws.amazon.com/ MQTT echo demo finished.
+37 7355 https://forums.aws.amazon.com/ ----Demo finished----"
+Amazon FreeRTOS	"Re: Amazon Freertos Espressif ESP32 DevKitC demo is failing to connect
+I am running these steps in order to connect to MQTT broker from the AWS ESP32 example:
+https://docs.aws.amazon.com/freertos/latest/userguide/getting_started_espressif.html
+
+When esp32 is trying to connect to MQTT broker it is showing ERROR: MQTT echo failed to connect with error 1.
+
+System information
+
+    ESP32 DevKitC V1
+    Operating System Linux
+    Version of Amazon FreeRTOS (run git describe --tags to find it): v1.4.6-58-ga81bf209
+    Project MQTT Sub pub Demo
+
+Expected behavior
+Demo should connect to MQTT broker
+
+Screenshots or console output
+
+I (8534) WIFI: SYSTEM_EVENT_STA_GOT_IP
+2 840 https://forums.aws.amazon.com/ vDHCPProcess: offer c0a8046aip
+3 841 https://forums.aws.amazon.com/ WiFi Connected to AP. Creating tasks which use network...
+4 842 https://forums.aws.amazon.com/ Write certificate...
+I (8554) PKCS11: Initializing NVS partition: ""storage""
+5 846 https://forums.aws.amazon.com/ Write device private key...
+6 856 https://forums.aws.amazon.com/ Creating MQTT Echo Task...
+7 856 https://forums.aws.amazon.com/ MQTT echo attempting to connect to XXXXXXXXXX-ats.iot.us-east-1.amazonaws.com.
+8 856 https://forums.aws.amazon.com/ Sending command to MQTT task.
+9 857 https://forums.aws.amazon.com/ Received message 10000 from queue.
+10 1858 https://forums.aws.amazon.com/ Socket sending wakeup to MQTT task.
+11 2358 https://forums.aws.amazon.com/ About to close socket.
+12 2358 https://forums.aws.amazon.com/ Socket closed.
+13 2358 https://forums.aws.amazon.com/ Stack high watermark for MQTT task: 4696
+14 2358 https://forums.aws.amazon.com/ Notifying task.
+15 2358 https://forums.aws.amazon.com/ Received message 0 from queue.
+16 2358 https://forums.aws.amazon.com/ Command sent to MQTT task failed.
+17 2358 https://forums.aws.amazon.com/ ERROR: MQTT echo failed to connect with error 1.
+18 2358 https://forums.aws.amazon.com/ MQTT echo test could not connect to broker.
+19 2358 https://forums.aws.amazon.com/ Sending command to MQTT task.
+20 2359 https://forums.aws.amazon.com/ Received message 20000 from queue.
+21 2359 https://forums.aws.amazon.com/ Notifying task.
+22 2360 https://forums.aws.amazon.com/ Command sent to MQTT task passed.
+23 2360 https://forums.aws.amazon.com/ MQTT echo demo finished.
+24 2360 https://forums.aws.amazon.com/ ----Demo finished----
+
+I am testing the connection from my computer using mosquitto_pub client and the connection is successful:
+
+$ mosquitto_pub -d --cafile AmazonRootCA1.pem --cert esp32-reedswitch-aws-certificate/27eb999b86-certificate.pem.crt --key esp32-reedswitch-aws-certificate/27eb999b86-private.pem.key -h XXXXXXXX-ats.iot.us-east-1.amazonaws.com -p 8883 -m ""test message"" -t ""freertos/demo/echo"" -q 1
+
+Client mosqpub/14670-g4560 sending CONNECT
+Client mosqpub/14670-g4560 received CONNACK
+Client mosqpub/14670-g4560 sending PUBLISH (d0, q1, r0, m1, 'freertos/demo/echo', ... (12 bytes))
+Client mosqpub/14670-g4560 received PUBACK (Mid: 1)
+Client mosqpub/14670-g4560 sending DISCONNECT
+
+I've already cleaned up the certificate, thing and policy using the command BASE_DIRECTORY/tools/aws_config_quick_start/SetupAWS.py cleanup but it is still showing the same MQTT failed to connect with error 1.
+
+Thank you!"
+Amazon FreeRTOS	"OTA stuck on a old/previous job
+Are there any timeouts once subscribed to a OTA job? As i deploy more and more units I am running into situations where the library is still associated to a job that has either been canceled, deleted, or dropped from some reason. This causes the device to remain in a queued state for the next job. 
+
+Amazon FreeRTOS OTA Agent V1.0.0
+Amazon FreeRTOS release 1.4.6
+
+Two types of errors that i have captured from multiple attempts to get a device to start the download.
+First error says the library is busy with existing job but there are no active jobs in the IoT console.
+179776 347670946 [OTA Task] [prvParseJobDoc] Busy with existing job. Ignoring.                  
+179777 347670946 [OTA Task] [prvParseJobDoc] Error 1 parsing job document.
+179778 347670946 [OTA Task] [prvParseJobDoc] Rejecting job due to OTA_JobParseErr_t 1           
+179796 347671098 [OTA Task] [prvOTA_Close] Context->0x005599a4
+
+
+This is the next attempt to send an image. It is about to start and then the mqtt library indicates subscribe limit is reached. The library has a max of 8 subscriptions. 2 are used by my application so there should be 6 left to the OTA (seems to only use 3).
+179951 347887000 [OTA Task] [prvParseJobDoc] Job was accepted. Attempting to start transfer.
+179952 347887000 [OTA Task] [OTA]	cnewImageStatus = 0
+179953 347887092 [OTA Task] [prvPAL_GetPlatformImageState]	currentImageStatus = 0
+179954 347887092 [OTA Task] Sending command to MQTT task.
+179955 347887092 [MQTT] Received message 16fa0000from queue.
+179956 347887092 [MQTT] Initiating MQTT subscribe.
+179957 347887093 [MQTT] WARN: Subscription Manager full! No space left to store new subscriptions.
+179958 347887093 [MQTT] MQTT_Subscribe failed!
+
+
+Edited by: nickm2018 on Feb 5, 2019 3:08 PM"
+Amazon FreeRTOS	"Re: OTA stuck on a old/previous job
+What happens if the OTA library looses connection/disconnects/looses sync with the job and there is an active subscribe to $aws/things/%s/streams/%s/data/cbor?
+
+In the MQTT library, when a new subscribe is started, it checks the subscribe manager list and removes any matching topics. The stream topic will be different for each job / portion of file, correct? Could this be the reason why my subscription manager ran out of room?
+
+Is there a way to purge all subscriptions associated with a mqtt connection from the subscription manager list?"
+Amazon FreeRTOS	"Re: OTA stuck on a old/previous job
+yes it looks like the mqtt subscription manager should remove the jobs which are not active currently. We are debugging the code to why it is behaving incorrectly."
+Amazon FreeRTOS	"Possbility of including a data serialization into FreeRTOS?
+Using Proto Buffers right now. Love it, but... 
+
+For me to use protobufs in my AWS IoT application, specifically to keep the BLE packet size small, I need to lambda each incoming and outgoing device message to adjust the data payload. That's a lot of JSON to ProtoBuf conversion. I'd much rather store human readable event data in the database.
+
+This isn't so much of a question as it is a feature request. If AWS IoT could support a native data serialization and tie it in to the rest of the eco-system it would be quite nice."
+Amazon FreeRTOS	"Re: Possbility of including a data serialization into FreeRTOS?
+Hi SloRo,
+
+Thanks for letting us know.  
+
+Amazon FreeRTOS uses CBOR for data serialization (based on tinycbor located in lib/third_party/tinycbor) in over-the-air updates.  As you have pointed out, there is currently not device support for Protobuffers.  
+
+Best,
+Alexa"
+Amazon FreeRTOS	"New project setup and other Amazon FreeRTOS questions
+Hi,
+
+I am very new to Amazon FreeRTOS, but I am looking at using it for a new project, mainly to get the OTA capability.
+
+Some background: The product would probably on based on the ESP32. The product involves some realtime/motion control software (which would be running on the ESP32). Ideally, I'd want to run the wireless/communication on one core and my application on the other. The product must be paired to a phone, and we have fairly realtime requirements for communication. 
+
+Specific questions:
+1. Sanity check: Does this sound like an appropriate application for Amazon FreeRTOS on an ESP32?
+
+2. We need to talk point to point to a phone through BTLE. We do not want to go through wifi, and we do not want our messages to hit the cloud. Using the Amazon BTLE library, can we use the phone as a proxy device to get both OTA and direct messaging to the phone? We have full control of our messaging, so if we need to pack it in an MQTT message, that's fine.
+
+3. It's my observation that the Amazon docs are extremely extensive covering the configuration, building and testing of the demos. The Amazon docs seem to stop exactly short of actually taking the Amazon libraries and creating a new non-demo project. This seems to also be the case for the Android proxy app too. What is the best practice way to spin up a fully custom project using AFRTOS? Should I simply copy the libraries out of the demo repo? In that case, it makes upgrading the libs a little bit dirty. I suppose I could also make my new app exist outside of the AFRTOS demo repo, but reference the libs in the demo repo.
+
+Thanks!
+Chris"
+Amazon FreeRTOS	"Re: New project setup and other Amazon FreeRTOS questions
+Hi Chris,
+
+Thanks for looking into Amazon FreeRTOS.
+
+1. Perhaps, but it depends on your communication (and motion control) requirements.  BLE messages can be configured to be sent about every 7.5-20ms.
+
+2. Yes, Amazon FreeRTOS with BLE is currently in Beta, and you can use it to get both MQTT messages and perform OTAs through the phone via BLE. If you do not want to heavily modify the app and device code, you would need to wrap the messages in MQTT. You can configure your MQTT agent to connect to an endpoint of your choice.
+
+Likewise, for OTA with the Amazon FreeRTOS OTA agent, OTA updates would also need to be wrapped by MQTT to use without significant modification. The demo phone application acts as a middle man between the AWS IoT OTA job and the device, and the device OTA agent expects OTAs to be formatted like and respond to requests as the AWS IoT OTA job would.
+
+3. I think there are many ways to start building your custom application - the ways you've suggested could work, and you could also fork the repo & copy/rename/modify the demo folder.
+
+Hope this helps,
+Alexa"
+Amazon FreeRTOS	"esp-idf, can we get an updated version?
+Seems like the esp-idf package in the demo repo does not have support for CAN. Could we get an update to this package? I tried to just direct the makefile to a new cloned esp-idf outside of the demo repo, but I got the following build error:
+
+
+Python requirements from /home/chris/espiot/esp-idf/requirements.txt are satisfied.
+Building partitions from /home/chris/espiot/amazon-freertos/demos/espressif/esp32_devkitc_esp_wrover_kit/make/partitions_example.csv...
+CC build/amazon-freertos-common/lib/mqtt/aws_mqtt_lib.o
+CC build/amazon-freertos-common/lib/mqtt/aws_mqtt_agent.o
+In file included from /home/chris/espiot/amazon-freertos/lib/include/private/portable.h:52:0,
+                 from /home/chris/espiot/amazon-freertos/lib/include/FreeRTOS.h:62,
+                 from /home/chris/espiot/amazon-freertos/lib/include/aws_mqtt_agent.h:36,
+                 from /home/chris/espiot/amazon-freertos/lib/mqtt/aws_mqtt_agent.c:33:
+/home/chris/espiot/amazon-freertos/lib/FreeRTOS/portable/ThirdParty/GCC/Xtensa_ESP32/include/portmacro.h:77:32: fatal error: xtensa/tie/xt_core.h: No such file or directory"
+Amazon FreeRTOS	"Re: esp-idf, can we get an updated version?
+Hi Chris,
+
+Thanks for this input.  The tip of master is based on v3.1.1 of the Espressif IDF (which as you have pointed out, does not have CAN driver code).  
+
+We are currently working on updating our processes to incorporate updated versions of driver libraries more quickly, but I'm not sure what the timeline is for pulling in a version of the IDF that has CAN drivers included.  I will pass this feedback on for prioritization. 
+
+My understanding from our partners at Espressif is that there are a couple additional steps that must be taken in addition to redirecting the makefile to a newer version of the IDF:
+-Remove common components that are already present in Amazon FreeRTOS (such as the FreeRTOS kernel or mbedTLS)
+-Modify the bootloader to comply with Amazon FreeRTOS over-the-air update requirements
+
+In the meantime, the guidance from Espressif is that it would likely be easier to pull the CAN driver changes into Amazon FreeRTOS rather than point the makefile to an external IDF.
+
+Alexa"
+Amazon FreeRTOS	"GCC for Amazon FrreeRTOS libraries?
+Hi,
+I would like to develop AWS IoT demo for Renesas board with GCC. I understand that for FreeRTOS kernel, I need to choose the relevant compiler and CPU architecture
+
+However for libraries such as MQTT, PKCS11, and crypto, are they compiler specific? Which means, are there library code for both Renesas Compiler, and GCC?"
+Amazon FreeRTOS	"Re: GCC for Amazon FrreeRTOS libraries?
+Hello cyberthor,
+
+You should able use gcc for compiling libraries. https://www.freertos.org/RTOS_ports.html lists gcc as one of the tools supported for Renesas. 
+Thanks!"
+Amazon FreeRTOS	"Re: GCC for Amazon FrreeRTOS libraries?
+Hi,
+Thanks for your reply.
+I understand that for FreeRTOS Kernel, it supports different compilers for different devices
+However I am asking about the AFR libraries, such as:
+
+PKCS#11
+MQTT
+TLS
+
+Are the compiler specific?"
+Amazon FreeRTOS	"Re: GCC for Amazon FrreeRTOS libraries?
+Libraries are not written for a particular compiler, so yes you should able use GCC."
+Amazon FreeRTOS	"Error when Creating a Code-Signing Certificate for the Espressif ESP32
+Hi,
+
+I am following this instruction:
+https://docs.aws.amazon.com/freertos/latest/userguide/ota-code-sign-cert-esp.html 
+
+And I got an error in 2nd step: 
+$ openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -pkeyopt ec_param_enc:named_curve -outform PEM -out ecdsasigner.key
+parameter setting error
+140736032478152:error:06089094:digital envelope routines:EVP_PKEY_CTX_ctrl:invalid operation:/BuildRoot/Library/Caches/com.apple.xbs/Sources/libressl/libressl-22.50.2/libressl/crypto/evp/pmeth_lib.c:410:
+$ openssl version
+LibreSSL 2.2.7
+$ ls -a
+.           ..          cert_config
+
+
+Did anyone face this problem before?"
+Amazon FreeRTOS	"Re: Error when Creating a Code-Signing Certificate for the Espressif ESP32
+Hello tungnt 
+
+The second step does not use cert_config, the third step does. It looks like openssl you are using may have some problem generating private key.
+From output of version command, it looks like you are using LibreSSL. so I would check if the parameters are indeed valid.
+
+Thanks."
+Amazon FreeRTOS	"PIC32MZ - Debugging MQTT demo output
+Hello,
+
+I did porting of Amazon FreeRTOS libraries into MPLAB Harmony project together with demo files. 
+My harmony configuration was as close as I could understand from system_config.g and other system_xxx files. Then for the rest I just replaced with harmony version configurations with the ones from the AWS demo including WILC1000 drivers.
+
+So my device seems to be running demo ok, I receive Hello world messages and the ACK ones too. But serial print out is messed up. 
+I get lines like :
+[Echoing] Message returned with ACK: 'H57 4351 [MQTT] MQTT Publish was successful.
+
+or
+88 9391 [Echoing] Message returned with ACK: 'H85 9391 [MQTT] MQTT Publish was successful.
+86 9391 [MQTT] Notifying task.
+87 9391 [Echoing] Command sent to MQTT task p;⸮""⸮͍90 9411 [MQTT] Received message 0 from queue.
+
+
+Or like this last one 
+
+158 24471 [MQTTEcho] Echo successfully published 'Hello World 4'
+159 24501 [Echoing] Sending command to MQTT task.
+160 24501 [MQTT] Received message 0 from queue.
+161 24502 [Echoing] Sending command to MQTT task.
+162 24502 [MQTT] Received message c0000 from queue.
+163 24571 [IP-task] Socket sending wakeup to MQTT task.
+164 24571 [MQTT] Received message 0 from queue.
+165 24610 [IP-task] Socket sending wakeup to MQTT task.
+166 24610 [MQTT] Received message 0 from queue.
+167 24631 [Echoing] Command sent to MQTT task passed.
+172 24631 [Echoing] Message returned with ACK: 'H169 24631 [MQTT] MQTT Publish was successful.
+170 24631 [MQTT] Notifying task.
+171 24631 [Echoing] Command sent to MQTT task passed.
+172 24631 [Echoing] Message returned with ACK: 'Hello World 4 ACK'
+ 
+
+
+It seems that part of the string is being messed with. Or like in this last sample it seems like there is a repetition of messages as there is message returned with ACK 'H169 and only after that Hello World 4 ACK.
+
+I never really worked with SPI DMA if that could be something or maybe somewhere buffers are missing things. I am not sure.
+
+Could someone help me our or have any ideas?
+
+I also included full demo printouts in the attachments."
+Amazon FreeRTOS	"Re: PIC32MZ - Debugging MQTT demo output
+Hello,
+
+Could you provide the system_xxx.h files and linker script, that you are using, so that we can verify it against the original system/peripheral setup? 
+
+Thanks!
+Sarena"
+Amazon FreeRTOS	"Re: PIC32MZ - Debugging MQTT demo output
+Hi,
+Thank you. So I added all my system_xxx files and the linker file I was using the one from the aws demo since it had configurations for bootloader"
+Amazon FreeRTOS	"Re: PIC32MZ - Debugging MQTT demo output
+Hi,
+
+Thank you for sharing those files. It seems that the output from two different tasks is getting intermingled. Are you using aws_logging_task_dynamic_buffers or are you directly printing output? The logging task should be the only task printing to serial.
+
+Thanks."
+Amazon FreeRTOS	"Re: PIC32MZ - Debugging MQTT demo output
+Yes, I am using aws_logging_task_dynamic_buffers and only configPRINTF() in my tasks. I am also including FreeRTOS configuration files where configPRINTF is being defined. 
+main.c is identical as from AWS demo. The way I include my other custom apps is inside aws_demo_runner.c but this happens without using any custom apps. Inside Harmony configurations I set up as in the attached picture. Just console and debug system services."
+Amazon FreeRTOS	"Re: PIC32MZ - Debugging MQTT demo output
+I discovered that one of the mistakes. I was using BufferAllocation_2.c from 
+
+lib/FreeRTOS-Plus-TCP/source/portable/BufferManagement/BufferAllocation_2.c
+and now I replaced with 
+lib/FreeRTOS-Plus-TCP/source/portable/NetworkInterface/pic32mzef/BufferAllocation_2.c
+
+Things got way better. But still every few minutes some random character messsages. But not every second message as it used to be."
+Amazon FreeRTOS	"Re: PIC32MZ - Debugging MQTT demo output
+That seems correct. At this point it looks like we need to take a closer look. Will you create a minimal project to demonstrate the problem and share with us so that we can take a look?
+
+Thanks."
+Amazon FreeRTOS	"Re: PIC32MZ - Debugging MQTT demo output
+I just cleared out aws_clientcredential.h, aws_clieantcredential_keys.h and aws_codesign_keys.h
+https://s3.amazonaws.com/file-sharing-public/Migration_AWS.zip 
+MPLAB harmony paths should be set accordingly and I used AWS library relative paths from AWS demo folder next to migration app folder."
+Amazon FreeRTOS	"Re: PIC32MZ - Debugging MQTT demo output
+Hello !
+This is fairly old thread, Do you still need help with this issue ?"
+Amazon FreeRTOS	"pxcallback invoking eMQTTAgentDisconnect in endless loop
+On one device recently I noticed that I would receive the eMQTTAgentDisconnect in the event callback (pxCallback of the connectionParams) after successfully connecting and successfully subscribing to the broker. My firmware is structured such that there is a 4-6 second delay before reconnecting if the connection was closed. 
+
+Basic pseudo code
+mqtt agent create
+while(1)
+{
+mqtt connect
+mqtt subscribe
+     while(!error)
+     {
+          mqtt publish
+          if error or disconnect callback invoked
+              disconnect
+      }
+delay 4 seconds
+}
+
+I am not sure why I was receiving the disconnect message from the broker. I power cycled the device and it connected fine. I do not know if there was something lingering in the MQTT agent instance or what. 
+
+The mqtt broker log showed the connect and disconnect occurring but without any errors. There were a couple of throttling errors reported but the delays were > than the 1 second limit. Right after resetting the device it looks like there was a duplicate client id error and then it recovered. My client ID's are the device MAC address so it should be unique to my device. 
+
+I have had problems with the duplicate client ID issue due to device resets and the disconnect callback seems like the only way to handle it.
+
+What happens if the broker sees a duplicate id scenario but there is only one real client and that is my board? Could there be a possible looping scenario as described above?"
+Amazon FreeRTOS	"Re: pxcallback invoking eMQTTAgentDisconnect in endless loop
+Hello nickm2018 !
+Do you see the disconnect happening every time or is it intermittent?  Are you connecting to AWS broker?  Can you please enable MQTT debug logs on your device if the problem is reproducible?  
+Thanks."
+Amazon FreeRTOS	"Re: pxcallback invoking eMQTTAgentDisconnect in endless loop
+When it enters this ""mode"", the connect and disconnect are constant. This issue is not easily reproduced and I do not have a handle on what triggers it. I am using a AWS broker connection. 
+In the below log file, i believe the DUPLICATE_CLIENT_ID issue happens after i power cycle the board. I have seen this before with resets, either unexpected or post OTA updates. I use the MAC address as the clientID. 
+
+Here is a small capture of the broker log. 
+ 2019-01-14 22:56:21.513 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 22:56:16.597 	logLevel:""INFO""	status:""Success""	eventType:""Disconnect""	protocol:""MQTT""		
+ 2019-01-14 14:26:37.945 	logLevel:""ERROR""	status:""Failure""	eventType:""Disconnect""	protocol:""MQTT""	reason:""DUPLICATE_CLIENT_ID""	details:""A new connection was established with the same client ID""} |
+ 2019-01-14 14:26:35.910 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:25:23.608 	logLevel:""ERROR""	status:""Failure""	eventType:""Disconnect""	protocol:""MQTT""	reason:""DUPLICATE_CLIENT_ID""	details:""A new connection was established with the same client ID""} |
+ 2019-01-14 14:25:21.542 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:23:56.123 	logLevel:""ERROR""	status:""Failure""	eventType:""Disconnect""	protocol:""MQTT""	reason:""DUPLICATE_CLIENT_ID""	details:""A new connection was established with the same client ID""} |
+ 2019-01-14 14:23:54.084 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:22:54.219 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:22:49.055 	logLevel:""INFO""	status:""Success""	eventType:""Disconnect""	protocol:""MQTT""		
+ 2019-01-14 14:22:47.805 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:22:41.646 	logLevel:""INFO""	status:""Success""	eventType:""Disconnect""	protocol:""MQTT""		
+ 2019-01-14 14:22:39.769 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:22:34.564 	logLevel:""INFO""	status:""Success""	eventType:""Disconnect""	protocol:""MQTT""		
+ 2019-01-14 14:22:32.456 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:22:26.945 	logLevel:""INFO""	status:""Success""	eventType:""Disconnect""	protocol:""MQTT""		
+ 2019-01-14 14:22:25.031 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:22:19.141 	logLevel:""INFO""	status:""Success""	eventType:""Disconnect""	protocol:""MQTT""		
+ 2019-01-14 14:22:17.557 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:22:12.915 	logLevel:""INFO""	status:""Success""	eventType:""Disconnect""	protocol:""MQTT""		
+ 2019-01-14 14:22:11.218 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:22:05.509 	logLevel:""INFO""	status:""Success""	eventType:""Disconnect""	protocol:""MQTT""		
+ 2019-01-14 14:22:04.017 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:21:58.584 	logLevel:""INFO""	status:""Success""	eventType:""Disconnect""	protocol:""MQTT""		
+ 2019-01-14 14:21:56.893 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:21:51.419 	logLevel:""INFO""	status:""Success""	eventType:""Disconnect""	protocol:""MQTT""		
+ 2019-01-14 14:21:49.425 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:21:44.359 	logLevel:""INFO""	status:""Success""	eventType:""Disconnect""	protocol:""MQTT""		
+ 2019-01-14 14:21:42.640 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+ 2019-01-14 14:21:37.038 	logLevel:""INFO""	status:""Success""	eventType:""Disconnect""	protocol:""MQTT""		
+ 2019-01-14 14:21:35.317 	logLevel:""INFO""	status:""Success""	eventType:""Connect""	protocol:""MQTT""		
+
+Here is a small capture of my device's debug log
+1257670 221645508 MQTT Received message d6c30000 from queue.		
+1257671 221645818 MQTT data sent 35	 time=221645818 	
+1257672 221645883 worker thread Socket sending wakeup to MQTT task.		
+1257673 221645884 MQTT MQTT Connect was accepted. Connection established.		
+1257674 221645884 MQTT Notifying task.		
+1257675 221645884 MQTT Received message 0 from queue.		
+1257676 221645884 App Command sent to MQTT task passed.		
+1257677 221645884 App Connected 
+1257678 221646414 App Sending command to MQTT task.		
+1257679 221646414 MQTT Received message d6c40000 from queue.		
+1257680 221646414 MQTT data sent 32	 time=221646414 	
+1257681 221646465 worker thread Socket sending wakeup to MQTT task.		
+1257682 221646465 MQTT MQTT Subscribe was accepted. Subscribed.		
+1257683 221646465 MQTT Notifying task.		
+1257684 221646466 MQTT Received message 0 from queue.		
+1257685 221646466 App Command sent to MQTT task passed.		
+1257686 221646466 App  Sync Subscription = Successful		
+1257687 221646466 App Sending command to MQTT task.		
+1257688 221646566 MQTT Received message d6c50000 from queue.		
+1257689 221646566 MQTT data sent 48	 time=221646566 	
+1257690 221646617 worker thread Socket sending wakeup to MQTT task.		
+1257691 221646617 MQTT MQTT Subscribe was accepted. Subscribed.		
+1257692 221646617 MQTT Notifying task.		
+1257693 221646618 MQTT Received message 0 from queue.		
+1257694 221646618 App Command sent to MQTT task passed.		
+1257695 221646618 App  Command Subscription = Successful		
+1257696 221647105 App Transition to Active 		
+1257697 221647437 App ACTIVE to MQTT_AGENT_DISCONNECT_EVENT 		
+1257698 221647698 App SERVICE SHUTTING DOWN STATE 		
+1257699 221647698 App Sending command to MQTT task.		
+1257700 221647718 MQTT Received message d6c60000 from queue.		
+1257701 221647718 MQTT data sent 2	 time=221647718 	
+1257702 221647718 MQTT About to close socket.		
+1257703 221647719 MQTT Socket closed.		
+1257704 221647719 MQTT Notifying task.		
+1257705 221647719 App Command sent to MQTT task passed.		
+1257706 221647719 App Disconnected from MQTT broker		
+1257707 221652227 app_thread Heap is healthy	 91 perc free	(1065976 of 1169056)
+1257708 221653604 App MQTT clientID CC:C0:79:DF:45:46		
+1257711 221653605 App Sending command to MQTT task.		
+1257712 221653619 MQTT Received message d6c70000 from queue.		
+1257713 221653873 MQTT data sent 35	 time=221653873 	
+1257714 221653921 worker thread Socket sending wakeup to MQTT task.		
+1257715 221653923 MQTT MQTT Connect was accepted. Connection established.		
+1257716 221653923 MQTT Notifying task.		
+1257717 221653923 MQTT Received message 0 from queue.		
+1257718 221653923 App Command sent to MQTT task passed.		
+1257719 221653923 App Connected		
+1257720 221654233 App Sending command to MQTT task.		
+1257721 221654233 MQTT Received message d6c80000 from queue.		
+1257722 221654233 MQTT data sent 32	 time=221654233 	
+1257723 221654344 worker thread Socket sending wakeup to MQTT task.		
+1257724 221654344 MQTT Received message 0 from queue.		
+1257725 221654394 MQTT MQTT Subscribe was accepted. Subscribed.		
+1257726 221654394 MQTT Notifying task.		
+1257727 221654394 App Command sent to MQTT task passed.		
+1257728 221654394 App  Sync Subscription = Successful		
+1257729 221654394 App Sending command to MQTT task.		
+1257730 221654394 MQTT Received message d6c90000 from queue.		
+1257731 221654395 MQTT data sent 48	 time=221654395 	
+1257732 221654436 worker thread Socket sending wakeup to MQTT task.		
+1257733 221654445 MQTT MQTT Subscribe was accepted. Subscribed.		
+1257734 221654445 MQTT Notifying task.		
+1257735 221654445 MQTT Received message 0 from queue.		
+1257736 221654445 App Command sent to MQTT task passed.		
+1257737 221654445 App  Command Subscription = Successful		
+1257738 221654829 App Transition to Active 		
+1257739 221654994 App ACTIVE to MQTT_AGENT_DISCONNECT_EVENT 		
+1257740 221655096 App SERVICE SHUTTING DOWN STATE 		
+1257741 221655096 App Sending command to MQTT task.		
+1257742 221655145 MQTT Received message d6ca0000 from queue.		
+1257743 221655145 MQTT data sent 2	 time=221655145 	
+1257744 221655145 MQTT About to close socket.		
+1257745 221655146 MQTT Socket closed.		
+1257746 221655146 MQTT Notifying task.		
+1257747 221655146 App Command sent to MQTT task passed.		
+1257748 221655146 App Disconnected from MQTT broker
+
+The ACTIVE to MQTT_AGENT_DISCONNECT_EVENT statement is printed when my application receives the disconnect callback and considers the mqtt connection as closed. From the debug output, it looks like the callback is triggered without the mqtt library receiving any messages. 
+Unfortunately i do not have the entire serial log file to know what happened prior to the device entering this more."
+Amazon FreeRTOS	"Re: pxcallback invoking eMQTTAgentDisconnect in endless loop
+I was able to witness this on another device. 
+
+The device was communicating correctly with the server and then all of a sudden it appears to have been disconnected by the server. After the disconnect, the device enters the loop of successful connect, successful subscribe, then disconnect callback. 
+
+""1/14/2019 2:02:24 PM"",86998 237063369 MQTT Publish message
+""1/14/2019 2:02:24 PM"",86999 237063372 MQTT data sent 523, time=237063372 
+""1/14/2019 2:02:24 PM"",87000 237063402 worker thread Socket sending wakeup to MQTT task.
+""1/14/2019 2:02:24 PM"",87001 237063403 MQTT MQTT Publish was successful.
+""1/14/2019 2:02:24 PM"",87002 237063403 MQTT Notifying task.
+""1/14/2019 2:02:24 PM"",87003 237063403 MQTT Received message 0 from queue.
+""1/14/2019 2:02:24 PM"",87004 237063403 App Command sent to MQTT task passed.
+""1/14/2019 2:02:24 PM"",87005 237063403 App Successfully published Message
+""1/14/2019 2:02:43 PM"",87006 237082817 worker thread Socket sending wakeup to MQTT task.
+""1/14/2019 2:02:43 PM"",87007 237082817 MQTT Received message 0 from queue.
+""1/14/2019 2:02:43 PM"",87008 237082818 MQTT data sent 2, time=237082818 
+""1/14/2019 2:02:43 PM"",87009 237082818 MQTT About to close socket.
+""1/14/2019 2:02:43 PM"",87010 237082818 MQTT Socket closed.
+""1/14/2019 2:02:43 PM"",87011 237082818 App ACTIVE to MQTT_AGENT_DISCONNECT_EVENT
+""1/14/2019 2:02:44 PM"",87012 237083103 App SERVICE SHUTTING DOWN STATE 
+""1/14/2019 2:02:44 PM"",87013 237083103 App Sending command to MQTT task.
+""1/14/2019 2:02:44 PM"",87014 237083103 MQTT Received message f770000 from queue.
+""1/14/2019 2:02:44 PM"",87015 237083103 MQTT Notifying task.
+""1/14/2019 2:02:44 PM"",87016 237083103 App Command sent to MQTT task passed.
+""1/14/2019 2:02:44 PM"",87017 237083103 App Disconnected from MQTT broker"
+Amazon FreeRTOS	"OTA Updates and bootloader
+Hi,
+
+I'm quite new to AWS and aFreeRTOS, so any help would be appreciated.
+
+Basically, I would like to better understand the mechanism for OTA updates. My end goal is to have an STM32 based device that can be upgraded OTA.
+
+So, I assumed that a bootloader would be required for this... there is a reference bootloader provided by Amazon that can be ported.
+
+I'm just a little confused about the responsibility of the bootloader vs the application when doing OTA updates. Normally I would have said that it is the responsibility of the bootloader to allow reprogramming, but maybe the idea is we can first store the updated binary at runtime and attempt to load it next time we reset.
+
+My question is, is it intended that the code in the OTA demo should be located in the""Application"" space of the device, or the bootloader space? I haven't yet understood what should happen when an OTA job is set up... should the device be reset and put into bootloader mode, or handle the firmware download, then trigger a reset and let the bootloader handle the switch over?
+
+I understand that the STM32 is not yet fully supported, so would need a bootloader and OTA port.
+
+Apologies if this sounds a little confused, I am! but that's OK 
+
+Thanks
+
+Ant"
+Amazon FreeRTOS	"Re: OTA Updates and bootloader
+The OTA library for Amazon FreeRTOS is designed to be able to share a single network socket handle with the application. That approach isn't mandatory, but based on the likely scenario that app data as well as OTA job data are both coming from the AWS IoT MQTT broker, exchanging both using a single context handle reduces our minimum RAM footprint (potentially by a lot). 
+
+Once the device OTA library receives notification of a new update, it subscribes to a new MQTT topic and begins downloading the image. Once all ""chunks"" of the image have been received, the OTA library validates the digital signature of the new image. If the signature checks out, a callback to the app is triggered so that a reboot can be scheduled. There is a portable layer for the OTA library, which you will have to modify, that is responsible for writing image chunks to storage, as well as for performing the signature check. For reference, check out the one for our Visual Studio based simulator, https://github.com/aws/amazon-freertos/blob/master/lib/ota/portable/pc/windows/aws_ota_pal.c.
+
+After the reboot, it is the responsibility of the bootloader to load the newest firmware image that has a valid digital signature. For more information, please see our demo bootloader, https://github.com/aws/amazon-freertos/tree/master/demos/common/ota/bootloader."
+Amazon FreeRTOS	"Re: OTA Updates and bootloader
+DanG,
+
+Thanks for taking the time to reply, your answer has cleared up a few things I was unsure about.
+
+I'm glad that you suggested looking at the visual studio based simulator, because that is what I ended up starting on, once I have worked my way through that a bit more I can move on to the bootloader side.
+
+In terms of the bootloader, I will need to understand how the STM32 dual bank flash works, it looks a little different to the Microchip part in that there is not a re-programmable ""boot flash""... only a fixed bootloader (no good), but that is a different problem for a different day.
+
+Thanks again
+
+Ant"
+Amazon FreeRTOS	"Re: OTA Updates and bootloader
+Hello,
+
+I've been trying to implement OTA update task just as you do.
+As you might already know, following links might be helpful to understand usage of dual bank flash structure of STM32.
+This contains example source code of ""In application proggraming"".
+https://www.st.com/en/embedded-software/x-cube-dbfu.html"
+Amazon FreeRTOS	"Re: OTA Updates and bootloader
+Hi, did the OTA update work for you."
+Amazon FreeRTOS	"OTA update task is failed when it try to get stream
+Hello.
+I have been trying to port OTA update demo to 
+STM32L4 Discovery kit IoT node.
+
+Now, I've stubbed aws_ota_pal.c and run aws_ota_update_demo.c .
+The thing seems to subscribe OTA update jobs successfully so the updating task is launched when I create the job on web console.
+But the job is failed when it tries to publish to topic ""$aws/things/stm32-test/streams/AFR_OTA-313b4591-0958-4ad4-8b58-e5f3fed32748/get/cbor"".
+Following is a console output when task is in this loop.
+100 31447 [OTA Task] [prvPublishGetStreamMessage] OK: $aws/things/stm32-test/streams/AFR_OTA-313b4591-0958-4ad4-8b58-e5f3fed32748/get/cbor
+101 31459 [OTA Task] [prvStartRequestTimer] Starting OTA_FileRequest timer.
+102 31485 [IP-task] Socket sending wakeup to MQTT task.
+103 31490 [MQTT] Received message 0 from queue.
+104 31617 [IP-task] Socket sending wakeup to MQTT task.
+105 31623 [MQTT] Received message 0 from queue.
+106 31628 [MQTT] Received fixed header, 151 bytes to receive.
+107 32744 [OTA] State: Active  Received: 1   Queued: 1   Processed: 1   Dropped: 0
+108 33959 [OTA Task] Sending command to MQTT task.
+109 33963 [MQTT] Received message 70000 from queue.
+110 33968 [MQTT] Initiating MQTT publish.
+111 33984 [MQTT] Notifying task.
+112 33988 [OTA Task] Command sent to MQTT task passed.
+113 33993 [IP-task] Socket sending wakeup to MQTT task.
+114 33998 [MQTT] Received message 0 from queue.
+115 34003 [OTA Task] [prvPublishGetStreamMessage] OK: $aws/things/stm32-test/streams/AFR_OTA-313b4591-0958-4ad4-8b58-e5f3fed32748/get/cbor
+116 34015 [OTA Task] [prvStartRequestTimer] Starting OTA_FileRequest timer.
+117 34146 [IP-task] Socket sending wakeup to MQTT task.
+118 34152 [MQTT] Received message 0 from queue.
+119 34157 [MQTT] Received fixed header, 151 bytes to receive.
+120 34751 [OTA] State: Active  Received: 1   Queued: 1   Processed: 1   Dropped: 0
+121 36515 [OTA Task] Sending command to MQTT task.
+122 36519 [MQTT] Received message 80000 from queue.
+123 36524 [MQTT] Initiating MQTT publish.
+124 36540 [MQTT] Notifying task.
+125 36544 [OTA Task] Command sent to MQTT task passed.
+126 36549 [IP-task] Socket sending wakeup to MQTT task.
+127 36554 [MQTT] Received message 0 from queue.
+// continued...
+
+In CloudWatch logs, following error logs are recorded.
+{
+    ""timestamp"": ""2019-01-06 19:08:15.222"",
+    ""logLevel"": ""ERROR"",
+    ""accountId"": ""200001232690"",
+    ""status"": ""Failure"",
+    ""actionType"": ""GetStream"",
+    ""protocol"": ""MQTT"",
+    ""clientId"": ""stm32-test"",
+    ""topicName"": ""$aws/things/stm32-test/streams/AFR_OTA-f85ce53a-5a51-4cf0-8bf6-7e9eb3cf5520/get/cbor"",
+    ""streamId"": ""AFR_OTA-f85ce53a-5a51-4cf0-8bf6-7e9eb3cf5520"",
+    ""clientToken"": ""rdy"",
+    ""details"": ""The request status is FAILURE. Error: Stream block not found due to unexpected exception. null""
+}
+
+
+What is the cause of this error?
+Any help would be highly appreciated. Thanks."
+Amazon FreeRTOS	"Re: OTA update task is failed when it try to get stream
+Hello, first, when you create the OTA job in the AWS console for your Amazon FreeRTOS device, please double check that job creation is succeeding. It should display as ""in progress"" in your Jobs view on the console. 
+
+Second, confirm that the OTA job role you're using is configured with sufficient rights as described in https://docs.aws.amazon.com/freertos/latest/userguide/create-service-role.html. Note that the OTA service attempts to create the stream from the S3 bucket that contains your digitally signed firmware image. 
+
+Third, can you please describe how you're creating your ""Code signing profile""?"
+Amazon FreeRTOS	"Re: OTA update task is failed when it try to get stream
+DanG,
+
+Thanks for your reply.
+
+I reviewed settings according to your suggestions, then I was able to start downloading a image.
+What I did is re-creating ""Code signer profile"" as following CLI command.
+
+Before (not working)
+aws signer put-signing-profile \
+--profile-name stm32_dev_profile \
+--signing-material certificateArn=arn:aws:acm:ap-northeast-1:<aws id>:certificate/<cert id> \
+--platform AWSIoTDeviceManagement-SHA256-ECDSA \
+--signing-parameters certname=/ 
+
+After (working!)
+aws signer put-signing-profile --profile-name stm32_dev_ota \
+--signing-material certificateArn=arn:aws:acm:ap-northeast-1:<aws id>:certificate/<cert id> \
+--platform AmazonFreeRTOS-Default \
+--signing-parameters certname=/cert
+
+After creating a profile, I created OTA job via web console selecting this profile.
+Then, STM started downloading image.
+
+For one's information, would you please let me know difference between these two platforms, ""AmazonFreeRTOS-Default"" and ""AWSIoTDeviceManagement-SHA256-ECDSA""?
+
+Thanks.
+
+Edited by: uhey22e on Jan 8, 2019 9:25 AM"
+Amazon FreeRTOS	"Re: OTA update task is failed when it try to get stream
+Hi uhey22e, you can get the list of signing platforms from the CLI command aws signer list-signing-platforms. A signing platform is a predefined set of instructions for the hash and encryption algorithms used to sign the image. With AmazonFreeRTOS-Default"" and ""AWSIoTDeviceManagement-SHA256-ECDSA, the difference is the signing image format. Hope this helps!
+
+Edited by: mradula-aws on Jan 8, 2019 1:08 PM"
+Amazon FreeRTOS	"No luck compiling PIC32MZEF demo in MPLAB X v5.10 with XC32 v2.15
+I've been trying to build this for quite a while, on two different versions of XC32 and on two different versions of MPLAB X, but no dice. The code is unmodified, aside from the project being automatically updated to run in MPLAB v5.10. Any advice would be greatly appreciated.
+
+MPLAB X: v5.10
+XC32: v2.15
+Python: v3.6
+Amazon FreeRTOS: V1.4.3
+Relevant docs:  https://docs.aws.amazon.com/freertos/latest/userguide/getting_started_mch.html 
+
+Build log starting from first fatal error:  https://pastebin.com/NhKiQmYR
+
+Edited by: 2kk9 on Dec 29, 2018 12:18 AM
+
+Edited by: 2kk9 on Dec 29, 2018 10:50 AM
+(Adding the userguide link)"
+Amazon FreeRTOS	"Re: No luck compiling PIC32MZEF demo in MPLAB X v5.10 with XC32 v2.15
+Update: It fails similarly in MPLAB X v4.20. I had thought that it might perform better there, since the project didn't need to be automatically updated for that version of MPLAB X.
+
+Additional information: I am opening \amazon-freertos-master\demos\microchip\curiosity_pic32mzef\mplab as an MPLAB X project. I renamed the folder to mplab.X to accomplish this."
+Amazon FreeRTOS	"Re: No luck compiling PIC32MZEF demo in MPLAB X v5.10 with XC32 v2.15
+Hello, I'm using MPLAB X 4.x. In the MPLAB X Open Project dialog box, I select the directory \amazon-freertos\demos\microchip\curiosity_pic32mzef\mplab that I've cloned from github. In that dialog box, the Project Name text box displays ""aws_demos"". It also displays the second required project, ""aws_bootloader"". I then click the Open Project button in that dialog. 
+
+Once the projects are open, I right-click on ""aws_demos"" in the Projects pane and select Clean and Build. 
+
+I don't have to rename the project folder in order to open it, or do a migration as you mentioned. Is that the same as what you're seeing?"
+Amazon FreeRTOS	"Re: No luck compiling PIC32MZEF demo in MPLAB X v5.10 with XC32 v2.15
+Thank you for your response, Dan.
+
+It turns out I actually didn't have to rename the folder - I just did that when I didn't see it  immediately show up as an MPLAB X project in the project browser.
+
+I just deleted everything and redownloaded from Git today to get the latest files and match your setup. So now, we have the same files. But, compilation still fails for me, with the same errors as before.
+
+Migration is only necessary in MPLAB X v5.x, but now I am using v4.20 and migration can be ruled out as a problem. I am now using XC32 v2.10 instead of v2.15.
+
+Edit: I'm attaching a window snip in case you can spot any smoking guns here.  https://ibb.co/XC5Z5Gz
+
+Edit 2: ""Attach Files"" doesn't seem to work for my post. Edited a link in."
+Amazon FreeRTOS	"Re: No luck compiling PIC32MZEF demo in MPLAB X v5.10 with XC32 v2.15
+I have successfully reproduced the problem. Two considerations:
+
+First, there is a path length limit in XC32 on Windows. For this project, the various nested driver and BSP subdirectories can cause you to come close to, if not over, that limit. Therefore, try making the base path of your repo clone as short as possible. 
+
+(The most extreme example, I suppose, being something like:)
+git clone https://github.com/aws/amazon-freertos c:\M
+
+Second, as you already know, aside from the above, v2.10 appears to work. A cursory analysis of the errors reported by v2.15 suggests that it may have become more sensitive to certain violations of the C standard. We're working on confirming."
+Amazon FreeRTOS	"ESP32 Greengrass
+Hi,
+
+I have problems connecting to the greengrass device. 
+
+I have functional greengrass core with multiple devices on it and successfully sending data between each other. 
+
+I wanted to connect esp32 to it. 
+My steps were: Created new thing inside greengrass group by adding device. Used 1 click configurations etc. I downloaded certificates. Used CertificateConfigurator.html to create aws_clientcredential_keys.h . Setup endpoint and wifi settings. All setup was done using a cloned freertos repo. 
+
+I redeployed greengrass core which included new esp32 device thing. 
+
+I successfully, did MQTTEchoDemo. Device was publishing to the cloud. 
+
+But when I comment out mqttechodemo and un-commented greengrass discovery demo. It fails to connect.
+Did I missed any steps? I am not sure where things are going wrong.
+Thanks
+
+This is the output from serial after WiFi connection established. 
+3 303 [main] WiFi Connected to AP. Creating tasks which use network...
+4 304 [main] Write code signing certificate...
+I (3140) PKCS11: Initializing SPIFFS
+I (3150) PKCS11: Partition size: total: 52961, used: 2761
+5 306 [main] Write device private key...
+I (3270) PKCS11: Initializing SPIFFS
+6 323 [main] Key provisioning done...
+7 323 [IoT_GGD] Attempting automated selection of Greengrass device
+I (3460) PKCS11: Initializing SPIFFS
+I (3460) PKCS11: Initializing SPIFFS
+I (3560) PKCS11: Initializing SPIFFS
+I (3560) PKCS11: Initializing SPIFFS
+I (3570) PKCS11: Initializing SPIFFS
+I (4340) wifi: pm start, type:0
+ 
+I (5440) PKCS11: Initializing SPIFFS
+8 1248 [IoT_GGD] About to close socket.
+9 1250 [IoT_GGD] Socket closed.
+10 1250 [IoT_GGD] Stack high watermark for discovery helper task: 2620.
+11 1750 [IoT_GGD] About to close socket.
+12 1750 [IoT_GGD] Socket closed.
+13 1750 [IoT_GGD] Stack high watermark for discovery helper task: 2092.
+14 2254 [IoT_GGD] About to close socket.
+15 2254 [IoT_GGD] Socket closed.
+16 2254 [IoT_GGD] Stack high watermark for discovery helper task: 2092.
+17 2761 [IoT_GGD] About to close socket.
+18 2761 [IoT_GGD] Socket closed.
+19 2761 [IoT_GGD] Stack high watermark for discovery helper task: 2092.
+20 2761 [IoT_GGD] GGD - Can't connect to greengrass Core
+21 2761 [IoT_GGD] Auto-connect: Failed to retrieve Greengrass address and certificate.
+22 2761 [IoT_GGD] ----Demo finished----"
+Amazon FreeRTOS	"Re: ESP32 Greengrass
+Or slightly different output but still no success
+
+3 303 [main] WiFi Connected to AP. Creating tasks which use network...
+4 304 [main] Write code signing certificate...
+I (3140) PKCS11: Initializing SPIFFS
+I (3150) PKCS11: Partition size: total: 52961, used: 2761
+5 311 [main] Write device private key...
+I (3320) PKCS11: Initializing SPIFFS
+6 323 [main] Key provisioning done...
+7 323 [IoT_GGD] Attempting automated selection of Greengrass device
+I (3410) PKCS11: Initializing SPIFFS
+I (3420) PKCS11: Initializing SPIFFS
+I (3520) PKCS11: Initializing SPIFFS
+I (3520) PKCS11: Initializing SPIFFS
+I (3520) PKCS11: Initializing SPIFFS
+I (4350) wifi: pm start, type:0
+ 
+I (5360) PKCS11: Initializing SPIFFS
+8 1227 [IoT_GGD] About to close socket.
+9 1273 [IoT_GGD] Socket closed.
+10 1273 [IoT_GGD] Stack high watermark for discovery helper task: 2668.
+I (13350) PKCS11: Initializing SPIFFS
+I (13350) PKCS11: Initializing SPIFFS
+I (13460) PKCS11: Initializing SPIFFS
+I (13460) PKCS11: Initializing SPIFFS
+I (13460) PKCS11: Initializing SPIFFS
+I (14360) PKCS11: Initializing SPIFFS
+11 1598 [IoT_GGD] About to close socket.
+12 1599 [IoT_GGD] Socket closed.
+13 1599 [IoT_GGD] Stack high watermark for discovery helper task: 236.
+14 1599 [IoT_GGD] Greengrass device discovered.
+15 1599 [IoT_GGD] Establishing MQTT communication to Greengrass...
+I (16110) PKCS11: Initializing SPIFFS
+I (16110) PKCS11: Initializing SPIFFS
+I (16220) PKCS11: Initializing SPIFFS
+I (16220) PKCS11: Initializing SPIFFS
+I (16220) PKCS11: Initializing SPIFFS
+I (17050) PKCS11: Initializing SPIFFS
+16 2318 [IoT_GGD] Disconnecting from broker.
+17 2320 [IoT_GGD] Disconnected from the broker.
+18 2320 [IoT_GGD] Deleted Client.
+19 2320 [IoT_GGD] Heap low watermark: 103232. Stack high watermark: 236.
+20 2320 [IoT_GGD] ----Demo finished----"
+Amazon FreeRTOS	"Re: ESP32 Greengrass
+Hello,
+
+It looks like in the first log, you are unable to connect to any of the addresses returned by AWS IoT.  Can you check that the GG core is online?
+
+In the second log, it looks like you can connect, but get disconnected upon initiating an MQTT connection.
+Can you check that GG subscriptions and your AWS IoT policy are configured correctly?
+
+https://docs.aws.amazon.com/greengrass/latest/developerguide/config_subs.html
+https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html"
+Amazon FreeRTOS	"Re: ESP32 Greengrass
+Thanks,
+
+Policy attached to the thing's certificate allows all actions on greengrass and IoT basics.
+
+What should be subscription requirements for this demo?
+I selected my thing as source, IoT cloud as target and filtering freertos/demos/ggd topic.
+
+Greengrass core is online and deployments with subscription changes gets successfully deployed within seconds.
+
+{
+  ""Version"": ""2012-10-17"",
+  ""Statement"": [
+    {
+      ""Effect"": ""Allow"",
+      ""Action"": [
+        ""iot:Publish"",
+        ""iot:Subscribe"",
+        ""iot:Connect"",
+        ""iot:Receive"",
+        ""iot:GetThingShadow""
+      ],
+      ""Resource"": [
+        ""*""
+      ]
+    },
+    {
+      ""Effect"": ""Allow"",
+      ""Action"": [
+        ""greengrass:*""
+      ],
+      ""Resource"": [
+        ""*""
+      ]
+    }
+  ]
+}"
+Amazon FreeRTOS	"Re: ESP32 Greengrass
+For subscriptions, can you try # (all topics), just to ensure that the subscriptions are not the issue.
+
+A few other things to check on your core:
+In your greengrass/ folder, is there a crash.log file?  This means your core crashed some time ago.
+In greengrass/configuration/group, make sure that group.json is correct.  The ARN must match the group ARN on AWS IoT.
+Also make sure that greengrass/configuration/config.json is correct.
+
+An example config.json:
+{
+    ""coreThing"": {
+        ""caPath"": ""root-certificate.pem"",
+        ""certPath"": ""xxxx-certificate.pem.crt.txt"",
+        ""keyPath"": ""xxxx-private.pem.key"",
+        ""thingArn"": ""YOUR THING ARN"",
+        ""iotHost"": ""YOUR ENDPOINT HERE"",
+        ""ggHost"": ""greengrass.iot.us-west-2.amazonaws.com""
+    },
+    ""runtime"": {
+        ""cgroup"": {
+            ""useSystemd"": ""yes""
+        }
+    }
+}"
+Amazon FreeRTOS	"Re: ESP32 Greengrass
+Thanks,
+
+So I couldn't find any crash log, and I would like to believe that greengrass is functioning ok, because I have other devices connected to that publishing and subscribing works. And new greengrass deployments go down successfully. config.json seems to be good too. 
+
+The only other detail I could tell that Core connectivity was set to find endpoints automatically, and inside Core endpoints I have multiple IP addresses. But from debugging it seems that it finds the core. 
+
+for Subscription i did ""#"" for the topics. And deployed this update, rebooted esp32 and still same results.
+
+config.json
+{
+  ""coreThing"" : {
+    ""caPath"" : ""root.ca.pem"",
+    ""certPath"" : ""xxx.cert.pem"",
+    ""keyPath"" : ""xxx.private.key"",
+    ""thingArn"" : ""arn:aws:iot:us-east-1:xx"",
+    ""iotHost"" : ""xxx.iot.us-east-1.amazonaws.com"",
+    ""ggHost"" : ""greengrass-ats.iot.us-east-1.amazonaws.com"",
+    ""keepAlive"" : 600
+  },
+  ""runtime"" : {
+    ""cgroup"" : {
+      ""useSystemd"" : ""yes""
+    }
+  },
+  ""managedRespawn"" : false,
+  ""crypto"" : {
+    ""principals"" : {
+      ""SecretsManager"" : {
+        ""privateKeyPath"" : ""file:///greengrass/certs/xxx.private.key""
+      },
+      ""IoTCertificate"" : {
+        ""privateKeyPath"" : ""file:///greengrass/certs/xxx.private.key"",
+        ""certificatePath"" : ""file:///greengrass/certs/xxx.cert.pem""
+      }
+    },
+    ""caPath"" : ""file:///greengrass/certs/root.ca.pem""
+  }
+}
+
+
+Still same results
+2 306 [IP-task] vDHCPProcess: offer a0b0314ip
+3 307 [main] WiFi Connected to AP. Creating tasks which use network...
+4 308 [main] Write code signing certificate...
+I (3181) PKCS11: Initializing SPIFFS
+I (3181) PKCS11: Partition size: total: 52961, used: 2761
+5 310 [main] Write device private key...
+I (3301) PKCS11: Initializing SPIFFS
+6 322 [main] Key provisioning done...
+7 322 [IoT_GGD] Attempting automated selection of Greengrass device
+I (3401) PKCS11: Initializing SPIFFS
+I (3411) PKCS11: Initializing SPIFFS
+I (3511) PKCS11: Initializing SPIFFS
+I (3511) PKCS11: Initializing SPIFFS
+I (3511) PKCS11: Initializing SPIFFS
+I (4381) wifi: pm start, type:0
+ 
+I (5411) PKCS11: Initializing SPIFFS
+8 1249 [IoT_GGD] About to close socket.
+9 1251 [IoT_GGD] Socket closed.
+10 1251 [IoT_GGD] Stack high watermark for discovery helper task: 2588.
+I (13131) PKCS11: Initializing SPIFFS
+I (13131) PKCS11: Initializing SPIFFS
+I (13241) PKCS11: Initializing SPIFFS
+I (13241) PKCS11: Initializing SPIFFS
+I (13241) PKCS11: Initializing SPIFFS
+I (16441) PKCS11: Initializing SPIFFS
+11 1816 [IoT_GGD] About to close socket.
+12 1818 [IoT_GGD] Socket closed.
+13 1818 [IoT_GGD] Stack high watermark for discovery helper task: 108.
+14 1818 [IoT_GGD] Greengrass device discovered.
+15 1818 [IoT_GGD] Establishing MQTT communication to Greengrass...
+I (18391) PKCS11: Initializing SPIFFS
+I (18391) PKCS11: Initializing SPIFFS
+I (18501) PKCS11: Initializing SPIFFS
+I (18501) PKCS11: Initializing SPIFFS
+I (18501) PKCS11: Initializing SPIFFS
+I (19411) PKCS11: Initializing SPIFFS
+16 2609 [IoT_GGD] Disconnecting from broker.
+17 2611 [IoT_GGD] Disconnected from the broker.
+18 2611 [IoT_GGD] Deleted Client.
+19 2611 [IoT_GGD] Heap low watermark: 103232. Stack high watermark: 108.
+20 2611 [IoT_GGD] ----Demo finished----"
+Amazon FreeRTOS	"Re: ESP32 Greengrass
+So,
+I think I discovered some ridiculous stuff. I enabled
+#define mqttconfigENABLE_DEBUG_LOGS    1
+inside aws_mqtt_config.h and demo was succesful, I published 3 messages to the cloud via greengrass. But the moment I remove debug log it goes back again to failing. And most of the time it's the same but once every 3rd try I get errors like 
+GGD - Can't connect to greengrass Core
+21 2834 [IoT_GGD] Auto-connect: Failed to retrieve Greengrass address and certificate.
+
+or 
+Greengrass device discovered.
+15 1964 [IoT_GGD] Establishing MQTT communication to Greengrass...
+16 2465 [IoT_GGD] ERROR: Could not connect to the Broker.
+17 2465 [IoT_GGD] Heap low watermark: 103180. Stack high watermark: 212.
+18 2465 [IoT_GGD] ----Demo finished----
+
+
+8 1224 [IoT_GGD] ERROR: Handshake failed with error code -29312 
+9 1224 [IoT_GGD] About to close socket.
+10 1224 [IoT_GGD] Socket closed.
+11 1224 [IoT_GGD] Stack high watermark for discovery helper task: 2820.
+12 1224 [IoT_GGD] JSON request could not connect to end point
+13 1224 [IoT_GGD] Auto-connect: Failed to retrieve Greengrass address and certificate.
+14 1224 [IoT_GGD] ----Demo finished-----
+
+
+My conclusion was that with debugging enabled it was success most of the time. but but with debugging disabled it was 0% success, maybe it's all just a coincidence. 
+
+I write firmware with ""make erase_flash all flash monitor -j9"" command
+
+Sometime it just fails to connect to the AP. I would like to write off most of these errors to bad wifi. We are using CloudTrax to mesh wifi around the office, but it's horrible and we planning to replace it. 
+I did not change anything else in the code but the enable metrics or debugging and just reset device like a million times.
+
+Now even with debugging enable I just get. 
+19 2888 [IoT_GGD] Stack high watermark for discovery helper task: 2088.
+20 2888 [IoT_GGD] GGD - Can't connect to greengrass Core
+21 2888 [IoT_GGD] Auto-connect: Failed to retrieve Greengrass address and certificate.
+22 2888 [IoT_GGD] ----Demo finished----
+
+
+Could #define mqttconfigENABLE_METRICS    ( 1 )
+or
+#define mqttconfigENABLE_DEBUG_LOGS    0
+be affecting this or it was just a coincidence?
+Could all this be just our wifi problems?
+
+No matter what I do I can't get anything stable."
+Amazon FreeRTOS	"Re: ESP32 Greengrass
+I have tried it on a different network and it connected the first time and since then all other connection attempts were a fail. Failed to retrieve certificates from greengrass."
+Amazon FreeRTOS	"Re: ESP32 Greengrass
+Hello FreeOurToes,
+
+Your original output:
+
+2 306 [IP-task] vDHCPProcess: offer a0b0314ip
+3 307 [main] WiFi Connected to AP. Creating tasks which use network...
+4 308 [main] Write code signing certificate...
+I (3181) PKCS11: Initializing SPIFFS
+I (3181) PKCS11: Partition size: total: 52961, used: 2761
+5 310 [main] Write device private key...
+I (3301) PKCS11: Initializing SPIFFS
+6 322 [main] Key provisioning done...
+7 322 [IoT_GGD] Attempting automated selection of Greengrass device
+I (3401) PKCS11: Initializing SPIFFS
+I (3411) PKCS11: Initializing SPIFFS
+I (3511) PKCS11: Initializing SPIFFS
+I (3511) PKCS11: Initializing SPIFFS
+I (3511) PKCS11: Initializing SPIFFS
+I (4381) wifi: pm start, type:0
+ 
+I (5411) PKCS11: Initializing SPIFFS
+8 1249 [IoT_GGD] About to close socket.
+9 1251 [IoT_GGD] Socket closed.
+10 1251 [IoT_GGD] Stack high watermark for discovery helper task: 2588.
+I (13131) PKCS11: Initializing SPIFFS
+I (13131) PKCS11: Initializing SPIFFS
+I (13241) PKCS11: Initializing SPIFFS
+I (13241) PKCS11: Initializing SPIFFS
+I (13241) PKCS11: Initializing SPIFFS
+I (16441) PKCS11: Initializing SPIFFS
+11 1816 [IoT_GGD] About to close socket.
+12 1818 [IoT_GGD] Socket closed.
+13 1818 [IoT_GGD] Stack high watermark for discovery helper task: 108.
+14 1818 [IoT_GGD] Greengrass device discovered.
+15 1818 [IoT_GGD] Establishing MQTT communication to Greengrass...
+I (18391) PKCS11: Initializing SPIFFS
+I (18391) PKCS11: Initializing SPIFFS
+I (18501) PKCS11: Initializing SPIFFS
+I (18501) PKCS11: Initializing SPIFFS
+I (18501) PKCS11: Initializing SPIFFS
+I (19411) PKCS11: Initializing SPIFFS
+16 2609 [IoT_GGD] Disconnecting from broker.
+17 2611 [IoT_GGD] Disconnected from the broker.
+18 2611 [IoT_GGD] Deleted Client.
+19 2611 [IoT_GGD] Heap low watermark: 103232. Stack high watermark: 108.
+20 2611 [IoT_GGD] ----Demo finished----
+
+
+Was a successful demo. When mqttconfigENABLE_DEBUG_LOGS is set to 0, the MQTT publishes are silent on success for the Greengrass demo. The Greengrass demo will print a message only if the MQTT client fails to publish."
+Amazon FreeRTOS	"Re: ESP32 Greengrass
+Thank you!"
+Amazon FreeRTOS	"ESP32 OTA + Code Signature - E (###) ota_pal: signature verification failed
+I have followed the OTA setup procedures for the ESP32 with much success but am having issues with the code signature verification. I am able to successfully download all of the blocks but the update is failed due to the following error:
+
+E (5320617) ota_pal: signature verification failed
+
+The problem stems from a lack of understanding of how we are intended to properly integrate the signature keys into the esp firmware build for verification. I have created the code sign certificate following this https://docs.aws.amazon.com/freertos/latest/userguide/ota-code-sign-cert-esp.html. 
+
+I then included the cert that I created into aws_ota_codesigner_certificate.h as outlined here https://docs.aws.amazon.com/freertos/latest/userguide/ota-download-freertos.html. I followed the same formatting as recommended for the Microchip Curiosity PIC32MZEF with the new lines as quotes. So that it looked like the following:
+
+static const char signingcredentialSIGNING_CERTIFICATE_PEM[] = ""-----BEGIN CERTIFICATE-----/n""
+""MIIBVjCB/aA######################################################wwT/n""
+""YWRyaWF######################################################EwMTAyMDUy/n""
+""NDFaMB4######################################################OPQIB/n""
+""Bggqh######################################################DnB96Klxx92P/n""
+""Lc/fPu######################################################Q8EBAMCB4Aw/n""
+""EwY######################################################1hDe/n""
+""Cip1######################################################r/6U/n""
+""w##########H1Q==/n""
+""-----END CERTIFICATE-----"";
+
+(I have replaced most of the key here with a random number of hashes for obvious reasons)
+
+I have also tried the key as a single line with similar results.
+My best guess as to what is going wrong is that I do not know what the proper ""Pathname of code signing certificate on device"" is when creating a code signing profile for the IOT job for the ESp32. I have tried ""ecdsasigner.crt"", ""/"", and ""signingcredentialSIGNING_CERTIFICATE_PEM."" 
+
+Similarly, I put ""/"" for the ""Pathname of firmware image on device."" I assume that any input here would be okay since it is just needed to allow me to click next (the box should be optional in the form but it is not).
+
+Any help would be much appreciated. I can also provide any additional information that is pertinent. Thanks!"
+Amazon FreeRTOS	"Re: ESP32 OTA + Code Signature - E (###) ota_pal: signature verification failed
+Face-palm...
+The escape new line characters were the wrong direction. Working now."
+Amazon FreeRTOS	"Re: ESP32 OTA + Code Signature - E (###) ota_pal: signature verification failed
+I am getting the signature verification failed also.  I have triple checked the procedure.  I believe the signingcredentialSIGNING_CERTIFICATE_PEM[] constant I'm using is OK.
+When you had success, which code signing platform did you use when creating the OTA job? (ESP-WROVER-KIT or ESP32-DevKitC).  I'm unclear why they would be different - they are both SHA256WITHECDSA.
+Did using ""/"" as the ""Pathname of firmware image on device."" work OK? (I also assume it doesn't matter).
+Do you have other suggestions for things I should check or verification I should do?
+I am using a ESP32 version 0 (over a year old) - would the version make a difference?  What hardware did you run your OTA on?
+Thanks in advance."
+Amazon FreeRTOS	"Re: ESP32 OTA + Code Signature - E (###) ota_pal: signature verification failed
+User error: the was_demo.bin I had loaded to do the OTA with (version 0.9.2) didn't have the certificate configured in the .h file.  The signature in the bin file that was downloaded (version 0.9.3) was fine.
+The OTA upgrade works fine with a v0 version of the ESP on custom hardware using the ESP32-DevKitC signing profile."
+Amazon FreeRTOS	"ESP32 OTA ""Job in self test but platform state is not!""
+Hi,
+
+I have been trying OTA for ESP32. Everything sets up correctly. I receive OTA all blocks, device restarts and starts running for 5-10 seconds and then in the middle of it, it reboots to previous fw version.
+
+The only detail I am able to get out of debugging is that platform is not in self-test mode. 
+
+30 746 [OTA Task] [prvOTAUpdateTask] Job in self test but platform state is not!
+
+
+In aws_ota_agent.c comments says that it could be an attack platform image state.
+But not sure what to make of it..
+
+thanks
+11 716 [OTA Task] [prvSubscribeToJobNotificationTopics] OK: $aws/things/esp32_tests_gg/jobs/$next/get/accepted
+I (7368) ota_pal: prvPAL_GetPlatformImageState
+I (7368) esp_ota_ops: aws_esp_ota_get_boot_flags: 1
+I (7368) esp_ota_ops: [0] aflags/seq:0x3/0x2, pflags/seq:0x1/0x2
+I (7378) ota_pal: prvPAL_GetPlatformImageState
+I (7378) esp_ota_ops: aws_esp_ota_get_boot_flags: 1
+I (7388) esp_ota_ops: [0] aflags/seq:0x3/0x2, pflags/seq:0x1/0x2
+12 722 [OTA Task] [prvSubscribeToJobNotificationTopics] OK: $aws/things/esp32_tests_gg/jobs/notify-next
+13 725 [OTA Task] [OTA_CheckForUpdate] Request #0
+I (7458) ota_pal: prvPAL_SetPlatformImageState, 1
+W (7458) ota_pal: Set image as testing!
+14 731 [OTA Task] [prvParseJSONbyModel] Extracted parameter [ clientToken: 0:esp32_tests_gg ]
+15 731 [OTA Task] [prvParseJSONbyModel] Extracted parameter [ jobId: AFR_OTA-esp32_test_9 ]
+16 731 [OTA Task] [prvParseJSONbyModel] Identified parameter [ self_test ]
+17 731 [OTA Task] [prvParseJSONbyModel] Extracted parameter [ updatedBy: 655374 ]
+18 731 [OTA Task] [prvParseJSONbyModel] Extracted parameter [ streamname: AFR_OTA-### ]
+19 731 [OTA Task] [prvParseJSONbyModel] Extracted parameter [ filepath: /device/updates ]
+20 731 [OTA Task] [prvParseJSONbyModel] Extracted parameter [ filesize: 626064 ]
+21 731 [OTA Task] [prvParseJSONbyModel] Extracted parameter [ fileid: 0 ]
+22 731 [OTA Task] [prvParseJSONbyModel] Extracted parameter [ certfile: aws_ota_codesigner_certificate.h ]
+23 731 [OTA Task] [prvParseJSONbyModel] Extracted parameter [ sig-sha256-ecdsa: ###... ]
+24 731 [OTA Task] [prvParseJobDoc] In self test mode.
+25 731 [OTA Task] [prvUpdateJobStatus] Msg: {""status"":""IN_PROGRESS"",""statusDetails"":{""self_test"":""active"",""updatedBy"":""0xa000f""}}
+26 732 [OTA] [OTA_AgentInit] Ready.
+27 736 [OTA Task] [prvUpdateJobStatus] 'IN_PROGRESS' to $aws/things/esp32_tests_gg/jobs/AFR_OTA-esp32_test_9/update
+28 736 [OTA Task] [prvOTA_Close] Context->0x3ffbb520
+29 742 [OTA Task] [prvUnSubscribeFromDataStream] OK: $aws/things/esp32_tests_gg/streams/AFR_OTA-1##/data/cbor
+I (7568) ota_pal: prvPAL_GetPlatformImageState
+I (7598) esp_ota_ops: aws_esp_ota_get_boot_flags: 1
+I (7598) esp_ota_ops: [0] aflags/seq:0x3/0x2, pflags/seq:0x1/0x2
+I (7608) ota_pal: prvPAL_SetPlatformImageState, 3
+W (7618) ota_pal: Set image as invalid!
+I (7618) esp_ota_ops: aws_esp_ota_get_boot_flags: 1
+I (7628) esp_ota_ops: [0] aflags/seq:0x3/0x2, pflags/seq:0x1/0x2
+W (7628) ota_pal: Image not in self test mode 3
+I (7638) esp_ota_ops: aws_esp_ota_get_boot_flags: 1
+I (7638) esp_ota_ops: [0] aflags/seq:0x3/0x2, pflags/seq:0x1/0x2
+30 746 [OTA Task] [prvOTAUpdateTask] Job in self test but platform state is not!
+31 750 [OTA Task] [prvUpdateJobStatus] Msg: {""status"":""FAILED"",""statusDetails"":{""reason"":""rejected: 0x26000000""}}
+32 755 [OTA Task] [prvUpdateJobStatus] 'FAILED' to $aws/things/esp32_tests_gg/jobs/AFR_OTA-esp32_test_9/update
+33 755 [OTA Task] [prvResetDevice] Attempting forced reset of device...
+I (8198) wifi: state: run -> init (0)
+I (8198) wifi: n:1 0, o:1 0, ap:255 255, sta:1 0, prof:1
+I (8198) wifi: pm stop, total sleep time: 0/3802069
+ 
+I (8238) wifi: flush txq
+I (8238) wifi: stop sw txq
+I (8238) wifi: lmac stop hw txq
+I (8238) WIFI: SYSTEM_EVENT_STA_DISCONNECTED
+ets Jun  8 2016 00:22:57"
+Amazon FreeRTOS	"Re: ESP32 OTA ""Job in self test but platform state is not!""
+Hello,
+
+It looks like the OTA image self-test fails, which causes a rollback.
+
+Can you check that the OTA image you are downloading has a version number greater than the image on your device?
+
+Also, which version of Amazon FreeRTOS are you using?  We have recently made some fixes to improve the reliability of OTA, so please make sure you are using the latest version."
+Amazon FreeRTOS	"Re: ESP32 OTA ""Job in self test but platform state is not!""
+Thanks, I managed to have a successful OTA.
+
+Ok, So today I downloaded the newest version from github. 
+
+Configured credentials. did,  make erase_flash
+then make flash monitor -j9
+. incremented the build number in fw version. make all
+ Uploaded newest bin, did all jazz in the console and it worked. 
+
+But I am sure I was increment-ing build version before, because I did like 10 tries of different things and and code I was using was from this week too.
+But I noticed one difference.
+So after some unsuccessful tries (few things that I was changing were ""Pathname of firmware image on device"" field in ota from example /device/update to just having ""/"".)
+In debugging window I started to have an error about partitions. 
+E (108) boot: ota data partition invalid and no factory, will try all partitions
+ 
+
+
+Even after flashing new firmware this error existed, but after doing make erase_flash, and then flashing new firmware it went away and OTA was success. 
+
+I (30) boot: ESP-IDF v3.1-dev-322-gf307f41-dirty 2nd stage bootloader
+I (30) boot: compile time 10:47:09
+I (31) boot: Enabling RNG early entropy source...
+I (36) boot: SPI Speed      : 40MHz
+I (40) boot: SPI Mode       : DIO
+I (44) boot: SPI Flash Size : 4MB
+I (48) boot: Partition Table:
+I (52) boot: ## Label            Usage          Type ST Offset   Length
+I (59) boot:  0 nvs              WiFi data        01 02 00010000 00006000
+I (67) boot:  1 otadata          OTA data         01 00 00016000 00002000
+I (74) boot:  2 phy_init         RF data          01 01 00018000 00001000
+I (82) boot:  3 ota_0            OTA app          00 10 00020000 00100000
+I (89) boot:  4 ota_1            OTA app          00 11 00120000 00100000
+I (97) boot:  5 storage          Unknown data     01 82 00220000 00010000
+I (104) boot: End of partition table
+E (108) boot: ota data partition invalid and no factory, will try all partitions
+I (116) esp_image: segment 0: paddr=0x00020020 vaddr=0x3f400020 size=0x15a44 ( 88644) map
+I (156) esp_image: segment 1: paddr=0x00035a6c vaddr=0x3ffb0000 size=0x02454 (  9300) load
+I (160) esp_image: segment 2: paddr=0x00037ec8 vaddr=0x40080000 size=0x00400 (  1024) load"
+Amazon FreeRTOS	"Bluetooth Low Energy (BLE) Support in Amazon FreeRTOS is now in beta
+BLE support in Amazon FreeRTOS is now available in beta. You can securely connect Amazon FreeRTOS devices that use BLE to AWS IoT through Android and iOS devices.
+
+Amazon FreeRTOS is an IoT operating system for microcontrollers that extends the FreeRTOS kernel with software libraries for security, connectivity, and updateability to make small, low-powered edge devices easy to program, deploy, secure, connect, and manage. Amazon FreeRTOS is open source, free to download and use, and provides everything you need to easily program connected microcontroller-based devices and collect data from them for IoT applications. You can scale those applications across millions of devices. Amazon FreeRTOS includes libraries that help configure devices to a local network using common connectivity options like Wi-Fi, Ethernet, and now via a connection to Android and iOS devices using BLE.
+
+You can get started by downloading source code and the SDK for either Android https://github.com/aws/amazon-freertos-ble-android-sdk or iOS  https://github.com/aws/amazon-freertos-ble-ios-sdk  from GitHub. View the Amazon FreeRTOS User Guide  https://docs.aws.amazon.com/freertos/latest/userguide/what-is-amazon-freertos.html or the Amazon FreeRTOS website  https://aws.amazon.com/freertos/  for more information."

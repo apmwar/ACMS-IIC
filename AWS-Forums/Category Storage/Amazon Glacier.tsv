@@ -1,0 +1,3062 @@
+label	description
+
+Amazon Glacier	"Large batch operation gets stuck in Active state, near completion
+Hi there, this concerns job 6733ac65-50c2-4332-a273-915e096b94c0 which I created on 7th February.
+
+This job was still in the Active status until I manually update it with update-job-status.
+
+You can see below that it was just 12 tasks away from completion – I'm not sure how long it had been at that level of completion, but a while. It's not that the job was about to complete – it was seemingly stalled at this point.
+
+It's not a huge problem for us because we can manually cancel jobs or use priorities carefully, but is this expected behaviour?
+
+  {
+    ""Status"": ""Active"",
+    ""ProgressSummary"": {
+      ""NumberOfTasksFailed"": 0,
+      ""TotalNumberOfTasks"": 230073882,
+      ""NumberOfTasksSucceeded"": 230073870
+    },
+    ""Description"": ""user_inactive_6_months vangogh-composites"",
+    ""CreationTime"": ""2019-02-07T00:29:13.488Z"",
+    ""JobId"": ""6733ac65-50c2-4332-a273-915e096b94c0"",
+    ""Priority"": 42,
+    ""Operation"": ""S3PutObjectTagging""
+  }"
+
+Amazon Glacier	"Re: Large batch operation gets stuck in Active state, near completion
+We'll take a look and get back to you."
+
+Amazon Glacier	"Re: Large batch operation gets stuck in Active state, near completion
+While it looks like the job has now been cancelled, we are doing further investigation to see why our retry logic was delayed in picking up the remaining objects in this job."
+
+Amazon Glacier	"""Task target couldn't be URL decoded"" for CSV manifest
+Hi there, this concerns jobs e622ad8d-44d1-4460-af06-afea56a35bba and 6aaefb2a-237b-4167-b341-f724eb65fae2.
+
+After creating the jobs, they fall into the Failed status, with this error:
+
+        ""FailureReasons"": [
+            {
+                ""FailureCode"": ""InvalidManifestContent"",
+                ""FailureReason"": ""Failed to parse task from Manifest teespring-object-cleanup/usercontent.to-archive.csv at byte offset 139264. ErrorMessage: Task target couldn't be URL decoded""
+            }
+        ],
+
+
+I don't see any problems with the manifest at the given location:
+$ head -c 139280 usercontent.to-archive.csv| tail
+teespring-usercontent,uk8jnb-uploads
+teespring-usercontent,ae1d50-uploads
+teespring-usercontent,e42b5u-uploads
+teespring-usercontent,xxn5je-uploads
+teespring-usercontent,6m5trx-uploads
+teespring-usercontent,71le05-uploads
+teespring-usercontent,4gktyu-uploads
+teespring-usercontent,nr4hbl-uploads
+teespring-usercontent,gczt0c-uploads
+teespring-userconten⏎ 
+
+
+Neither are there any blank lines (which might be a problem according to https://forums.aws.amazon.com/thread.jspa?threadID=295717&tstart=0).
+
+$ grep -c '^$' usercontent.to-archive.csv
+0
+
+
+As the manifest file is quite large, I've emailed a link to the file to s3batchoperationspreview@amazon.com rather than attached it here."
+
+Amazon Glacier	"Re: ""Task target couldn't be URL decoded"" for CSV manifest
+Thanks for reaching out. We suspect the error is due to the manifest containing some rows where the bucket field is populated but the object key is blank. This was observed in the copy of the manifest you shared via email. 
+
+We are also looking into the byte offset you shared from the error message and will continue to work to improve our error messages and make them more targeted during the course of the preview."
+
+Amazon Glacier	"65% success rate when applying a tag via a batch operation
+As a test, I added a tag to 28 objects in a large S3 bucket via a batch operation.
+
+In the report CSV, there is a 200, Successful status for all 28 objects.
+
+However, when I query the taggings for those 28 objects, only 18 of the 28 have had the tag successfully applied.
+
+The job ID is f2851b2d-07c1-400b-9392-37eb2244c6dc.
+
+An example object which was tagged correctly is s3://vangogh-composites/aEcBjLIY-0nQgm1V0QBtPawF64I.
+
+An example object which was not tagged correctly is s3://vangogh-composites/RSiNYxIZQQHeFKiufECOiBCc5mc."
+
+Amazon Glacier	"Re: 65% success rate when applying a tag via a batch operation
+You may observe this behavior if objects are overwritten or new versions are added to the bucket after the tagging job is complete. The Batch Operations job acts only on the objects specified in the manifest at the time the job is run, later updates will not be tagged. 
+
+For an unversioned bucket, this means that any overwritten objects to the same key after the tagging job is completed will not have object tags (unless added through another means).
+
+For a versioned bucket, you can choose to specify or not specify version IDs in your manifest. When version IDs are specified, the job acts on the object versions specified. If no version ID is given, Batch Operations acts on the object version that is the current version when the job is executed."
+
+Amazon Glacier	"Re: 65% success rate when applying a tag via a batch operation
+I see, that makes sense – let me double check with some objects I'm 100% sure won't be updated: I'll mark this as answered if that goes smoothly.
+
+Thanks!"
+
+Amazon Glacier	"Cost of a batch operation?
+I can't find any information about the price of performing batch operations.
+
+E.g. do prices vary by job size? Operation type?"
+
+Amazon Glacier	"Re: Cost of a batch operation?
+During the Preview, S3 Batch Operations jobs and objects will be free. Although, you will still be charged for S3 Batch Operation requests (List Jobs and Update Job Priority are Tier 1 requests, and Describe Job is a Tier 2 request) and any charges associated with the operation that S3 Batch Operations performs on your behalf, including data transfer, requests, and other charges. For example, adding object tags to one million objects you would pay $5.00 ($0.005 per 1000 requests in us-east-1) for the PUT object tag requests.
+
+When the product launches, the pricing will be $0.25 per job and $1.00 per 1 million object operations performed by S3 Batch Operations."
+
+Amazon Glacier	"""aws: error: argument command: Invalid choice"" when creating a batch job
+Hi all, I'm trying to create my first batch operation job, following these instructions: https://docs.aws.amazon.com/AmazonS3/latest/dev/batch-ops-operations.html
+
+1a) and 1b) went fine, but when I attempt 2), I get this error:
+
+aws s3control create-job \
+        --region us-east-1 \
+        --account-id 476385240457 \
+        --operation '{""S3PutObjectTagging"": { ""TagSet"": [{""Key"":""keyOne"", ""Value"":""ValueOne""}] }}' \
+        --manifest '{""Spec"":{""Format"":""S3BatchOperations_CSV_20180820"",""Fields"":[""Bucket"",""Key""]},""Location"":{""ObjectArn"":""arn:aws:s3:::I_PUT_A_FILE_HERE"",""ETag"":""fef589dde810e57129e5b4370f26439e""}}' \
+        --report '{""Bucket"":""arn:aws:s3:::I_PUT_A_BUCKET_HERE"",""Prefix"":""final-reports"", ""Format"":""Report_CSV_20180820"",""Enabled"":true,""ReportScope"":""AllTasks""}' \
+        --priority 42 \
+        --role-arn S3BatchJobRole \
+        --client-request-token (uuidgen) \
+        --description ""Testing 0"" \
+        --no-confirmation-required
+ 
+usage: aws [options] <command> <subcommand> [<subcommand> ...] [parameters]
+To see help text, you can run:
+ 
+  aws help
+  aws <command> help
+  aws <command> <subcommand> help
+aws: error: argument command: Invalid choice, valid choices are:
+ 
+... lots of options, none of which are s3control ...
+
+
+I was only recently granted access to the batch operations preview – do I need to wait a while before it's usable? Or do something with my aws CLI to enable it?
+
+Thanks!"
+
+Amazon Glacier	"Re: ""aws: error: argument command: Invalid choice"" when creating a batch job
+Did you use the instructions here to add S3 Batch Operations functionality to the AWS CLI? (https://s3-us-west-2.amazonaws.com/s3batchoperationspreview/SDK+Download+Links.pdf)
+
+As we are still in Preview, the feature is not yet part of the public release of the CLI.
+
+Rob"
+
+Amazon Glacier	"Re: ""aws: error: argument command: Invalid choice"" when creating a batch job
+I had not seen that, no! That's great, s3control works now.
+
+The next problem I ran into is my user/policy/role isn't working as expected to enable me to create the job – but I'll either figure that out myself or create a separate thread for that separate issue.
+
+Thanks again!"
+
+Amazon Glacier	"Empty line in input CSV causes parsing failure
+If the CSV file used as input (manifest object) ends with a blank line, the operation fails with this error:
+
+Failed to parse task from Manifest <mybucket>/incoming/list1.csv at offset 441. ErrorMessage: Unexpected parsing error
+
+I'd consider that a bug."
+
+Amazon Glacier	"Re: Empty line in input CSV causes parsing failure
+Thank you for your feedback!  We will take a look into this and determine a path forward."
+
+Amazon Glacier	"Re: Empty line in input CSV causes parsing failure
+Thanks for the feedback. Would you be able to send the CSV file you used, or just the ending  portion of it, to s3batchoperationspreview@amazon.com?
+
+Feel free to redact or change any key names/bucket names if you want to use generic terms for them."
+
+Amazon Glacier	"Re: Empty line in input CSV causes parsing failure
+Emailed the file a few moments ago."
+
+Amazon Glacier	"Java SDK Support
+When will S3 Batch support for the Java SDK be released?"
+
+Amazon Glacier	"Re: Java SDK Support
+In the Preview welcome email there was a link to instructions for each SDK, as well as downloads.  Here is the link to the PDF: https://s3-us-west-2.amazonaws.com/s3batchoperationspreview/SDK+Download+Links.pdf
+
+Also, this is the link to our Java SDK: https://s3-us-west-2.amazonaws.com/s3batchoperationspreview/AWSS3ControlJavaClient-1.11.x.jar"
+
+Amazon Glacier	"Re: Java SDK Support
+I guess the API is pretty obtuse.  Any better instruction on how to use the SDK?"
+
+Amazon Glacier	"Re: Java SDK Support
+Were you able to get the jar file installed so that S3 Batch Operations functionality is part of the Java SDK?
+
+If you have, are you looking for us to add Java SDK examples to our documentation? This work is underway and those examples should be added soon."
+
+Amazon Glacier	"Can a PUT Copy be used to copy into a deeper path?
+I am looking at using the PUT Copy option to effectively backup a set of objects into a different bucket under a deeper path. It seems that this is not currently possible. Ideally what I would like to use this batch feature to copy a list of objects from one bucket into another bucket with a predefined path prefix. Also, it would be great if the current ACL and storage class of each object is copied with it.
+
+Robert"
+
+Amazon Glacier	"Re: Can a PUT Copy be used to copy into a deeper path?
+Thanks for the feedback. We will look into offering the ability to copy data into a destination prefix.
+
+Today, copy through S3 Batch Operations writes all the copied objects with the storage class and object ACL specified during job creation. I'll document a feature request for the ability to preserve the object ACL and storage class of the object as it is copied."
+
+Amazon Glacier	"Remove all tags
+Feature request.
+
+Batch operation should allow the removal of all tags.
+
+With the current setup, removing existing tags is not possible..."
+
+Amazon Glacier	"Re: Remove all tags
+It sounds like you would like to see Delete object tagging (https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectDELETEtagging.html) as a supported operation in Batch Operations, is that correct? 
+
+Would you expect this to be a recurring workload or a one time deletion of tags? On this question, we're mainly just trying to gather additional insights into the most common Batch Operations usage."
+
+Amazon Glacier	"Re: Remove all tags
+Yes, correct.
+
+For me this would be a one off. I'm currently testing large ingests, so it'd be nice to be able to add and remove tags in batches."
+
+Amazon Glacier	"Re: Remove all tags
+Thanks, I'll save your feature request for the new operation type."
+
+Amazon Glacier	"Large batch operation gets stuck in Active state, near completion
+Hi there, this concerns job 6733ac65-50c2-4332-a273-915e096b94c0 which I created on 7th February.
+
+This job was still in the Active status until I manually update it with update-job-status.
+
+You can see below that it was just 12 tasks away from completion – I'm not sure how long it had been at that level of completion, but a while. It's not that the job was about to complete – it was seemingly stalled at this point.
+
+It's not a huge problem for us because we can manually cancel jobs or use priorities carefully, but is this expected behaviour?
+
+  {
+    ""Status"": ""Active"",
+    ""ProgressSummary"": {
+      ""NumberOfTasksFailed"": 0,
+      ""TotalNumberOfTasks"": 230073882,
+      ""NumberOfTasksSucceeded"": 230073870
+    },
+    ""Description"": ""user_inactive_6_months vangogh-composites"",
+    ""CreationTime"": ""2019-02-07T00:29:13.488Z"",
+    ""JobId"": ""6733ac65-50c2-4332-a273-915e096b94c0"",
+    ""Priority"": 42,
+    ""Operation"": ""S3PutObjectTagging""
+  }"
+
+Amazon Glacier	"Re: Large batch operation gets stuck in Active state, near completion
+We'll take a look and get back to you."
+
+Amazon Glacier	"Re: Large batch operation gets stuck in Active state, near completion
+While it looks like the job has now been cancelled, we are doing further investigation to see why our retry logic was delayed in picking up the remaining objects in this job."
+
+Amazon Glacier	"""Task target couldn't be URL decoded"" for CSV manifest
+Hi there, this concerns jobs e622ad8d-44d1-4460-af06-afea56a35bba and 6aaefb2a-237b-4167-b341-f724eb65fae2.
+
+After creating the jobs, they fall into the Failed status, with this error:
+
+        ""FailureReasons"": [
+            {
+                ""FailureCode"": ""InvalidManifestContent"",
+                ""FailureReason"": ""Failed to parse task from Manifest teespring-object-cleanup/usercontent.to-archive.csv at byte offset 139264. ErrorMessage: Task target couldn't be URL decoded""
+            }
+        ],
+
+
+I don't see any problems with the manifest at the given location:
+$ head -c 139280 usercontent.to-archive.csv| tail
+teespring-usercontent,uk8jnb-uploads
+teespring-usercontent,ae1d50-uploads
+teespring-usercontent,e42b5u-uploads
+teespring-usercontent,xxn5je-uploads
+teespring-usercontent,6m5trx-uploads
+teespring-usercontent,71le05-uploads
+teespring-usercontent,4gktyu-uploads
+teespring-usercontent,nr4hbl-uploads
+teespring-usercontent,gczt0c-uploads
+teespring-userconten⏎ 
+
+
+Neither are there any blank lines (which might be a problem according to https://forums.aws.amazon.com/thread.jspa?threadID=295717&tstart=0).
+
+$ grep -c '^$' usercontent.to-archive.csv
+0
+
+
+As the manifest file is quite large, I've emailed a link to the file to s3batchoperationspreview@amazon.com rather than attached it here."
+
+Amazon Glacier	"Re: ""Task target couldn't be URL decoded"" for CSV manifest
+Thanks for reaching out. We suspect the error is due to the manifest containing some rows where the bucket field is populated but the object key is blank. This was observed in the copy of the manifest you shared via email. 
+
+We are also looking into the byte offset you shared from the error message and will continue to work to improve our error messages and make them more targeted during the course of the preview."
+
+Amazon Glacier	"65% success rate when applying a tag via a batch operation
+As a test, I added a tag to 28 objects in a large S3 bucket via a batch operation.
+
+In the report CSV, there is a 200, Successful status for all 28 objects.
+
+However, when I query the taggings for those 28 objects, only 18 of the 28 have had the tag successfully applied.
+
+The job ID is f2851b2d-07c1-400b-9392-37eb2244c6dc.
+
+An example object which was tagged correctly is s3://vangogh-composites/aEcBjLIY-0nQgm1V0QBtPawF64I.
+
+An example object which was not tagged correctly is s3://vangogh-composites/RSiNYxIZQQHeFKiufECOiBCc5mc."
+
+Amazon Glacier	"Re: 65% success rate when applying a tag via a batch operation
+You may observe this behavior if objects are overwritten or new versions are added to the bucket after the tagging job is complete. The Batch Operations job acts only on the objects specified in the manifest at the time the job is run, later updates will not be tagged. 
+
+For an unversioned bucket, this means that any overwritten objects to the same key after the tagging job is completed will not have object tags (unless added through another means).
+
+For a versioned bucket, you can choose to specify or not specify version IDs in your manifest. When version IDs are specified, the job acts on the object versions specified. If no version ID is given, Batch Operations acts on the object version that is the current version when the job is executed."
+
+Amazon Glacier	"Re: 65% success rate when applying a tag via a batch operation
+I see, that makes sense – let me double check with some objects I'm 100% sure won't be updated: I'll mark this as answered if that goes smoothly.
+
+Thanks!"
+
+Amazon Glacier	"Cost of a batch operation?
+I can't find any information about the price of performing batch operations.
+
+E.g. do prices vary by job size? Operation type?"
+
+Amazon Glacier	"Re: Cost of a batch operation?
+During the Preview, S3 Batch Operations jobs and objects will be free. Although, you will still be charged for S3 Batch Operation requests (List Jobs and Update Job Priority are Tier 1 requests, and Describe Job is a Tier 2 request) and any charges associated with the operation that S3 Batch Operations performs on your behalf, including data transfer, requests, and other charges. For example, adding object tags to one million objects you would pay $5.00 ($0.005 per 1000 requests in us-east-1) for the PUT object tag requests.
+
+When the product launches, the pricing will be $0.25 per job and $1.00 per 1 million object operations performed by S3 Batch Operations."
+
+Amazon Glacier	"""aws: error: argument command: Invalid choice"" when creating a batch job
+Hi all, I'm trying to create my first batch operation job, following these instructions: https://docs.aws.amazon.com/AmazonS3/latest/dev/batch-ops-operations.html
+
+1a) and 1b) went fine, but when I attempt 2), I get this error:
+
+aws s3control create-job \
+        --region us-east-1 \
+        --account-id 476385240457 \
+        --operation '{""S3PutObjectTagging"": { ""TagSet"": [{""Key"":""keyOne"", ""Value"":""ValueOne""}] }}' \
+        --manifest '{""Spec"":{""Format"":""S3BatchOperations_CSV_20180820"",""Fields"":[""Bucket"",""Key""]},""Location"":{""ObjectArn"":""arn:aws:s3:::I_PUT_A_FILE_HERE"",""ETag"":""fef589dde810e57129e5b4370f26439e""}}' \
+        --report '{""Bucket"":""arn:aws:s3:::I_PUT_A_BUCKET_HERE"",""Prefix"":""final-reports"", ""Format"":""Report_CSV_20180820"",""Enabled"":true,""ReportScope"":""AllTasks""}' \
+        --priority 42 \
+        --role-arn S3BatchJobRole \
+        --client-request-token (uuidgen) \
+        --description ""Testing 0"" \
+        --no-confirmation-required
+ 
+usage: aws [options] <command> <subcommand> [<subcommand> ...] [parameters]
+To see help text, you can run:
+ 
+  aws help
+  aws <command> help
+  aws <command> <subcommand> help
+aws: error: argument command: Invalid choice, valid choices are:
+ 
+... lots of options, none of which are s3control ...
+
+
+I was only recently granted access to the batch operations preview – do I need to wait a while before it's usable? Or do something with my aws CLI to enable it?
+
+Thanks!"
+
+Amazon Glacier	"Re: ""aws: error: argument command: Invalid choice"" when creating a batch job
+Did you use the instructions here to add S3 Batch Operations functionality to the AWS CLI? (https://s3-us-west-2.amazonaws.com/s3batchoperationspreview/SDK+Download+Links.pdf)
+
+As we are still in Preview, the feature is not yet part of the public release of the CLI.
+
+Rob"
+
+Amazon Glacier	"Re: ""aws: error: argument command: Invalid choice"" when creating a batch job
+I had not seen that, no! That's great, s3control works now.
+
+The next problem I ran into is my user/policy/role isn't working as expected to enable me to create the job – but I'll either figure that out myself or create a separate thread for that separate issue.
+
+Thanks again!"
+
+Amazon Glacier	"Empty line in input CSV causes parsing failure
+If the CSV file used as input (manifest object) ends with a blank line, the operation fails with this error:
+
+Failed to parse task from Manifest <mybucket>/incoming/list1.csv at offset 441. ErrorMessage: Unexpected parsing error
+
+I'd consider that a bug."
+
+Amazon Glacier	"Re: Empty line in input CSV causes parsing failure
+Thank you for your feedback!  We will take a look into this and determine a path forward."
+
+Amazon Glacier	"Re: Empty line in input CSV causes parsing failure
+Thanks for the feedback. Would you be able to send the CSV file you used, or just the ending  portion of it, to s3batchoperationspreview@amazon.com?
+
+Feel free to redact or change any key names/bucket names if you want to use generic terms for them."
+
+Amazon Glacier	"Re: Empty line in input CSV causes parsing failure
+Emailed the file a few moments ago."
+
+Amazon Glacier	"Java SDK Support
+When will S3 Batch support for the Java SDK be released?"
+
+Amazon Glacier	"Re: Java SDK Support
+In the Preview welcome email there was a link to instructions for each SDK, as well as downloads.  Here is the link to the PDF: https://s3-us-west-2.amazonaws.com/s3batchoperationspreview/SDK+Download+Links.pdf
+
+Also, this is the link to our Java SDK: https://s3-us-west-2.amazonaws.com/s3batchoperationspreview/AWSS3ControlJavaClient-1.11.x.jar"
+
+Amazon Glacier	"Re: Java SDK Support
+I guess the API is pretty obtuse.  Any better instruction on how to use the SDK?"
+
+Amazon Glacier	"Re: Java SDK Support
+Were you able to get the jar file installed so that S3 Batch Operations functionality is part of the Java SDK?
+
+If you have, are you looking for us to add Java SDK examples to our documentation? This work is underway and those examples should be added soon."
+
+Amazon Glacier	"Can a PUT Copy be used to copy into a deeper path?
+I am looking at using the PUT Copy option to effectively backup a set of objects into a different bucket under a deeper path. It seems that this is not currently possible. Ideally what I would like to use this batch feature to copy a list of objects from one bucket into another bucket with a predefined path prefix. Also, it would be great if the current ACL and storage class of each object is copied with it.
+
+Robert"
+
+Amazon Glacier	"Re: Can a PUT Copy be used to copy into a deeper path?
+Thanks for the feedback. We will look into offering the ability to copy data into a destination prefix.
+
+Today, copy through S3 Batch Operations writes all the copied objects with the storage class and object ACL specified during job creation. I'll document a feature request for the ability to preserve the object ACL and storage class of the object as it is copied."
+
+Amazon Glacier	"Remove all tags
+Feature request.
+
+Batch operation should allow the removal of all tags.
+
+With the current setup, removing existing tags is not possible..."
+
+Amazon Glacier	"Re: Remove all tags
+It sounds like you would like to see Delete object tagging (https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectDELETEtagging.html) as a supported operation in Batch Operations, is that correct? 
+
+Would you expect this to be a recurring workload or a one time deletion of tags? On this question, we're mainly just trying to gather additional insights into the most common Batch Operations usage."
+
+Amazon Glacier	"Re: Remove all tags
+Yes, correct.
+
+For me this would be a one off. I'm currently testing large ingests, so it'd be nice to be able to add and remove tags in batches."
+
+Amazon Glacier	"Re: Remove all tags
+Thanks, I'll save your feature request for the new operation type."
+
+Amazon Glacier	"Application for iOS / iPhone / iPad mobile access to Glacier?
+Good afternoon, 
+
+Hopefully this is the best place to ask this...
+
+I'm a new personal customer to AWS and Glacier and I've found the ""AWS Mobile Console"" app here; https://aws.amazon.com/console/mobile/ ... however it only supports a limited number of AWS services and Glacier isn't one of them.
+
+Can anyone recommend a third-party mobile app for iOS 12 (iPhone / iPad) which works in the same way as windows client tools such as ""FastGlacier"" (https://fastglacier.com/)  and Cloudberry's ""Explorer"" (https://www.cloudberrylab.com/explorer.aspx) et al?
+
+I've tried searching and unless I'm missing something I'm not finding anything. I was thinking there might be a need to request a restore when I'm not able to get to my own or any computer with an Internet Connection etc.
+
+Thanks for any advice.
+
+Regards"
+
+Amazon Glacier	"Do Glacier IAM resource access policies respect NotPrincipal?
+I'm trying to set up a vault lock policy that denies delete capability to all users EXCEPT the user(s) specified in an IAM ""NotPrincipal"" object. The vault also needs to have a specified tag. The policy below looks correct to me but PowerShell Remove-GLCVault cmdlets fail with an explicit deny error.
+
+Interestingly, when you input this policy in the console it is accepted but the ""Principals"" field is blank. One could argue that's correct since no Principals are supplied. But it makes me wonder if Glacier only supports the Principals IAM object.
+
+Do Glacier access policies respect NotPrincipal? 
+
+Here's the policy:
+
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Sid"": ""permit-delete-for-specified-users-deny-all-others"",
+            ""Effect"": ""Deny"",
+            ""NotPrincipal"": {
+                ""AWS"": [
+                    ""arn:aws:iam::123456789abc:user/deleteuser""
+                ]
+            },
+            ""Action"": ""glacier:DeleteVault"",
+            ""Resource"": ""arn:aws:glacier:us-east-1:123456789abc:vaults/VLockTest"",
+            ""Condition"": {
+                ""StringLike"": {
+                    ""glacier:ResourceTag/LegalHold"": [
+                        ""true""
+                    ]
+                }
+            }
+        }
+    ]
+}"
+
+Amazon Glacier	"AWS Simple storage really NOT simple
+Hi,
+
+I am investigating the possibility of using Glacier to archive files for backup purposes and it just doesn't work efficiently. Just creating a vault through the console didn't work well for me; I am stuck with the default US region while I wanted to store the data in my country, Canada, and there is no way from the GUI to change the region, I tried, searched for more than 5 minutes, nothing. Program code (in Java or C#) is almost mandatory just to upload a single file. I tried using the CLI and found out that you need a tree hash just to upload a file, but I even don't know what is a tree hash and don't want to bother myself reading about cryptography to figure that out, and try to manually compute one for each and every file I want to upload. If a tree hash is just a checksum, WHY not call this as such and specify which checksum it is (SHA256, e.g.) instead of inventing a new work and again and again and again, assume prior knowledge?
+ I tried to check introductions on AWS, but all I get is inline code that I would need to copy/paste from web page to files, but each time I try to do that, I misclick and get missing parts or the parts of the webpage around the code, not just the code itself. If the 400Mb SDK (really too large for just a SDK!) contains copies of this, then the tutorials should tell so, but all there is code snippets.
+Seems AWS doesn't work alone, requires third parties like Veeman or Goodsync, but each time I try a third party, it doesn't compile, doesn't install, is not part of Ubuntu's repositories, doesn't work, etc.
+If a third party is really necessary, then how can I figure out what to take? I'm worried the encoding of the archives will even depend on the third party so if I pick the wrong ones I will have to download the data and re-upload it to switch."
+
+Amazon Glacier	"Re: AWS Simple storage really NOT simple
+Hi again,
+
+I found out thqt S3 and Glacier have different APIs and command lines. Using Glacier directly wasn't the greatest idea in the world; it is far easier to use S3 with a lifetime rule sending old objects to Glacier. I was able to create S3 buckets, upload files and delete buckets, from the command line."
+
+Amazon Glacier	"AccessDeniedException: user is not auth...but...
+OK, so I successfully ran a list vaults: 
+aws glacier list-vaults --account-id -
+
+
+But, 
+aws glacier upload-archive --account-id - --vault-name my_vault --body my_file.txt
+
+returns:
+An error occurred (AccessDeniedException) when calling the UploadArchive operation: User: arn:aws:iam::123132123132:user/xyz is not authorized to perform the operation
+
+
+However, I am looking at the group policy: 
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": [
+                ""glacier:InitiateJob"",
+                ""glacier:AbortMultipartUpload"",
+                ""glacier:GetVaultAccessPolicy"",
+                ""glacier:ListTagsForVault"",
+                ""glacier:CreateVault"",
+                ""glacier:DescribeVault"",
+                ""glacier:AddTagsToVault"",
+                ""glacier:GetJobOutput"",
+                ""glacier:ListParts"",
+                ""glacier:GetVaultNotifications"",
+                ""glacier:DescribeJob"",
+                ""glacier:GetDataRetrievalPolicy"",
+                ""glacier:ListJobs"",
+                ""glacier:ListMultipartUploads"",
+                ""glacier:SetVaultNotifications"",
+                ""glacier:CompleteMultipartUpload"",
+                ""glacier:InitiateMultipartUpload"",
+                ""glacier:UploadMultipartPart"",
+                ""glacier:PurchaseProvisionedCapacity"",
+                ""glacier:UploadArchive"",
+                ""glacier:GetVaultLock"",
+                ""glacier:ListVaults"",
+                ""glacier:ListProvisionedCapacity""
+            ],
+            ""Resource"": ""*""
+        }
+    ]
+}
+
+to which user ""xyz"" is a member and ""glacier:UploadArchive"", is clearly listed there.
+
+Anyone care to tell me what gives?
+
+Also, as a bonus. the docs say that you must provide a checksum when uploading but then the example given omits the checksum: 
+aws glacier upload-archive --account-id - --vault-name my-vault --body archive.zip
+
+https://docs.aws.amazon.com/cli/latest/reference/glacier/upload-archive.html
+What am I missing?
+
+Edited by: md500 on Dec 6, 2018 8:18 PM"
+
+Amazon Glacier	"Re: AccessDeniedException: user is not auth...but...
+Hm, nvm looks like it worked this time.  I suppose I could have had a typo in the command the first time."
+
+Amazon Glacier	"Admin account denied access to list-vaults
+Hi, 
+
+I have an AWS admin account that is returning a:
+
+An error occurred (AccessDeniedException) when calling the ListVaults operation: User <arn account name> is not authorized to perform the operation
+
+via the aws cli (Windows 10 desktop).
+I've run aws iam commands to confirm the account has access - I even created a separate group with AmazonGlacierFullAccess policy assigned to it and a new Access Key ID, but I still get the error.
+
+Can anyone suggest the next steps for troubleshooting?"
+
+Amazon Glacier	"Nas to Glacier, Nas died, new nas to glacier new vault not old one
+Hi All, 
+We have a DSM Nas uploading to Glacier for the last few years. Its hardware died and we got the data running on a new box. But when I went to set up Glacier backup again it needed a new security key and then created a new Vault. 
+So is there any way to connect to the original vault (so we do not have to move 7 tb's again) or transfer the old vault to the new one?
+
+Any ideas would be great"
+
+Amazon Glacier	"Re: Nas to Glacier, Nas died, new nas to glacier new vault not old one
+Hi,
+
+Thank you for contacting Glacier. I would recommend contacting your NAS vendor support on re-using an existing Glacier vault. If you are concerned about your existing data/vaults in Glacier, you can log into the Glacier console to see a list of all the vaults and a summary of content. 
+To get a complete list of archives in your Glacier vault, you will need to request an inventory report which will provide you with a detailed report of all the archives and the corresponding metadata.
+
+Hope that helps!
+
+Abhinav"
+
+Amazon Glacier	"Re: Nas to Glacier, Nas died, new nas to glacier new vault not old one
+How would synology help me connect to a specific Glacier vault? It only allows me to use a key and a private key to connect to through the Iam account. The connection to the vaults is through the Iam account Access key and secret key. So there is no way to connect a new key to an old vault?"
+
+Amazon Glacier	"Re: Nas to Glacier, Nas died, new nas to glacier new vault not old one
+In the end you are SOL and need to start over if you lose the keys."
+
+Amazon Glacier	"Extremely slow download speeds using Glacier
+Hi all, I'm attempting to download about 83 GB from Amazon Glacier using Freeze on Mac. I am seeing extremely slow download speeds: 4 bytes per second. That's not 4 MB or KB; 4 BYTES per second. At this rate, it will be over 700 years for this download to complete.
+
+Alas, I don't have that sort of time, so I was wondering what was going on. I reached out to Freeze's developer, but he's just using standard Amazon APIs, and since I have no download limits enabled in the program, he has referred me here.
+
+(Note: this is an issue with the download of the data from the Amazon data center to my computer, not an issue with the Glacier retreival, which completed without incident. As such, it may not be a Glacier-specific issue, but I figured this would be a good starting point.)
+
+My general internet speed is not an issue; I'm getting 23.0 Mbps download and 17.9 Mbps upload. I'm based in the NYC Metro area, connecting to local servers for internet access, and I'm hitting the Amazon data center in Virginia, so physical distance shouldn't be an issue (not that it would necessarily explain such a drastic slowdown).
+
+My computer is a MacBook Pro running Sierra, plenty of RAM, available CPU power, and hard drive space.
+
+What could be causing this extreme slowdown? I don't mind waiting a few days or even a week to get a relatively large amount of data from cold storage, but 7 centuries is a little past my SLA."
+
+Amazon Glacier	"Re: Extremely slow download speeds using Glacier
+Update: since I posted this thread, I dropped to 1 byte per second. 
+
+Has this happened with anyone else?"
+
+Amazon Glacier	"Re: Extremely slow download speeds using Glacier
+Hello, 
+
+Can you complete an extended ping and traceroute to glacier.us-east-1.amazonaws.com to verify if you're seeing any latency or packet loss to glacier in that region? If you're seeing 1 byte per second I doubt this is the issue, as the type of packet loss and latency required to lower speeds that low would likely not allow for the initial connection. 
+
+I haven't used Freeze before, but when attempting to use it I found that it required a license to retrieve anything from Glacier so I was unable to proceed with my own attempts at replicating this with Freeze specifically. 
+
+Have you tried from any other applications or from AWS CLI? From AWS CLI if you've already retrieved your archive and initiated a job, you should be able to download the output with the following:
+
+aws glacier get-job-output --account-id <InsertAccountIDHere> --vault-name <InsertVaultNameHere> --job-id <InsertJobIDHere>
+
+
+Otherwise you may want to try from another computer or internet connection to help rule out where exactly the problem lies. 
+
+Regards,
+Nick"
+
+Amazon Glacier	"Re: Extremely slow download speeds using Glacier
+Thank you for the reply, Nick!
+
+Ping looks normal, but Traceroute is showing a great deal of packet losses.
+
+traceroute to glacier.us-east-1.amazonaws.com (54.239.30.206), 64 hops max, 52 byte packets
+ 1  wireless_broadband_router (192.168.1.1)  0.751 ms  0.486 ms  0.383 ms
+ 2  lo0-100.nwrknj-vfttp-363.verizon-gni.net (72.76.47.1)  8.880 ms  6.311 ms  7.796 ms
+ 3  b3363.nwrknj-lcr-21.verizon-gni.net (100.41.200.154)  9.613 ms  9.670 ms  7.380 ms
+ 4  * * *
+ 5  0.ae2.br2.nyc4.alter.net (140.222.229.93)  10.244 ms  12.119 ms  9.862 ms
+ 6  ntt.customer.alter.net (152.179.49.38)  10.205 ms  9.687 ms  9.766 ms
+ 7  ae-11.amazon.nycmny01.us.bb.gin.ntt.net (129.250.201.138)  10.325 ms  10.034 ms
+    ae-9.amazon.nycmny01.us.bb.gin.ntt.net (129.250.201.130)  9.508 ms
+ 8  52.93.4.91 (52.93.4.91)  12.260 ms
+    52.93.4.105 (52.93.4.105)  19.169 ms
+    52.93.4.113 (52.93.4.113)  10.109 ms
+ 9  52.93.4.28 (52.93.4.28)  9.676 ms
+    52.93.4.0 (52.93.4.0)  8.587 ms
+    52.93.4.34 (52.93.4.34)  9.096 ms
+10  54.239.41.217 (54.239.41.217)  16.874 ms
+    54.239.42.186 (54.239.42.186)  18.984 ms  16.718 ms
+11  54.239.108.216 (54.239.108.216)  42.707 ms
+    54.239.108.214 (54.239.108.214)  27.060 ms
+    54.239.108.248 (54.239.108.248)  32.369 ms
+12  54.239.108.65 (54.239.108.65)  16.925 ms
+    54.239.108.99 (54.239.108.99)  14.435 ms
+    54.239.111.45 (54.239.111.45)  15.816 ms
+13  205.251.244.207 (205.251.244.207)  14.069 ms
+    205.251.245.47 (205.251.245.47)  19.347 ms
+    205.251.245.244 (205.251.245.244)  17.069 ms
+14  * * *
+15  * * *
+16  * * *
+17  * * *
+18  * * *
+19  * * *
+20  * * *
+21  * * *
+22  * * *
+23  * 72.21.218.197 (72.21.218.197)  18.110 ms *
+24  * * *
+25  * * *
+26  * * *
+27  * * *
+28  * * *
+29  * * *
+30  * * *
+31  * * *
+32  * * *
+33  * * *
+34  * * *
+35  * * *
+36  * * *
+37  * * *
+38  * * *
+39  * * *
+40  * * *
+41  * * *
+42  * * *
+43  * * *
+44  * * *
+45  * * *
+46  * * *
+47  * * *
+48  * * *
+49  * * *
+50  * * *
+51  * * *
+52  * * *
+53  * * *
+54  * * *
+55  * * *
+56  * * *
+57  * * *
+58  * * *
+59  * * *
+60  * * *
+61  * * *
+62  * * *
+63  * * *
+64  * * *
+
+
+I have an EC2 instance I use for a Twitterbot. My uploads to it are fairly small, but finish in a reasonable amount of time.
+
+Since I initiated this retrieval job last week, my job ID has already expired, so I can't use AWS console to download it. 
+
+Any further help would be hugely appreciated. Thank you!"
+
+Amazon Glacier	"Re: Extremely slow download speeds using Glacier
+Now at 0 bytes per second - completely stalled."
+
+Amazon Glacier	"Re: Extremely slow download speeds using Glacier
+Hello, 
+
+That traceroute does not show packet loss. The stars indicate TTL has expired, which basically means our nodes have deprioritized this traffic or are simply not responding to it. Traceroute will be more useful if you were seeing packet loss or lower latency, as it would indicate where the issue starts to occur. If your ping to glacier.us-east-1.amazonaws.com indicates no packet loss and low latency than you likely don't have any network issues between yourself and our network. 
+
+I've been unable to duplicate the issues you're having specifically, so we need to rule out where the issue lies with this attempted download.
+
+To rule out any application issues, you can try retrieving your job ID via command line or using different tools. 
+
+To rule out any OS/hardware, you could try from another PC/mac.
+
+To rule out a network issue you could try from another network/ISP. 
+
+Doing any of the above will help us rule out where the problem is. 
+
+I'd recommend retrieving another job ID since this one expired and then attempting to get the output using the variety of methods above so we can identify where help identify where the problem is occurring. If you get this job ID and still have issues, please let us know the job ID so we can verify it from our end. 
+
+If you'd like to do this via CLI you can review the relevant CLI commands with the following links:
+http://docs.aws.amazon.com/cli/latest/reference/glacier/initiate-job.html
+http://docs.aws.amazon.com/cli/latest/reference/glacier/get-job-output.html
+
+Regards,
+Nick"
+
+Amazon Glacier	"Re: Extremely slow download speeds using Glacier
+OK, I was able to download over 40 GB via the CLI before it was interrupted by an HTTP timeout (different issue).
+
+So I know I can download my stuff via the CLI in theory (although it's pretty annoying to use - which is why I wanted to use a more developed client in the first place), so I'll go back to Freeze's developer and try to get it worked out with him.
+
+I'll leave this thread as ""unanswered"" for now, as I've given Freeze's developer its link, and he may want to chime in with questions.
+
+Thanks!"
+
+Amazon Glacier	"Re: Extremely slow download speeds using Glacier
+Freeze developer here. Just for the record for anyone finding this: Freeze has since been updated to resolve this issue. The app now uses a low speed detection which will abort and resume the upload/download if the average transfer speed falls below a certain threshold.
+
+If anyone is having similar issues with the current release, please contact me at support at freezeapp dot net. I'm happy to help!"
+
+Amazon Glacier	"Amazon Glacier now available in the LATAM region (Sao Paulo)
+Dear Amazon Glacier Customer, 
+
+Amazon Glacier is now generally available in the LATAM (Sao Paulo) region. 
+
+Customers can now use Amazon Glacier in Central and South America to reliably and durably store backup and long-term archival data for US$0.0085 per gigabyte per month, with no up-front expenses or long-term commitments. Amazon S3 customers whose data resides in LATAM (Sao Paulo) can use Amazon S3 Lifecycle Management to configure rules that automatically archive infrequently accessed objects to Amazon Glacier at the same low rates.
+
+Amazon Glacier is now available in 18 regions worldwide, 5 new regions already announced. You can learn more about our growing global infrastructure footprint at our  Global Infrastructure Page https://aws.amazon.com/about-aws/global-infrastructure/ .
+
+We continue to expand our services globally, based in large part on customer input, so please continue to send us your feedback. To get started or learn more, visit https://aws.amazon.com/glacier.
+
+Sincerely, 
+The Amazon Glacier Team
+
+Edited by: Amazon-Mike on Nov 9, 2018 11:43 AM"
+
+Amazon Glacier	"Glacier - Expedited Initiate Restore With Provisioned - Not working
+Hey there! I'm attempting to restore about 100 jpg files from Glacier, and I've selected the Expedited restore tier and even inadvertently purchased a Provisioned capacity unit. It appears that the files have been retrieved properly, however, it's not updating the storage class label from ""Glacier"" to Standard, so my setup won't read it properly and thinks that it is still in Glacier.
+
+When I go into an individual file that is labeled ""Glacier"", It has a ""Restoration expiry date"", and will even let me download it individually, but that, unfortunately, is not what I need... I need the labels to accurately reflect the storage class.
+
+How can I get these labels to update/refresh?
+
+Thanks!"
+
+Amazon Glacier	"How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
+I'm very new to AWS and have started working with CloudFormation templates. In the stack I'm trying to build I need to create a Glacier as a Resource. I've looked around but have n ot found any snippets on this. 
+
+Is it possible even?
+
+Appreciate any advice and/or guidance. 
+
+Thanks!
+
+Edited by: AntG0 on Feb 26, 2013 1:58 PM"
+
+Amazon Glacier	"Re: How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
+Hi,
+
+What you've asked for isn't currently supported by CloudFormation.  I've forwarded your feedback to the CloudFormation team as a feature request - thanks for taking the time to let us know how you'd like to use our services!
+
+Thanks,
+Chris"
+
+Amazon Glacier	"Re: How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
+Thank you for your reply. So how does one then automate Glacier into a stack, is there a different mechanism or is it necessarily manual at this point?
+
+Thank you."
+
+Amazon Glacier	"Re: How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
++1
+
+CloudFormation support should be a required step in releasing new AWS services and enhancements to existing services."
+
+Amazon Glacier	"Re: How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
++1
+
+Eric is right. It get's old playing the guessing game if a new service is going to be supported by CF, or for that matter, CloudWatch. The lack of road maps and dates just isn't acceptable anymore. The lack of communication to your customers and partners used to be 'cool'; now it's the kind of thing that will make people leave your offering."
+
+Amazon Glacier	"Re: How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
+-1 actually.
+
+Generally speaking, CloudFormation integration does seem like a reasonable thing to expect of any AWS service, but Glacier stands out to me as a fully-acceptable exception to this.
+
+I can't imagine a justifiable need for Glacier to be addressable by CloudFormation, because the two services are inherently, fundamentally, diametrically opposed to each other.
+
+CloudFormation builds stacks of what are primarily easily-destroyed objects.  Granted, in cases like creating an EBS volume or S3 bucket, they can persist after the stack is gone, or not... but Glacier is not intended to be destructible without a lot of effort -- not to mention the fact that if data is uploaded to Glacier and then deleted, there is the $0.03/GB penalty for not leaving the data in Glacier long enough.
+
+If something running in CloudFormation needs to manipulate vaults or archives or otherwise interact with Glacier, it seems simple enough that this could be done by the code running on the stack -- not by the stack itself, since there's not a sensible case to be made for auto-destroying anything in Glacier.  What a mess that would be."
+
+Amazon Glacier	"Re: How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
+I'd definitely like to see this turn up in CloudFormation. Just as automating creation of S3 buckets can work without deleting the data in them if you tear down the stack, I'd like to see the same for Glacier. Even better if I can give CloudFormation a CreationPolicy of Existing that tells it to re-use a given stable bucket/vault if it's present. Let me automatically re-deploy infrastructure around existing data stores without hassle.
+
+The mantra throughout Amazon's articles & re:Invent talks has been 'automate, automate, automate'. If I've got multiple regions & multiple accounts to re-create or re-deploy perfectly every single time, why would I want a bunch of manual steps in Glacier's web console, or manually written API calls, rather than properly set up CloudFormation templates checked into source control?
+
+CloudFormation is the closest we have to a self-documenting 'this is how your AWS system is built & configured' script.
+
++1 for having the feature. If you don't want it, don't use it, but for those of us automating building large scale systems, this is practically a must-have."
+
+Amazon Glacier	"Re: How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
++1
+
+Yes, if I'm starting up CF to fire up an environment, and Glacier is part of that (s3 -> Glacier)
+I'd want my buckets and bucket disposition (Glacier) set at the same time.
+
+No manual steps."
+
+Amazon Glacier	"Re: How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
++1 for this"
+
+Amazon Glacier	"Re: How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
++1"
+
+Amazon Glacier	"Re: How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
++1"
+
+Amazon Glacier	"Re: How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
+Yeah whilst I understand comments made earlier about the whole ""glacier shouldn't be part of your immutable stack setup"", it should be able to be scripted simply because it enables us to codify our setup and respin the infra in the future. Why would I want to have to hand patch in possibly one of the most important aspects of my compliance? Please provide support for this sort of stuff, I'm enjoying CF atm but it's annoying having to find different solutions for different resources, it makes it hard for people to follow the solution implemented when they have to continuously shift mental models."
+
+Amazon Glacier	"Re: How to incorporate Glacier as a Resource in a CloudFormation Tamplate?
++1 I really thought this feature had been added years ago..."
+
+Amazon Glacier	"missing files?
+Hi, 
+
+I have 3 backups on Glacier that I synchronized with FastGlacier, but today, one of the backup is missing and for an another most of the files are missing.
+How that is possible? Who can help me? 
+
+Thanks"
+
+Amazon Glacier	"Re: missing files?
+Hi Alex1234567890, 
+
+I would recommend starting with the FastGlacier logs to troubleshoot any deletion or syncing issues from the client side. If you believe that client looks correct, I'd ask you to open a support ticket with Glacier, provide all the relevant information (region, vault-name, etc.) and I'll be happy to take over from there.
+
+Abhinav"
+
+Amazon Glacier	"Re: missing files?
+0
+
+Edited by: Alex1234567890 on Oct 6, 2018 12:29 AM"
+
+Amazon Glacier	"Re: missing files?
+Hi,
+Actually Fast Glacier did not think, I just start it and tried to compare the local folders with my archive and I saw that files were missing."
+
+Amazon Glacier	"Re: missing files?
+Hi Alex1234567890,
+
+Welcome to Glacier. It sounds like you were able to figure out the issue. If you have any further questions, I'll be happy to assist. Also, I recommend that you read through the FAQs for better understanding of the product.
+
+https://aws.amazon.com/glacier/faqs/
+
+Abhinav"
+
+Amazon Glacier	"Re: missing files?
+It seems that my message wasn't clear. 
+I still have no explanation about the reason why some of my files are missing. 
+You said it could be due to FastGlacier, which is not the case. So I still expect an explanation."
+
+Amazon Glacier	"Re: missing files?
+Following up with Alex1234567890 through PM."
+
+Amazon Glacier	"Re: missing files?
+Hi, can you fix my issue?
+
+Regards"
+
+Amazon Glacier	"Re: missing files?
+Hi still no news from you. 
+Can you manage my issue?
+
+Regards"
+
+Amazon Glacier	"Send file to cloud + delete same in computer local
+Has a option in AWS or software that I send my archives to cloud and after delete this archives in my computer?"
+
+Amazon Glacier	"SubFolders and Prefix
+I have data in subfolders that I would like to transition to Glacier.
+ie: I have a subfolder called BucketA/Disk0/homes containing other subfolders which contains files.
+
+What should be the prefix like to make the transition successfull ?
+I tried homes/ and Disk0/homes, waited 2 days on the first try and now 1 day on the other one, but I don't see any transition to Glacier.
+
+I also tried a full bucket transition on another test bucket and it worked fine in a couple hours but I only want some folders in Glacier on the main bucket.
+
+ps: If subfolders transition is not possible, I could transition everyting to glacier and restore what I don't want in standard storage; but there's an expiry days option for the restore.
+So what is the maximum setting on the expiry (ot is there a way to say the restore is definitive) ?
+
+Thanks a lot
+
+Edited by: sdorrekens on Jan 2, 2013 10:57 PM"
+
+Amazon Glacier	"Re: SubFolders and Prefix
+If in BucketA there is a subfolder called /Disk0/homes and you are given prefix  Disk0/homes then it is correct, There is no problem. Actully Migrate to Glacier (Object Lifecycle -Transition) is does once in a day at 12.00 and After that it will be queued your objects for migrating to Glacier (It may takes time by Amazon S3).
+
+You can get Bucket Explorer copy of coming version which is going to be released, will show you to set Transition details(Amazon S3 to Glacier) and  Expiration Details(Remove Amazon S3 object) together on your data and with more options for Glacier Objects.
+
+I will let you know as soon as it will release.
+
+Thanks
+
+Ronak
+Bucket Explorer"
+
+Amazon Glacier	"Re: SubFolders and Prefix
+Thanks, I checked this morning and Disk0/homes/ did transfer the data onto glacier.
+Have a nice day,"
+
+Amazon Glacier	"Re: SubFolders and Prefix
+hi,
+in my case I have folders that are generated daily and monthly basis using dates as name, with subfolders defined by country name. For example:-
+
+Monthly:-
+BucketA/201801/CountryA/files
+BucketA/201801/CountryB/files
+BucketA/201802/CountryA/files
+BucketA/201802/CountryB/files
+
+Daily:-
+BucketB/20180101/CountryA/files
+BucketB/20180101/CountryB/files
+BucketB/20180102/CountryA/files
+BucketB/20180102/CountryB/files
+
+If I want to transition to glacier a specific country only for all the monthly or daily folder, how can I set this in the prefix? Do I need to set individually for each month or day? How can I set it so that it applies to a specific country prefix for all the monthly / daily named folders ?
+Since the folders are generated on a monthly and daily basis, do I need to manually add the lifecylce rule for every new day and month ?
+
+thanks"
+
+Amazon Glacier	"Glacier vautes won't update their inventory
+Hi,
+
+I have few vaults created roughly 10 days ago.
+
+The inventory for most of the vaults is being updated constantly (probably as they have more activity and new files coming) but on some others, it doesn't update even when I try to force it via API. I would like to go ahead and delete at least one of those vaults, but since they inventory doesn't update, I cannot really see the content, clean it up (if needed, as I'm pretty sure I cleaned them already) and them delete the vault.
+
+Would appreciate your help resolving it.
+
+Thanks,
+Itay
+
+Edited by: Itayev on Oct 1, 2018 2:22 AM"
+
+Amazon Glacier	"Re: Glacier vautes won't update their inventory
+We have reached out to the customer and are working with them to resolve their issue."
+
+Amazon Glacier	"AWS Glacier hash calculation for multipart uploads
+I'm struggling to get my bash script to run a multipart upload to Amazon Glacier. My script works using 1Mb (1048576) parts, however when I try to increase the part size the hashes no longer match those returned by aws glacier.
+
+For example increasing the part size to 8Mb (8388608 bytes)
+
+$ dd skip=0 count=8388608 if=archive.zip of=archive_chunk.1 bs=1
+
+8388608 bytes (8.4 MB) copied, 0.0122916 s, 682 MB/s
+
+$ openssl dgst -sha256 archive_chunk.1
+
+SHA256(archive_chunk.1)= 8ca94b1f246d334e1576d8067b878d61c3a6b494c953518ce25c3f751c4867aa
+
+Upload to aws glacier returns
+{
+    ""checksum"": ""e5483ab34e587c69023490cfabe2b04b232890be72c0af43309fd385779184b3""
+}
+
+
+Is there anything obvious I am missing with the hash generation when I set up the size of the parts? I have tried a range of sizes (64Mb=67108864 and 256Mb=268435456) and all fail to match the aws hashes.
+
+Any help much appreciated!"
+
+Amazon Glacier	"Re: AWS Glacier hash calculation for multipart uploads
+Hello, 
+
+Are you calculating the tree hash for each 1MB chunk? The checksum provided by Glacier is based on a tree hash of all MB chunks of an archive, rather than a hash on the entire archive. Please refer to the below link on computing checksums for Glacier. 
+
+http://docs.aws.amazon.com/amazonglacier/latest/dev/checksum-calculations.html
+
+Mas Kubo
+Product Manager, Glacier"
+
+Amazon Glacier	"Re: AWS Glacier hash calculation for multipart uploads
+This is before the tree hash stage.
+
+Shouldn't the local openssl hash for an individual chunk of a file match that returned by the aws part upload?"
+
+Amazon Glacier	"Re: AWS Glacier hash calculation for multipart uploads
+Did you ever figure this issue out?  I am having the same problem.  I can re-create the tutorial on multi-part uploads with one meg chunks (http://docs.aws.amazon.com/cli/latest/userguide/cli-using-glacier.html).  I can do the same when the last part is not a multiple of chunk size (greater than 2 meg but less than 3). 
+
+When each individual part is uploaded I can compute the same checksum that the upload-multipart-part statement returns.  However, when I use larger parts (2 Gig part size) the same computation to compute checksums for individual parts does not match what is returned by the upload-multipart-part statement.  It seems to me like AWS is returning an incorrect checksum for these larger chunks; or maybe I need to compute it differently.
+
+In any case I can never complete the multipart upload because I cannot compute the same tree hash as the AWS service.  I have used the exact same process (and number of parts) to compute the tree hash for 1 Meg chunks as I have for the larger 2 Gig chunks.
+
+I think this is the same problem you have experienced."
+
+Amazon Glacier	"Re: AWS Glacier hash calculation for multipart uploads
+Yeah, the tutorial is annoyingly confusing on this, because it uses 1MB chunks for the upload and 1MB chunks for the tree hash calculation, implying that as long as you keep the chunk size a factor of 2 and under the max (4G I think), it'll work the same way with larger chunk sizes.  Nope.  If you split the file into chunks that are not 1MB, then after you've transmitted all the parts you have to split it again into 1MB chunks, and use those to calculate the tree hash.
+
+In short, the tree hash is based on 1MB chunks regardless of the size of the multiple parts you uploaded."
+
+Amazon Glacier	"Re: AWS Glacier hash calculation for multipart uploads
+I've been fighting with this issue for a couple of days now.. So you are saying that, I can upload 2GB chunks but the checksum needs to be the result of 1MB chunks regardless of the upload size? Am i understanding correct?"
+
+Amazon Glacier	"Re: AWS Glacier hash calculation for multipart uploads
+Thank you for providing the feedback. I have engaged our technical writers to help improve the tutorial with more examples."
+
+Amazon Glacier	"Re: AWS Glacier hash calculation for multipart uploads
+In case nobody replied and you are still wondering about this.  Yes, the tree hash must always be calculated based on 1mb chunks of the original file.  Even if you are uploading 2gb chunks, the tree hash is based on original file in 1mb chunks.  I found a python script that does this and I am sure there are other scripts / methods to do it.  To keep things simple I am leaning toward using Amazon SDKs but I always like to know what is going on under the hood before blindly using someone else's code.
+
+Pete
+
+Edited by: BadgerPete on Feb 8, 2018 8:22 AM"
+
+Amazon Glacier	"Re: AWS Glacier hash calculation for multipart uploads
+Ok, the consensus seems to be that the tree hash calculations are based on 1MB chunks only.
+This is a nonsense.   I have a number of 1.5 TB archives to upload. Splitting this into 1MB chunks results in about 1,782,579 chunks. This is impractical, impossible to debug
+
+My original upload strategy was to split the archive into 4GB chunks. This would have resulted in 408 chunks, very manageable.
+
+My conclusion is that the AWS Glacier cli is not fit for purpose for archives over a few GB's
+The documentation is really poor in this regard.
+
+I'd really like to be proven wrong on this."
+
+Amazon Glacier	"Any tools to use amazon glacier
+Hi,
+
+  For s3 a magical tool s3cmd is available, but when comes to glacier any tool avail? if so please let me know...
+
+Regards 
+Paulwintech"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+Hi Paulwintech
+
+if you are on Windows you can try CloudBerry Explorer freeware Glacier and S3 freeware client. There are other options available too
+
+Thanks
+Andy"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+You can perform any Glacier operation over FTP with https://cloudgates.net"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+Im looking for a tool to support in Linux"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+What kind of tool is this? Is this secure.. Also is it possible to use in Linux flavors
+
+Regards
+Paulwintech"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+You can use any of the Linux FTP clients with cloudgates.net (for ex. midnight commander). You can use it to upload files even with curl which is installed on most Linux machines anyway.
+
+WRT security, you do need to give your credentials to the service for it to work, but the security is taken very seriously, so it will not be leaked (and you can rotate credentials if you're worried)."
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+I've been using SAGU, or Simple AWS Glacier Uploader. You can find details at  http://simpleglacieruploader.brianmcmichael.com 
+
+I've moved over 70GB with this tool successfully on Mac OS X. It is an executable Java .jar file - so to run it is just a double-click or a java -jar command.
+
+The UI is plain but functional. I've have success in both multiple uploads concurrently running into different vaults, and multiple queued files into a single vault.
+
+My biggest complaint is not a fault of the tool, but of the AWS API. I've posted a separate thread asking for an enhanced ArchiveTransferManager that accepts an InputStream so we can present users with a percentage uploaded instead of an indefinite progress bar."
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+glacier-cli located on github here is a pretty decent cli tool for linux."
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+I've used this tool and works very well.
+
+https://github.com/MoriTanosuke/glacieruploader
+
+roberto"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+Perl Multithreaded multipart sync to Glacier 
+(for linux)
+
+https://github.com/vsespb/mt-aws-glacier
+
+discussed here:
+
+https://forums.aws.amazon.com/thread.jspa?threadID=102986&tstart=50"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+We use glacer-cli with no problems so far.
+Wrote a 100-line Tcl script to encrypt our monthly backups and upload them to Glacier vault.
+Works well."
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+Hi,
+
+Im looking for a feature to support upload/download the archives from a vaults... All the CLI which used for either download or upload(correct me if im wrong)...
+
+Thanks
+paulwintech"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+Nearly all CLI tools allow upload AND download."
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+Sometimes, we get a ""timed out"" with glacier-cli.
+Modified the upload script to split the encrypted files into 1GB chunks and that seems
+to solve that one. Further, when we need them, we'll be able to download 1GB chunks
+to optimize download rates.
+Script attached."
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+Have you tried FastGlacier?
+
+regards
+
+Ajay Pherwani"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+No, it did not address our requirements:
+
+platform independence (ie. run on Unix or Windows)
+GUI independence (ie. run from crontab)
+
+Regards."
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+Hi team,
+
+If you can wait a bit for it to get stable, then my glaciate tool (tar-like, written in Go so cross-platform/single binary/no dependencies).
+
+It's open source but a bit ugly right now, I was planning to refactor in some unit tests over Xmas but failed due to distractions.
+
+Suggestions for functionality are welcome, I'm modelling it on tar and using the tar header (and pax extensions) as that tool has evolved to cater for backing up/restoring all kinds of stuff.
+
+I'll report back when it is stable. Actually, it can't restore right now, so I'm a bit premature 
+
+Cheers,
+Bruce"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+Consider using https://cloudgates.net"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+Just added Glacier support to HashBackup beta, alongside S3, Google Storage, DreamObjects, rsync, ftp, imap, ssh.  Dedup, compression, encryption, retention, upload, download.  OSX, BSD, Linux 32/64 bit.  I'm currently finishing up managed Glacier retrievals, with downloads spread out to reduce retrieval costs.   http://www.hashbackup.com"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+I tried HB with Glacier, but it seems to be a problem with the LocationConstraint value...
+
+HashBackup build 997 Copyright 2009-2013 HashBackup, LLC
+Backup directory: /backup
+Loading destinations from dest.conf
+dest glacier: unable to start: S3ResponseError S3ResponseError: 400 Bad Request
+<?xml version=""1.0"" encoding=""UTF-8""?>
+<Error><Code>InvalidLocationConstraint</Code><Message>The specified location-constraint is not valid</Message><LocationConstraint>us-east-1</LocationConstraint><RequestId>D684AC8E278D9439</RequestId><HostId>jEt8mtMN1DBxomOeIa7AANlLnMvWR4uMjwnaBBuz3+easX02xzo/jG5uwE71scd7</HostId></Error>
+This is backup version: 1
+Dedup enabled, 0% of current, 0% of max
+Removing archive 1.0
+
+Time: 1.0s
+Stored: 0
+Excluded: 0
+Bytes: 0
+No errors"
+
+Amazon Glacier	"Re: Any tools to use amazon glacier
+Can I use Amazon Glacier with Looker or any other Reporting tool.
+
+Please let me know."
+
+Amazon Glacier	"Audit trail
+I would like to store some data in a Glacier where I need to legally prove if and when any of the data was accessed/retrieved by anyone (including myself, as Admin).  
+
+Is that feasible with the default implementation of Amazon or do I need any add ones?  It’s important that there be no practical to circumvent the logging even by the administrator. 
+
+Thanks!"
+
+Amazon Glacier	"Re: Audit trail
+Bump"
+
+Amazon Glacier	"Oregon time out issues
+I am having issues with my backups on Oregon's Glacier Servers. Currently, I am using the same configuration on the Glacier Backup task that I had been using for the past year, the backup in Oregon continually fails, and the only error message states: Upload failed error message: http://Request timed out. (I am using a Synology NAS, and Synology support can't tell me what the problem either)
+
+Since this error won't allow me to update my backups, I started a new backup task in Ireland and has been running correctly for the last 18 hours,  that leads me to think that the problem is related to Oregon.
+
+Any ideas on how to troubleshoot this? Thanks!"
+
+Amazon Glacier	"payment method
+Hi,
+I have a visa debit card setup on my account, will this automatically be charged each month or do I have to manually make the payment? I have a statement for June for $0.49 but it doesn't say anything about when payment is due or when payment will be taken from my account?
+Thanks
+James"
+
+Amazon Glacier	"Re: payment method
+AWS sends out an email (""Amazon Web Services Billing Statement Available""), and your card is automatically charged shortly thereafter. I believe you can expect that to happen within a day or two after receiving the email."
+
+Amazon Glacier	"Re: payment method
+I have another question about payment method. I also have debit card for my account. But in the my card all operations in the internet blocked for security reason. I disable block, when I need to make payment and after it again enable this block. Is it possible to pay for my billing statement in online mode, when I can disable block on my card, click to some button to Amazon charge money and I can again enable block on my card?"
+
+Amazon Glacier	"Can't seem to get updated inventory of vault
+I want to delete everything from a vault.  In order to do so I need to see the inventory.  I am using Cloudberry Explorer as my client.  When I visit the vault it appears to be empty but I know it isn't.  I tell Cloudberry to Get Inventory but it never shows anything.  What do I need to do?  Starting to wonder if maybe something isn't set properly in my permissions so that the IAM user I am using has permission to view?  If I am reading it correctly the control panel says I have it set for AmazonGlacierFullAccess.
+
+Any ideas?"
+
+Amazon Glacier	"Glacier vault not updating
+Hi,
+
+I uploaded a lot of data about two weeks ago and I have been able to check that the data is there using a 3rd party Glacier file transfer app.
+
+When I look at my Amazon Glacier Vaults for my vault, I see the vault there, but under ""Inventory Last Updated"" it says ""Not updated yet"".
+
+I thought that the inventory updated automatically once a day.
+
+I can also see that Amazon have started billing me for the data that's been uploaded, so I'm confident that it's there.
+
+Does anyone have any ideas why the inventory does not show please?
+
+Thanks,
+
+Richard."
+
+Amazon Glacier	"Notificaiton on successful backup?
+Is there a way to do this? All i see is to setup a notification on successful restore. I would think people would want to know if a backup was successful too.
+
+Thanks."
+
+Amazon Glacier	"Re: Notificaiton on successful backup?
+Anyone?"
+
+Amazon Glacier	"Re: Notificaiton on successful backup?
+Hi KW,
+
+Amazon Glacier supports notification on data restore because the restore operation is async and takes between 3-5 hours. Uploading data is synchronous and you get a successful response when the archive has been written durably. 
+
+Are you looking for an ""upload success"" notification for large archives which may take a while to backup/upload? Could you share more background on the intended use case please?
+
+Thank you.
+
+-Henry"
+
+Amazon Glacier	"Re: Notificaiton on successful backup?
+It's now 4 years later....  
+Is there yet a way to get notified of an upload backup job.  In response to an earlier question:
+yes professionally built backups should provide a notification that a job has run ... and whether it was successful or not.
+This is of course useful for large/long-duration uploads, but also as a log of normal scheduled (nightly) incremental backups.
+
+If a scheduled backup fails repeately to run successfully and one doesnt get notified .... what happens when you actually need to restore/retrieve data ... and find it isn't there!!
+
+I see options for notification of 'retrieval' but not 'upload'"
+
+Amazon Glacier	"Using wildcards or regular Expression in prefix for LifeCycle rule?
+Hello Forum,
+I guess that the subject says it all: I'm playing around with some rules to move data from my S3 account to Glacier. 
+
+Is it possible to use wildcards in the prefix part of the rule? Or could one even use regular expressions? 
+I'm trying to achieve a rule that archives all files from a bucket but three. 
+
+Thanks for any support in advance.
+
+Claudia"
+
+Amazon Glacier	"Re: Using wildcards or regular Expression in prefix for LifeCycle rule?
+I'm afraid that wildcards and regular expressions aren't supported at this time. It would be a nice addition though."
+
+Amazon Glacier	"Re: Using wildcards or regular Expression in prefix for LifeCycle rule?
++1 for this request — i have 'asset' buckets that contain multiple versions of assets, some of which should be able to expire shortly after creation.
+
+No way to accomplish that except in API / manually?
+
+Edited by: mbhnyc on Apr 18, 2013 8:57 AM"
+
+Amazon Glacier	"Re: Using wildcards or regular Expression in prefix for LifeCycle rule?
+Right now, you can only specify a prefix to cover a subset of the files. There is an example in the documentation. See Lifecycle Configuration Rules. Anything else would involve some additional work, possibly utilizing the API."
+
+Amazon Glacier	"Re: Using wildcards or regular Expression in prefix for LifeCycle rule?
+Is this still the same, or has anything changed? Expiring objects based on wildcard prefixes would be a great addition and we're in need of the same.
+
+Suresh."
+
+Amazon Glacier	"Avoid unexpected Glacier charges
+Hello,
+we recently activated a policy on our S3 bucket which will auto-rotate files to Glacier after some days and I think all the previous/old files that were on the S3 bucket got rotated all at once.
+
+We were not expecting all old files to be rotated automatically but we were assuming the new policy was kicking in for new files only.
+
+Unfortunately, it worked to all old S3 files that brought us to unexpected huge Glacier charges.
+We are a small company and our decision was aiming to save a few bucks on the backup fees.
+Last month we spent $86.42 and moving to Glacier would have allowed us to save about $50.
+
+But this new policy charged us $1,883.47 just for moving the files.
+This amount is like leaving all the files on S3 for almost 2 years for free!
+
+We know that data stored to Glacier is not meant to be retrieved frequently but we have not done a huge amount of retrievals from Glacier, because all those requests was just upload requests.
+
+I would say then that I should keep the Glacier vault because that's the ultimate position I want my files to be, but maybe I should download all the old files from S3, zip them and upload that zip to Glacier and keep the rotation policy active from now on.
+
+Is it the best way to limit our costs?
+
+Thanks for your support"
+
+Amazon Glacier	"How to move s3 Glaciered folders and files from one bucket to another?
+Hi,
+
+I have a bucket with 4 folders and all files are s3 glaciered.
+At the time was done via lifecycle.
+
+How can i move all 4 folders(with all files)  into a different bucket that already exists?
+
+Edited by: nailian on Jun 19, 2018 3:09 PM"
+
+Amazon Glacier	"Re: How to move s3 Glaciered folders and files from one bucket to another?
+Hi. Would you like to remain Glacier class for these objects? 
+Direct copy with retrieval is possible, however, I'm not sure if S3 allows copy without loosing Glacier class."
+
+Amazon Glacier	"Cannot delete bucket
+I keep on getting an error when I try to delete a bucket.
+
+If I try to empty it, I can only empty some of it, not all of it.   I had no trouble deleting other buckets"
+
+Amazon Glacier	"List files in Glacier with AWS CLI?
+Hi!
+
+I need to delete files stored in a Glacier Vault, but AWS CLI needs the object id and I can't execute the correct command to obtain this id.
+
+Anyone knows the command to see the file id with AWS CLI?
+
+Edited by: beekeka on Mar 12, 2015 2:39 AM"
+
+Amazon Glacier	"Re: List files in Glacier with AWS CLI?
+Hello,
+
+Could you please let me know if you have tried deleting your files using some GUI-based tools such as CloudBerry Explorer or you want to delete your files only using AWS CLI?
+
+Regards,
+Vlad"
+
+Amazon Glacier	"Re: List files in Glacier with AWS CLI?
+Yes, i want use AWS CLI, but i need object id of the file that i want delete."
+
+Amazon Glacier	"Re: List files in Glacier with AWS CLI?
+so you want a CLI way to get the object id.
+
+are you scripting this?"
+
+Amazon Glacier	"Re: List files in Glacier with AWS CLI?
+Yes, I want.
+
+But in Glacier CLI documentation I can't see the command to obtain the object ID."
+
+Amazon Glacier	"Re: List files in Glacier with AWS CLI?
+Hi,
+
+I like to upload the files in vault, I selected retrieval policy free tier unable to view files through AWS CLI
+
+:\Program Files\Amazon\AWSCLI>aws glacier list-jobs --account-id 768518232256 --vault-name thiruneeru
+{
+    ""JobList"": []
+}"
+
+Amazon Glacier	"Re: List files in Glacier with AWS CLI?
+Hi Saravanakumar,
+If I understand your question correctly, you're looking for an inventory of all the uploaded files in your vault. To get this list you need to invoke a vault inventory through CLI.
+
+https://docs.aws.amazon.com/amazonglacier/latest/dev/vault-inventory.html
+
+Keep in mind that inventories take up to 24 hours to update so might not include the archives that have been uploaded within this duration.
+
+-Abhinav"
+
+Amazon Glacier	"Re: List files in Glacier with AWS CLI?
+Hi  abhinavat,
+
+when i tried initiate the job error found.
+
+C:\Program Files\Amazon\AWSCLI>aws glacier initiate-job --account-id <scrubbed> --vault-name thiruneeru
+
+An error occurred (MissingParameterValueException) when calling the InitiateJob operation: Required parameter missing: Job Parameters
+
+thanks and regards,
+Saravana
+
+Edited by: abhinavataws on May 24, 2018 9:27 AM"
+
+Amazon Glacier	"Re: List files in Glacier with AWS CLI?
+Hi Saravana,
+
+You are missing the job parameters for the request. 
+
+aws glacier initiate-job --account-id <account_id> --vault-name my-vault --job-parameters '{""Type"": ""inventory-retrieval""}'
+
+https://docs.aws.amazon.com/cli/latest/reference/glacier/initiate-job.html
+
+PS: I have edited your previous post to remove the account information.
+
+-Abhinav
+
+Edited by: abhinavataws on May 24, 2018 9:28 AM"
+
+Amazon Glacier	"Re: List files in Glacier with AWS CLI?
+Hi Abhinav,
+
+Already I checked the below  command for retrieval find error
+
+C:\Program Files\Amazon\AWSCLI>aws glacier initiate-job --account-id - --vault-name myvault --job-parameters '{""Type"": ""inventory-retrieval""}'
+usage: aws https://forums.aws.amazon.com/ <command> <subcommand> http://<subcommand> ... https://forums.aws.amazon.com/
+To see help text, you can run:
+
+  aws help
+  aws <command> help
+  aws <command> <subcommand> help
+
+Unknown options: inventory-retrieval}'
+
+Edited by: Saravanakumar on May 27, 2018 2:09 PM
+
+Edited by: Saravanakumar on May 27, 2018 2:10 PM
+
+Edited by: Saravanakumar on May 31, 2018 6:13 PM"
+
+Amazon Glacier	"Archive files directly from URL source (https://) without local staging.
+. I need to archive files comming from a URL source - remote sites on which I don't have admin access. 
+(example: a public data set with a https:// download link )
+. Is there a way that I can directly upload them to my Glacier vault without actually downloading them to local ?
+
+. I tried AWS CLI; however, this method throws Error parsing parameter '--body': Blob values must be a path to a file. [1]-  Exit 255
+Code:
+aws glacier upload-archive --account-id - --vault-name myvault --body https://data.cityofchicago.org/api/views/ijzp-q8t2/rows.csv?accessType=DOWNLOAD&bom=true
+
+. I explored AWS SDK for Java (high-level API) and found it is only accepting file paths from my local machine..Below is a piece of code, that throws file not exist error!
+
+public class ArchiveUploadHighLevel {
+    public static String vaultName = ""myvault"";
+    # Below is a sample data available at that download link that I want to archive directly to glacier
+    public static String archiveToUpload = ""https://data.cityofchicago.org/api/views/ijzp-q8t2/rows.csv?accessType=DOWNLOAD&bom=true"";
+    public static AmazonGlacierClient client;
+    public static void main(String[] args) throws IOException {
+    	ProfileCredentialsProvider credentials = new ProfileCredentialsProvider();
+    	client = new AmazonGlacierClient(credentials);
+    	client.setEndpoint(""https://glacier.us-west-2.amazonaws.com/"");
+    	try {
+            ArchiveTransferManager atm = new ArchiveTransferManager(client, credentials);
+            UploadResult result = atm.upload(vaultName, ""my archive "" + (new Date()), new File(archiveToUpload));
+            System.out.println(""Archive ID: "" + result.getArchiveId());
+    	} catch (Exception e)
+    	{
+            System.err.println(e);
+        }
+    }
+}"
+
+Amazon Glacier	"Re: Archive files directly from URL source (https://) without local staging.
+Hello Gowtham,
+
+Glacier's upload API is currently not designed to support the use case you mentioned. I'm going to reach out separately to understand more about your use case to see if I can help in any way. 
+
+Mas Kubo
+Product Manager, Glacier"
+
+Amazon Glacier	"Re: Archive files directly from URL source (https://) without local staging.
+I have the same issue, in my case I want Glacier as a backup repository for other cloud services (Dropbox, Google Drive...). This is a simple service but downloading every single file in order to upload it to Glacier is just out of range."
+
+Amazon Glacier	"Delete Glacier Vault with Lock Policy
+I have a Glacier Vault with over 12,000 archives in it. It also has a locked Vault Lock Policy that prevents deleting archives. I need to now delete this vault but can't. I can't delete the vault because it contains archives but I can't delete the archives because of the lock policy. I also can't delete the lock policy because it is locked. Is there any way to ever remove this vault and its contents or am I stuck paying for it forever? It seems that the service shouldn't allow such a scenario with no way out."
+
+Amazon Glacier	"When RESTORE data transfer is billed?
+Restore job for Glacier is normally two-steps:
+
+1. Initiate job (4hrs to ""prepare"" file to download)
+2. Get job output (actual data transfer happens here)
+
+Question - when will I be billed for data transfer - after step 1 finished or after step 2?
+
+For example - if I requested initiate job and then never transferred the data or the data transfer was programmatically aborted in the middle - what my bill will be?"
+
+Amazon Glacier	"Re: When RESTORE data transfer is billed?
+Hi judge100000,
+
+The Glacier pricing is made up of 3 components - Retrieval requests pricing, retrieval pricing and data transfer charges. 
+
+https://aws.amazon.com/glacier/pricing/
+
+In the example above, you will be charged for Request and Retrieval pricing after step 1 when the data is available for streaming. The data transfer charges occur separately during step 2. As such, if step 2 was never initiated, you will not be charged for data transfer.
+
+-Abhinav"
+
+Amazon Glacier	"Error restore job. Service unavialable 503
+Hi! i just try to restore my backuped data from glacier and got errors on some vaults:  Type	Date	Time	Users	Source IP	Computer name	Content	
+Error	2018/05/05	20:08:22	Glacier	127.0.0.1	localhost	https://forums.aws.amazon.com/ Restore job https://forums.aws.amazon.com/ failed because the service server is temporarily unavailable. The error code is 503. Please contact the service provider for detailed information.	
+
+And the retreive speed other jobs  is to low 4kb/s. What is the problem?  Does it deneding on retreival policy. My plan is FREE TIER ONLY. I try to set No Retrieval Limit plan but nothing changed."
+
+Amazon Glacier	"Re: Error restore job. Service unavialable 503
+Hi pistoletov,
+Glacier error code 503 is sometimes returned for expedited jobs if Glacier doesn't have sufficient capacity to service the on-demand expedited retrievals. 
+
+https://docs.aws.amazon.com/amazonglacier/latest/dev/api-error-responses.html
+
+If your applications are dependent on guaranteed expedited retrievals, I would suggest looking into purchasing provisioned capacity. You can refer to our FAQs for more details about expedited retrievals and provisioned capacity. 
+
+https://aws.amazon.com/glacier/faqs/
+
+
+Abhinav"
+
+Amazon Glacier	"Retrieving archives - simple question
+I think I know the answer but I've never seen an explicit answer.
+
+If I am retrieving, for example, a large number of small files from Glacier, do I need a separate job for every file retrieved?  Or can I define a retrieval job that accepts multiple archiveId parameters to get many files?
+
+If it's the former, one job per archive retrieved, does each retrieval job count as one glacier request for billing purposes?"
+
+Amazon Glacier	"Re: Retrieving archives - simple question
+Hi bp811,
+
+Glacier only supports single archive requests. Each request is charged separately based on the retrieval tier. Would you be interested in a bulk feature that supports multi-archive retrievals?
+
+abhinavataws"
+
+Amazon Glacier	"Re: Retrieving archives - simple question
+That may be a useful feature if it were possible to implement it.
+
+With that in mind, let me pose a scenario.
+
+Let's say I retrieve 500,000 files that are 500k each.  That's 250gb of data total.  My understanding of the new price structure tells me that my cost would be (using standard retrieval) 500,000 requests costing $25 ((500,000 / 1000) * 0.05 per thousand requests) and then data transfer charges of $22.50 (250gb at 0.09 per GB).  Total cost is $47.50, and the only ""catch"" is that I'd have to run 500,000 separate jobs (I can use my database server to keep track of these and automate the download as needed).
+
+Is my understanding correct?
+
+Edited by: bp811 on May 3, 2018 1:32 PM
+
+Edited by: bp811 on May 3, 2018 1:32 PM"
+
+Amazon Glacier	"Re: Retrieving archives - simple question
+Hi,
+The retrieval pricing is made up of 3 components:
+1. Request cost
+2. Retrieval cost
+3. Data transfer cost (if applicable)
+
+In your example above - You are accounting for requests and data transfer but not the retrieval cost. Assuming Standard tier in IAD region, the calculation for your example will be:
+1. Request = 500,000/1000 * 0.05 = $25
+2. Retrieval cost = 250GB * 0.01/GB = $2.5
+3. Data transfer cost = 250GB * 0.09/GB = $22.5 (This is the data transfer cost from Glacier to Internet, other scenarios might differ).
+
+I hope that helps.
+
+
+Abhinav"
+
+Amazon Glacier	"Question on retrieval pricing
+I want to make sure I'm understanding the retrieval pricing model correctly.
+
+My current understanding is that retrievals are $0.05 per 1000 requests and $0.01 / gb retrieved.  So, for a use case close to what I'm contemplating, let's say I have on vault that I'm using to store approximately 500,000  files that are, on average, 1.5mb per file.  Total bytes stored is 750gb.
+
+Based on the pricing page on AWS's website, it suggests my pricing would be (750gb * 0.01) + ((500,000 / 1000) * 0.05).  The first calculation is the data transfer fee, the second a calculation of cost of 500,000 requests.  Data transfer fee calculates as $7.50, request fee is $25.  Total retrieval cost for the whole vault using standard retrieval is $32.50.
+
+So why am I seeing horror stories of paying thousands to just retrieve a few GB?  These other claims are indicating that it has to do with data retrieval rate.  Under that model, it looks something like data transfer fees + request fees + data rate fees.  The data rate fee looks something like 744 hours * average data retrieval rate.
+
+So if the second model is the accurate one, my retrieval formula for the entire vault looks like ((500,000 / 1000) * 0.05) + ***((750gb / 4hrs) * 0.01 * 744)***.  That last bit comes out to just under $1400.
+
+That would be a totally unacceptable cost for my purposes to retrieve the entire vault.  I would like it if someone from AWS could explain what the reality here is, because the pricing page is not as clear as I'd like it to be."
+
+Amazon Glacier	"Re: Question on retrieval pricing
+Since no one seems to be answering, I can only assume the real answer is that my costs would be the far more prohibitive $1400 figure from my example.  Glacier is no longer an option for us."
+
+Amazon Glacier	"Re: Question on retrieval pricing
+Hi bp811,
+
+The peak retrieval pricing model has changed since late 2016 and is now dependent only on the volume of data retrieved and the number of requests at the specific tier rate. From your example above, it seems that you're looking to retrieve the data in Standard tier.
+There is still a data transfer charge in case the data is egressed out to the internet or to a different AWS region but all prices are independent of the speed of transfer. Please refer to our pricing page for more details. 
+https://aws.amazon.com/glacier/pricing/
+
+As an example, you can also look at the following forum post
+https://forums.aws.amazon.com/thread.jspa?threadID=263641
+
+abhinavataws
+
+Edited by: abhinavataws on May 3, 2018 10:00 AM"
+
+Amazon Glacier	"Storage Gateway won't recognize second drive
+Hello,
+
+I currently use Veeam Backup and Replication to backup my VM's to a physical backup server on site. I'm looking to possibly use Amazon Glacier as a secondary destination for my Backups. But from the videos on Veeam's web site, it wants me to create a Storage Gateway for me to be able to use the Virtual Tapes. I cannot get my Gateway to recognize that I have two drives installed on it's VM. I've tried recreating the VM several times, including with two SCSI controllers. But it still won't recognize the second drive, so that I can have one for upload buffer and one for cache.
+
+The second part of my question is, is this even necessary? Is there a way to just send my backup jobs directly to Glacier? Thanks in advance for the help."
+
+Amazon Glacier	"Re: Storage Gateway won't recognize second drive
+I figured out my issue. I didn't realize that you need three drives. One for the OS, one for the cache and one for upload buffering."
+
+Amazon Glacier	"Backup of a MySQL database on Amazon EC2
+Backup of a MySQL database on Amazon EC2
+
+How can I back up my Amazon EC2 MySQL database?
+
+I heard about Amazon Glacier, but I could not implement it.
+Is there a simple and inexpensive alternative to this?"
+
+Amazon Glacier	"Re: Backup of a MySQL database on Amazon EC2
+Moving this post to the Glacier Forum which would be more appropriate. Thank you."
+
+Amazon Glacier	"Upload timeouts to Glacier
+Hi,
+
+I am attempting to use the following script https://github.com/tbumi/glacier-upload/blob/develop/src/glacier_upload/upload.py in order to upload.
+
+In summary, I am providing a 15GB file, telling to to use 256MB parts (-p 256) and using 1 thread. I keep on getting failures saying "" ('ConnectionError' has no attribute 'write')"". My understanding is that we can use part sizes from 1MB to 4gb. 
+
+How come this error is occuring? I tried via a VPN, no VPN and other ways. The only way I was able to get a previous upload to work was splitting a 20GB into 8mb parts. This seems to be quite expensive as it took about 2k UPLOAD requests.
+
+Thank you for your help. Ideally I would like to figure out if it's an issue on my end, or somehow my connection is being closed from the AWS side."
+
+Amazon Glacier	"Multipart upload ID expiration, and what happens after it expires
+The documentation says multipart upload IDs expire after a day, but not whether it's a day since it was created or since it was last used. Which is it?
+
+Meanwhile, I have a multipart upload that's been running seemingly fine for a month (continuously; without a one day lapse in activity) with the same upload ID. If upload IDs expire just a day after their creation, where's my data going? Different archives with the same name? Silently discarded?"
+
+Amazon Glacier	"Re: Multipart upload ID expiration, and what happens after it expires
+According to the documentation for initiating a multipart upload (https://docs.aws.amazon.com/amazonglacier/latest/dev/api-multipart-initiate-upload.html, emphasis mine):
+
+Amazon Glacier will also remove the multipart upload resource if you cancel the multipart upload or it may be removed if there is no activity for a period of 24 hours.
+
+I would take this to mean that the multipart upload will be removed if you have not uploaded a piece in the last 24 hours.  Uploading a piece should therefore extend the life of the multipart upload ID for another 24 hours."
+
+Amazon Glacier	"Glacier contains archives according to console, but inventory is empty
+In the Glacier console, I can see the last inventory date of my vault (Mar 3, 2018 4:47:33 AM) and that as of this inventory, the vault contains 85 archives.
+
+Nevertheless, I have completed two inventory request jobs in the last 24 hours (one following the other) and both report no archives in the vault:
+
+{""VaultARN"":""..."",""InventoryDate"":""2018-03-03T09:47:33Z"",""ArchiveList"":[]}
+
+This vault has had archives in it for ~4 years.  Why would they not be listed in an inventory request job?  Are the archives gone?  If so, why would the console report that the last inventory (with the same date) has 85 archives?"
+
+Amazon Glacier	"Re: Glacier contains archives according to console, but inventory is empty
+I'm facing the same problem, console shows thousands of archives across 20 vaults aging 4~5 years, all of them on us-east-1, but when i retrieve my inventories (tried with fastglacier client v3.6.7 , v3.8.5 and a python2.7, boto 2.48.0 script) only the recently uploaded archives are retrieved (older one is from Mar 15, 2018)."
+
+Amazon Glacier	"Re: Glacier contains archives according to console, but inventory is empty
+Thanks for bringing this to our attention. We are reviewing the question you asked and will be contacting you directly."
+
+Amazon Glacier	"Re: Glacier contains archives according to console, but inventory is empty
+Hi,
+
+I am developer of FastGlacier and have tens of customers reporting about the same issue, the most of the reports are received in the past couple of days.
+
+The Archive list is either empty or incomplete.
+
+We didn't change anything in inventory retrieval code.
+It looks like the problem is on the server side.
+
+--
+Best Regards,
+Ivan Moiseev"
+
+Amazon Glacier	"Re: Glacier contains archives according to console, but inventory is empty
+Yep, I first noticed this issue when my vault inventory completed in FastGlacier and the archive list was completely empty.  However, being a developer and familiar with the command line, I decided to dig deeper and look at the responses directly from AWS using ""aws glacier get-job-output"" and verified that the service was at fault.
+
+Note that AWS support has informed me that this issue should be resolved now; I am awaiting the results of my latest fetch-inventory job and will report back with the results."
+
+Amazon Glacier	"Re: Glacier contains archives according to console, but inventory is empty
+This issue was resolved by AWS staff."
+
+Amazon Glacier	"Inventory not updated
+I have 2 vaults that do not show any inventory. The vaults were created somewhere in 2016.
+
+The vaults are part of a backup task from my Synology NAS. The NAS crashed recentrée, so I wanted to restore the files from Glacier. This fails because these 2 vaults that are part of the backup set do not have an inventory.
+
+Is there any way of forcing AWS to create the inventory for them?
+
+Tim"
+
+Amazon Glacier	"Re: Inventory not updated
+Reached out to the customer through private message"
+
+Amazon Glacier	"Re: Inventory not updated
+OP, did this issue ever resolve for you?  I have a vault in a similar situation and opened a thread about it today -- the vault is ~4 years old and the console claims it has archives, but the few inventory retrieval jobs I ran today all came back with an empty archive list.  I suspect a systemic issue in Glacier."
+
+Amazon Glacier	"Re: Inventory not updated
+Hi,
+
+I am developer of FastGlacier and have tens of customers reporting about the same issue, the most of the reports are received in the past couple of days.
+
+The Archive list is either empty or incomplete.
+
+We didn't change anything in inventory retrieval code.
+It looks like the problem is on the server side.
+
+--
+Best Regards,
+Ivan Moiseev"
+
+Amazon Glacier	"EBS to Glacier
+Is it or will it be possible to create a snapshot of an EBS volume to a Glacier Vault using the AWS Console?"
+
+Amazon Glacier	"Re: EBS to Glacier
+Thank you for the feedback. Currently  this functionality is not available via the AWS console. However, we do recognize the value of this type of integration and are evaluating its inclusion in a future release."
+
+Amazon Glacier	"Re: EBS to Glacier
+Is there any way to send data between EBS and Glacier, aside from programmatically? 
+
+The Amazon Import/Export documentation at http://aws.amazon.com/importexport/ suggests there is a way to send data from EBS to Glacier:  ""There is no Data Transfer charge for data transferred between AWS Import/Export and Amazon S3, AWS Import/Export and Glacier, or AWS Import/Export and Amazon EBS.""
+
+Thanks!"
+
+Amazon Glacier	"Re: EBS to Glacier
+Currently this can only be done programmatically. The import/export text you reference is referring to transfers to EBS using import/export and transfers to Glacier using import/export respectively, not transfers between EBS and Glacier."
+
+Amazon Glacier	"Re: EBS to Glacier
+Currently this can only be done programmatically. 
+
+Would be nice, if you told us how,  at least with a link...  
+
+Edited by: 1kenthomas2 on Sep 2, 2012 7:59 PM"
+
+Amazon Glacier	"Re: EBS to Glacier
+Unfortunately I can't point you to a link, this is somewhat involved and the process will vary based on your particular use case. If someone on the forum comes up with a solid recipe or tool here, I'd encourage them to share it.  The high level workflow would be along the lines of:
+
+1/ get a volume that you want to archive in an appropriately consistent and readable state.  Ie. you could snapshot a live volume, create a new volume from the snapshot and attach this new volume to an EC2 instance (alternately lvm freeze or similar, use an existing volume that isn't being written to, or sacrifice consistency if you see fit.) 
+
+2/ create a file from the contents of the volume. There are many ways to do this, I'd search the internet for advice here. You may find it helpful to look at how this is done for S3 based EC2 AMIs. Whatever method you use, it's advisable to use that file to do the reverse operation to populate a newly created volume and then test that the contents are what is expected and are useable to you.
+
+3/ Provided #2 checks out, upload that created file via a 3rd party tool or write some code to do this."
+
+Amazon Glacier	"Re: EBS to Glacier
++1 here, that would be a great feature to be able to archive snapshots to glacier."
+
+Amazon Glacier	"Re: EBS to Glacier
++1 
+
+The use case is very simple -- we have many EBS snapshots which we would like to move to Glacier through admin console without spinning any extra machine instances / etc."
+
+Amazon Glacier	"Re: EBS to Glacier
++1 here also.
+It would be nice to have Lifecycle rules on the snapshots so we can automate them to expire and be transferred to Glacier.
+Thanks!"
+
+Amazon Glacier	"Re: EBS to Glacier
+Two weeks ago, during one of the presentation at AWS Summit NYC 2013, one of the vendors hinted that this functionality is coming.
+
+If you look at the slideshare from this presentation, it is on page 6:
+
+http://www.slideshare.net/copperegg/ebs-presentation-aws-summit-2013"
+
+Amazon Glacier	"Re: EBS to Glacier
+Another user here that would really appreciate an automated EBS to Glacier feature."
+
+Amazon Glacier	"Re: EBS to Glacier
++1 
+ this would be a great feature to be able to archive snapshots to glacier.Really required."
+
+Amazon Glacier	"Re: EBS to Glacier
+Me too"
+
+Amazon Glacier	"Re: EBS to Glacier
++1
+For various compliance reasons, the ability to move a snap from EBS to Glacier for long (multi-year) storage would be an awesome feature."
+
+Amazon Glacier	"Re: EBS to Glacier
++1"
+
+Amazon Glacier	"Re: EBS to Glacier
++1"
+
+Amazon Glacier	"Re: EBS to Glacier
++1"
+
+Amazon Glacier	"Re: EBS to Glacier
++1"
+
+Amazon Glacier	"Re: EBS to Glacier
++1"
+
+Amazon Glacier	"Re: EBS to Glacier
++1"
+
+Amazon Glacier	"Re: EBS to Glacier
++1"
+
+Amazon Glacier	"Re: EBS to Glacier
++1"
+
+Amazon Glacier	"Re: EBS to Glacier
++1"
+
+Amazon Glacier	"Re: EBS to Glacier
+You can extract the snapshot to S3 by using the copy-snapshot CLI command: https://docs.aws.amazon.com/cli/latest/reference/ec2/copy-snapshot.html
+
+From here, you can either pipe the data from S3 to Glacier or use S3 lifecycle rules to transition the S3 export to the Glacier storage class, depending on your needs."
+
+Amazon Glacier	"How to get notified of object(s) restored?
+I am restoring a number of files from Glacier. Is there a way to get notified somehow when they are in ""restored"" status?
+
+So far, I have to manually scan objects through S3 console, right-click and check whether they are already restored. Politely saying, this is inconvenient. Is restoring done so rarely, that no one has asked for an indicator in S3 console?
+
+To me, it's quite obvious, but missing nonetheless, interface element.
+
+So far,  I tried several well-known tools like s3cmd, without much success.
+
+Thanks for any possible idea on monitoring the restoring process."
+
+Amazon Glacier	"Re: How to get notified of object(s) restored?
+This would be a more appropriate question for the S3 forum.  In fact, there is already a thread on this topic: https://forums.aws.amazon.com/thread.jspa?threadID=116845"
+
+Amazon Glacier	"Moving AMI to Glacier
+Dear Amazon, 
+
+We have multiple AMI  images that we would like to move into Glacier storage as we do not anticipate using them for a number of months.
+
+Is this something that either you can do it for us or can you provide us with a set of command or documentation which will help us to achieve this task.
+
+Thank you,
+Vlad"
+
+Amazon Glacier	"Re: Moving AMI to Glacier
+Hello,
+
+Archiving AMI's is not currently supported by Glacier or Ec2. I can submit a feature request for this to happen in the future.
+
+Regards,
+
+Matt J"
+
+Amazon Glacier	"Re: Moving AMI to Glacier
+Hi! 
+Is it supported now?
+Thanks in advance"
+
+Amazon Glacier	"Re: Moving AMI to Glacier
+Here we are, March of 2017 and I can still find no way to archive an AMI from EC2 to Glacier. Seriously? 3 years?? disappointed"
+
+Amazon Glacier	"Re: Moving AMI to Glacier
+Cause there is still no opportunity to archive AMI to Glacier, I'd like to ask you:
+
+Did you consider any backup vendors software. For example Cloudberry Backup Server Edition?
+
+You can Run your AMI in Amazon, install backup software there and upload your Image directly to Glacier."
+
+Amazon Glacier	"Re: Moving AMI to Glacier
+This is not what I want. I am an AWS Marketplace seller. I want seamless backup of an AMI or, at the very least snapshots, to Glacier so I can archive older versions of the software (to reduce hefty overhead costs) and, if needed later, easily pull them from cold storage and launch them. I don't want to have to use a 3rd party software to effectively hack images into and out of volumes, as this will break the UUID chains needed for the Marketplace license tracking. If I have to regress to an old version and then re-patch for some reason, I wouldn't end up with a Marketplace-ready AMI in the end if I used a solution like CloudBerry.
+
+This type of support was supposed to be submitted as a feature request in 2014! The fact that AWS has basically ignored this is pretty ridiculous at this point. My guess is, they don't want us to be able to do this at all...period. They make a pretty penny off companies like mine that have to maintain a large amount of snapshot data at $0.05/GB/Mo. **smh**"
+
+Amazon Glacier	"Re: Moving AMI to Glacier
+Any update on this feature request?"
+
+Amazon Glacier	"Re: Moving AMI to Glacier
++1 for this feature request"
+
+Amazon Glacier	"Re: Moving AMI to Glacier
++1 for this feature request
+I'm surprised that this essential feature is being ignored by AWS"
+
+Amazon Glacier	"Glacier keeps showing ""Not updated yet""
+I created an AWS Free Tier a week ago and set up a Glacier backup from my QNAP NAS using the Glacier tool. The backups have been running nightly and the NAS reports everything is ok.
+
+However, the Glacier Management Console still shows ""Not updated yet"" under the ""Inventory Last Updated"", even after a week. If I understand, this should update nightly but has not done so yet, a week later. The two initial backup jobs are still fairly small (0.5 GB and 2GB each), as I wanted to ensure that everything works as intended before I add my main folders to be backed up, but I am concerned that things are properly stored when AWS does not update the status.
+
+Is this normal? Is there anyway to check the contents of a Vault?"
+
+Amazon Glacier	"Re: Glacier keeps showing ""Not updated yet""
+Problem solved:
+The Glacier app for the QNAP NAS system only lists one NA East location - ""US East (N. Virginia)"" for the ""us-east-1"" region. I'm located in Michigan, and my default region is ""US East (Ohio)"" or ""us-east-2"". As I only saw one ""US East"" alternative in the Glacier app, I assumed that was right (it does not show the actual region code, only the region name).
+
+By switching to the ""N. Virginia"" location in the top right bar of the Glacier Management Console (or by using the AWS CLI) I can confirm that all my backups successfully made it to the N. Virginia location. Now I just need to figure out how to get QNAP to fix/update their app..."
+
+Amazon Glacier	"Error from any URI ""Required parameter missing""
+I'm reading the PDF about Glacier but I just don't understand why I always receive this error:
+{""code"":""MissingParameterValueException"",""message"":""Required parameter missing: API version"",""type"":""Client""} in any kind or test I did.
+
+I just try this URI: https://glacier.us-east-1.amazonaws.com/111122223333/vaults/examplevault with my Account id and my vaultname in my region endpoint but nothing ... just this error.
+
+Any suggestion?"
+
+Amazon Glacier	"Re: Error from any URI ""Required parameter missing""
+Well this seems to be the message whenever the URI is wrong.  Yours is not signed, but any of the ones I send come back with this message.   It is a terrible 'err message' as it leads the sender to think if only I get the version in there again....
+
+I can not believe AWS has not replied to your messages in more than a year.   That is what is wrong with the forums, there is not a consistent AWS attendance. 
+
+AWS where are you on this????? Is it the 'default' return message?"
+
+Amazon Glacier	"Re: Error from any URI ""Required parameter missing""
+Hello GdB, 
+The error you are receiving is because Amazon Glacier REST requests must include the required header ""x-amz-glacier-version"" with a value set to ""2012-06-01"". Please refer this document for the list of request headers: https://docs.aws.amazon.com/amazonglacier/latest/dev/api-common-request-headers.html
+
+You are also required to sign these REST requests according to the document: https://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html#sigv4_signing-steps-get-vs-post
+
+Important When you use the AWS Command Line Interface (AWS CLI) or one of the AWS SDKs to make requests to AWS, these tools automatically sign the requests for you with the access key that you specify when you configure the tools. When you use these tools, you don't need to learn how to sign requests yourself. However, when you manually create HTTP requests to AWS, you must sign the requests yourself.
+
+You can also use https://www.getpostman.com/ which provides an option to make AWS Signature Authorization."
+
+Amazon Glacier	"How to delete archive object in Glacier using S3 console?
+Hello,
+I moved files from S3 to Glacier using S3 LifeCycle from inside S3 Management Console.
+Now, how do I delete some archives in Glacier using S3 Management Console?
+(Since I used S3 Lifecycle to move files from S3 to Glacier, there was no Glacier Vault creation needed by me, so even with AWS CLI I wonder how you can delete archives without Glacier Vault name?  And in my case, I don't use CLI and would like to use GUI, ie. S3 Management Console, so it is even more confusing/difficult)
+
+Thanks!"
+
+Amazon Glacier	"Re: How to delete archive object in Glacier using S3 console?
+Hi daley1369,
+
+If you are using Glacier storage class in S3, then all the objects should remain visible in your S3 console even after transition to the Glacier storage tier. You can interact with these objects through CLI or console in exactly the same way as if they were S3 objects (exception - RESTORE vs. GET). You can also setup a lifecycle delete policy if you want deterministic, rule based deletion.
+
+For further details, please refer to our documentation on this topic.
+https://docs.aws.amazon.com/AmazonS3/latest/dev/lifecycle-transition-general-considerations.html
+
+Abhinav"
+
+Amazon Glacier	"Re: How to delete archive object in Glacier using S3 console?
+Thanks Abhinav!"
+
+Amazon Glacier	"Price to restore data...
+Hi,
+
+I do not understand clearly this FAQ : http://aws.amazon.com/fr/glacier/faqs/#How_will_I_be_charged_when_retrieving_large_amounts_of_data_from_Amazon_Glacier
+
+Just a little sample...  i store 12TB on Glacier...  after 6 months, i need to restore 30Gb.  I request the data, i wait between 3 and 5 hours for the data to become available, then i donwload the data in less than 1 hour...
+
+It means that i have downloaded 30Gb in less than 1 hour, thus according the explanation of the FAQ, my Peak hourly retrieval for the month is 30Gb ?
+
+According the FAQ : Billable peak hourly retrieval = Peak hourly retrieval - Free retrieval hourly allowance 
+
+Billable peak hourly retrieval = 30 gigabytes - 0.82 gigabytes = 29.18 gigabytes
+
+And thus Retrieval fee = 29.18 x 720 x $0.01 = $210.10
+
+Thus, i store 12TB, after 6 months i need to restore 30Gb, the cost for the restore is 210$ ???"
+
+Amazon Glacier	"Re: Price to restore data...
+Hi,
+
+A few clarifications in your example. The peak retrieval is calculated based on the retrieval time, not the download time. Your data would be retrieved in approximately 4 hours and so therefore your billable peak hourly retrieval would be 30GB/4Hr = 7.5 GB.
+
+Per the example in your link with 12TB stored you could retrieve 20.5GB for free every day. Assuming that you did no other retrieval operations that day the charge would look like this:
+
+Billable peak hourly retrieval = 30GB/4HR = 7.5GB
+Free daily retrieval amount = 12TB * 0.05 / 30 = 20.5GB
+Free retrieval applied to peak hour = 20.5/4 = 5.125GB
+
+Billable peak hourly retrieval = 7.5GB -  5.125GB = 2.375GB
+
+Retrieval fee = 2.375GB * 720 * $0.01 = $17.10
+
+As this is based on a peak monthly retrieval rate, there are further opportunities to reduce this cost. If you spread the retrievals across 2 days it would cost nothing as 30GB/2=15GB is less than the 20.5GB daily free retrieval amount in this case. Similarly, if you were to spread the retrievals more smoothly across the day, lets say over the course of 24 hours the bill would look like this:
+
+Billable peak hourly retrieval = 30GB/24HR = 1.25GB
+Free daily retrieval amount = 12TB * 0.05 / 30 = 20.5GB
+Free retrieval applied to peak hour = 20.5/24 = 0.85GB
+
+Billable peak hourly retrieval = 1.25GB -  0.85GB = 0.4GB
+
+Retrieval fee = 0.4GB * 720 * $0.01 = $2.88"
+
+Amazon Glacier	"Re: Price to restore data...
+Does it mean that if i wait 12 hours before starting the download, and the download take 1 hour, the retreival  time would be 13 hours and thus the Billable peak hourly retreival = 30GB/13HR = 2,31GB ?
+
+How did you calculate the free hourly amount ?  For me, 20.5Gb per day = 20.5/24 per hour and not 20.5/4 ?
+
+It would be easiest with the fee calculated based on the total volume transfered in the month, it seems that with this product restore should not occur regulary...  for a backup purpose, less that once a month, we hope less than once a year...  but when you need to restore, you restore a lot of data at once, the same day, the same hour...  it's strange that we must pay this restore every hour/every day of the month..."
+
+Amazon Glacier	"Re: Price to restore data...
+Hi,
+
+Does it mean that if i wait 12 hours before starting the download, and the download take 1 hour, the retreival time would be 13 hours and thus the Billable peak hourly retreival = 30GB/13HR = 2,31GB ?
+
+Only the retrieval time is factored in, the download time is never considered. The retrieval time is that time that it takes the service to make your data available for download. A simple way to spread the 30GB retrieval over 12 hours would be to retrieve 10GB in hour 0, 10GB in hour 4, and 10GB in hour 8.
+
+How did you calculate the free hourly amount ? For me, 20.5Gb per day = 20.5/24 per hour and not 20.5/4 ?
+
+It's a daily allotment, not an hourly allotment. You apply it proportional to usage to the hours in the day. In the example you gave there were 20 hours with 0 usage and 4 hours with 7.5GB retrieved. So, 0% of your free daily allotment is applied to the hours with 0 usage and 25% is applied to each of the four hours where there was usage."
+
+Amazon Glacier	"Re: Price to restore data...
+So, suppose I request retrieval of an archive that doesn't fit in the daily allotment, the cost of that is entirely dependent on the performance of the AWS system? If the retrieval takes 4 hours I would pay at one rate, if it takes just one hour I'll get to pay four time as much. Correct?
+
+This pricing system needs to be rethinked and simplified."
+
+Amazon Glacier	"Re: Price to restore data...
+Colin@AWS wrote:
+Hi,
+
+As this is based on a peak monthly retrieval rate, there are further opportunities to reduce this cost. If you spread the retrievals across 2 days it would cost nothing as 30GB/2=15GB is less than the 20.5GB daily free...
+
+I want to know how can I spread the retrievals across 2 days.. suppose 30GB data is an archive, I can not set the retrieval parameters in code and I need to dependent on AWS system? right?
+
+The way to fulfill your suggestion is spreading this archive into two, 15 GB each, isn't it?"
+
+Amazon Glacier	"Re: Price to restore data...
+Hi,
+
+do I understand it right, that it's only expensive when I need the data fast.
+
+Is my example calculation right?
+
+I have 1 TB of data and need to restore about 500GB of it within one month.
+Free daily retrieval amount = 1TB * 0.05 / 30 = 1.66GB (I ignore this for the calculation because it's too low)
+
+I order 1GB of data every hour -> 24 * 1GB = 24GB / Day
+Billable peak hourly retrieval = 24GB/24HR = 1GB
+
+Retrieval fee = 1GB * 720 * $0.01 = $7.20
+
+So I can get 720GB of data in a month for only $7.20?
+Can I expect that retieval always takes the same amount of time?"
+
+Amazon Glacier	"Re: Price to restore data...
+Correct. There are cost advantages to having larger archives, but for retrieval purposes it's advantageous in some cases like this to break large files into chunks prior to archival. For example breaking a 30GB file into 30 1GB archives would give a great deal of flexibility on total retrieval time/cost. For other use cases where you have lots of storage and the large archive can be retrieved under the free tier breaking it up may or may not be attractive."
+
+Amazon Glacier	"Re: Price to restore data...
+Exactly correct (ignoring the free allotment as you did.) The most cost effective way to retrieve large volumes of data that account for a high percentage of your overall stored data is to do it smoothly with a low peak to avg of the course of days, weeks, or a month. Alternately, even if the amount of retrieved data is large, it can also be done very cost effectively (free) as long as it remains a small percentage of your overall storage."
+
+Amazon Glacier	"Re: Price to restore data...
+Missed your second question. Yes, you can always expect the total amount of data retrieved for a single retrieval to be spread evenly across four hours for the purposes of working out the cost of the retrieval."
+
+Amazon Glacier	"Re: Price to restore data...
+For the purposes of trying to remain within the free daily retrieval allotment, what is the cut-off for a particular day? Is it midnight GMT? Local time for the region? Any random 24-hour period?"
+
+Amazon Glacier	"Re: Price to restore data...
+Wait so if i am billed by the peak hour of the month * 720 *.01 , 
+It doesn't matter what i do for the rest of the month. i.e. i can restore data for the other 719 hours, under the peak rate, for free? And if i restore nothing else, i have wasted 719 hours worth of peak retrieval?"
+
+Amazon Glacier	"Re: Price to restore data...
+The cut-off for your free daily retrieval allotment is midnight UTC."
+
+Amazon Glacier	"Re: Price to restore data...
+The retrieval fee is based on your peak hourly retrieval in a month, rather than on the amount of data retrieved (bandwidth is often priced in this manner). This enables you to reduce your retrieval charge by spreading your retrievals over a longer duration."
+
+Amazon Glacier	"Re: Price to restore data...
+There is a further optimization that needs to be taken into consideration due to the charging of 720 hours at the peak rate. This means that choosing a somewhat higher peak rate that would keep your retrieval within one calendar month will work out cheaper than one that might result in taking 750 or 800 hours to retrieve. As while in the latter case your per hour charge is lower you will be charged it for 1440 hours instead of 720.
+
+(E.g. Retrieving a full 25 TB archive , extreme I admit, at a well paced 35 GB/hour would take a little less than one month and cost $240, at 30 GB/hour it would take a little OVER one month and cost $407. Doing it at 10 GB/hour, taking 3.5 months would also cost $240 despite it taking 2.5 months longer than at 35 GB/hour and only below 10 GB/hour does the cost actually drop below that of 35 GB/hour. It pays to determine optimal retrieval speed and individual archive size relative to total size before saving/retrieving.)
+
+Overall the whole retrieval costs structure could really do with simplification and clarification on the main Glacier page as the example there is missing a number of the added comments that were shared in this thread."
+
+Amazon Glacier	"Re: Price to restore data...
+Retrieving 25Tb in one month would also cost 15000 * $0.09 + 10000 * $0.12 = $2500 in bandwidth charges, so the difference in retrieval cost is not as significant compared to that. Splitting download into multiple months would also increase the bandwidth cost however."
+
+Amazon Glacier	"Re: Price to restore data...
+Agreed, there are other, higher, costs depending on what you do with the data, just wanted to point out lower speed is not always cheaper.
+
+Taking into account that a higher percentage of bandwidth will be in the $0.12 tier is spread over more months it's actually significantly more expensive.
+
+This makes optimization even more important and tends to favor pacing over one month for larger retrievals rather than over many months."
+
+Amazon Glacier	"Re: Price to restore data...
+Hi,
+I stored 9.54Gb
+
+1 day retrieval 1.9 Gb/4H
+2 day retrieval 2.86 Gb/4H
+
+2 day (for peak day must calculate)
+Billable peak hourly retrieval = 2.86GB/4HR = 0.715GB
+Free daily retrieval amount = 9.54GB * 0.05 / 30 = 0.0159GB
+Free retrieval applied to peak hour = 0.0159/4 = 0.003975GB
+
+Billable peak hourly retrieval = 0.715GB -  0.003975GBGB = 0.71GB
+
+Retrieval fee = 0.71GB * 720 * $0.01 = $5.14
+
+I see in Amazon Account Activity
+Amazon Glacier
+Download Usage Report » 	$1.88
+  	  	$0.011 per GB - Retrieval Fee 	168.800 GB 	1.86
+
+I can't understand as calculated value 168,8Gb and $1.88
+Can amazon calculates on other formula?"
+
+Amazon Glacier	"Re: Price to restore data...
+This seems needlessly complicated..."
+
+Amazon Glacier	"Re: Price to restore data...
+Colin@AWS wrote:
+Correct. There are cost advantages to having larger archives
+
+Hi Colin,
+
+I can't see what these cost advantages are? Is it just that it minimises the number of requests for Archive retrievals?
+
+I'm writing a tar-workaline for Glacier (called Glaciate) and currently modelling each Vault as a tar file, and Archives as files.  This should allow me to do some funky stuff to minimise retrieval costs (optionally, if the user care to).
+
+Regards,
+Bruce"
+
+Amazon Glacier	"Re: Price to restore data...
+The pricing model is so bizarre that it is scarring our clients away. 
+
+The incredible length we will need to go through to decrease retrieval cost is ridiculous. Here are some of the tricks and traps to keep in mind:  
+
+
+Break the files into an optimal size (then reconstruct them once retrieved).  How is that for creating complexity fin your retrieval.
+
+
+
+Spread the downloads into 4 hours intervals always asking the same amount of bytes. Slip once and pay for it for the whole month.
+
+
+
+Make one of the 4 hour calls one second too early ( at 3:59:59s) and you will double the cost for the -whole- month. This is because the call will fall in the previous 4h window and double your max hourly rate.
+
+
+
+For bulk download put a system in place to fit the download in exactly one month but not one month and one minute or you will double the total cost of the download. This is since the last call you make, one minute past midnight will become basis of billing for the whole month that follows. So instead of paying for one month, you will pay for two.
+
+
+With all due respect to a great company, this is childish and perverted. Amazon, please get some of your many brains together and replace the pricing with something that reflects more a business solution and less a tricky video game loaded with traps. 
+
+Thanks, 
+Karl"
+
+Amazon Glacier	"Re: Price to restore data...
+Very well put. This pricing scheme is ridiculous. At the very least there needs to be a programmatic way to limit spending / rate of retrieval. A header like ""x-amz-If-Monthly-Rate-Under: 1000 MB"" that makes the operation fail if it would make retrieval rate go over the specified value or something."
+
+Amazon Glacier	"Re: Price to restore data...
+Agreed.  Much of this insanity would be dealt with if the API had the option to specify the max retrieval rate.  The waiting time would thus go up beyond four hours (if the rate is set low) but you wouldn't have to worry about the various traps above."
+
+Amazon Glacier	"Re: Price to restore data...
+Thread Watchers and Others,
+
+I have submitted your feedback to our Glacier team for either possible adding of the feature in the future or at least to hear your comments for your concerns.
+
+Thanks for sharing,
+
+CurtusR"
+
+Amazon Glacier	"Re: Price to restore data...
+I add to the worries above. Honestly I never truly started using glacier because of the recovery price and being unable to control it. I don't want to be surprised by any unusually high bill if I have to recover all my data after a disaster recovery process.
+
+As a suggestion, why not having a configuration on aws page for Glacier, which would allow us to define the peak retrieval rate for our account or vault?"
+
+Amazon Glacier	"Glacier Server Side Encryption question
+I am using FastGlacier and CludBerry Explorer as Glacier clients and both show that my archives in the Glacier vaults are not encrypted. They are supposed to be encrypted on server side by default. Is this is a problem with the clients? How can I verify that my data is encrypted?"
+
+Amazon Glacier	"Re: Glacier Server Side Encryption question
+Hi Leonid,
+I can confirm that Glacier applies server side encryption to all data. You can refer to the FAQs page for more details. 
+https://aws.amazon.com/glacier/faqs/
+
+Since this is a server side encryption, clients will not be able to detect the encryption and there is no way for you to verify the encryption used. 
+
+Hope that answers your question.
+
+Abhinav"
+
+Amazon Glacier	"S3 Lifecycle Rule to transition objects to glacier
+Hi All,
+
+I had created a Lifecycle Rule to transition objects with specific tag to Glacier after 0 days from creation. It's been more than two days now but I still see my objects in standard storage. I verified my Lifecycle Rule through CLI to make sure there are no extra space in Tag Ket/Value, but everything looks good to me.
+
+Is there a way I can check why objects are not transitioning? I am attaching copy of my Lifecycle Rule for reference. 
+
+Regards."
+
+Amazon Glacier	"Re: S3 Lifecycle Rule to transition objects to glacier
+Eventually my objects were moved to glacier. Let me know if any one faces similar issue.
+
+Thanks."
+
+Amazon Glacier	"Cannot delete glacier vault
+Hi all,
+For a while I'm trying to delete a test vault but can't. The error was ""Vault not empty or recently written to: arn:aws:glacier:eu-west-1:xxxxxxxxxx:vaults/inxxxxx-vault"". 
+Yes It's empty and I cannot delete it. 
+Please can some admin help me?
+Regards,
+Eduard."
+
+Amazon Glacier	"S3 to Glacier: Not Appearing?
+I am new to Glacier.  I have an S3 bucket and wanted to back up its contents to Glacier after 10 days.  I made a lifecycle rule on my S3 and told it to back up to Glacier after 1 day and made the rule active.  Nothing appeared in Glacier (I had never used Glacier before and did not have a vault).  I created a vault and tried it again.  Still nothing: my vault is empty. Am I missing something?  The tutorials I have found make it seem as if if you just create a lifecycyle rule and set it to active, the backups to glacier will happen automatically."
+
+Amazon Glacier	"Re: S3 to Glacier: Not Appearing?
+Hi ColinWithMothras,
+
+Since you are using Glacier via S3 lifecycle, your S3 object data will be automatically transitioned to S3's Glacier storage class and continue to be managed by S3. The data will not show up in the Glacier console nor do you need to create Glacier vaults. You can see the transitioned objects in the S3 console  in the same bucket and the storage class will be Glacier. Hope that helps. 
+
+Cheers,
+-Henry"
+
+Amazon Glacier	"Re: S3 to Glacier: Not Appearing?
+Thanks a lot for your response!  I have been clicking around in my S3 console and cannot anything showing the file being backed up.  On my main bucket, I have have a few files and folders with the storage class listed as ""standard.""  I had created a lifecycle rule which is active.  The parameters for it:
+
+Configure transition: Current version
+Transition to Amazon glacier after 1 days of object creation
+No expiration
+
+This is applied to the whole bucket and active.  I have had this set for over a week and added files but I see no evidence of any glacier backup anywhere on the bucket.  Am I missing something?"
+
+Amazon Glacier	"Re: S3 to Glacier: Not Appearing?
+This seems to happens quite often. Recreate your lifecycle rule and it will probably start working"
+
+Amazon Glacier	"Re: S3 to Glacier: Not Appearing?
+Hi ColinWithMothras,
+
+The transition should automatically happen and the storage class should be ""Glacier"". I sent you a private message to gather some info about your bucket so we can follow up. 
+
+Best regards,
+-Henry"
+
+Amazon Glacier	"Re: S3 to Glacier: Not Appearing?
+I responded to your message, thanks  
+
+Some quick questions: if I see the data, how do I retrieve it?  Is there a straightforward way to do that on the my bucket page or would I need to initiate a retrieval job with JAVA/C# or the AWS SDK?  If the bucket accidentally got deleted, would my glacier files disappear as well?"
+
+Amazon Glacier	"Re: S3 to Glacier: Not Appearing?
+Any updates (or can anyone else provide something that may help me get galcier working with S3)?  I responded to your message but have not heard back, thanks  
+Edit: ah it works now, no idea why it didnt before
+
+Edited by: ColinWithMothras on Jan 26, 2018 8:14 AM"
+
+Amazon Glacier	"Issues deleting an archive from a Glacier vault
+I am trying to setup a archive delete using REST API.  
+
+How do I figure out the SignatureValue.  Is that my Secret access key or something else?
+
+Any help would be great!  Thank you."
+
+Amazon Glacier	"move data from glacier to S3
+hi,
+is it possible to move data in Glacier to a S3 bucket?
+(without having to download it and upload it to S3 offcourse)
+thx,
+Marc"
+
+Amazon Glacier	"Re: move data from glacier to S3
+I'm wondering the same thing.  Anyone?"
+
+Amazon Glacier	"Re: move data from glacier to S3
+Hello,
+
+The transition of objects to the GLACIER storage class is one-way.
+You cannot use a lifecycle configuration rule to convert the storage class of an object from GLACIER to Standard or RRS. 
+If you want to change the storage class of an already archived object to either Standard or RRS, you should download it and reupload to the S3.
+
+If you upload your files directly to Glacier, it's also not possible to move them to S3 without downloading them to your computer.
+
+If you have more questions, please let me know.
+
+Regards,
+Vlad,
+CloudBerry Lab"
+
+Amazon Glacier	"Re: move data from glacier to S3
+Hi drwhois.  If you used a lifecycle policy on your S3 bucket to transition your objects to Glacier, you can issue a restore request to restore a copy of your objects back into S3.  See http://docs.aws.amazon.com/AmazonS3/latest/dev/restoring-objects.html for more details.  
+
+If you uploaded your objects directly to Glacier then you will have to also upload them directly to S3, there is no feature to move objects placed directly in Glacier to an S3 bucket.
+
+I hope this information is helpful for you.
+
+Frank"
+
+Amazon Glacier	"Re: move data from glacier to S3
+Thanks!  
+
+Are you able to reveal how does CloudberryExplorer performs this function? (i.e. are they actually downloading to local storage, then reuploading)"
+
+Amazon Glacier	"Re: move data from glacier to S3
+Hello,
+
+In such cases CloudBerry Explorer downloads and reuploads files.
+But I would like to notice that no temporary storage on the local file system used. All data is stored in the RAM automatically dedicated for the process.
+
+If you have more questions, please let me know.
+
+Regards,
+Vlad"
+
+Amazon Glacier	"Re: move data from glacier to S3
+For clarification, that means if we run Cloudberry locally, we'd have to pay the cost of downloading from Glacier then uploading to S3?
+
+If we run Cloudberry on a EC2, though, those costs would be eliminated?
+
+Thanks for your responses!"
+
+Amazon Glacier	"Re: move data from glacier to S3
+In case of using EC2 instance in the same region, you won't be charged for data transfer out from Amazon Glacier. All data transfer to S3 is free. You still be charged for the requests performed when copying your files from Glacier to S3 inspite of using EC2.
+
+For more information, please see the following pages:
+https://aws.amazon.com/glacier/pricing/
+http://aws.amazon.com/s3/pricing/
+
+Regards,
+Vlad"
+
+Amazon Glacier	"Re: move data from glacier to S3
+Unfortunate that there is still no easy solution for this. My Glacier data was uploaded directly to Glacier, there is no backing S3 bucket on which I can change the policy to restore. It looks like I have to spin up a  VPS and essentially do a transfer back from Glacier and onto S3 manually."
+
+Amazon Glacier	"Re: move data from glacier to S3
+Unfortunate... Unsatisfactory!
+
+I too am looking for a way to make existing Glacier vault files visible as S3 Glacier storage class content.
+
+With LifeCycle policies S3 seems to be evolving into a Glacier front-end, especially when considering that the files S3 converts into 'Glacier Storage Class' are only visible in the originating S3 bucket and not directly accessible via a Glacier app.
+
+Surely downloading everything from AWS Glacier, only to upload it all again via S3 to the same destination, cannot remain the solution here. In my case, rough estimates show this would cause costs that run into the thousands. I'd be happy to review any alternatives at sensible pricing."
+
+Amazon Glacier	"Can't delete vault.  InventoryRetrieval not showing any archives
+I am trying to delete a glacier vault. I've read the various discussions about using third party tools.  I have tried FastGlacier, Cloudberry Explorer and the aws cli.  While I can get archive lists for other vaults just fine, any attempt to get an inventory for this particular vault returns an empty list.
+
+%aws glacier list-jobs --account-id - --vault-name ""DiskStation_001132066589_1""
+        {
+            ""CompletionDate"": ""2017-12-29T18:27:59.294Z"", 
+            ""VaultARN"": ""arn:aws:glacier:us-east-1:......:vaults/DiskStation_001132066589_1"", 
+            ""InventoryRetrievalParameters"": {
+                ""Format"": ""JSON""
+            }, 
+            ""Completed"": true, 
+            ""InventorySizeInBytes"": 143, 
+            ""JobId"": ""<job-id>"", 
+            ""Action"": ""InventoryRetrieval"", 
+            ""CreationDate"": ""2017-12-29T14:42:42.796Z"", 
+            ""StatusMessage"": ""Succeeded"", 
+            ""StatusCode"": ""Succeeded""
+        }
+
+%aws glacier get-job-output --account-id - --vault-name ""DiskStation_001132066589_1"" --job-id <job-id> output.json
+
+%cat output.json
+{""VaultARN"":""arn:aws:glacier:us-east-1:.....:vaults/DiskStation_001132066589_1"",""InventoryDate"":""2016-12-24T02:16:07Z"",""ArchiveList"":[]}
+
+(I cut out a bit of the output for brevity.. such as the 3 other InventoryRetrieval jobs that I submitted with the various clients)
+
+The AWS console shows the vault having lots of archives in it.  The vault hasn't been written to since 2016, so its not an issue of needing to wait 24 hours for the inventory to update.
+
+How can I get this vault deleted?"
+
+Amazon Glacier	"Request Timeout using multi part upload
+Every day starting at 12:00 -02:00 my server execute a program to upload files to Glacier, but frequently I'm receiving the error response: (408) Request Timeout
+
+
+The program use the Multipart Upload (http://docs.aws.amazon.com/amazonglacier/latest/dev/uploading-an-archive-mpu-using-dotnet.html) 
+
+
+
+The program run directly from one Amazon Instance (r3.4xlarge) in Oregon, and upload the files do Glacier in Oregon
+
+
+
+The program send 8 files divided in parts of 16MB (16.777.216 bytes)
+
+
+file1 = 72.331.934.719 bytes (4.312 parts)
+file2 = 7.257.444.441 bytes (433 parts)
+file3 = 2.481.939.670 bytes (148 parts)
+file4 = 5.120.224.744 bytes (306 parts)
+file5 = 146.156.798 bytes (9 parts)
+file6 = 48.973.774 bytes (3 parts)
+file7 = 95.898.548 bytes (6 parts)
+file8 = 138.007.627 bytes (9 parts)
+
+
+The upload is sequential (one file per time and one part per time)
+
+
+Frequently the process is throwing the error: ""408 Request Timeout"" sending one of the parts.
+
+Below, the log:
+
+2016-12-25 13:01:04.898 -02:00	Error sending file1, part 2.812 -- Request timed out
+2016-12-26 13:12:25.699 -02:00	Error sending file1, part 2.175 -- Request timed out
+2016-12-27 14:07:00 -02:00 		Sending all files with success!
+2016-12-28 14:07:00 -02:00 		Sending all files with success!
+2016-12-31 12:59:07.218 -02:00 	Error sending file1, part 3.555
+2017-01-01 11:47:07.460 -02:00	Error sending file1, part 74
+2017-01-02 13:49:00 -02:00 		Sending all files with success!
+2017-01-03 13:37:59.977 -02:00	Error sending file3, part 52 -- Request timed out
+2017-01-04 15:23:46.065 -02:00	Sending all files with success!
+2017-01-05 12:12:38.694 -02:00	Error sending file1, part 482 -- Request timed out
+
+
+I try this:
+
+The previus program version was not using the multi part upload, after start receiving this request timeout error, I change the code to use multi part upload, the logs are all from the new version;
+After error, I change the code to try more 4 times send the same part, waiting 10 seconds between the parts, but this not solve the problem and never a new try was executed with success;
+I was suspecting this was a problem of Network Throughput, so I changed the code to wait 1 second between the parts upload but this had no effect, the logs after 2017-01-03 was using this;
+I increased the Glacier client timeout limits;
+
+
+The program use this timeout limits:
+var config = new AmazonGlacierConfig();
+config.RegionEndpoint = Amazon.RegionEndpoint.USWest2;
+config.MaxErrorRetry = 6;
+config.Timeout = TimeSpan.FromMinutes(20);
+config.ReadWriteTimeout = TimeSpan.FromMinutes(30);
+
+Exception:
+Message: The remote server returned an error: (408) Request Timeout.
+Type: System.Net.WebException (System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)
+Source: System
+TargetSite: System.Net.WebResponse GetResponse()
+StackTrace:
+
+at System.Net.HttpWebRequest.GetResponse()
+at Amazon.Runtime.Internal.HttpRequest.GetResponse()
+
+How can I solve this problem? Any ideas?
+
+Thks!"
+
+Amazon Glacier	"Re: Request Timeout using multi part upload
+Hello,
+
+I've reached out privately asking for account information to help investigate this.
+
+Cheers!
+Mas"
+
+Amazon Glacier	"Re: Request Timeout using multi part upload
+Hello Mas,
+last Thursday (January, 05 2017), I answered your private message sending you our account-id.
+
+The last execution logs was:
+2017-01-05 11:53:13.498 -02:00 -- Error sending file 1 part 482/4.328 --Request timed out
+2017-01-06 12:22:02.019 -02:00 --Error sending file 1 part 263/4.345 -- Request timed out
+2017-01-07 14:20:46.784 -02:00 --OK!
+2017-01-08 13:53:22.701 -02:00 -- OK!
+2017-01-09 13:53:38.228 -02:00 --Error sending file 2 part 429/437 -- Request timed out
+
+Additional information:
+When the program receive then error ""Request timed out"", after 120 seconds a new try is executed and this try always receive this exception:
+
+Message: A WebException with status RequestCanceled was thrown.
+Type: Amazon.Runtime.AmazonServiceException (AWSSDK, Version=2.3.55.0, Culture=neutral, PublicKeyToken=9f476d3089b52be3)
+Source: MarketUp_Backup
+TargetSite: System.Collections.Generic.List`1http://System.String UploadParts(Amazon.Glacier.AmazonGlacierClient, System.String, System.String, System.String, Int64, Int64)
+StackTrace:
+
+at MarketUP.Backup.Core.Glacier.UploadParts(AmazonGlacierClient client, String uploadID, String vaultName, String filePath, Int64 fileLength, Int64 partSizeInBytes)
+
+INNER EXCEPTION:
+Message: The request was aborted: The request was canceled.
+Type: System.Net.WebException (System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)
+Source: System
+TargetSite: Void CloseInternal(Boolean, Boolean)
+StackTrace:
+
+at System.Net.ConnectStream.CloseInternal(Boolean internalCall, Boolean aborting)
+at System.Net.ConnectStream.System.Net.ICloseEx.CloseEx(CloseExState closeState)
+at System.Net.ConnectStream.Dispose(Boolean disposing)
+at System.IO.Stream.Close()
+at Amazon.Runtime.Internal.HttpRequest.WriteToRequestBody(Stream requestContent, Stream contentStream, IDictionary`2 contentHeaders, IRequestContext requestContext)
+at Amazon.Runtime.Internal.HttpHandler`1.WriteContentToRequestBody(TRequestContent requestContent, IHttpRequest`1 httpRequest, IRequestContext requestContext)
+at Amazon.Runtime.Internal.HttpHandler`1.InvokeSync(IExecutionContext executionContext)
+at Amazon.Runtime.Internal.PipelineHandler.InvokeSync(IExecutionContext executionContext)
+at Amazon.Runtime.Internal.Unmarshaller.InvokeSync(IExecutionContext executionContext)
+at Amazon.Runtime.Internal.PipelineHandler.InvokeSync(IExecutionContext executionContext)
+at Amazon.Runtime.Internal.ErrorHandler.InvokeSync(IExecutionContext executionContext)
+
+INNER EXCEPTION:
+Message: Cannot close stream until all bytes are written.
+Type: System.IO.IOException (mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)
+Source: System
+TargetSite: Void CloseInternal(Boolean, Boolean)
+StackTrace:
+
+at System.Net.ConnectStream.CloseInternal(Boolean internalCall, Boolean aborting)
+
+Edited by: coutinho-marketup on Jan 9, 2017 11:00 AM
+
+Edited by: coutinho-marketup on Jan 9, 2017 11:01 AM"
+
+Amazon Glacier	"Re: Request Timeout using multi part upload
+Hello Mas,
+I have been facing the same issue, with AWS Glacier mult-ipart upload (JAVA SDK). I am trying to upload a 25GB archive, with part size 4MB. The process returns the RequestTimeoutException, error code 408. The upload had started working with 1MB part size, but failed due to limitation on number of parts as 1000.
+Please help!"
+
+Amazon Glacier	"Re: Request Timeout using multi part upload
+Same issue here. I try to resend the multi-part request and get the web exception error. 
+
+Happens for any file over ~20-30GB. Sometimes it works, but now I am moving files 100GB or more and it hasn't worked yet.
+
+I would like to see the solution provided to the OP, if there was one. Maybe it is possible to update the sample code or documentation with some process to handle errors."
+
+Amazon Glacier	"Re: Request Timeout using multi part upload
+I've solved this problem doing this:
+
+1- Create a endpoint in VPC por S3 https://aws.amazon.com/blogs/aws/new-vpc-endpoint-for-amazon-s3/ this makes the upload faster
+
+2- Compact the large files in parts using a zip algoritm, and send each part separately using the the single upload process to Glacier, if a error happens wait 5 minutes and resend this part.
+
+As a example, today I sent a 600GB file, compressed in 13 parts (total 128GB) and during the process I had to resend 2 of this 13 parts, but now this work."
+
+Amazon Glacier	"Re: Request Timeout using multi part upload
+I solved the issue by handling the part's timeout, and trying again. here is the post:
+
+https://forums.aws.amazon.com/thread.jspa?threadID=269120"
+
+Amazon Glacier	"Multiple timeouts when using multipart upload
+Hi,
+
+I'm trying to upload a 300Gb file to Glacier in the eu-west-2 region. I am using the multipart upload method, and I have tried with a part-sizes ranging between 8Mb and 64Mb, and I keep getting time outs. I've tried uploading between 1 and 4 parts concurrently, both with HTTP and with HTTPS, but it's consistently timing out again and again.
+
+I can see in a network dump taken with tcpdump that there are a lot of duplicate ACKS received from the AWS Glacier endpoint, with a lot of retransmissions on the TCP level. 
+
+My network connection is stable, I have 3MBit/sec bandwidth upstream to the Internet and other than the AWS endpoint I have no issue uploading data from the network to anywhere else that I've tried.
+
+Does anybody know what else I can try? Is there any issue with the eu-west-2 glacier endpoint?
+
+Thanks,"
+
+Amazon Glacier	"Re: Multiple timeouts when using multipart upload
+hi, I solved the glacier multipart timeout for .net sdk.
+
+https://forums.aws.amazon.com/thread.jspa?threadID=269120
+
+hope it helps."
+
+Amazon Glacier	"timeouts uploading multi-part to glacier using SDK .NET
+I'm consistently getting timeout failures uploading files (>1GB) to Glacier. 
+I'm using the code suggested by Amazon. http://docs.aws.amazon.com/amazonglacier/latest/dev/uploading-an-archive-mpu-using-dotnet.html
+
+By increasing the timeout to >12 hours, and maxerrorretry to 40, I have a 50% success rate. 
+
+Further it appears that the timeout configuration item doesn't behave as documented. Sometimes a multipart upload will have 15 successful part uploads, then fail on the 16th in a matter of minutes with a ""timeout"", even though the timeout is = 12 hours.
+http://docs.aws.amazon.com/sdk-for-net/v2/developer-guide/retries-timeouts.html
+
+any help?"
+
+Amazon Glacier	"Re: timeouts uploading multi-part to glacier using SDK .NET
+After digging into the 'timeout' exception further, it appears that the Service is sending back a 'WebException Webrequest has been cancelled' message. 
+Thus, it's not a timeout issue. the service is cancelling the request. Further, it's cancelling the whole multipart upload, not just the part- so I can't just restart the part. I will contact AWS support."
+
+Amazon Glacier	"Re: timeouts uploading multi-part to glacier using SDK .NET
+I was able to resolve the timeout issue with the glacier sdk for .net.
+
+recap:I was getting timeouts when running this code sample from aws:
+http://docs.aws.amazon.com/amazonglacier/latest/dev/uploading-an-archive-mpu-using-dotnet.html
+
+after poking around for 2 weeks, and researching how the CLI works, I found the solution was to handle the part's timeout in a loop, recover, and keep trying. here is the new UploadParts for the sample code, which works perfectly.
+
+        static List<string> UploadParts(string uploadID, AmazonGlacierClient client,FileInfo file)
+        {
+            List<string> partChecksumList = new List<string>();
+            long currentPosition = 0;
+            var buffer = new byte[Convert.ToInt32(partSize)];
+            bool partcomplete; //used in the while
+ 
+            long fileLength = file.Length;
+            using (FileStream fileToUpload = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
+            {
+                while (fileToUpload.Position < fileLength)
+                {
+                    partcomplete = false;
+                    Stream uploadPartStream = GlacierUtils.CreatePartStream(fileToUpload, partSize);
+ 
+                    while (!partcomplete)   // added this while, to endlessly retry a part that threw an exception
+                    {
+                        try
+                        {
+                            Console.Write("" __ "" + fileToUpload.Position.ToString());
+                            string checksum = TreeHashGenerator.CalculateTreeHash(uploadPartStream);
+                            partChecksumList.Add(checksum);
+                            // Upload part.
+                            UploadMultipartPartRequest uploadMPUrequest = new UploadMultipartPartRequest()
+                            {
+                                VaultName = vaultName,
+                                Body = uploadPartStream,
+                                Checksum = checksum,
+                                UploadId = uploadID
+                            };
+                            uploadMPUrequest.SetRange(currentPosition, currentPosition + uploadPartStream.Length - 1);
+                            UploadMultipartPartResponse pr = client.UploadMultipartPart(uploadMPUrequest);
+                            partcomplete = true;
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(""Recovering and continuing after this. Ex: "" + e.Message + ""!!!!!!  "" + currentPosition.ToString());
+                            fileToUpload.Position = currentPosition; //sets back the position, because the file progresses by itself. if failure, go back to position.
+                            uploadPartStream = GlacierUtils.CreatePartStream(fileToUpload, partSize);
+                            partChecksumList.RemoveAt(partChecksumList.Count - 1); //remove the check sum that failed.
+                            partcomplete = false; //set false, to try again
+                        }
+                    }
+                    
+ 
+                    currentPosition = currentPosition + uploadPartStream.Length;
+                }
+            }
+            return partChecksumList;
+        }"
+
+Amazon Glacier	"Re: timeouts uploading multi-part to glacier using SDK .NET
+answered it myself."
+
+Amazon Glacier	"Interaction of lifecycle rules and glacier restore days available
+Hi -
+It is unclear to us how lifecycle rules which move files to glacier interact with the days a restored glacier object is available.
+
+Let's say, for example, we ask a restored object to be available for 3 days, but the lifecycle rule says move it immediatly to glacier.  One might expect the restored object to be bounced promtly (on the UTC day boundary) to glacier - clearly not desired. 
+
+Will the restored object be moved to glacier, or is it following its own rules as a special object which is subject to the restore days, and not the lifecycle rules?
+
+Thanks -
+
+Stephen
+
+Edited by: stephensykes on Dec 20, 2017 1:13 PM"
+
+Amazon Glacier	"Re: Interaction of lifecycle rules and glacier restore days available
+Hi stephensykes,
+
+Thats a great question. Today, S3 lifecycle transition actions are applicable only to S3 and S3-IA storage class. As a result, once an object is transitioned to Glacier storage class, it is no longer subjected to further movement. The expiration actions are applicable across all the three storage classes.
+
+When the object is restored for a given duration (3 in your example), it is temporarily stage in S3 but the storage class of the object is still Glacier and hence, it will not re-transition to Glacier. 
+
+http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html
+
+Abhinav"
+
+Amazon Glacier	"Poor Glacier Restore Performance
+I'm getting horrible download performance from Glacier on a 3TB restore. I have a 1Gbps connection to the internet and fast local storage. I can easily fill the 1Gbps pipe on upload to Glacier using CloudBerry Backup. However, a CloudBerry restore from Glacier is downloading at ~20Mbps. I am using standard Glacier restore policy (4-5hrs before 1st byte) but now that 18hrs have elapsed data should be downloading at an unlimited rate. I confirmed my Glacier vault restore policy is set to 'no limit'. I am not using expedited restore. 
+
+I see thousands of connection errors from CloudBerry:
+
+2017-12-18 21:07:39,409 https://forums.aws.amazon.com/ https://forums.aws.amazon.com/ INFO  - Getting object, bucket: XXXXXXX, key: XXX_XXXX/XXXX:XXXXX$/Root/Tx.XXXX/2016-07-09.001/Snapshot.22347.1.bin:/20170427012704/Snapshot.22347.1.bin, version: , range: bytes=124860193-125912231, length: 1052039
+2017-12-18 21:07:39,518 https://forums.aws.amazon.com/ https://forums.aws.amazon.com/ ERROR - Request failed, retrying in 400 msec, 3 attempts left
+CloudBerryLab.Base.HttpUtil.Light.LightWebException
+Unable to connect to the remote server
+System.Net.WebException
+Unable to connect to the remote server
+   at System.Net.HttpWebRequest.GetResponse()
+   at Ut.A(Uo )
+System.Net.Sockets.SocketException
+A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 54.231.115.34:443
+   at System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
+   ‎
+CloudBerry support says the issue is with AWS. Is it possible AWS is throttling the restore? Or limiting the number of connections? I've restored data from Glacier before (a few years ago) and didn't have this problem. At this rate my restore will take a month. 
+
+Is this expected download behavior for Glacier? Can anyone share what type of performance they have seen on restore?"
+
+Amazon Glacier	"Question on Glacier Pricing S3 -> Glacier using lifecycle
+Hi AWS enthusiasts!
+
+This is a bit of a long read i apologize!
+
+I have a question regarding using S3 then transitioning that data to  Glacier it concerns pricing and possible surprise charges that can come up. I went to AWS Simple Monthly Calculator so I have a rough idea of the costs (+based on Northern CA Prices+) I was hoping to get additional input on the matter.
+
+We have Dell Rapid Recovery that has the option to send the archives directly to an S3, we were considering to use a lifecycle policy to have them migrate to Glacier, for long term storage on systems that are retiring but for legal purposes we must have a reliable backup. We did some rough calculations and we are looking at roughly 5 TB of storage. the initial question we have is:
+What does our 1st month costs look like?, 2nd month?, 3rd month?
+In the next few years we have alot of consolidation projects and so we have an extreme case:
+what would happen if we went with 55TB? 2nd month?, 3rd month?
+
+Here is is what we are looking at 5TB example: Link:https://calculator.s3.amazonaws.com/index.html#r=SFO&key=calc-DF5E4EA2-C73E-4A8C-8418-6E27A78293F9
+
+The link above doesn't have any of the PUT or GET Requests per 1000 (we are also a bit unsure on the math behind that), we don't have that exact number of objects that Rapid Recovery will be creating in the S3 (i understand this can be vital as the S3 and Glacier will add an additional 8KB to 32KB per object for the metadata and etc. We are expecting that in the 1st Month we will he paying for the using S3 and the glacier storage (even if we create a life cycle rule to move the objects to glacier after 1 day creation AWS doesn't prorate such things, correct?), and that afterwards in the 2nd and 3rd month things we are just paying for the storage, we know if we decide to restore the data we will need to migrate the data form glacier back to the S3 and etc. Does anyone have any examples of using S3 to Glacier in recent months? and the actual prices they encountered month to month? i really appreciate any assistance on the matter. please share your experiences with me. 
+
+We done some research on the matter hence what has given us the concerns
+Link: https://alestic.com/2012/12/s3-glacier-costs/
+he talks about his experiences back in 2012, with the overheads costs
+Link: https://forums.aws.amazon.com/thread.jspa?threadID=168450
+talks about managing the data which a bit unrelated but an eye opener if we need to do a restore
+Link: https://www.quest.com/community/products/rapid-recovery/f/forum/21170/can-dell-rapid-recovery-core-6-1-1-137-archive-to-amazon-glacier
+Clarifies why we need to use a S3 and then Glacier with life-cycle but no pricing examples.
+
+Edited by: FrostyDLL on Dec 15, 2017 9:53 AM"
+
+Amazon Glacier	"Uploaded files not showing up in vault inventory even days later
+I have uploaded a lot of archived files to Glacier using FastGlacier the last few days and everything seemed happy from the client. My problem is that only the files I uploaded on the first day show up in inventory retrieval requests multiple days later. I have done inventory updates using FastGlacier and also via aws cli requests. Also in the aws console I only see the data from the first day. 
+
+I have created 5 glacier vaults and uploaded archives to 4 of them but in the console and inventory retrieval job responses one of the ones I uploaded 70GB of archives too still shows empty and one that shows some data in it only shows less than half of what I apparently uploaded even days after it was uploaded. I have a lot more to upload but I'm wondering if there is any point. Where are my archives going? I do see roughly the correct number of amazon glacier requests showing up on the billing page for all of what I thought i uploaded. It isn't clear if the timed storage value in billing is correct as i think it pro-rates the values for partial months.
+
+I see I could upload to S3 and then use lifecycle transitions to move to glacier after 1 day but i should also be able to do this directly with glacier shouldn't i?"
+
+Amazon Glacier	"Re: Uploaded files not showing up in vault inventory even days later
+Well they showed up in inventory today. Either someone did something or sometimes it's more than a day before inventory updates.
+
+Edited by: rdarrylr on Dec 13, 2017 5:56 AM"
+
+Amazon Glacier	"Place the image of Instance to Glacier Server
+I want to place the image of Instance to Glacier Server.
+Need that image as backup."
+
+Amazon Glacier	"Re: Place the image of Instance to Glacier Server
+I'm not sure I understand the question; why can't you upload the AMI to S3 or Glacier?"
+
+Amazon Glacier	"Glacier retrieval: 000z files? Where are my original files?
+Hi there,
+
+I am quite new to this. I uploaded all my photo folders from Linux into Glacier using CrossFTP and now I would like to retrieve some of them. I now use FastGlacier under Windows for retrieval but once I retrieve my vault inventories, they contain long lists of meaningless files, mostly files with a type of 000Z or 023Z or similar. The file names all start with ""key="" or long lists of numbers and letters. Needless to say, these are not the files I had uploaded. I cannot see the original folder structure (in fact, there are no folders in the retrieved list). I also cannot see any of my jpgs. What am I doing wrong? Or what did I do wrong when I uploaded my files? Thanks, so much, Marius"
+
+Amazon Glacier	"Re: Glacier retrieval: 000z files? Where are my original files?
+I am experiencing a similar scenario. I'm new to Glacier, so I'm not sure I understand it fully yet.
+
+I can only see the files from the specific machine I uploaded the files from (macOS with CrossFTP). When I access Glacier with FastGlacier on Windows, I can see files I uploaded from this machine, but all other files are key=(...).000Z files.
+
+Did you resolve your issue, laumansm?"
+
+Amazon Glacier	"Re: Glacier retrieval: 000z files? Where are my original files?
+Hi,
+
+Glacier provides a unique archive ID upon each upload and does not preserve the original file name and extension. The user is expected to maintain a client-side archive metadata to keep this information. 
+
+Please read through the following documentation for clarity. 
+Link: http://docs.aws.amazon.com/amazonglacier/latest/dev/working-with-archives.html
+
+Third party tools often maintain this client-side metadata using the archive description field. I would suggest reading through the documentation of the tool that you used to upload the data.
+
+Abhinav"
+
+Amazon Glacier	"Retrieval from Glacier when lifecycle transitions are used
+Hi all
+
+Assume that I have some amount of data on S3 that has been transferred to Glacier by means of a lifecycle transition policy.
+
+I'm searching for a few clarifications regarding the retrieval process to programmatically bring archives back onto my local machine out of AWS:
+
+1) In order to retrieve my archives from Glacier I have to first make GET requests to S3 and NOT directly to Glacier, correct?
+
+2) When this is done, my archives are retrieved and loaded onto S3-RRS, correct? 
+
+3) I have to make GET requests to S3-RRS in order to download the archives out of AWS, correct?
+
+Please correct me if I'm wrong and do let me know what is the correct procedure in case.
+
+--King Rancher"
+
+Amazon Glacier	"Re: Retrieval from Glacier when lifecycle transitions are used
+Hi KingRancher,
+
+You would need to use the RESTORE api in S3 to retrieve data from Glacier storage class. I have attached the relevant document for your use. 
+http://docs.aws.amazon.com/AmazonS3/latest/user-guide/restore-archived-objects.html
+Once the data is restored, you will be able to save it to your computer using the S3 GET call.
+
+Abhinav"
+
+Amazon Glacier	"Re: Retrieval from Glacier when lifecycle transitions are used
+Thanks for the quick reply Abhinav"
+
+Amazon Glacier	"A Scala / JVM based Glacier client
+Glacier client is a simple tool I've created for working with Amazon Glacier. It was designed to support both interactive use (with Scala REPL), as well as programmatic use with Scala or Java. It’s well suited for server side use. Glacier client uses Amazon AWS SDK for Java to access Glacier.
+
+If you want to know more please check out a blog entry I wrote on this: https://practicingtechie.com/2017/11/19/scala-client-for-amazon-glacier/
+
+The code can be found on GitHub: https://github.com/marko-asplund/glacier-client"
+
+Amazon Glacier	"Glacier vault Signing Request failing
+Trying to make a list vault request.
+
+My canonical string and string to sign (my strings includes all the new line as mentioned in the glacier doc) is same as given by amazon in error code but getting the error from Amazon
+
+please look at the input and output and help me out to resolve the signing request.
+
+Url - http://glacier.us-east-1.amazonaws.com:80/-/vaults
+
+My Canonical string: 
+GET /-/vaults host:glacier.us-east-1.amazonaws.com x-amz-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 x-amz-date:20171117T061938Z x-amz-glacier-version:2012-06-01 host;x-amz-content-sha256;x-amz-date;x-amz-glacier-version e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+My String to sign: 
+AWS4-HMAC-SHA256 20171116T110124Z 20171116/us-east-1/glacier/aws4_request 7b01d8258e82cc09e9b0b3ce86f4d9a722af007afd59698a805c5fd6bc862b9d
+
+Authorization: AWS4-HMAC-SHA256 Credential=ACCESSKEY/20171116/us-east-1/glacier/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-glacier-version,Signature=7ddc2798fa78914ebe38c85ec13dc91cbe3657d4e2d4ac45a513f7507c2ce7e4
+
+Signature calculated as per given in the doc.
+
+Getting from Amazon-
+
+{""code"":""InvalidSignatureException"",""type"":""Client"",""message"":""The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. Consult the service documentation for details.\n\nThe Canonical String for this request should have been\n'GET\n/-/vaults\n\nhost:glacier.us-east-1.amazonaws.com\nx-amz-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nx-amz-date:20171116T110124Z\nx-amz-glacier-version:2012-06-01\n\nhost;x-amz-content-sha256;x-amz-date;x-amz-glacier-version\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'\n\nThe String-to-Sign should have been\n'AWS4-HMAC-SHA256\n20171116T110124Z\n20171116/us-east-1/glacier/aws4_request\n7b01d8258e82cc09e9b0b3ce86f4d9a722af007afd59698a805c5fd6bc862b9d'\n""}
+
+Thanks
+
+Edited by: Gryffindor on Nov 16, 2017 10:59 PM"
+
+Amazon Glacier	"Pricing clarification
+1) Glacier Storage. Does the rate of download (throughput) affect the pricing? I gather that's how it was but not any more? There is confusion on the internet. 
+
+I know the Expedited, Standard and Bulk have different pricing but that's not what I'm asking.
+
+Example: Let's say I have 2 x 100GB arhives on Glacier and I want to retrieve them using Bulk retrieval, which is currently priced at $0.0025 per GB in eu-west-1.
+I send a InitiateJob request, with Tier: Bulk to fetch the two archives.
+
+I wait for 5-12 hours and then I send GetJobOutput to fetch the bytes of the archives from outside of AWS.
+
+The question is, save for the Request charges, do I pay:
+2 x 100GB * $0.0025/GB = $0.5 for the Glacier fetch, and
+2 x 100GB * $0.09/GB = $18 for fetching the data outside the AWS?
+Irrelevant how ""quickly I download the data?""
+Do I pay more in any circumstances (based on pricing at the time of writing)?"
+
+Amazon Glacier	"Re: Pricing clarification
+Hello olafur, 
+
+Your math is correct, you pay 2 x 100GB * $0.0025/GB = $0.5 for the Glacier Bulk retrievals, and
+2 x 100GB * $0.09/GB = $18 for data egress out of AWS. These costs are independent of how quickly you download the data.  
+
+Best regards,
+-Henry"
+
+Amazon Glacier	"Re: Pricing clarification
+I do wonder how "" Max Retrieval Rate"" in ""Data Retrieval Settings"" on the affect these calculations though.  Do I still pay the same if it's set on 2 GB/Hour?"
+
+Amazon Glacier	"Migration from ARQ on Mac to Synology Glacier Backup
+I have a client utilizing ARQ software on a Mac to backup specific folders from 2 external volumes to a Glacier bucket.  I am consolidating the 2 external volumes to a Synology NAS unit and want to use the Glacier Backup application available on the NAS OS to backup the same folders.  The problem is that the folder and file paths will now be different.  Is there a way to re-configure the paths in the bucket to allow for the new sync backup without starting all over again?  Thanks in advance!"
+
+Amazon Glacier	"beginner best practice question
+Hello,
+
+I got some 300 folders, each about 2GB in size, containing pdf files that I want to move/archive to Glacier storage using the free Cloudberry Explorer. I am new to Amazon storage and from my understanding, I can have unlimited number of vaults and unlimited number of archives in each vault. 
+
+Do I create one vault and move all 300 folders into it, or should I create 30 vaults and put 10 folders into each vault, or is there a better approach? I will be adding more folders similar to the current ones in size and content to Glacier storage in the future.
+The main concern is the speed of moving files to Glacier and the retrieval speed in the future.
+
+Thanks!"
+
+Amazon Glacier	"Re: beginner best practice question
+Hi,
+
+I would suggest to move your data to S3 storage and use life cycle policy to set another storage class for your objects, - IA, Glacier.
+
+What is the plan with retrieval files in the future? Do you need them on daily/monthly basis or just occasionally based on some internal triggers (accidents etc)?"
+
+Amazon Glacier	"Re: beginner best practice question
+Thank you for your response.
+
+I may need to retrieve a couple of files a year occasionally, that's why I chose the least expensive Glacier and not S3.
+Before moving the files to the cloud, I wanted to find out if there were any recommended limits for the number of folders/files in the vault and the number of vaults, etc.
+What is the advantage of using S3 storage with a Glacier storage class vs Glacier storage in my case? Does not S3 cost more?
+Is there a tool that would allow to search by name for a file located on Glacier or S3?
+I do not see any Search tools for my vault on Glacier in Coudberry Explorer Pro trial version although I already run Get Inventory.
+
+Thanks!"
+
+Amazon Glacier	"Re: beginner best practice question
+@maestro let me expand on what @evgeny said:
+
+You can use S3 and a short-acting Lifecycle Policy to store content in Glacier, at essentially the same storage cost as using Glacier directly, but with a much more friendly interface.
+
+Accessing Glacier directly requires working with an advanced, low-level API, which works from the assumption that you are the one keeping track of what you stored, where.
+
+When you store objects in Glacier via S3, you have the convenient S3 presentation of a hierarchical structure, a simplified interface, and the ability to restore one file at a time or a number of files, just by using the checkboxes in the console.
+
+Choosing the S3/Glacier integration makes your questions moot, because S3 handles everything for you, transparently, and I would not recommend using Glacier directly unless you have specific need of features like Vault Lock that are not available through the S3 integration."
+
+Amazon Glacier	"Re: beginner best practice question
+Thank you for your response.
+
+It looks like your statement about using ""S3 and a short-acting Lifecycle Policy to store content in Glacier, at essentially the same storage cost as using Glacier directly"" is incorrect, because there is an additional conversion from S3 to Glacier storage cost.
+
+I do not care about Advanced low-level API either because there are plenty of tools, and some free, that have a great user friendly interface, and my data is pretty well structured, but I still need a file search functionality that Cloudberry Explorer Pro claims to have. I just do not know how to run a search, because I cannot find that Search tool in the Cloudberry Explorer's interface.
+
+Edited by: maestro on Sep 11, 2017 11:03 AM"
+
+Amazon Glacier	"Re: beginner best practice question
+Apparently, Cloudberry Explorer Pro can do a file search only in S3 storage.
+FastGlacier has a file filter functionality, but it does not bring up the results in a separate view, and you have to open every folder in the vault to see if it contains the filtered file(s).
+
+This makes so much advertised Amazon Glacier storage useless to me, because even if I need to retrieve a file less than once a year, it is almost impossible to find the file I want to retrieve... unless there is a tool that allows to do that easily.
+
+All I need is a simple file search, and I am not sure why the mentioned above utilities cannot do the file search once they have the inventory of the vault..."
+
+Amazon Glacier	"Re: beginner best practice question
+Correct, there is a cost associated with the Glacier transitions, which is why I said ""essentially"" the same coat, because when you can migrate 100,000 files for a transition cost of $5, that's pretty negligible.  The storage price is also fractionally higher, because S3 objects resting in Glacier carry a few extra KiB of metadata, again, negligible... but, having migrated many terabytes of data to Glacier over the past few years, I have never regretted the decision early on to use the S3 integration, after I came to a thorough understanding of what the two APIs had to offer.  Glacier is an industrial-strength enterprise-class service and to use it directly, and you need an industrial strength enterprise-class client that maintains its own local searchable indexes.  I was in the process of developing such a system when I realized S3 had already solved the problem."
+
+Amazon Glacier	"Re: beginner best practice question
+I appreciate your response.
+
+I think that, if a utility can get inventory of the storage and allow you to view the content of the storage, then it can also search that inventory for a file and present the results in the way the tools that store local indexes do.
+
+Edited by: maestro on Sep 14, 2017 7:59 AM"
+
+Amazon Glacier	"Re: beginner best practice question
+I created an S3 storage to see how a file search on S3 compares to Glacier.
+I see that there is a Search tool in the console, but it searches only the current folder.
+If I want to search for a file that is located in one of the 300 folders in my bucket, I have to open and search in each and every folder to find the file...
+I am glad that some tools like Cloudberry Explorer Pro version allow to search the whole S3 bucket in one step."
+
+Amazon Glacier	"Glacier retrieval/restore costs
+Good morning,
+
+I'm sure this question has been asked many times but i need some clarification on retrieval costs.
+
+At present we have 45TB stored in our Amazon account across 7 buckets with files being moved to Glacier 2 days after creation on S3.
+
+I'm not sure what the average monthly data upload is!How can i find out?
+
+Scenario is as follows:
+
+Site 1 completely burns down and we must retrieve all data from Glacier. This site currently has approx 940gb of data. How much will it cost us and what is the best, most efficient way to retrieve this data?
+
+I have to work this out for all businesses and would like to understand the approx costs that they would pay in case of DR.
+
+Also can someone clarify what an Archive is? Is it a file??
+
+Kind regards
+Simon
+
+Edited by: SimonUK on Mar 29, 2017 1:57 AM"
+
+Amazon Glacier	"Re: Glacier retrieval/restore costs
+The prices of Glacier depends on the time you are ready to wait. General price offer you to wait 6-12 hours of data retrieval, however, if you will need your data in few minutes, you will be charged much more.
+
+Take a look at your billing dashboard, I think Amazon should tell you, how much it charged you for data in Glacier and how much data is in Glacier.
+
+https://aws.amazon.com/glacier/pricing/"
+
+Amazon Glacier	"Re: Glacier retrieval/restore costs
+It is fairly complex. The FAQ page for Glacier talks about ""peak retrieval speed"" but the pricing page for Glacier will not mention it. The safest way to calculate the total cost is to first determine the tier you wish to use. You can choose from Expedited, Standard, or Bulk. Once chosen you have a retrieval price per gigabyte known as P.
+
+From what I can tell, the retrieval rate is calculated on an hourly basis. There is information out there that says to divide the amount of data you request within the hour using the standard tier by 4; however, if you wanted to be safe you should first calculate how fast can you download the data.
+
+For example, with if your bandwidth can handle 10-megabytes/second then your maximum download would be 10 multiplied by 3600 which is 36000-megabytes per hour. The trick is to request only 36000-megabytes per hour and you can do that using range requests. This requires your software to properly partition the archives using byte range requests.
+
+Let us say you wish to use the Bulk tier. It is $0.0025 per gigabyte. You issue one or more requests for 36-gigabytes in the first hour. Then, in the next hour you issue another 36-gigabytes and so forth. As these jobs become completed you download them. According you shall be charged at a peak retrieval speed of 36-gigabytes per hour. The total calculation for monthly cost is 36 * 0.0025 * 720 = $64.80.
+
+What Amazon is doing is charging you more money the more data you cause them to move within the hour. However, they give you a discount for giving them longer to move the data hence the tiers (Bulk, Standard, and Expedited). They then multiply it by 720-hours which ends up giving them a cost advantage. They effectively charge you to move that much data for the rest of the month. It is like automatic provisioning. They allocated resources to move that amount of data for the entire month. This forces you to spread out your transfers over the longest possible time interval in order to acquire the lowest costs.
+
+The next cost is from the actual data transfer. This is currently $0.09 per gigabyte. Therefore, the calculation is then done as 0.09 * total_gigabytes + $64.80.
+
+Yes, it sounds strange. The pricing page would make you believe you would pay differently. What it should say on the pricing page is ""Peak Hourly Retrieval Pricing"" instead of ""Retrieval Pricing"". Then, a section should be devoted to explaining the peak hourly calculation.
+
+A significant problem is making requests for more data in one hour than you can download in one hour. If you told Amazon to get 1-terabyte of data ready using the Bulk tier by sending a request that scheduled the download of a 1-terabyte archive you would be charged 1000 * 0.0025 * 720 = $1800 as a minimum for the month. Instead, if you downloaded that 1-terabyte archive over the entire month by issuing requests for 0.695-gigabyte per hour you would only pay $1.80 at the end of the month. This excludes data transfer costs. You have to remember that your request to have 1-terabyte will be completed according to the time for the tier you specify. That means an entire 1-terabyte will be made available to download as fast as possible and that costs $1800 minimum. The good news is that you peak rate will now be 1-terabyte/hour. Feel free to download slower and not incur any additional charges. BUT, you will still pay the data transfer fees of 9 cents per gigabyte during the month."
+
+Amazon Glacier	"Re: Glacier retrieval/restore costs
+I think Leonard's information is based on the old pricing method.
+I can't find it anywhere in the pricing that you pay for throughput.  You pay different fixed fees for for Expedited, Standard and Bulk retrievals.
+See this Q/A: https://forums.aws.amazon.com/thread.jspa?messageID=804810
+
+If you think I'm wrong and Leonard's right, can you please quote relevant sections from Glacier Pricing where its' explained that throughput affects the pricing."
+
+Amazon Glacier	"Client Side Encryption
+I was using Client Side Encryption on S3 when the data gets saved to Glacier will it have the same Client Side Encryption?"
+
+Amazon Glacier	"Client Side Encryption
+I was using Client Side Encryption on S3 when the data gets saved to Glacier will it have the same Client Side Encryption?"
+
+Amazon Glacier	"Error deleting vault. Vault not empty or recently written to:
+Hi.
+
+As I understand it is a very common situation when someone wants to delete non empty archive.
+
+Right now it is not really possible to empty the archives, so can someone from AWS do it for me? Please..."
+
+Amazon Glacier	"Re: Error deleting vault. Vault not empty or recently written to:
+Nvm. Deleted through Synology app."
+
+Amazon Glacier	"Glacier Availability Numbers: 99.99%?
+Hi, 
+
+Looking at the table here: https://aws.amazon.com/s3/storage-classes/ Glacier does not have 'Availability' numbers like the various storage classes of S3.   Nor can I find reference to such figures anywhere else.
+
+Is there a reason for this?
+
+Does Glacier have an availability percentage?
+
+Thanks - Mike"
+
+Amazon Glacier	"Re: Glacier Availability Numbers: 99.99%?
+""Availability"" doesn't really seem like a concept that can be applied all that meaningfully to Glacier.  The objects are durable, but by design they are not ""available"" in the same sense that S3 objects in other storage classes are ""available.""   Depending on the selected retrieval tier, the anticipated restoration times are 1 to 5 minutes, 3-5 hours, or 5-12 hours.
+
+Glacier doesn't appear to have a formal SLA like S3 does: https://aws.amazon.com/legal/service-level-agreements/"
+
+Amazon Glacier	"Delete and Close Glacier storage
+I am trying to remove all files and archives and vaults from my account,  No jobs are finishing so I cannot get the archive ID to delete it.    All jobs just show in progress.    My email is my account.  there is only one Glacier Vault and Archive in us-west-2
+
+Can someone at amazon just kill the whole thing and shut it down.  Not going to use it anymore."
+
+Amazon Glacier	"Re: Delete and Close Glacier storage
+inventory of archive finally finished and I was able to get the archive ID.
+
+Then ran
+
+aws glacier get-job-output --account-id - --vault-name mainbackup --job-id  %yourjobid$ --range 1024 temp.txt
+
+Then looked through temp.txt to find the archive ID
+
+Ran
+
+aws glacier delete-archive --account-id - --vault-name mainbackup --archive-id %YourArchiveID%
+
+Had to run this several times over several DAYS.
+
+Finally the Vault was empty and I could delete the Vault from the Web console.
+
+Edited by: cabozone on Aug 29, 2017 9:11 AM"
+
+Amazon Glacier	"Restore files from Glacier
+Question moved to S3
+
+Edited by: martin3000 on Aug 25, 2017 6:06 AM"
+
+Amazon Glacier	"Re: Restore files from Glacier
+moved to s3 forum"
+
+Amazon Glacier	"inventory retrieval fee
+Hello everyone!
+
+I would like to know if there is a fee for initiating an inventory-retrieval job or getting its output via get-job-output.
+In the documentation I can see that there is obviously a fee for archive-retrieval, but I just want to make sure if there is a fee for inventory-retrieval as well.
+
+Thanks in advance,
+Itay."
+
+Amazon Glacier	"Re: inventory retrieval fee
+AWS Support,
+
+Can we get this answered AWS Support? I have the same question and there isn't a good answer on the internet."
+
+Amazon Glacier	"Re: inventory retrieval fee
+Hi Itay,
+
+Inventory retrievals in Glacier are processed as standard retrievals and the standard retrieval request and data fees apply.
+
+Abhinav
+
+Edited by: abhinavataws on Aug 23, 2017 4:33 PM"
+
+Amazon Glacier	"[Ann] CloudBerry Backup v 5.7 for Amazon S3 and Glacier is released
+Hi everyone,
+
+CloudBerry Lab is proud to present Cloudberry Backup for Amazon S3 version 5.7 with Hybrid backup support that will back up to local storage and then to the cloud is available. 
+
+here is a full list of the features. 
+
+Hybrid backup for Image Based
+Hybrid backup for MS Exchange
+Hybrid backup for SQL Server
+Hybrid backup for VMware
+Hybrid backup for Hyper-V
+Restore Hyper-V VMs to Amazon EC2
+Restore VMware VMs to Amazon EC2 
+Restore IBB as a VM to VMWare/Hyper-V
+Fast NTFS search
+Backup operators support
+Ability to chain the restore plan after the backup plan 
+Ability to run SQL Server transaction log backups during the full backup 
+Amazon S3 bulk delete
+Improve Backup History screen
+
+
+Check out our blog for more info
+https://www.cloudberrylab.com/blog/introducing-cloudberry-backup-5-7/
+Get your copy here 
+
+Desktop Edition: http://www.cloudberrylab.com/desktop
+Server Edition: http://www.cloudberrylab.com/server"
+
