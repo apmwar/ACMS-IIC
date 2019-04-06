@@ -1,0 +1,2592 @@
+label	description
+Amazon Linux	"Key Pair is too open
+I am trying to ssh my Linux EC2 instance from my local windows pc using cmd but getting error message that Key Pair file is too open. I checked all file permissions. Only I have ownership and access to the Key Pair file, still the issue persists.
+
+What to do?"
+Amazon Linux	"Unable to install glibc.i686 - Amazon Linux 2
+Hi, I'm unable to install glibc.i686, I need it for an APP we are developing, I adding the repo manually but it fails. Any ideas?
+Here is what I get when I run the install command..
+
+root@testserver tmp# yum install glibc.i686
+Loaded plugins: langpacks, update-motd
+amzn2-core                                                                             | 2.0 kB  00:00:00
+No package glibc.i686 available.
+Error: Nothing to do"
+Amazon Linux	"Re: Unable to install glibc.i686 - Amazon Linux 2
++1 and a more generic follow up as we need some help from AWS representatives regarding 32bit application and development compatibility on AWS branded Linux 2 AMI as it is missing all the i686 versions of libraries and most of the compat\* rpms that would normally exist on RHEL7/Centos7/OEL7 and even the forthcoming Fedora 28. 
+
+No 32 bit application support will be a dead stop for using the proposed Amazon Branded Linux 2 LTS Distribution for some very old applications (do not need a non 64bit OS boot just 32 bit development tool chain for re-links and a full 32 bit run time), I need at least the basic libraries:
+
+No package glibc.i686 available.
+No package glibc-devel.i686 available.
+No package libstdc++.i686 available.
+No package libstdc++-devel.i686
+No package glib2.i686 available.
+No package glib2-devel.i686 available.
+No package libaio.i686 available.
+No package libaio-devel.i686 available."
+Amazon Linux	"Re: Unable to install glibc.i686 - Amazon Linux 2
++1 for me too as many applications are still built 32 bit and run 64bit (not just Linux but Winblows too) as they either do not need the 64 bit capacities or they are not even 64bit clean (naughty developers with char=int badness that they have no interest in correcting due to the testing involved).  Will 32bit application and development compatibility be supported on AWS branded Linux 2 AMI?"
+Amazon Linux	"Re: Unable to install glibc.i686 - Amazon Linux 2
+Another +1. We need 32bit build and runtime libraries available in order to migrate to Amazon Linux 2. Much as we would love to go full 64bit our dependencies don't allow for it right now."
+Amazon Linux	"Re: Unable to install glibc.i686 - Amazon Linux 2
+Last week I created case 4837075421 specifically asking for ""Support for 32bit software and libraries on Amazon Linux 2"" and we have been told AWS will be updating the FAQ
+
+""Amazon Linux 2 is 64-bit only in that it does -not- support 32-bit software and does not ship the 32-bit libraries and compat packages.  Our suggested avenue forward is either continue to run these select applications on Amazon Linux 1, or recompile them for 64-bit if possible."""
+Amazon Linux	"Re: Unable to install glibc.i686 - Amazon Linux 2
+The Amazon Linux Team is proud to announce that we are now supporting 32-bit libraries in Amazon Linux 2. For more information, please see our release notes here: https://aws.amazon.com/amazon-linux-2/release-notes/ .
+
+Please give it a try and contact us if you have any further questions or issues."
+Amazon Linux	"Re: Unable to install glibc.i686 - Amazon Linux 2
+Hello,
+but i cant install on AWS linux 2 glibc devel.i686. 
+
+What i do wrong ?
+
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+amzn2-core                                                                                                                                                                                               | 2.4 kB  00:00:00
+No packages marked for update
+ sudo yum install glibc-devel.i686
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+No package glibc-devel.i686 available.
+Error: Nothing to do
+
+Edited by: DTometzki on Feb 22, 2019 10:35 AM"
+Amazon Linux	"Re: Unable to install glibc.i686 - Amazon Linux 2
+Hello together,
+
+any comment from amazon support to my question ?
+
+Best regards
+Damian"
+Amazon Linux	"Amazon Linux 2 No Longer has EPEL installed as default ?
+Is epel repo going to be supported in the new Linux 2 ami. Looks like its no longer available in the new Linux version. How can I get epel installed in Linux 2 ?"
+Amazon Linux	"Re: Amazon Linux 2 No Longer has EPEL installed as default ?
+I was able to install the EPEL. I posted instructions in another thread:
+
+https://forums.aws.amazon.com/thread.jspa?threadID=270511"
+Amazon Linux	"Re: Amazon Linux 2 No Longer has EPEL installed as default ?
+Incase it helps someone else:
+
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -P /tmp
+
+sudo yum install -y /tmp/epel-release-latest-7.noarch.rpm"
+Amazon Linux	"Re: Amazon Linux 2 No Longer has EPEL installed as default ?
+worked for me.  very nice."
+Amazon Linux	"Re: Amazon Linux 2 No Longer has EPEL installed as default ?
+Hi junior2701,
+
+AL2 does not officially support enabling and installing packages from EPEL repositories, however you should find that the packages are mostly compatible and just work.
+If you have any issues with using EPEL packages on AL2 please bring them to our attention and we'll do our best to resolve these as they come up.
+
+Thanks,
+
+Eric"
+Amazon Linux	"Re: Amazon Linux 2 No Longer has EPEL installed as default ?
+It is in amazon-linux-extras these days and is actually really easy to enable. One command and you're golden:
+
+sudo amazon-linux-extras install epel"
+Amazon Linux	"repo: amzn-main/latest
+When a try to update my EC2-instance, I got this error, it's returning a private ip and some port, how can change this?
+
+Loaded plugins: priorities, update-motd, upgrade-helper
+Could not retrieve mirrorlist http://repo.us-east-1.amazonaws.com/latest/main/mirror.list error was
+14: curl#7 - ""Failed to connect to 11.0.0.148 port 3128: Connection refused""
+
+ One of the configured repositories failed (Unknown),
+ and yum doesn't have enough cached data to continue. At this point the only
+ safe thing yum can do is fail. There are a few ways to work ""fix"" this:
+
+     1. Contact the upstream for the repository and get them to fix the problem.
+
+     2. Reconfigure the baseurl/etc. for the repository, to point to a working
+        upstream. This is most often useful if you are using a newer
+        distribution release than is supported by the repository (and the
+        packages for the previous distribution release still work).
+
+     3. Disable the repository, so yum won't use it by default. Yum will then
+        just ignore the repository until you permanently enable it again or use
+        --enablerepo for temporary usage:
+
+            yum-config-manager --disable <repoid>
+
+     4. Configure the failing repository to be skipped, if it is unavailable.
+        Note that yum will try to contact the repo. when it runs most commands,
+        so will have to try and fail each time (and thus. yum will be be much
+        slower). If it is a very temporary problem though, this is often a nice
+        compromise:
+
+            yum-config-manager --save --setopt=<repoid>.skip_if_unavailable=true
+
+Cannot find a valid baseurl for repo: amzn-main/latest"
+Amazon Linux	"Re: repo: amzn-main/latest
+Hello,
+It looks like yum on your instance is configured to connect to a web proxy. Port 3128 is typically used for web proxies. Please review your yum configuration in /etc/yum.conf or in /etc/yum/ directory. Amazon Linux repositories are hosted in S3, so if you are not using a proxy, make sure that you have network access to S3 from your VPC. 
+
+-Heath"
+Amazon Linux	"java-11-openjdk-devel for Amazon Linux 2
+Does anyone when the java-11-openjdk-devel will be available in the Amazon Linux 2 yum repo?"
+Amazon Linux	"Re: java-11-openjdk-devel for Amazon Linux 2
+Hello,
+We are working to make this package available for Amazon Linux 2. I'm afraid I do not have a date when this will be available. The plan at this point is to make the package available in the Amazon Linux extras repositories. 
+
+-Heath"
+Amazon Linux	"Missing PHP Zip on Amazon Linux 2
+Amazon Linux has a ""php-zip"" package for PHP 7.0.
+Amazon Linux 2 has no such package for PHP 7.2.
+
+So how can we enable the PHP Zip module on AL2?
+It seems php-pear could help, but is not available either."
+Amazon Linux	"Re: Missing PHP Zip on Amazon Linux 2
+Thanks for trying out Amazon Linux 2. 
+
+php-pear is now available in the repos. Could you please check if that serves your needs?"
+Amazon Linux	"Re: Missing PHP Zip on Amazon Linux 2
+The ""php-pear"" package available in the main repository is version 1.9.4 released in 2011. It does not work at all with PHP 7.2.
+
+I think you guys need to include ""php-zip"" module in the ""extras"" repository along with php 7.2 because a lot of php libraries depend on this module."
+Amazon Linux	"Re: Missing PHP Zip on Amazon Linux 2
+I have the same problem, I need the module ""php-zip"", I tried to install via pear / pecl however it requires libzip and libzip-devel version> = 0.11.
+The problem is that Amazon Linux 2 and Centos 7 / uses libzip 0.10.8."
+Amazon Linux	"Re: Missing PHP Zip on Amazon Linux 2
+We are working on getting php-zip in our php 7 Extras repository. Thanks for bringing this to our attention."
+Amazon Linux	"Re: Missing PHP Zip on Amazon Linux 2
+Hi.
+
+We have upgraded php-pear so that it works with php 7.2. This will allow you to use pear/pecl to install php-zip. We are still looking into providing php-zip as an RPM so that it can be installed via yum. However, in the meantime you can install php-zip by running the following:
+
+sudo amazon-linux-extras install php7.2
+sudo yum install php-pear php-devel gcc libzip-devel zlib-devel
+sudo pecl install zip-1.13.5 # we must specify a slightly older version due due to compatibility
+
+And then add ""extension=zip.so"" to /etc/php.ini
+
+We will update this thread once we have php-zip in our php7.2 extras repository"
+Amazon Linux	"Re: Missing PHP Zip on Amazon Linux 2
+I'm facing the same problem, and even following these steps I'm still getting the error:
+Class 'ZipArchive' not found
+
+But when I ran php -m I see the zip module in the list:
+[PHP Modules]
+bz2
+calendar
+Core
+ctype
+curl
+date
+dom
+exif
+fileinfo
+filter
+ftp
+gettext
+hash
+iconv
+json
+libxml
+mysqli
+mysqlnd
+openssl
+pcntl
+pcre
+PDO
+pdo_mysql
+pdo_sqlite
+Phar
+posix
+readline
+Reflection
+session
+shmop
+SimpleXML
+sockets
+SPL
+sqlite3
+standard
+sysvmsg
+sysvsem
+sysvshm
+tokenizer
+wddx
+xml
+xmlreader
+xmlwriter
+xsl
+zip
+zlib
+
+Why it's loaded in the PHP modules list but my application can't find the ZipArchive class?"
+Amazon Linux	"Re: Missing PHP Zip on Amazon Linux 2
+Hi,
+thank you for php-pear upgrade.
+
+Are there some news about the php-zip extras package?
+At the moment the only way is to install Zip module (1.13.5 version only) via PECL?
+
+Thanks"
+Amazon Linux	"Re: Missing PHP Zip on Amazon Linux 2
+We have provided php-pecl-zip-1.15.2 for php7.2 in the php7.2 Extras.
+
+If you want to use an older version, you will need to use pecl.
+
+I hope that helps."
+Amazon Linux	"Re: Missing PHP Zip on Amazon Linux 2
+Hi everybody!
+
+what I should do to install php-pecl-zip in my amazon linux instance?  I tried to run the commands above but  got:
+
+ec2-user@xxxxx home$ sudo amazon-linux-extras install php7.2
+sudo: amazon-linux-extras: command not found
+
+is RPM enable already?
+
+thanks"
+Amazon Linux	"Re: Missing PHP Zip on Amazon Linux 2
+The amazon-linux-extras command and the extras RPM repositories are only available in Amazon Linux 2. Please make sure you are running the Amazon Linux 2. 
+
+The php pecl zip module is provided in the php72-common package in the Amazon Linux AMI. 
+
+-Heath
+
+Edited by: heath@AWS on Feb 12, 2019 3:15 PM"
+Amazon Linux	"php 7.2 redis, support missing from amzn2extra-php7.2
+Hi guys
+
+Could you update amzn2extra-php7.2 for amazon-linux-extras to include the extensions for redis  ASAP? Ideally to work with the redis 4.0 in amazon linux extras too (should there be a need to specify).
+
+Trying to install php-pecl-redis just results in a whole bunch of package conflict errors otherwise and there seems to be no other option which is really holding me back!
+
+Thanks
+
+Chris
+
+Edited by: Digital L. on Oct 25, 2018 8:31 AM
+
+Edited by: Digital L. on Oct 25, 2018 8:34 AM
+
+Edited by: Digital L. on Oct 25, 2018 8:35 AM"
+Amazon Linux	"Re: php 7.2 redis, support missing from amzn2extra-php7.2
+We can certainly provide support for php-pecl-redis, we'll track it as a feature request 
+
+I am curious about one thing that you said: 
+
+Trying to install php-pecl-redis just results in a whole bunch of package conflict errors otherwise and there seems to be no other option which is really holding me back! 
+
+How are you trying to install this, we do not provide any package for php-pecl-redis? The right way to install a pecl module w/o an RPM would be to use the pecl CLI as per: http://php.net/manual/en/install.pecl.pear.php which is provided by the php-pear package (you'll probably need to install php-devel as well)."
+Amazon Linux	"Re: php 7.2 redis, support missing from amzn2extra-php7.2
+php-pecl-redis is in the epel distro - in the absence of it being in al2 extras I was hoping it might be generic enough to just slot in - but the dependencies (if not more) make a mess of things for a simple yum install. 
+
+Would expect it to be quite widely used for php apps (as with most others) so was surprised it wasn't already in al2 extras to be honest. It's absence is blocking a bunch of migrations to AL2 for me (as I prefer to use the supported versions of packages when doing reasonably standard work like this).
+
+Is it possible to get a guide date for availability in the repo as if it's going to be a while I'll need to opt for a different solution in the interim.
+
+EDIT:
+Actually I'll do this through pecl as you suggest in this case right now - not entirely sure how closely you intend to follow the way its done in epel, etc. in al2 extras so may as well do these outside the scope of yum generally.
+
+Is there any guidance/roadmap as to what you're including in forthcoming updates to the al2 extras repo?
+
+Edited by: DigitalTactics2018 on Oct 30, 2018 5:54 AM"
+Amazon Linux	"Re: php 7.2 redis, support missing from amzn2extra-php7.2
+Is php-pecl-redis available yet through the amazon-linux-extras repo for Redis 4.x?"
+Amazon Linux	"Re: php 7.2 redis, support missing from amzn2extra-php7.2
+Is php-pecl-redis available yet through the amazon-linux-extras repo for Redis 4.x?"
+Amazon Linux	"CVE-2019-5489 status/fix for Amazon Linux?
+Is there any information on confirmation of vulnerability to CVE-2019-5489 for Amazon Linux, and/or a fix?"
+Amazon Linux	"Re: CVE-2019-5489 status/fix for Amazon Linux?
+This is the harbinger notice: https://harbinger.amazon.com/notices/35707
+
+Thanks,
+Anchal Agarwal"
+Amazon Linux	"How to request package updates?
+I'm running Amazon Linux 2018.03 on a number of lightsail instances.
+
+A number of the packages in the amzn repositories (including the preview) are woefully out of date.
+
+For example: Postfix 2.10 is in the preview repo, but 3.3 is the latest stable release and 2.11 is no longer supported.
+
+There's also a number of incomplete packages in the repo ... for instance, PHP 7.2 doesn't have the same additional packages that 7.1 has.  I'm currently running my Wordpress blogs on 7.1 because I can't install 7.2.
+
+Are there plans to update any of these packages?
+
+Thanks!
+
+david"
+Amazon Linux	"Re: How to request package updates?
+Greetings,
+Thank you for bringing these requests to our attention.  We are evaluating the Postfix update you have requested.  We can not, however, promise any specific release date.
+
+Which of your required additional PHP 7.2 packages are missing from our repositories?"
+Amazon Linux	"Re: How to request package updates?
+OK, I have a bit of egg on my face here ... a few weeks ago I tried to upgrade to PHP 7.2 and I THOUGH it didn't work due to dependencies.
+
+I just did a test install of PHP72 on another AMI Lightsail instance and it worked fine.
+
+I've also updated my production AMI Lightsail instance and it's humming along fine.
+
+Still, I'd really like to see more current packages available ... especially things light Postfix."
+Amazon Linux	"Amazon Linux 2 nginx 1.12.2 vulnerable
+Just FYI,
+
+http://mailman.nginx.org/pipermail/nginx-announce/2018/000221.html is enough to make nginx fail vendor PCI testing. Can we get a refresh for this package?
+
+Thanks!"
+Amazon Linux	"Re: Amazon Linux 2 nginx 1.12.2 vulnerable
+This vulnerability (CVE-2018-16845) was addressed, along with CVE-2018-16843 and CVE-2018-16844 in our release of nginx-1.12.2-2.amzn2.0.1"
+Amazon Linux	"Amazon Linux 2 on premises + GUI Desktop
+Hi all,
+
+We want to renew our Devboxes using Amazon Linux 2 so we can get the same environment across the board (we're currently using CentOS for Development VM).
+
+Question:
+Could anyone get an Amazon Linux 2 (on premises using Vagrant) box booting up in graphic mode using MATE Desktop?
+
+Additional info:
+I've installed amazon linux extra package:  mate-desktop1.x and I've got it working OK via VNC client in graphical mode but I couldn't make it boot natively in graphical mode using only Vagrant. The window that ""vagrant up"" brings when booting is only text based and I'd like it to be graphical. I only get to the desktop version using VNC but I'd prefer not to have the VNC overhead.
+
+Thanks in advance."
+Amazon Linux	"Update request: Ruby 2.5/2.6 support in Amazon Linux yum repos
+Hello,
+
+It seems that yum repos on both Amazon Linux 1 and 2 are stuck on Ruby 2.4. This is a hurdle when preparing production nodes, where tools like rvm have no place.
+
+Ruby community is dynamic and the latest Ruby version brings various optimizations (e.g. JIT compilation).
+
+Any chance of providing newer package versions via yum?
+
+Edited by: tonci on Feb 4, 2019 12:50 PM - Changed into a form of question"
+Amazon Linux	"Fail2Ban kills Apache in Amazon Linux 2
+We used fail2ban with no issues in the previous version of Amazon Linux.  I setup an EC2 instance with Amazon Linux 2 running Apache 2.4 - basic config using the events mpm.   I added the EPEL repository to get the fail2ban package.
+
+When I first install fail2ban, the server runs and responds.  
+
+If I reboot the server, Apache no longer responds.  Even if I shut down fail2ban, Apache fails to respond.
+
+Any ideas on why this is happening in Amazon Linux 2?"
+Amazon Linux	"Re: Fail2Ban kills Apache in Amazon Linux 2
+HangoutScheduler wrote:
+When I first install fail2ban, the server runs and responds.  
+
+If I reboot the server, Apache no longer responds.  Even if I shut down fail2ban, Apache fails to respond.
+
+Any chance fail2bvan is adding your IP to the firewall rules?
+
+I had something similar happen to me the other day ... I'm hosting a few blogs on my instance (lightsail), including my wifes, and she got her password wrong a few times and fail2ban blocked our IP.
+
+Luckily I had fail2ban configured to only block http & https on wordpress password failures, so I was able to log in via ssh and remove the block.  I then whitelisted our IP.
+
+david"
+Amazon Linux	"Update request: sssd
+Using sssd, the memory consumption of sssd_nss process grows until it exhausts the whole memory of the AmazonLinux1 server.
+
+I investigated this issue and found it's a memory leak bug fixed in sssd-1.15.2-50.el7_4.12.
+https://bugzilla.redhat.com/show_bug.cgi?id=1546064 
+
+In AmazonLinux1 the latest sssd package is sssd-1.15.2-50.34.amzn1, which its changelog says it's based on EL7/sssd-1.15.2-50.el7_4.8.
+Could you update the package?
+
+In AmazonLinux2 the bugfix is already included in 1.16.0-9
+https://bugzilla.redhat.com/show_bug.cgi?id=1482231
+- Resolves: rhbz#1482231 - sssd_nss consumes more memory until
+                           restarted or machine swaps"
+Amazon Linux	"Re: Update request: sssd
+Thanks for registering your desire to see this fixed. It helps us decide how and when to schedule someone to work on it."
+Amazon Linux	"Re: Update request: sssd
+Thank you for your report.  We released sssd 1.16.2-13.amzn1 for AL AMI on 2019-01-24.  This new version contains the fix for the sssd_nss resource consumption bug you referenced."
+Amazon Linux	"xfsprogs package change request for amzn2
+Amazon Linux 2 initial xfsprogs package appears to have started from el7's
+xfsprogs package which contains some el7 specific patches. In particular,
+mkfs.xfs on el7 disables the free inode btree index by default to ensure
+compatibility with earlier versions of el7 kernels [1].
+
+The free inode btree index (finobt=1) has been enabled by default since
+xfsprogs 3.2.3 and 3.16 kernel [2] and provides 'faster, more consistent
+inode allocation performance as filesystems age' (from man page). Given that
+amzn2 initial kernel is 4.14, it seems like this option should be enabled
+by default as there is no need to support kernels older then 3.16.
+
+Please consider removing el7 specific patches from the xfsprogs package.
+
+[1] https://bugzilla.redhat.com/show_bug.cgi?id=1309498
+[2] https://wiki.archlinux.org/index.php/XFS#Free_inode_btree"
+Amazon Linux	"Re: xfsprogs package change request for amzn2
+Thank you for bringing this to our attention. We are working on updating this package. But unfortunately we can't make any promises with regard to the timeline."
+Amazon Linux	"MySql Workbench on Amazon Linux 2
+Has anyone successfully run MySql Workbench on Amazon Linux 2? MySql server itself runs fine, but when I try to invoke the Workbench I get the error below. I'm attempting this in an Amazon Workspace, but the issue has been replicated on generic Amazon Linux. (I originally posted this in the Amazon Workbench forum, but no one responded. Meanwhile AWS Support said they replicated it on generic Amazon Linux 2, but had no more info. So I closed that question and moved it to this forum.)
+$ mysql-workbench
+Found /lib64/libproj.so.0
+/usr/libexec/mysql-workbench/mysql-workbench-bin: symbol lookup error: /usr/lib64/mysql-workbench/liblinux_utilities.so.8.0.13: undefined symbol: _ZN4Glib7ustringC1ERKSs
+
+The workbench that's installed is mysql-workbench-community.x86_64 8.0.13-1.el7.
+My WorkSpace Linux version is 4.14.77-81.59.amzn2.x86_64 (mockbuild@ip-10-0-1-59) (gcc version 7.3.1 20180303 (Red Hat 7.3.1-5) (GCC)) #1 SMP Mon Nov 12 21:32:48 UTC 2018.
+
+I did figure out one way to get around this, but I don't think it's a solution, just a clue to the root problem. If I replace the following Amazon Linux 2 /usr/lib64 shared objects with those of the same version number from CentOS (el7.x86_64.rpm packages instead of amzn2.x86_64 packages), then MySql Workbench runs successfully (though it does report that it's running on an unsupported OS).
+libcairomm-1.0.so.1.4.0
+libgdkmm-3.0.so.1.1.0
+libgdk_pixbuf-2.0.so.0.3600.5
+libglibmm-2.4.so.1.3.0
+libgtkmm-3.0.so.1.1.0
+libpcrecpp.so.0.0.0
+
+I say this is not a solution because I'm aware that I've not used proper maintenance procedures (installing the full packages for these libs created other problems) and have likely destabilized my OS. But it seems to show that there is a library issue with either MySql Workbench and/or Amazon Linux 2. I'd think if the MySql Workbench el7 package had a library dependency issue then there would be complaints that it didn't work on RHEL/CentOS, and I don't see evidence of this online (which I realize isn't conclusive proof). Which leaves, either Amazon Linux 2 has a compatibility problem for some libraries with RHEL/CentOS (on which it's supposed to be based); or it is what it is and someone needs to build an Amazon Linux 2-specific MySql Workbench package; or ...? So does anyone who knows about Linux versions and libraries (I'm not a Linux admin nor developer) have an idea as to the proper resolution? Thanks for any attempts at answers."
+Amazon Linux	"e2fsprogs package update request for Amazon Linux 2
+The current e2fsprogs package distributed with Amazon Linux 2 is version 1.42.9. 1.42.9 was released in 2013. A huge number of bug fixes and improvements have occurred since 1.42.9 was released in 2013. Please take a look at the e2fsprogs release notes for details: 
+
+http://e2fsprogs.sourceforge.net/e2fsprogs-release.html
+
+Note that Amazon Linux AMI (amzn1) already has a new version - 1.43.5. Please consider updating e2fsprogs on amzn2 to at least match amzn1's version."
+Amazon Linux	"Re: e2fsprogs package update request for Amazon Linux 2
+Thank you for bringing this to our attention
+
+We'll be sure to update this when we get a chance
+
+Unfortunately we can't make any promises with regard to the timeline"
+Amazon Linux	"Re: e2fsprogs package update request for Amazon Linux 2
+Thank you for your reply and in advance for the update.
+
+-Kurt"
+Amazon Linux	"PHP 7.2 pdo-dblib - Amazon Linux 2
+Hi,
+
+In amazon-linux-2 the php-pdo-dblib (PDO driver Microsoft SQL Server and Sybase databases) is not available in the RPM repository. Is this something which can be added. So we can use the same code on Amazon Linux 2 as we did on the old Amazon Linux AMI 
+
+Greetz Leon"
+Amazon Linux	"Re: PHP 7.2 pdo-dblib - Amazon Linux 2
+Thank you for for the request
+
+I'll make a note of this in our system and we'll add the package when we get a chance
+
+Unfortunately I can't make any promises regarding the timeline"
+Amazon Linux	"Clam AV dependency problems?
+Hello,
+ I have just started getting this error when my server is autopatching 
+Failed to check for updates with the following error message:
+Failed to build transaction: clamav-scanner-sysvinit-0.99.4-1.30.amzn1.noarch requires clamav-server-sysvinit = 0.99.4-1.30.amzn1
+clamav-scanner-sysvinit-0.99.4-1.30.amzn1.noarch requires clamav-scanner = 0.99.4-1.30.amzn1
+
+
+Running a yum update manually gets the attached error.
+
+It looks like ClamAV is dependant on a package it has marked as obsolete?! 
+
+Is this something I can fix at my end? or do I need to wait for a fix repo side?"
+Amazon Linux	"Re: Clam AV dependency problems?
+The new version of clamav has significantly changed its package organization, and has obsoleted several packages by moving them inside of the clamd package.  You can apply the following manual workaround:
+# yum shell
+remove clamav-scanner-sysvinit
+remove clamav-server-sysvinit
+update
+run
+exit
+
+We do apologize for the inconvenience.  We are testing modifications to the packages to eliminate this manual step."
+Amazon Linux	"Any plans for making and maintaining Vagrant boxes?
+As the thread title says - does AWS plan to make official Vagrant boxes for Amazon Linux? It would help with local development/testing.
+
+AWS is so-so close to it since it's publishing a VirtualBox image.
+
+Edited by: costincaraivan on Dec 11, 2018 3:05 AM"
+Amazon Linux	"Re: Any plans for making and maintaining Vagrant boxes?
+I'd also like to see this.  I'm sure you've found several boxes on Vagrant Cloud.  I maintain:
+https://app.vagrantup.com/gbailey/boxes/amzn2
+
+It's fairly straightforward to produce the box.  The approach I favor is to loopback mount the provided VirtualBox image (and chroot into it) on an existing Linux system, and then create the ""vagrant"" user, install the VirtualBox guest additions, etc.  That way, you never actually have to ""boot"" the provided image, and there's no cleanup/sanitizing required.
+
+If you (or others) are curious as to the process:
+https://github.com/gebailey/vagrant-boxes/tree/master/amzn2"
+Amazon Linux	"XFS vs ext4 - File Corruption
+I've been using Amazon Linux 2 for 6 months now and recently have been plagued with file corruption on my root volume.  I restore to backup when I did not have corruption and it rears it's head again in a few weeks.  There are no unexpected power-offs/reboots occurring on this system.  I am about to start a build from scratch instead of restoring from backup and it looks like there is no way to easily stand up an Amazon Linux 2 server running ext4 as it's root volume.
+
+1.  Has anyone managed standing up an Amazon Linux 2 server on ext4?
+2.  Will doing so lead to issues?
+3.  Has anyone else experienced frequent data corruption with XFS or am I alone here?
+
+Thanks for your input!"
+Amazon Linux	"Re: XFS vs ext4 - File Corruption
+Thanks for bringing this to our attention. I have reported this issue to the appropriate team internally. 
+Can you please open a ticket with our support team for further investigation. Also, do you mind providing more data as un crash messages, kernel version you are using and if any particular application/workload is causing the issue?
+
+Thanks for using Amazon Linux. 
+Anchal"
+Amazon Linux	"Restarting Apache won't add PHP extensions
+Hello,
+
+I am using Amazon Linux 2 and I installed two extensions - PSR and phalcon.
+They were both showing on 'php -i' and 'php -m', however, they just would not work on the web and show in phpinfo output. I ran 'sudo service httpd restart' around 20 times before restarting the instance itself.
+Restarting the instance solved the issue. Is there any reason why apache won't load new modules on restart? It's the first time I encounter such issue."
+Amazon Linux	"Building custom kernels
+I have an instance running the 64bit Ubuntu Server/18.04 LTS image. I am working with the linux kernel, specifically stock vanilla 4.18, 4.19, and 4.20.
+
+Is it possible to apply the Amazon patches to these kernels? I could not find a source repository for them.
+
+Thank you in advance."
+Amazon Linux	"Re: Building custom kernels
+Thanks for reaching out! Can you please briefly explain what amazon patches you are referring to?"
+Amazon Linux	"Unable to find/install Node.js via Amazon Linux 2 extras
+The post here says Node.js is available to install via amazon-linux-extras: 
+
+https://aws.amazon.com/about-aws/whats-new/2017/12/introducing-amazon-linux-2/
+Additional software packages, including the newer versions of popular software packages such as Python, MariaDB, Node.js, are available for installation using the Amazon Linux Extras repository.
+
+Definitely don't see it in the list here:
+[root@whatever]# amazon-linux-extras list
+  0  ansible2   disabled  [ =2.4.2 ]
+  1  emacs   disabled  [ =25.3 ]
+  2  memcached1.5   disabled  [ =1.5.1 ]
+  3  nginx1.12   disabled  [ =1.12.2 ]
+  4  postgresql9.6   disabled  [ =9.6.6 ]
+  5  python3   disabled  [ =3.6.2 ]
+  6  redis4.0=latest  enabled  [ =4.0.5 ]
+  7  R3.4   disabled  [ =3.4.3 ]
+  8  rust1   disabled  [ =1.22.1 ]
+  9  vim   disabled  [ =8.0 ]
+ 10  golang1.9   disabled  [ =1.9.2 ]
+ 11  ruby2.4   disabled  [ =2.4.2 ]
+ 12  nano   disabled  [ =2.9.1 ]
+ 13  php7.2   disabled  [ =7.2.0 ]
+ 14  lamp-mariadb10.2-php7.2   disabled  [ =10.2.10_7.2.0 ]
+
+Was hoping to give Node v8 a try from the new linux AMI but looks like it's not quite ready yet."
+Amazon Linux	"Re: Unable to find/install Node.js via Amazon Linux 2 extras
+I have the same question, but the AWS guys don't seem to be very active on this forum?"
+Amazon Linux	"Re: Unable to find/install Node.js via Amazon Linux 2 extras
+Hi
+
+I did it with nvm with the following commands.
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+nvm install 6.13.1
+nvm alias default 6.13.1
+nvm use default
+
+
+After that you can execute.
+nvm list
+node --version
+npm --version"
+Amazon Linux	"Re: Unable to find/install Node.js via Amazon Linux 2 extras
+If you install the epel package from the Linux Extras.
+ sudo amazon-linux-extras install epel
+
+
+You will be able to install Node and NPM.
+ sudo yum install -y nodejs npm"
+Amazon Linux	"CIS benchmarks 2.1+ and Level 2 for Amazon Linux 2 in Inspector security
+Hi, Is there a time frame for CIS2.1 benchmark (Level 1 and 2) and upload of those rules in AWS Inspector? Last update for AL2 was 2017 December.  It's rather pointless to tout an OS as enterprise ready that's not as well supported as Centos or Ubuntu within AWS Inspector services ? 
+
+A linux is a serious support effort."
+Amazon Linux	"Subversion update - Amazon Linux 2
+Hi,
+
+I noticed Amazon Linux 2 is using a rather old version for subversion
+[root@ami2 /tmp]# yum list subversion
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+179 packages excluded due to repository priority protections
+Installed Packages
+subversion.x86_64                                                               1.7.14-11.amzn2.0.2                                                               @amzn2-core
+
+
+While Amazon Linux (1) has a much newer version: 
+[root@ami1 /tmp]#  yum list subversion
+Loaded plugins: priorities, update-motd, upgrade-helper
+Installed Packages
+subversion.x86_64                                                      1.9.7-1.58.amzn1                                                      @amzn-updates
+
+
+Any changes we can get an updated package?
+
+Leon"
+Amazon Linux	"Amazon Linux on VMWare (cloud-init broken)
+Hi,
+
+Spent all day trying to figure out what is wrong with the latest Amazon Linux. I have a cloud-init iso built and it applies all other settings apart from the network.
+
+I see the following errors the logs:
+
+Feb 24 21:15:55 cloud-init[3600]: handlers.py[DEBUG]: finish: init-network/config-write-metadata: FAIL: running config-write-metadata with frequency once-per-instance
+Feb 24 21:15:55 cloud-init[3600]: util.py[WARNING]: Running module write-metadata (<module 'cloudinit.config.cc_write_metadata' from '/usr/lib/python2.7/site-packages/cloudinit/config/cc_write_metadata.pyc'>) failed
+Feb 24 21:15:55 cloud-init[3600]: util.py[DEBUG]: Running module write-metadata (<module 'cloudinit.config.cc_write_metadata' from '/usr/lib/python2.7/site-packages/cloudinit/config/cc_write_metadata.pyc'>) failed
+Traceback (most recent call last):
+  File ""/usr/lib/python2.7/site-packages/cloudinit/stages.py"", line 776, in _run_modules
+    freq=freq)
+  File ""/usr/lib/python2.7/site-packages/cloudinit/cloud.py"", line 54, in run
+    return self._runners.run(name, functor, args, freq, clear_on_fail)
+  File ""/usr/lib/python2.7/site-packages/cloudinit/helpers.py"", line 187, in run
+    results = functor(*args)
+  File ""/usr/lib/python2.7/site-packages/cloudinit/config/cc_write_metadata.py"", line 58, in handle
+    write_metadata(name, files, cloud, log)
+  File ""/usr/lib/python2.7/site-packages/cloudinit/config/cc_write_metadata.py"", line 79, in write_metadata
+    f_info['content'] = retrieve_metadata(path, data, cloud, log)
+  File ""/usr/lib/python2.7/site-packages/cloudinit/config/cc_write_metadata.py"", line 128, in retrieve_metadata
+    exctype=type(exc).__name__, excmsg=str(exc))
+  File ""/usr/lib64/python2.7/logging/__init__.py"", line 1161, in warning
+    self._log(WARNING, msg, args, **kwargs)
+TypeError: _log() got an unexpected keyword argument 'path'
+Feb 24 21:15:55 cloud-init[3600]: stages.py[DEBUG]: Running module growpart (<module 'cloudinit.config.cc_growpart' from '/usr/lib/python2.7/site-packages/cloudinit/config/cc_growpart.pyc'>) with frequency always
+Feb 24 21:15:55 cloud-init[3600]: handlers.py[DEBUG]: start: init-network/config-growpart: running config-growpart with frequency always
+Feb 24 21:15:55 cloud-init[3600]: helpers.py[DEBUG]: Running config-growpart using lock (<cloudinit.helpers.DummyLock object at 0x3267950>)
+Feb 24 21:15:55 cloud-init[3600]: cc_growpart.py[DEBUG]: No 'growpart' entry in cfg.  Using default: {'ignore_growroot_disabled': False, 'mode': 'auto', 'devices': ['/']}
+
+
+My meta-data file
+local-hostname: amazonlinux.onprem
+# eth0 is the default network interface enabled in the image. You can
+# configure static network settings with an entry like below.
+network-interfaces: |
+  iface eth0 inet static
+  address 192.168.1.10
+  network 192.168.1.0
+  netmask 255.255.255.0
+  broadcast 192.168.1.255
+  gateway 192.168.1.254
+
+
+my network-config file
+version: 1
+config:
+  - type: physical
+    name: eth0
+    subnets:
+    - type: static
+      address: 192.168.1.10/24
+      gateway: 192.168.1.254
+      dns_nameservers:
+      - 8.8.8.8
+      - 8.8.4.4
+      dns_search:
+      - onprem
+
+
+It is definetly reading the actual meta-data file because the hostname is set. Just no network settings will apply!"
+Amazon Linux	"Re: Amazon Linux on VMWare (cloud-init broken)
+Have you got the solution for this ERROR.? Spent days to figure our what is going wrong but nothing yet
+
+I am also getting the same ERROR when I was trying to apply following network configs:
+
+#cloud-config
+
+network:
+    config:
+        -type: route
+        destination: 216.58.217.36
+        gateway: 34.211.108.8
+        metric: 3
+    version: 1"
+Amazon Linux	"Re: Amazon Linux on VMWare (cloud-init broken)
+I suspect the problem is that your network-config doesn't have valid YAML. List items, including their markers, must be indented. So, the hyphen before ""type: static"" should be beneath the b in subnets. The dns addresses and on-prem hyphens should be beneath s in ""dns_..."", not beneath the d.
+
+version: 1
+config:
+  - type: physical
+    name: eth0
+    subnets:
+      - type: static
+        address: 192.168.1.10/24
+        gateway: 192.168.1.254
+        dns_nameservers:
+          - 8.8.8.8
+          - 8.8.4.4
+        dns_search:
+          - onprem
+
+
+Edited by: aws-chad on Dec 4, 2018 10:40 AM"
+Amazon Linux	"Re: Amazon Linux on VMWare (cloud-init broken)
+This does expose an error in the error handling. A future cloud-init will not fail this way. Thanks."
+Amazon Linux	"Re: Amazon Linux on VMWare (cloud-init broken)
+Thanks aws-chad! 
+This one worked great.
+version: 1
+config:
+  - type: physical
+    name: eth0
+    subnets:
+      - type: static
+        address: 10.10.10.10
+        netmask: 255.255.255.0
+        gateway: 10.10.10.250
+        dns_nameservers:
+          - 10.200.200.25
+          - 10.200.200.26
+        dns_search:
+          - mytraveltips.com
+
+Paste your network-config here http://www.yamllint.com/ for any errors. 
+and recreate seed.iso using user-data, meta-data and network-config
+genisoimage -o seed.iso -V cidata -r -J user-data meta-data network-config
+
+
+Edited by: jayessp on Dec 7, 2018 5:43 PM"
+Amazon Linux	"aws cli broken in Amazon Linux 2018.03 running m5.xlarge or r4 in OpsWorks
+If I build certain instance types in opsworks like m5.xlarge or r4.2xlarge using Amazon Linux 2018.03 aws cli is completely broken. Commands like:
+
+aws -version
+
+and
+
+aws s3 ls
+
+fail with a python stacktrace.
+
+For example:
+
+$ aws --version
+Traceback (most recent call last):
+File ""/usr/bin/aws"", line 19, in 
+import awscli.clidriver
+File ""/usr/lib/python2.7/dist-packages/awscli/clidriver.py"", line 19, in 
+from botocore.hooks import AliasedEventEmitter
+ImportError: cannot import name AliasedEventEmitter
+
+I can build a t2.micro in opsworks using the Amazon Linux 2018.03 ami and aws cli commands work as expected.
+
+Is this something Amazon is aware of/intends to fix? Right now the AMI is unusable to us with the machine types we need.
+
+Edited by: DashV on Sep 26, 2018 2:14 PM"
+Amazon Linux	"Re: aws cli broken in Amazon Linux 2018.03 running m5.xlarge or r4 in OpsWorks
+Hi DashV
+
+I am trying to replicate this, and launched both m5.xlarge and r4.2xlarge instances in OpsWorks Chef 12 Stack. On both instances the aws cli works. 
+
+Could you share the region and AMI id your instances are created with by OpsWorks?
+Also, is it possible that you are updating botocore in any of your customer recipes?
+
+Here is my findings currently. There was breaking change in botocore. The aws cli was updated to keep on working, however if you upgrade botocore directly without upgrading the aws cli, the error you see here happens. If you update the aws cli, it will update and include the botocore update to keep on working.
+
+After launching an instance in OpsWorks:
+[ec2-user@test3 ~]$ aws --version
+aws-cli/1.15.83 Python/2.7.14 Linux/4.14.72-68.55.amzn1.x86_64 botocore/1.10.82
+
+After updating botocore with: sudo pip install --upgrade botocore
+[ec2-user@test3 ~]$ aws --version
+Traceback (most recent call last):
+  File ""/usr/bin/aws"", line 19, in <module>
+    import awscli.clidriver
+  File ""/usr/lib/python2.7/dist-packages/awscli/clidriver.py"", line 19, in <module>
+    from botocore.hooks import AliasedEventEmitter
+ImportError: cannot import name AliasedEventEmitter
+
+The fix is: sudo pip install --upgrade awscli
+[ec2-user@test3 ~]$ aws --version
+aws-cli/1.16.29 Python/2.7.14 Linux/4.14.72-68.55.amzn1.x86_64 botocore/1.12.19
+
+
+Let me know if you have any further questions."
+Amazon Linux	"Re: aws cli broken in Amazon Linux 2018.03 running m5.xlarge or r4 in OpsWorks
+For anyone reading / finding this thread, here is a summary that I could find nowhere else.
+
+From the aws-cli and botocore source code, it looks like one must avoid the combination of botocore/1.12.0 or later (which removed AliasedEventEmitter in https://github.com/boto/botocore/pull/1524), with aws-cli/1.16.9 or before aws-cli/1.15.77 .. aws-cli/1.16.9 (both inclusive) (which still assume AliasedEventEmitter exists since they don't have 1.1.6.10's https://github.com/aws/aws-cli/pull/3521, but they do have 1.15.77's https://github.com/aws/aws-cli/commit/a267ec6).
+
+And I've seen no evidence that there is any Amazon Linux AMI that has such an incorrect combination.  Specifically, Amazon Linux 2018.03.0.20180811, which seems to be the most recent 2018.03 version that is available, has
+$ aws --version
+aws-cli/1.14.9 Python/2.7.14 Linux/4.14.47-56.37.amzn1.x86_64 botocore/1.8.13
+
+
+Edited by: marnixklooster on Dec 7, 2018 3:50 AM"
+Amazon Linux	"OpenSSH 7.8 - Does Amazon Linux or Amazon Linux 2 support it?
+It looks like, when a bunch of my colleagues upgraded to Mojave on Mac, OpenSSH got upgraded to version 7.8.
+
+But it looks like Amazon Linux and Amazon Linux 2 only support OpenSSH 7.4 p1.
+
+So what do people do from Macs to connect to EC2 instances running Amazon Linux or Amazon Linux 2 if they need to for some reason?
+
+Use a Docker image that only uses OpenSSH 7.4 p1?
+
+Thanks,
+Mike"
+Amazon Linux	"Re: OpenSSH 7.8 - Does Amazon Linux or Amazon Linux 2 support it?
+ssh clients are not tightly bound to versions of ssh servers. There should be no trouble in connecting that has anything to do with the version of either end.
+
+If you have something more specific in mind, please give those details so we can help answer."
+Amazon Linux	"Amazon Linux 2 Appears to break when updated
+The current version of Amazon Linux 2 appears to break when running yum update - or installing ANY package that requires dbus package. It appears to be an issue directly related to dbus requiring its own version to be updated...
+
+Some such packages (but not a complete list):
+sssd
+realmd
+dev tools
+dbus (itself) 
+
+Once dbus is updated, systemd seems to fail or just take a very long time to reload - and all (or a lot) of services that use dbus also fail (sssd, realmd in our environment).
+Was working:dbus 1:1.6.12-17.amzn2
+
+Is failing dbus 1:1.10.24-7.amzn2"
+Amazon Linux	"Re: Amazon Linux 2 Appears to break when updated
+Thanks for reporting this issue.  We are already aware and working on a fix.
+
+At issue here, is that dbus can't be safely restarted on a running system.  A mitigation, for now, would be to update dbus separately first. Then reboot the instance and update everything else.  That is the safest way to make sure you are actually running the newer dbus version and not the old one in memory with newer binaries and configs on the filesystem.  
+We know this is far from ideal.  We are actively working towards a better solution."
+Amazon Linux	"Re: Amazon Linux 2 Appears to break when updated
+Hi,
+
+what is the best way to follow AWS progress on this issue?"
+Amazon Linux	"Cannot use boto3 on Amazon Linux2
+I try to use certbot-dns-route53 (by epel from amazon-linux-extras) at EC2 instance installed Amazon Linux 2. But currently I cannot run command.
+
+I found version conflicts about boto3 and botocore from output of command.
+
+Command output:
+$ sudo certbot certonly --dns-route53 -d example.com
+An unexpected error occurred:
+ContextualVersionConflict: (botocore 1.10.79 (/usr/lib/python2.7/site-packages), Requirement.parse('botocore<1.6.0,>=1.5.0'), set(['boto3']))
+Please see the logfile '/tmp/tmp7VQmXB' for more details.
+
+
+YUM Information:
+$ yum list installed | grep -e certbot -e boto
+certbot.noarch                        0.27.1-1.el7                   @epel
+python2-boto3.noarch                  1.4.4-1.amzn2                  @amzn2-core
+python2-botocore.noarch               1.10.79-1.amzn2.1.1            installed
+python2-certbot.noarch                0.27.1-1.el7                   @epel
+python2-certbot-dns-route53.noarch    0.27.1-1.el7                   @epel
+ 
+$ yum info python2-boto3
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+162 packages excluded due to repository priority protections
+Installed Packages
+Name        : python2-boto3
+Arch        : noarch
+Version     : 1.4.4
+Release     : 1.amzn2
+Size        : 1.1 M
+Repo        : installed
+From repo   : amzn2-core
+Summary     : The AWS SDK for Python
+URL         : https://github.com/boto/boto3
+License     : ASL 2.0
+Description : Boto3 is the Amazon Web Services (AWS) Software Development
+            : Kit (SDK) for Python, which allows Python developers to
+            : write software that makes use of services like Amazon S3
+            : and Amazon EC2.
+ 
+$ yum info python2-botocore
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+162 packages excluded due to repository priority protections
+Installed Packages
+Name        : python2-botocore
+Arch        : noarch
+Version     : 1.10.79
+Release     : 1.amzn2.1.1
+Size        : 31 M
+Repo        : installed
+Summary     : Low-level, data-driven core of boto 3
+URL         : https://github.com/boto/botocore
+License     : ASL 2.0
+Description : A low-level interface to a growing number of Amazon Web Services. The
+            : botocore package is the foundation for the AWS CLI as well as boto3.
+ 
+$ yum list --showduplicates| grep botocore
+python2-botocore.noarch                 1.10.79-1.amzn2.1.1           installed
+python2-botocore.noarch                 1.8.12-1.amzn2.0.1            amzn2-core
+python2-botocore.noarch                 1.10.79-1.amzn2.0.1           amzn2-core
+python2-botocore.noarch                 1.10.79-1.amzn2.1.1           amzn2-core
+ 
+$ yum list --showduplicates| grep boto3
+python2-boto3.noarch                    1.4.4-1.amzn2                 @amzn2-core
+python2-boto3.noarch                    1.4.4-1.amzn2                 amzn2-core
+
+
+I think this is problem for only amzn2 repo because boto3 and botocore are installed from amzn2-core.
+
+This problem is able to resolve for install boto3 directly by pip command.
+But I hope to use packages of amzn2 repository (and epel) as only as possible.
+Do you have plan updating version of boto3 in amzn2 repo?
+
+Edited by: attakei on Nov 16, 2018 6:05 AM (clean up prompt)"
+Amazon Linux	"Re: Cannot use boto3 on Amazon Linux2
+Am running into the same issue.  Any solutions or workaround available?  TIA."
+Amazon Linux	"Squid Proxy on Amazon Linux EC2 - Slow Performance
+Hi all,
+
+I am having slow performance with Squid running on Amazon Linux. It only happens on the first request for a URL; hitting refresh returns the page pretty instantly. If I close the browser, re-open, and try again the same 'lag' on first request. It also happens after a period of time (if page remains open).
+
+The Squid proxy is installed on a fresh Amazon Linux EC2 of size t2.large (initially was t2.micro but increased for troubleshooting). A redacted copy of the squid.conf file is attached.
+
+If I curl to the URLs from the Linux shell I get a pretty instant return of the web content. Similarly, if I perform a DNS lookup it is very instant. DNS is set using VPC DHCP Options Set and are stated within the resolv.conf file on the Linux server.
+
+The URLs that sit on the 'public' side of the Squid proxy sit within an encrypted network, hence reducing MTU to 1360. The default, 1500, behaves exactly the same so MTU is changeable.
+There is no internet access available. The connectivity to the encrypted network is via AWS Direct Connect. 
+
+There is a load balancer (NLB) in front of the Squid proxy, but I bypass this for my testing. This is not causing the delays.
+
+I do get a load of TCP_MISSES in log files, but they are for internet-based locations like microsoft.com (these are generated from test Windows servers reaching out by default). So I think these are red herrings.
+
+I have researched online and changed everything I think is relevant. Some examples are forcing IPv4 DNS first and disabling IPv6. 
+
+I would be most grateful for any advice on this and hoping it's something small and obvious!
+
+Oh and this is freshly built, so anything can be changed and traffic is just me and a developer!
+
+Kind Regards,
+Tim Hinchey"
+Amazon Linux	"Re: Squid Proxy on Amazon Linux EC2 - Slow Performance
+Nothing springs to my mind as the obvious problem. My first inclination is to suspect DNS is the problem, and that is easily tested by using 'tcpdump' (and perhaps 'wireshark' on captured data in pcap file form). A 'curl' isn't going to behave like Firefox will, and details matter here.
+
+Also, when discussing performance, it is a great idea to use concrete numbers, like how many milliseconds it takes. (The ""network"" development console of most web browsers give this in awesome detail.)
+
+I suspect you'll see something interesting in the ""tcpdump"" results, and even if you don't, those will be nice to share so that someone else might. (You might obscure the names with search-and-replace, but don't hide too much detail! A dot or subdomain search might matter.)"
+Amazon Linux	"google-authenticator - Amazon Linux 2
+For  us we need to have the google-authenticator package available for Amazon Linux 2. Seeing it is available on Amazon Linux this shouldn't be a problem."
+Amazon Linux	"Re: google-authenticator - Amazon Linux 2
+Hello,
+Thanks for the request. I have added it our list of packages for consideration for inclusion in Amazon Linux 2. 
+-Heath"
+Amazon Linux	"Re: google-authenticator - Amazon Linux 2
+unfortunately it doesn't seem to be in the base set of modules, which broken my CFN script, however it is available in EPEL."
+Amazon Linux	"How do I install Tomcat 8 on Amazon Linux 2?
+I tried installing with yum, but it doesn't seem to be available:
+
+sudo yum install tomcat8 tomcat8-webapps tomcat8-admin-webapps tomcat8-docs-webapp
+Loaded plugins: langpacks, priorities, update-motd
+No package tomcat8 available.
+No package tomcat8-webapps available.
+No package tomcat8-admin-webapps available.
+No package tomcat8-docs-webapp available."
+Amazon Linux	"Re: How do I install Tomcat 8 on Amazon Linux 2?
+Tomcat 8 currently isn't available in either the main repo or extras repo. It's worth noting that Tomcat 8 is EOL in June, and has been replaced by 8.5.
+
+Tomcat 7 is available, and is currently a supported version.
+
+I think I'd like to see some guidance from AWS on what their intentions are. If we're sticking with Tomcat 7 will this be supported for 5 years from date of LTS, or, is the intention to replace with 8.5.
+
+I'm also interested in the naming scheme of Tomcat 7.
+
+On Amazon Linux (1) there's multiple versions of Tomcat and  they install in version specific directories.
+
+/etc/tomcat7 || /etc/tomcat8 - 
+
+They're also suitably named in yum. 
+
+yum install tomcat7 || yum install tomcat8
+
+On Amazon linux 2, we've got just 'tomcat' which currently installs version 7 but installs in non versioned directories, for example /etc/tomcat
+
+Is this intended, as, it's quite different from other distributions and means we have to account for this new layout?
+
+Any comments Amazon?
+
+Thanks
+
+Andrew"
+Amazon Linux	"Re: How do I install Tomcat 8 on Amazon Linux 2?
+It's worth noting that Tomcat 8 (or 8.5, I don't remember) is available with Amazon Linux, just not with Amazon Linux 2. This seems very weird to me."
+Amazon Linux	"Re: How do I install Tomcat 8 on Amazon Linux 2?
+Try
+
+amazon-linux-extras list
+
+and you'll see tomcat8.5 in the list.
+
+sudo amazon-linux-extras install tomcat8.5 to install"
+Amazon Linux	"Some packages fail verification in base image or reinstall
+Running ""rpm -Va"" immediately after starting the Amazon Linux 2 AMI shows a number of files not matching their source rpm (excluding config files). The offending packages are:
+
+yum-3.4 (the main culprit)
+filesystem-2.4.30 (/sys)
+aws-cfn-bootstrap-1.4-30.21 (/opt/aws/apitools/cfn-init-1.4-30.21.amzn1/init/redhat/cfn-hup)
+update-motd-1.0.1 (/usr/lib/yum-plugins/update-motd.pyc)
+
+It is important to be able to run verification without having to maintain a list of false positives that are not under the administrator's control. I do not see this issue under RedHat or CentOS.
+
+I've attached rpm -Va output with config files filtered out
+
+Edited by: njk70 on Sep 28, 2018 12:05 PM"
+Amazon Linux	"Re: Some packages fail verification in base image or reinstall
+Could you provide the ami the affected instance is running on? I would like to start an instance and test.
+
+A couple of AL2 instances we tested only showed files updated by cloud-init, which is expected.
+
+From http://ftp.rpm.org/max-rpm/s1-rpm-verify-what-to-verify.html#S2-RPM-VERIFY-PACKAGE-LABEL
+
+""Don't be too surprised if rpm -Va turns up a surprising number of files that failed verification. RPM's verification process is very strict! In many cases, the changes flagged don't indicate problems — they are only an indication of your system's configuration being different than what the builders of the installed packages had on their system. Also, some attributes change during normal system operation. However, it would be wise to check into each verification failure, just to make sure. """
+Amazon Linux	"Re: Some packages fail verification in base image or reinstall
+Image I am using is: ami-0ff8a91507f77f867
+
+Files that change as part of normal operation or user customization should be marked as config files in the RPM so that they can be appropriately filtered. The changes really aren't indicating a problem, the problem is that the false positive pollutes the usefulness of the verification process. In the cases lists I think the yum package isn't being built properly causing the .py files to maybe get recompiled on installation (wild guess), the filesystem package is maybe out of date with the kernel build (change of permissions on /sys), aws-cfn-bootstrap maybe the file should be marked config, and update-motd probably has the same build problem as yum. The Redhat/Centos versions of these packages don't report these problems. I appreciate your looking into the issue, I am trying to update my secure provisioning scripts to support Amazon Linux 2 for our environment."
+Amazon Linux	"Re: Some packages fail verification in base image or reinstall
+I'll re-test to make sure my provisioning isn't doing anything, i thought I tested on a clean install but maybe I did something."
+Amazon Linux	"Re: Some packages fail verification in base image or reinstall
+Re-tested on manual install via aws console, same result."
+Amazon Linux	"Re: Some packages fail verification in base image or reinstall
+Sorry for the delay
+
+I've recreated the error on my end. The hiccup was that ami-0ff8a91507f77f867 is AL1 ami, not AL2
+
+We'll continue tracking this issue internally, thank you for bringing this to our attention"
+Amazon Linux	"Launching EC2 with amazon-linux-extras epel is breaking.
+Hi Folks,
+
+I'm trying to run a cloudformation template that was working just fine until yesterday, where I launch an EC2, add some extra packages (amazon-linux-extras install epel) and then install a package from it (strongswan). 
+
+Are anyone experiencing the same issue?
+
+Thanks in advance.
+
+Eric
+----http:// /var/log/cfn-init.log ----
+2018-10-18 20:24:28,219 https://forums.aws.amazon.com/ CloudFormation client initialized with endpoint https://cloudformation.sa-east-1.amazonaws.com
+2018-10-18 20:24:28,219 https://forums.aws.amazon.com/ Describing resource VPNInstance in stack ailos-vpn
+2018-10-18 20:24:28,334 https://forums.aws.amazon.com/ -----------------------Starting build-----------------------
+2018-10-18 20:24:28,335 https://forums.aws.amazon.com/ Not setting a reboot trigger as scheduling support is not available
+2018-10-18 20:24:28,336 https://forums.aws.amazon.com/ Running configSets: default
+2018-10-18 20:24:28,340 https://forums.aws.amazon.com/ Running configSet default
+2018-10-18 20:24:28,341 https://forums.aws.amazon.com/ Running config awslogs
+2018-10-18 20:24:31,362 https://forums.aws.amazon.com/ Installing/updating  via yum
+2018-10-18 20:24:33,470 https://forums.aws.amazon.com/ Yum installed 
+2018-10-18 20:24:33,470 https://forums.aws.amazon.com/ No groups specified
+2018-10-18 20:24:33,470 https://forums.aws.amazon.com/ No users specified
+2018-10-18 20:24:33,470 https://forums.aws.amazon.com/ No sources specified
+2018-10-18 20:24:33,470 https://forums.aws.amazon.com/ /etc/awslogs/awscli.conf already exists
+2018-10-18 20:24:33,470 https://forums.aws.amazon.com/ Moving /etc/awslogs/awscli.conf to /etc/awslogs/awscli.conf.bak
+2018-10-18 20:24:33,470 https://forums.aws.amazon.com/ Writing content to /etc/awslogs/awscli.conf
+2018-10-18 20:24:33,471 https://forums.aws.amazon.com/ Setting mode for /etc/awslogs/awscli.conf to 000644
+2018-10-18 20:24:33,471 https://forums.aws.amazon.com/ Setting owner 0 and group 0 for /etc/awslogs/awscli.conf
+2018-10-18 20:24:33,471 https://forums.aws.amazon.com/ /etc/awslogs/awslogs.conf already exists
+2018-10-18 20:24:33,471 https://forums.aws.amazon.com/ Moving /etc/awslogs/awslogs.conf to /etc/awslogs/awslogs.conf.bak
+2018-10-18 20:24:33,471 https://forums.aws.amazon.com/ Writing content to /etc/awslogs/awslogs.conf
+2018-10-18 20:24:33,471 https://forums.aws.amazon.com/ Setting mode for /etc/awslogs/awslogs.conf to 000644
+2018-10-18 20:24:33,472 https://forums.aws.amazon.com/ Setting owner 0 and group 0 for /etc/awslogs/awslogs.conf
+2018-10-18 20:24:33,472 https://forums.aws.amazon.com/ Parent directory /etc/cfn does not exist, creating
+2018-10-18 20:24:33,472 https://forums.aws.amazon.com/ Writing content to /etc/cfn/cfn-hup.conf
+2018-10-18 20:24:33,472 https://forums.aws.amazon.com/ Setting mode for /etc/cfn/cfn-hup.conf to 000400
+2018-10-18 20:24:33,472 https://forums.aws.amazon.com/ Setting owner 0 and group 0 for /etc/cfn/cfn-hup.conf
+2018-10-18 20:24:33,472 https://forums.aws.amazon.com/ Parent directory /etc/cfn/hooks.d does not exist, creating
+2018-10-18 20:24:33,472 https://forums.aws.amazon.com/ Writing content to /etc/cfn/hooks.d/cfn-auto-validate.conf
+2018-10-18 20:24:33,473 https://forums.aws.amazon.com/ Setting mode for /etc/cfn/hooks.d/cfn-auto-validate.conf to 000400
+2018-10-18 20:24:33,473 https://forums.aws.amazon.com/ Setting owner 0 and group 0 for /etc/cfn/hooks.d/cfn-auto-validate.conf
+2018-10-18 20:24:33,473 https://forums.aws.amazon.com/ No commands specified
+2018-10-18 20:24:33,473 https://forums.aws.amazon.com/ Using service modifier: /sbin/chkconfig
+2018-10-18 20:24:33,473 https://forums.aws.amazon.com/ Setting service amazon-ssm-agent to enabled
+2018-10-18 20:24:33,589 https://forums.aws.amazon.com/ enabled service amazon-ssm-agent
+2018-10-18 20:24:33,590 https://forums.aws.amazon.com/ Using service runner: /sbin/service
+2018-10-18 20:24:33,631 https://forums.aws.amazon.com/ No need to modify running state of service amazon-ssm-agent
+2018-10-18 20:24:33,632 https://forums.aws.amazon.com/ Setting service awslogsd to enabled
+2018-10-18 20:24:33,741 https://forums.aws.amazon.com/ enabled service awslogsd
+2018-10-18 20:24:33,741 https://forums.aws.amazon.com/ Restarting awslogsd due to change detected in dependency
+2018-10-18 20:24:33,812 https://forums.aws.amazon.com/ Restarted awslogsd successfully
+2018-10-18 20:24:33,813 https://forums.aws.amazon.com/ Setting service cfn-hup to enabled
+2018-10-18 20:24:33,948 https://forums.aws.amazon.com/ enabled service cfn-hup
+2018-10-18 20:24:33,948 https://forums.aws.amazon.com/ Restarting cfn-hup due to change detected in dependency
+2018-10-18 20:24:34,609 https://forums.aws.amazon.com/ Restarted cfn-hup successfully
+2018-10-18 20:24:34,612 https://forums.aws.amazon.com/ Running config extras
+2018-10-18 20:24:34,612 https://forums.aws.amazon.com/ No packages specified
+2018-10-18 20:24:34,612 https://forums.aws.amazon.com/ No groups specified
+2018-10-18 20:24:34,612 https://forums.aws.amazon.com/ No users specified
+2018-10-18 20:24:34,613 https://forums.aws.amazon.com/ No sources specified
+2018-10-18 20:24:34,613 https://forums.aws.amazon.com/ No files specified
+2018-10-18 20:24:34,613 https://forums.aws.amazon.com/ Running command a_install_extras
+2018-10-18 20:24:34,613 https://forums.aws.amazon.com/ No test for command a_install_extras
+2018-10-18 20:24:38,981 https://forums.aws.amazon.com/ Command a_install_extras succeeded
+2018-10-18 20:24:38,981 https://forums.aws.amazon.com/ Command a_install_extras output: Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+Existing lock /var/run/yum.pid: another copy is running as pid 3494.
+Another app is currently holding the yum lock; waiting for it to exit...
+  The other application is: yum
+    Memory :  72 M RSS (288 MB VSZ)
+    Started: Thu Oct 18 20:24:32 2018 - 00:04 ago
+    State  : Running, pid: 3494
+Resolving Dependencies
+--> Running transaction check
+---> Package epel-release.noarch 0:7-11 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package              Arch           Version      Repository               Size
+================================================================================
+Installing:
+ epel-release         noarch         7-11         amzn2extra-epel          15 k
+
+Transaction Summary
+================================================================================
+Install  1 Package
+
+Total download size: 15 k
+Installed size: 24 k
+Downloading packages:
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : epel-release-7-11.noarch                                     1/1 
+  Verifying  : epel-release-7-11.noarch                                     1/1 
+
+Installed:
+  epel-release.noarch 0:7-11                                                    
+
+Complete!
+Installing epel-release
+  0  ansible2                 available    http:// =2.4.2  =2.4.6
+  1  emacs                    available    http:// =25.3 
+  2  httpd_modules            available    http:// =1.0 
+  3  memcached1.5             available    http:// =1.5.1 
+  4  nginx1.12                available    http:// =1.12.2 
+  5  postgresql9.6            available    http:// =9.6.6  =9.6.8
+  6  postgresql10             available    https://forums.aws.amazon.com/
+  8  redis4.0                 available    http:// =4.0.5  =4.0.10
+  9  R3.4                     available    http:// =3.4.3 
+ 10  rust1                    available    \
+http:// =1.22.1  =1.26.0  =1.26.1  =1.27.2
+ 11  vim                      available    http:// =8.0 
+ 12  golang1.9                available    http:// =1.9.2 
+ 13  ruby2.4                  available    http:// =2.4.2  =2.4.4
+ 14  nano                     available    http:// =2.9.1 
+ 15  php7.2                   available    \
+http:// =7.2.0  =7.2.4  =7.2.5  =7.2.8
+ 16  lamp-mariadb10.2-php7.2  available    \
+        [ =10.2.10_7.2.0  =10.2.10_7.2.4  =10.2.10_7.2.5
+          =10.2.10_7.2.8 ]
+ 17  libreoffice              available    http:// =5.0.6.2_15  =5.3.6.1
+ 18  gimp                     available    http:// =2.8.22 
+ 19  docker=latest            enabled      \
+http:// =17.12.1  =18.03.1  =18.06.1
+ 20  mate-desktop1.x          available    http:// =1.19.0  =1.20.0
+ 21  GraphicsMagick1.3        available    http:// =1.3.29 
+ 22  tomcat8.5                available    http:// =8.5.31  =8.5.32
+ 23  epel=latest              enabled      http:// =7.11 
+
+2018-10-18 20:24:38,982 https://forums.aws.amazon.com/ No services specified
+2018-10-18 20:24:38,984 https://forums.aws.amazon.com/ Running config ipsec
+2018-10-18 20:24:50,916 https://forums.aws.amazon.com/ Yum makecache failed. Output: Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+http://mirror.ci.ifes.edu.br/epel/7/x86_64/repodata/f611ea028a9a0e2a4e4612957e3fc85bce1bc12afab12e68a80c30e4deb7809d-filelists.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+http://epel.gtdinternet.com/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+http://mirror.upb.edu.co/epel/7/x86_64/repodata/f611ea028a9a0e2a4e4612957e3fc85bce1bc12afab12e68a80c30e4deb7809d-filelists.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+https://mirror.cedia.org.ec/epel/7/x86_64/repodata/c50dae9c4353b3d8b0599c5fae5edc4f9e71f2f6358d9a751b2226e61ad6c904-updateinfo.xml.bz2: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://d2lzkl7pfhq30w.cloudfront.net/pub/epel/7/x86_64/repodata/5137c2eb7ab8ecafd59718ef8797f6c5f5d26b2b2f57dbae35a917afce7aba7e-prestodelta.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://d2lzkl7pfhq30w.cloudfront.net/pub/epel/7/x86_64/repodata/c50dae9c4353b3d8b0599c5fae5edc4f9e71f2f6358d9a751b2226e61ad6c904-updateinfo.xml.bz2: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.espoch.edu.ec/epel/7/x86_64/repodata/3f363efd024fbe3ea0cc49ee01b041463c045f85949ced40c1767086172561c7-other.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.epn.edu.ec/epel/7/x86_64/repodata/f611ea028a9a0e2a4e4612957e3fc85bce1bc12afab12e68a80c30e4deb7809d-filelists.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.espoch.edu.ec/epel/7/x86_64/repodata/5137c2eb7ab8ecafd59718ef8797f6c5f5d26b2b2f57dbae35a917afce7aba7e-prestodelta.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.uta.edu.ec/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+http://mirror.ci.ifes.edu.br/epel/7/x86_64/repodata/3f363efd024fbe3ea0cc49ee01b041463c045f85949ced40c1767086172561c7-other.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+http://epel.gtdinternet.com/7/x86_64/repodata/f611ea028a9a0e2a4e4612957e3fc85bce1bc12afab12e68a80c30e4deb7809d-filelists.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+http://mirror.upb.edu.co/epel/7/x86_64/repodata/5137c2eb7ab8ecafd59718ef8797f6c5f5d26b2b2f57dbae35a917afce7aba7e-prestodelta.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+https://mirror.uta.edu.ec/epel/7/x86_64/repodata/c50dae9c4353b3d8b0599c5fae5edc4f9e71f2f6358d9a751b2226e61ad6c904-updateinfo.xml.bz2: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.cedia.org.ec/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.epn.edu.ec/epel/7/x86_64/repodata/5137c2eb7ab8ecafd59718ef8797f6c5f5d26b2b2f57dbae35a917afce7aba7e-prestodelta.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://d2lzkl7pfhq30w.cloudfront.net/pub/epel/7/x86_64/repodata/f611ea028a9a0e2a4e4612957e3fc85bce1bc12afab12e68a80c30e4deb7809d-filelists.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://d2lzkl7pfhq30w.cloudfront.net/pub/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+http://mirror.ci.ifes.edu.br/epel/7/x86_64/repodata/5137c2eb7ab8ecafd59718ef8797f6c5f5d26b2b2f57dbae35a917afce7aba7e-prestodelta.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+https://mirror.espoch.edu.ec/epel/7/x86_64/repodata/c50dae9c4353b3d8b0599c5fae5edc4f9e71f2f6358d9a751b2226e61ad6c904-updateinfo.xml.bz2: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+http://epel.gtdinternet.com/7/x86_64/repodata/5137c2eb7ab8ecafd59718ef8797f6c5f5d26b2b2f57dbae35a917afce7aba7e-prestodelta.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+http://epel.gtdinternet.com/7/x86_64/repodata/c50dae9c4353b3d8b0599c5fae5edc4f9e71f2f6358d9a751b2226e61ad6c904-updateinfo.xml.bz2: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+http://mirror.upb.edu.co/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+https://mirror.espoch.edu.ec/epel/7/x86_64/repodata/f611ea028a9a0e2a4e4612957e3fc85bce1bc12afab12e68a80c30e4deb7809d-filelists.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+http://mirror.upb.edu.co/epel/7/x86_64/repodata/c50dae9c4353b3d8b0599c5fae5edc4f9e71f2f6358d9a751b2226e61ad6c904-updateinfo.xml.bz2: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+http://mirror.ci.ifes.edu.br/epel/7/x86_64/repodata/c50dae9c4353b3d8b0599c5fae5edc4f9e71f2f6358d9a751b2226e61ad6c904-updateinfo.xml.bz2: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+https://mirror.uta.edu.ec/epel/7/x86_64/repodata/5137c2eb7ab8ecafd59718ef8797f6c5f5d26b2b2f57dbae35a917afce7aba7e-prestodelta.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.epn.edu.ec/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.cedia.org.ec/epel/7/x86_64/repodata/f611ea028a9a0e2a4e4612957e3fc85bce1bc12afab12e68a80c30e4deb7809d-filelists.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.epn.edu.ec/epel/7/x86_64/repodata/c50dae9c4353b3d8b0599c5fae5edc4f9e71f2f6358d9a751b2226e61ad6c904-updateinfo.xml.bz2: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.espoch.edu.ec/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.uta.edu.ec/epel/7/x86_64/repodata/f611ea028a9a0e2a4e4612957e3fc85bce1bc12afab12e68a80c30e4deb7809d-filelists.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.cedia.org.ec/epel/7/x86_64/repodata/5137c2eb7ab8ecafd59718ef8797f6c5f5d26b2b2f57dbae35a917afce7aba7e-prestodelta.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+http://mirror.ci.ifes.edu.br/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+https://d2lzkl7pfhq30w.cloudfront.net/pub/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+http://mirror.ci.ifes.edu.br/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+https://mirror.cedia.org.ec/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+http://epel.gtdinternet.com/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+https://mirror.espoch.edu.ec/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+http://mirror.upb.edu.co/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+Trying other mirror.
+https://mirror.uta.edu.ec/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+https://mirror.epn.edu.ec/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+Trying other mirror.
+
+ One of the configured repositories failed (Extra Packages for Enterprise Linux 7 - x86_64),
+ and yum doesn't have enough cached data to continue. At this point the only
+ safe thing yum can do is fail. There are a few ways to work ""fix"" this:
+
+     1. Contact the upstream for the repository and get them to fix the problem.
+
+     2. Reconfigure the baseurl/etc. for the repository, to point to a working
+        upstream. This is most often useful if you are using a newer
+        distribution release than is supported by the repository (and the
+        packages for the previous distribution release still work).
+
+     3. Run the command with the repository temporarily disabled
+            yum --disablerepo=epel ...
+
+     4. Disable the repository permanently, so yum won't use it by default. Yum
+        will then just ignore the repository until you permanently enable it
+        again or use --enablerepo for temporary usage:
+
+            yum-config-manager --disable epel
+        or
+            subscription-manager repos --disable=epel
+
+     5. Configure the failing repository to be skipped, if it is unavailable.
+        Note that yum will try to contact the repo. when it runs most commands,
+        so will have to try and fail each time (and thus. yum will be be much
+        slower). If it is a very temporary problem though, this is often a nice
+        compromise:
+
+            yum-config-manager --save --setopt=epel.skip_if_unavailable=true
+
+failure: repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz from epel: https://forums.aws.amazon.com/ No more mirrors to try.
+https://d2lzkl7pfhq30w.cloudfront.net/pub/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+http://mirror.ci.ifes.edu.br/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+https://mirror.cedia.org.ec/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+http://epel.gtdinternet.com/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+https://mirror.espoch.edu.ec/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+http://mirror.upb.edu.co/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTP Error 404 - Not Found
+https://mirror.uta.edu.ec/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+https://mirror.epn.edu.ec/epel/7/x86_64/repodata/4dd54c0d40cce7ef0837cd101d90e852e4caf5d1bf492ec75fe768733ff643c3-primary.xml.gz: https://forums.aws.amazon.com/ HTTPS Error 404 - Not Found
+
+2018-10-18 20:24:50,917 https://forums.aws.amazon.com/ Error encountered during build of ipsec: Could not create yum cache (return code 1)
+Traceback (most recent call last):
+  File ""/usr/lib/python2.7/site-packages/cfnbootstrap/construction.py"", line 542, in run_config
+    CloudFormationCarpenter(config, self._auth_config).build(worklog)
+  File ""/usr/lib/python2.7/site-packages/cfnbootstrap/construction.py"", line 229, in build
+    changeshttps://forums.aws.amazon.com/ = CloudFormationCarpenter._packageToolshttps://forums.aws.amazon.com/().apply(packages, self._auth_config)
+  File ""/usr/lib/python2.7/site-packages/cfnbootstrap/rpm_tools.py"", line 51, in apply
+    raise ToolError(""Could not create yum cache"", cache_result.returncode)
+ToolError: Could not create yum cache (return code 1)
+2018-10-18 20:24:50,919 https://forums.aws.amazon.com/ -----------------------BUILD FAILED!------------------------
+2018-10-18 20:24:50,924 https://forums.aws.amazon.com/ Unhandled exception during build: Could not create yum cache (return code 1)
+Traceback (most recent call last):
+  File ""/opt/aws/bin/cfn-init"", line 171, in <module>
+    worklog.build(metadata, configSets)
+  File ""/usr/lib/python2.7/site-packages/cfnbootstrap/construction.py"", line 129, in build
+    Contractor(metadata).build(configSets, self)
+  File ""/usr/lib/python2.7/site-packages/cfnbootstrap/construction.py"", line 530, in build
+    self.run_config(config, worklog)
+  File ""/usr/lib/python2.7/site-packages/cfnbootstrap/construction.py"", line 542, in run_config
+    CloudFormationCarpenter(config, self._auth_config).build(worklog)
+  File ""/usr/lib/python2.7/site-packages/cfnbootstrap/construction.py"", line 229, in build
+    changeshttps://forums.aws.amazon.com/ = CloudFormationCarpenter._packageToolshttps://forums.aws.amazon.com/().apply(packages, self._auth_config)
+  File ""/usr/lib/python2.7/site-packages/cfnbootstrap/rpm_tools.py"", line 51, in apply
+    raise ToolError(""Could not create yum cache"", cache_result.returncode)
+ToolError: Could not create yum cache (return code 1)"
+Amazon Linux	"Re: Launching EC2 with amazon-linux-extras epel is breaking.
+Thanks for bringing this issue to our attention. I tried reproducing the issue you reported, but couldn't.
+
+From the console log you posted, seems like yum failed to access the EPEL mirrors. Please re-check your Network/Security Groups/ACLs and try again. 
+
+-Praveen"
+Amazon Linux	"Re: Launching EC2 with amazon-linux-extras epel is breaking.
+Hi Praveen,
+
+I'm not sure if it is a missconfiguration since the problem is itermitent. Sometimes the epel access works (and EC2 gets  properly configured) and sometimes the epel access breaks and the EC2 ends-up launched but not properly configured. In both cases the EC2 can properly access the internet, I'm able to ssh into etc. 
+
+The problem seems more related to epel acces but it is happening too often to raise my concerns. Around 60% of my tests ended in a failing state. And this started to happens a few days ago. Prior to that all setups seemed to be ok.
+
+I think I'm doing everything ok (I'm setting up the packages using cloudformation:init sections, I'm signaling cfn-init cfn-signal, etc) but I can share my cloudformation with you in private if you want to take a look.
+
+Regards,
+
+Eric"
+Amazon Linux	"Re: Launching EC2 with amazon-linux-extras epel is breaking.
+Thank you for bringing this up
+
+We'll do some more research into the epel mirrors on our side however we can't make any guarantees regarding when the problem will the found and fixed"
+Amazon Linux	"OpenVPN Client setup for Amazon Linux 2 Workspaces
+Anyone have an example of the commands to install the client or another client that is compatible?
+
+Edited by: AllTheRage on Oct 17, 2018 12:02 PM"
+Amazon Linux	"Re: OpenVPN Client setup for Amazon Linux 2 Workspaces
+To install openvpn client use this command
+yum install openvpn
+
+   to connect use 
+openvpn --config client.ovpn
+
+
+
+
+Hope it helps.. 
+Shubhankit"
+Amazon Linux	"Request for Git client upgrade (cve-2018-17456)
+Hello all.
+Following the security alert cve-2018-17456, I need to upgrade my Git client on my CICD servers (some are running Amazon Linux 2 2018.03.0 , some are running Amazon Linux 1).
+Can you upgrade the Git client on those distro ?
+Amazon Linux 1 and 2 came with git client 2.14.4. The bug is fixed on 2.14.5 (and also on the latest Git stable branch 2.19.1), but there is no upgraded version available on the Testing channel, nor EPEL, nor IUS channels.
+
+Edited by: JeromeF on Oct 17, 2018 1:51 AM"
+Amazon Linux	"Re: Request for Git client upgrade (cve-2018-17456)
+Thanks for bringing this to our attention. We are aware of this issue and are actively working on pushing updated git packages. Unfortunately I cannot communicate when the updates will be available. 
+
+Please monitor Amazon Linux Security Advisories pages at https://alas.aws.amazon.com/ for updates on this.
+
+-Praveen"
+Amazon Linux	"Re: Request for Git client upgrade (cve-2018-17456)
+Thank you Praveen for your answer.
+I confirm git version 1.14.5 is available on Amazon Linux 1 since 2018-10-22.
+But today, there is no update for Git client on Amazon Linux 2."
+Amazon Linux	"The mysql57-libs package is broken
+MySQL 5.7 is available with the 2017.09 ami release. That's great.
+yum -y install mysql57-libs
+rpm -qf /etc/ld.so.conf.d/mysql57-x86_64.conf
+mysql57-libs-5.7.18-2.3.amzn1.x86_64
+cat /etc/ld.so.conf.d/mysql57-x86_64.conf 
+/usr/lib64/mysql56
+
+That's... ugh!"
+Amazon Linux	"Re: The mysql57-libs package is broken
+This is a rather BIG, OLD, and simple to fix bug and it's still not fixed? 
+
+Is anyone at Amazon listening!!!  I went through hours of troubleshooting to find the package has this file pointing to the wrong path.
+
+Please fix!!"
+Amazon Linux	"Re: The mysql57-libs package is broken
+Sorry for the delay in addressing this issue.  Our team is aware of the problem and working on a fix. We will update this thread, once a fix has been released."
+Amazon Linux	"Re: The mysql57-libs package is broken
+An updated mysql57 package that addresses this issue is now available in the Amazon Linux AMI repositories. Thanks for your report. 
+
+-Heath"
+Amazon Linux	"system-lsb-core bug report
+Just launched a new CDH 5 cluster with amzn2-ami-hvm-2.0.20181008-x86_64-gp2 (ami-0d1000aff9a9bad89).  Looks like a script installed by the system-lsb-core-4.1-27.amzn2.3.5.x86_64 package, /lib/lsb/init-functions, has reference to a non-existent /etc/redhat-lsb directory:
+
+Oct 19 13:12:22 host1.xxx.net hadoop-hdfs-namenodehttps://forums.aws.amazon.com/: starting namenode, logging to /var/log/hadoop-hdfs/hadoop-hdfs-namenode-xxx....net.out
+Oct 19 13:12:31 host1.xxx.net hadoop-hdfs-namenodehttps://forums.aws.amazon.com/: /lib/lsb/init-functions: line 18: /etc/redhat-lsb/lsb_pidofproc: No such file or directory
+Oct 19 13:12:31 host1.xxx.net hadoop-hdfs-namenodehttps://forums.aws.amazon.com/: /lib/lsb/init-functions: line 26: /etc/redhat-lsb/lsb_log_message: No such file or directory
+Oct 19 13:12:31 host1.xxx.net systemd[1]: hadoop-hdfs-namenode.service: control process exited, code=exited status=127
+Oct 19 13:12:31 host1.xxx.net systemd[1]: Failed to start LSB: Hadoop namenode.
+Oct 19 13:12:31 host1.xxx.net systemd[1]: Unit hadoop-hdfs-namenode.service entered failed state.
+Oct 19 13:12:31 host1.xxx.net systemd[1]: hadoop-hdfs-namenode.service failed.
+
+If I create a symlink /etc/redhat-lsb -> /etc/system-lsb then my services start as expected.
+
+Looks like the root cause is invalid paths in this file:
+root@xxx lsb# cd /lib/lsb && grep redhat *
+init-functions:# Lawrence Lim <llim@redhat.com> - Tue, 26 June 2007
+init-functions:	/etc/redhat-lsb/lsb_start_daemon ""$@""
+init-functions:	/etc/redhat-lsb/lsb_killproc ""$@""
+init-functions:	/etc/redhat-lsb/lsb_pidofproc ""$@""
+init-functions:	/etc/redhat-lsb/lsb_log_message success ""$@""
+init-functions:	/etc/redhat-lsb/lsb_log_message failure ""$@""
+init-functions:	/etc/redhat-lsb/lsb_log_message warning ""$@""
+
+Thanks,
+Andrew"
+Amazon Linux	"Re: system-lsb-core bug report
+Thanks for bringing this to our attention. We will evaluate this issue and determine if a fix to the package is required, or if some other solution is required. 
+
+-Heath"
+Amazon Linux	"%post(gc-7.6.4-3.amzn2.0.2.x86_64) scriptlet failed
+When installing gc-7.6.4-3 the following error occurs:
+/sbin/ldconfig: relative path `2' used to build cache
+warning: %post(gc-7.6.4-3.amzn2.0.2.x86_64) scriptlet failed, exit status 1
+Non-fatal POSTIN scriptlet failure in rpm package gc-7.6.4-3.amzn2.0.2.x86_64
+
+
+There is an error in the rpm spec. When inspecting with rpmrebuild -e -p gc-7.6.4-3.amzn2.0.2.x86_64.rpm you will notice that the optional section end markers have a % sign to much:
+%post -p /sbin/ldconfig
+%%end
+%postun -p /sbin/ldconfig
+%%end
+
+
+This can be fixed with
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig"
+Amazon Linux	"Re: %post(gc-7.6.4-3.amzn2.0.2.x86_64) scriptlet failed
+Thanks for bringing this issue to our attention. We will work towards fixing this issue and let you know once the updated version is available."
+Amazon Linux	"docker using ip not within vpc
+So I couldnt figure out why I couldnt connect to my containers from a public IP until I found out what IP the docker ports were listening on...if you see ifconfig is showing 172...this is not valid within my vpc...you can see below im not using any 172 within my vpc...so..im not sure where this is getting this from...should I create a new subnet in a new vpn and just make an ami and launch it in new vpc with conforming subnet? can I change docker ip/port its listening on?
+
+ifconfig 
+br-387bdd8b6fc4 Link encap:Ethernet  HWaddr 02:42:69:A3:BA:A9  
+          inet addr:172.18.0.1  Bcast:172.18.255.255  Mask:255.255.0.0
+          inet6 addr: fe80::42:69ff:fea3:baa9/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:114269 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:83675 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:11431231 (10.9 MiB)  TX bytes:36504449 (34.8 MiB)
+
+docker0   Link encap:Ethernet  HWaddr 02:42:65:A6:7C:B3  
+          inet addr:172.17.0.1  Bcast:172.17.255.255  Mask:255.255.0.0
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
+
+eth0      Link encap:Ethernet  HWaddr 02:77:F6:7A:50:A6  
+          inet addr:10.0.140.193  Bcast:10.0.143.255  Mask:255.255.240.0
+          inet6 addr: fe80::77:f6ff:fe7a:50a6/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:9001  Metric:1
+          RX packets:153720 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:65773 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:209782581 (200.0 MiB)  TX bytes:5618173 (5.3 MiB)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:30 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:30 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:2066 (2.0 KiB)  TX bytes:2066 (2.0 KiB)
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain DOCKER (2 references)
+target     prot opt source               destination         
+ACCEPT     tcp  --  0.0.0.0/0            172.18.0.11          tcp dpt:389
+ACCEPT     tcp  --  0.0.0.0/0            172.18.0.13          tcp dpt:9043
+ACCEPT     tcp  --  0.0.0.0/0            172.18.0.13          tcp dpt:7777
+ACCEPT     tcp  --  0.0.0.0/0            172.18.0.3           tcp dpt:9443
+ACCEPT     tcp  --  0.0.0.0/0            172.18.0.7           tcp dpt:443
+ACCEPT     tcp  --  0.0.0.0/0            172.18.0.8           tcp dpt:443
+ACCEPT     tcp  --  0.0.0.0/0            172.18.0.9           tcp dpt:443
+
+DockerSubnet1-Public	10.0.1.0/24
+DockerSubnet2-Public	10.0.2.0/24
+DockerSubnet3-Private	10.0.3.0/24
+DockerSubnet4-Private	10.0.4.0/24
+Private subnet 1A	10.0.0.0/19
+Private subnet 2A	10.0.32.0/19
+Public subnet 1	10.0.128.0/20
+Public subnet 2	10.0.144.0/20"
+Amazon Linux	"Re: docker using ip not within vpc
+Thanks for bringing this issue to our attention. 
+Could you please provide some more information on your setup for us to diagnose this issue further?
+
+1) Are you using Amazon Linux 1 or Amazon Linux 2 AMIs? If yes, which version?
+2) Are you using one of the ECS Optimized AMIs? If so, which version?
+3) Could you list the versions of docker/ecs-init packages you are using?"
+Amazon Linux	"Docker optimized?
+Can you release a ""pre"" Docker optimized AL2?"
+Amazon Linux	"Re: Docker optimized?
+BUMP"
+Amazon Linux	"Re: Docker optimized?
+Thanks for submitting this request. We are always looking for ways we can improve the experience of using Amazon Linux, and this helps make decisions on this manner."
+Amazon Linux	"Re: Docker optimized?
+you haven't given much info to go on...
+
+what do you mean by ""pre"" docker optimised, and why is it better / worse ?
+
+Edited by: packeteer on Oct 11, 2018 9:02 PM"
+Amazon Linux	"Exposing Tomcat on Port 80 on Amazon Linux 2
+Hey,
+
+This is a common question, I just haven't found an answer specific to Amazon Linux 2 yet. I am running a Tomcat instance for a Java web application on an EC2 instance, and I want to have it appear on port 80 rather than port 8080.
+
+Depending on the linux, there are lots of options:
+
+1. launch as root and run on port 80 (frowned upon for security)
+2. authbind (Ubuntu mostly)
+3. iptables port forward (I've used this on Amazon Linux 1)
+4. firewalld port forward (I've used this on Fedora)
+5. apache proxy
+6. other things?
+
+Near as I can see, all of iptables, firewalld and apache are viable paths on Amazon Linux 2, but none of them are really configured out-of-the-box:
+1. iptables seems to be installed out of the box, but not configured as a service. looks like I could install `iptables-services` and go from there, although many consider iptables deprecated
+2. firewalld is also not installed out of the box, but is also available for installation; since it is considered a replacement for iptables, maybe this is the most idiomatic approach for Amazon Linux 2?
+3. proxying with apache is also an option although I believe I would still need to install and configure it, and that seems slightly more complicated for the same job
+
+So -- confirming. Is using `firewalld` to port forward from port 80 to port 8080 the idiomatic way to expose Tomcat on port 80 with Amazon Linux 2?
+
+Edited by: Geoffrey on Sep 26, 2018 6:14 AM"
+Amazon Linux	"Re: Exposing Tomcat on Port 80 on Amazon Linux 2
+the standard way to do this is the run apache in front and use the ajp proxy module
+
+https://httpd.apache.org/docs/2.4/mod/mod_proxy_ajp.html"
+Amazon Linux	"mysql package in Amazon Linux AMI 2018.03 doesn't uninstall properly
+If I use yum to install mysql, I have to uninstall it twice in order to completely uninstall. I assume there is something in the spec files that should be changed in order to allow yum to handle the 
+
+[ec2-user@ip-172-16-10-89 ~]$ sudo yum -y install mysql
+Loaded plugins: priorities, update-motd, upgrade-helper
+Resolving Dependencies
+--> Running transaction check
+---> Package mysql.noarch 0:5.5-1.6.amzn1 will be installed
+--> Processing Dependency: mysql55 >= 5.5 for package: mysql-5.5-1.6.amzn1.noarch
+--> Running transaction check
+---> Package mysql55.x86_64 0:5.5.61-1.22.amzn1 will be installed
+--> Finished Dependency Resolution
+ 
+Dependencies Resolved
+ 
+===========================================================================
+ Package      Arch        Version                  Repository         Size
+===========================================================================
+Installing:
+ mysql        noarch      5.5-1.6.amzn1            amzn-main         2.7 k
+Installing for dependencies:
+ mysql55      x86_64      5.5.61-1.22.amzn1        amzn-updates      7.5 M
+ 
+Transaction Summary
+===========================================================================
+Install  1 Package (+1 Dependent package)
+ 
+Total download size: 7.5 M
+Installed size: 28 M
+Downloading packages:
+(1/2): mysql-5.5-1.6.amzn1.noarch.rpm                 | 2.7 kB   00:00
+(2/2): mysql55-5.5.61-1.22.amzn1.x86_64.rpm           | 7.5 MB   00:08
+---------------------------------------------------------------------------
+Total                                         907 kB/s | 7.5 MB  00:08
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : mysql55-5.5.61-1.22.amzn1.x86_64                        1/2
+  Installing : mysql-5.5-1.6.amzn1.noarch                              2/2
+  Verifying  : mysql-5.5-1.6.amzn1.noarch                              1/2
+  Verifying  : mysql55-5.5.61-1.22.amzn1.x86_64                        2/2
+ 
+Installed:
+  mysql.noarch 0:5.5-1.6.amzn1
+ 
+Dependency Installed:
+  mysql55.x86_64 0:5.5.61-1.22.amzn1
+ 
+Complete!
+ 
+[ec2-user@ip-172-16-10-89 ~]$ sudo yum -y remove mysql
+Loaded plugins: priorities, update-motd, upgrade-helper
+Resolving Dependencies
+--> Running transaction check
+---> Package mysql.noarch 0:5.5-1.6.amzn1 will be erased
+--> Finished Dependency Resolution
+ 
+Dependencies Resolved
+ 
+===========================================================================
+ Package      Arch          Version                Repository         Size
+===========================================================================
+Removing:
+ mysql        noarch        5.5-1.6.amzn1          @amzn-main        0.0
+ 
+Transaction Summary
+===========================================================================
+Remove  1 Package
+ 
+Installed size: 0
+Downloading packages:
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Erasing    : mysql-5.5-1.6.amzn1.noarch                              1/1
+  Verifying  : mysql-5.5-1.6.amzn1.noarch                              1/1
+ 
+Removed:
+  mysql.noarch 0:5.5-1.6.amzn1
+ 
+Complete!
+ 
+[ec2-user@ip-172-16-10-89 ~]$ sudo yum -y remove mysql
+Loaded plugins: priorities, update-motd, upgrade-helper
+Resolving Dependencies
+--> Running transaction check
+---> Package mysql55.x86_64 0:5.5.61-1.22.amzn1 will be erased
+--> Finished Dependency Resolution
+ 
+Dependencies Resolved
+ 
+===========================================================================
+ Package      Arch        Version                 Repository          Size
+===========================================================================
+Removing:
+ mysql55      x86_64      5.5.61-1.22.amzn1       @amzn-updates       28 M
+ 
+Transaction Summary
+===========================================================================
+Remove  1 Package
+ 
+Installed size: 28 M
+Downloading packages:
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Erasing    : mysql55-5.5.61-1.22.amzn1.x86_64                        1/1
+  Verifying  : mysql55-5.5.61-1.22.amzn1.x86_64                        1/1
+ 
+Removed:
+  mysql55.x86_64 0:5.5.61-1.22.amzn1
+ 
+Complete!"
+Amazon Linux	"Re: mysql package in Amazon Linux AMI 2018.03 doesn't uninstall properly
+Yes, the mysql package in the Amazon Linux AMI repositories is a metapackage that just has a dependency on  mysql55. Unfortunately, YUM does not have the functionality to handle properly removing meta package dependencies. In other words, meta packages are kind of a one way road that works when installing packages, but not when removing them. You will have to continue to remove the mysql and mysql55 package in this case as we do not have another solution to this issue.  When working with automation you should be managing the package in question directly, in this case specifying ""mysql55"" rather than ""mysql"" would solve this issue.
+
+Thanks for the feedback
+Heath"
+Amazon Linux	"Kernel 4.14.51 has SSL error when 'make modules_install'
+I built lttng-modules from source on Amazon Linux, but it raised SSL error as the bottom.
+
+AMI is amzn2-ami-hvm-2.0.20180622.1-x86_64-gp2-dotnetcore-2018.07.11
+KERNEL is kernel-devel-4.14.51-66.38.amzn2.x86_64
+
+cd $(mktemp -d) &&
+wget http://lttng.org/files/lttng-modules/lttng-modules-latest-2.10.tar.bz2 &&
+tar -xf lttng-modules-latest-2.10.tar.bz2 &&
+cd lttng-modules-2.10.* &&
+make &&
+sudo make modules_install &&
+sudo depmod -a
+
+
+make modules_install required signing during executing the script. 
+I think kernel will generate certs/signing_key.pem automatically when keys have not existed.
+Do I need to create a signing key or disable module signing?
+
+ERROR:
+make -C /lib/modules/4.14.51-66.38.amzn2.x86_64/build M=/home/ec2-user/perfcollect_packages/lttng-modules-2.10.7 CONFIG_LTTNG=m CONFIG_LTTNG_CLOCK_PLUGIN_TEST=m modules_install
+make[1]: Entering directory `/usr/src/kernels/4.14.51-66.38.amzn2.x86_64'
+INSTALL /home/ec2-user/perfcollect_packages/lttng-modules-2.10.7/lib/lttng-lib-ring-buffer.ko
+At main.c:160:
+- SSL error:02001002:system library:fopen:No such file or directory: bss_file.c:175
+- SSL error:2006D080:BIO routines:BIO_new_file:no such file: bss_file.c:182
+sign-file: certs/signing_key.pem: No such file or directory
+
+
+Warm regards,"
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+Hello, 
+Thanks for bringing this issue into our attention. We are internally assessing the issue and will update the thread, once we have an answer. Thanks for your patience and apologize for any inconvenience caused.
+Thanks and Regards"
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+Hello
+
+Module signing is enabled by default in AL2 kernel. However the signing happens at kernel build time. If an user wants to sign another kernel module, the one option is to regenerate a key pair and use it for signing. Following workaround may fix your problem, while we look for a better solution:
+
+1. Install kernel-devel package
+
+yum install kernel-devel
+
+2. Generate another pair for using it with the kernel module you want to sign
+
+openssl req -new -x509 -newkey rsa:2048 -keyout signing_key.pem -outform DER -out signing_key.x509 -nodes -subj ""/CN=Owner/""
+
+3. Copy the generated keys to /usr/src/kernels/$(uname -r)/certs/
+
+cp signing_key.x509 signing_key.pem /usr/src/kernels/$(uname -r)/certs/
+
+4. Compile module sources by following appropriate steps
+
+make
+
+5. Do make modules_install  https://forums.aws.amazon.com/
+
+make modules_install
+
+6. Discard the signing_key.pem or store it in safe place, if needs to be used for future signing. 
+
+7. You may verify if module signature is being appended to the kernel module
+ # hexdump -C  <module_file_name.ko>
+
+   You should see something like this at the end of the hexdump output.
+
+   |~Module signatur|
+   |e appended~.|
+
+Please let us know, if it resolves your problem. If it does not resolve your issue, please update the thread with errors you may be seeing. 
+
+Thanks again for bringing this to our attention."
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+Thank you for your assistant.
+
+After I installed kernel-devel there are two kernel under /lib/modules/ folder
+yum install kernel-devel
+
+
+Then run make for lttng-modules source. I got below error:
+make -C /lib/modules/4.14.51-66.38.amzn2.x86_64/build M=/home/ec2-user/check/lttng_tar/lttng-modules-2.10.7 CONFIG_LTTNG=m CONFIG_LTTNG_CLOCK_PLUGIN_TEST=m modules
+make[1]: Entering directory `/usr/src/kernels/4.14.51-66.38.amzn2.x86_64'
+/home/ec2-user/check/lttng_tar/lttng-modules-2.10.7/Makefile:28: *** Duplicate version.h files found in /usr/src/kernels/4.14.51-66.38.amzn2.x86_64/include/linux/version.h and /usr/src/kernels/4.14.51-66.38.amzn2.x86_64/include/generated/uapi/linux/version.h. Consider running make distclean on your kernel, or removing the stale /usr/src/kernels/4.14.51-66.38.amzn2.x86_64/include/linux/version.h file.  Stop.
+make[1]: *** [_module_/home/ec2-user/check/lttng_tar/lttng-modules-2.10.7] Error 2
+make[1]: Leaving directory `/usr/src/kernels/4.14.51-66.38.amzn2.x86_64'
+make: *** [modules] Error 2
+
+
+make with specific kernel dir
+make KERNELDIR=/lib/modules/4.14.51-66.38.amzn2.x86_64
+make -C /lib/modules/4.14.51-66.38.amzn2.x86_64 M=/home/ec2-user/check/lttng_tar/lttng-modules-2.10.7 CONFIG_LTTNG=m CONFIG_LTTNG_CLOCK_PLUGIN_TEST=m modules
+make[1]: Entering directory `/usr/lib/modules/4.14.51-66.38.amzn2.x86_64'
+make[1]: *** No rule to make target `modules'.  Stop.
+make[1]: Leaving directory `/usr/lib/modules/4.14.51-66.38.amzn2.x86_64'
+make: *** [modules] Error 2"
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+Hello,
+
+Could you explain why below code to check kernel version worked on other distros but ""duplicate error"" on Amazon Linux 2?
+
+  lttng_check_linux_version = $(shell pwd)/include/linux/version.h
+  lttng_check_generated_linux_version = $(shell pwd)/include/generated/uapi/linux/version.h
+ 
+  #
+  # Check for stale version.h, which can be a leftover from an old Linux
+  # kernel tree moved to a newer kernel version, only pruned by make
+  # distclean.
+  #
+  ifneq ($(wildcard $(lttng_check_linux_version)),)
+    ifneq ($(wildcard $(lttng_check_generated_linux_version)),)
+      $(error Duplicate version.h files found in $(lttng_check_linux_version) and $(lttng_check_generated_linux_version). Consider running make distclean on your kernel, or removing the stale $(lttng_check_linux_version) file)
+    endif
+  endif
+
+
+Source: 
+https://github.com/lttng/lttng-modules/blob/master/Makefile#L24
+
+Warm regards,"
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+Hello,
+We have reproduced the issue internally and currently working on it. We will update the thread as soon as we have an answer.
+
+
+
+
+Best Regards"
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+Hello,
+
+The file /usr/src/$(uname -r)/include/linux/version.h is present in the kernel-devel rpm and is duplicate of /usr/src/$(uname -4)/include/generated/uapi/linux/version.h. This is causing make to fail in case of lttng-modules build. We are internally working on figuring out dependencies, if there is any, on this duplicate file and take a decision on removing it, accordingly. As a workaround for this issue, please follow the following step:
+
+$ sudo mv /usr/src/kernels/$(uname -r)/include/linux/version.h  /usr/src/kernels/$(uname -r)/include/linux/version.h.bak
+
+With this, the duplicate warning should go away and build should go forward."
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+Thank you for your follow the issue.
+
+I forced perfcollect at here:https://github.com/lbthanh/corefx-tools/blob/master/src/performance/perfcollect/perfcollect
+
+After clone and run the installation from repository EfficiOS-RHEL7
+$sudo ./perfcollect install
+
+
+Below error happened 
+Error: Package: kmod-lttng-modules-2.10.6-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: kernel(__bitmap_weight) = 0x4cbbd171
+           Installed: kernel-4.14.51-66.38.amzn2.x86_64 (@amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.9.62-10.57.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.9.70-2.243.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.9.75-1.56.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.9.76-38.79.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.9.77-41.59.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.9.81-44.57.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.9.85-46.56.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Installing: kernel-4.9.85-47.59.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.14.26-54.32.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.14.33-59.34.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.14.33-59.37.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.14.42-61.37.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.14.47-63.37.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.14.47-64.38.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.14.55-68.37.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.14.59-68.43.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.14.62-70.117.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.14.67-71.56.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+           Available: kernel-4.14.70-72.55.amzn2.x86_64 (amzn2-core)
+               kernel(__bitmap_weight) = 0x63c4d61f
+Error: Package: kmod-lttng-modules-2.10.6-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: kernel(module_layout) = 0x28950ef1
+           Installed: kernel-4.14.51-66.38.amzn2.x86_64 (@amzn2-core)
+               kernel(module_layout) = 0x99c943d8
+           Available: kernel-4.9.62-10.57.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0xab201ebe
+           Available: kernel-4.9.70-2.243.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0xeec8fe46
+           Available: kernel-4.9.75-1.56.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0xda9f2e24
+           Available: kernel-4.9.76-38.79.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0xda9f2e24
+           Available: kernel-4.9.77-41.59.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0xda9f2e24
+           Available: kernel-4.9.81-44.57.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0xdbdff6b5
+           Available: kernel-4.9.85-46.56.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0xdbdff6b5
+           Available: kernel-4.9.85-47.59.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0xdbdff6b5
+           Available: kernel-4.14.26-54.32.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0x9d8f1302
+           Available: kernel-4.14.33-59.34.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0x9d8f1302
+           Available: kernel-4.14.33-59.37.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0x9d8f1302
+           Available: kernel-4.14.42-61.37.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0x644b03c2
+           Available: kernel-4.14.47-63.37.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0x644b03c2
+           Available: kernel-4.14.47-64.38.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0x644b03c2
+           Available: kernel-4.14.55-68.37.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0x99c943d8
+           Available: kernel-4.14.59-68.43.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0x99c943d8
+           Available: kernel-4.14.62-70.117.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0x99c943d8
+           Available: kernel-4.14.67-71.56.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0x99c943d8
+           Available: kernel-4.14.70-72.55.amzn2.x86_64 (amzn2-core)
+               kernel(module_layout) = 0x99c943d8
+Error: Package: kmod-lttng-modules-2.10.6-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: kernel(kmem_cache_create) = 0xaf5517a9
+           Installed: kernel-4.14.51-66.38.amzn2.x86_64 (@amzn2-core)
+               kernel(kmem_cache_create) = 0xf63f7a2e
+           Available: kernel-4.9.62-10.57.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0xbd3bf0ca
+           Available: kernel-4.9.70-2.243.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x7907da01
+           Available: kernel-4.9.75-1.56.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x68631886
+           Available: kernel-4.9.76-38.79.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x68631886
+           Available: kernel-4.9.77-41.59.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x68631886
+           Available: kernel-4.9.81-44.57.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x624d874f
+           Available: kernel-4.9.85-46.56.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x624d874f
+           Installing: kernel-4.9.85-47.59.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x624d874f
+           Available: kernel-4.14.26-54.32.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0xc9a1ffe0
+           Available: kernel-4.14.33-59.34.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0xc9a1ffe0
+           Available: kernel-4.14.33-59.37.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0xc9a1ffe0
+           Available: kernel-4.14.42-61.37.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x74f66bcb
+           Available: kernel-4.14.47-63.37.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x74f66bcb
+           Available: kernel-4.14.47-64.38.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x74f66bcb
+           Available: kernel-4.14.55-68.37.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0xf63f7a2e
+           Available: kernel-4.14.59-68.43.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x33416451
+           Available: kernel-4.14.62-70.117.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x33416451
+           Available: kernel-4.14.67-71.56.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x33416451
+           Available: kernel-4.14.70-72.55.amzn2.x86_64 (amzn2-core)
+               kernel(kmem_cache_create) = 0x33416451
+Error: Package: kmod-lttng-modules-2.10.6-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: kernel(__bitmap_empty) = 0x6d27ef64
+Error: Package: kmod-lttng-modules-2.10.6-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: kernel(seq_read) = 0x9c3df9b4
+           Installed: kernel-4.14.51-66.38.amzn2.x86_64 (@amzn2-core)
+               kernel(seq_read) = 0x43441bd1
+           Available: kernel-4.9.62-10.57.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x8d42125d
+           Available: kernel-4.9.70-2.243.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0xefbb1524
+           Available: kernel-4.9.75-1.56.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x09a3d932
+           Available: kernel-4.9.76-38.79.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x09a3d932
+           Available: kernel-4.9.77-41.59.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x09a3d932
+           Available: kernel-4.9.81-44.57.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x7a787bd0
+           Available: kernel-4.9.85-46.56.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x7a787bd0
+           Installing: kernel-4.9.85-47.59.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x7a787bd0
+           Available: kernel-4.14.26-54.32.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x585d4659
+           Available: kernel-4.14.33-59.34.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x585d4659
+           Available: kernel-4.14.33-59.37.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x585d4659
+           Available: kernel-4.14.42-61.37.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0xcc52901f
+           Available: kernel-4.14.47-63.37.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0xcc52901f
+           Available: kernel-4.14.47-64.38.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0xcc52901f
+           Available: kernel-4.14.55-68.37.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x43441bd1
+           Available: kernel-4.14.59-68.43.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x43441bd1
+           Available: kernel-4.14.62-70.117.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x43441bd1
+           Available: kernel-4.14.67-71.56.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x43441bd1
+           Available: kernel-4.14.70-72.55.amzn2.x86_64 (amzn2-core)
+               kernel(seq_read) = 0x43441bd1
+Error: Package: kmod-lttng-modules-2.10.6-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: kernel(init_task) = 0x6be0bc63
+           Installed: kernel-4.14.51-66.38.amzn2.x86_64 (@amzn2-core)
+               kernel(init_task) = 0xe3ab46a0
+           Available: kernel-4.9.62-10.57.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0xa153eb1a
+           Available: kernel-4.9.70-2.243.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0x6015b575
+           Available: kernel-4.9.75-1.56.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0xe93811d4
+           Available: kernel-4.9.76-38.79.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0xe93811d4
+           Available: kernel-4.9.77-41.59.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0xe93811d4
+           Available: kernel-4.9.81-44.57.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0x8faac757
+           Available: kernel-4.9.85-46.56.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0x8faac757
+           Installing: kernel-4.9.85-47.59.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0x8faac757
+           Available: kernel-4.14.26-54.32.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0x5b5028f5
+           Available: kernel-4.14.33-59.34.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0x5b5028f5
+           Available: kernel-4.14.33-59.37.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0x5b5028f5
+           Available: kernel-4.14.42-61.37.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0x74eb70c8
+           Available: kernel-4.14.47-63.37.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0x74eb70c8
+           Available: kernel-4.14.47-64.38.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0x74eb70c8
+           Available: kernel-4.14.55-68.37.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0xe3ab46a0
+           Available: kernel-4.14.59-68.43.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0x061faff2
+           Available: kernel-4.14.62-70.117.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0x061faff2
+           Available: kernel-4.14.67-71.56.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0xf30a5faf
+           Available: kernel-4.14.70-72.55.amzn2.x86_64 (amzn2-core)
+               kernel(init_task) = 0xf30a5faf
+Error: Package: kmod-lttng-modules-2.10.6-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: kernel(atomic_notifier_chain_unregister) = 0x758a3812
+           Installed: kernel-4.14.51-66.38.amzn2.x86_64 (@amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.9.62-10.57.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.9.70-2.243.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.9.75-1.56.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.9.76-38.79.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.9.77-41.59.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.9.81-44.57.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.9.85-46.56.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Installing: kernel-4.9.85-47.59.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.14.26-54.32.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.14.33-59.34.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.14.33-59.37.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.14.42-61.37.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.14.47-63.37.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.14.47-64.38.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.14.55-68.37.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.14.59-68.43.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.14.62-70.117.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.14.67-71.56.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+           Available: kernel-4.14.70-72.55.amzn2.x86_64 (amzn2-core)
+               kernel(atomic_notifier_chain_unregister) = 0xf3dd3ec1
+Error: Package: kmod-lttng-modules-2.10.6-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: kernel(pid_vnr) = 0x2837d90c
+           Installed: kernel-4.14.51-66.38.amzn2.x86_64 (@amzn2-core)
+               kernel(pid_vnr) = 0xf8459714
+           Available: kernel-4.9.62-10.57.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0x5ceaf581
+           Available: kernel-4.9.70-2.243.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0x95d9dc7b
+           Available: kernel-4.9.75-1.56.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0xf30f2e89
+           Available: kernel-4.9.76-38.79.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0xf30f2e89
+           Available: kernel-4.9.77-41.59.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0xf30f2e89
+           Available: kernel-4.9.81-44.57.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0x55d55d5d
+           Available: kernel-4.9.85-46.56.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0x55d55d5d
+           Available: kernel-4.9.85-47.59.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0x55d55d5d
+           Available: kernel-4.14.26-54.32.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0x01428e44
+           Available: kernel-4.14.33-59.34.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0x01428e44
+           Available: kernel-4.14.33-59.37.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0x01428e44
+           Available: kernel-4.14.42-61.37.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0xd1841a36
+           Available: kernel-4.14.47-63.37.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0xd1841a36
+           Available: kernel-4.14.47-64.38.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0xd1841a36
+           Available: kernel-4.14.55-68.37.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0xf8459714
+           Available: kernel-4.14.59-68.43.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0x907d169f
+           Available: kernel-4.14.62-70.117.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0x907d169f
+           Available: kernel-4.14.67-71.56.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0xaf50520f
+           Available: kernel-4.14.70-72.55.amzn2.x86_64 (amzn2-core)
+               kernel(pid_vnr) = 0xaf50520f
+Error: Package: lttng-tools-2.10.4-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: liburcu.so.6()(64bit)
+Error: Package: kmod-lttng-modules-2.10.6-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: kernel(free_cpumask_var) = 0xdbc34085
+           Installed: kernel-4.14.51-66.38.amzn2.x86_64 (@amzn2-core)
+               kernel(free_cpumask_var) = 0x8cac8c08
+           Available: kernel-4.9.62-10.57.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.70-2.243.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.75-1.56.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.76-38.79.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.77-41.59.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.81-44.57.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.85-46.56.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Installing: kernel-4.9.85-47.59.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.14.55-68.37.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x8cac8c08
+           Available: kernel-4.14.59-68.43.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x8cac8c08
+           Available: kernel-4.14.62-70.117.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x8cac8c08
+           Available: kernel-4.14.67-71.56.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x8cac8c08
+           Available: kernel-4.14.70-72.55.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x8cac8c08
+           Available: kernel-4.14.26-54.32.amzn2.x86_64 (amzn2-core)
+               Not found
+           Available: kernel-4.14.33-59.34.amzn2.x86_64 (amzn2-core)
+               Not found
+           Available: kernel-4.14.33-59.37.amzn2.x86_64 (amzn2-core)
+               Not found
+           Available: kernel-4.14.42-61.37.amzn2.x86_64 (amzn2-core)
+               Not found
+           Available: kernel-4.14.47-63.37.amzn2.x86_64 (amzn2-core)
+               Not found
+           Available: kernel-4.14.47-64.38.amzn2.x86_64 (amzn2-core)
+               Not found
+Error: Package: kmod-lttng-modules-2.10.6-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: kernel(module_put) = 0xc3bf75bc
+           Installed: kernel-4.14.51-66.38.amzn2.x86_64 (@amzn2-core)
+               kernel(module_put) = 0xe2fb322b
+           Available: kernel-4.9.62-10.57.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0xfc30220c
+           Available: kernel-4.9.70-2.243.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x1567cb89
+           Available: kernel-4.9.75-1.56.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x79cacbe6
+           Available: kernel-4.9.76-38.79.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x79cacbe6
+           Available: kernel-4.9.77-41.59.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x79cacbe6
+           Available: kernel-4.9.81-44.57.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x20d88db8
+           Available: kernel-4.9.85-46.56.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x20d88db8
+           Installing: kernel-4.9.85-47.59.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x20d88db8
+           Available: kernel-4.14.26-54.32.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x941fc0bc
+           Available: kernel-4.14.33-59.34.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x941fc0bc
+           Available: kernel-4.14.33-59.37.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x941fc0bc
+           Available: kernel-4.14.42-61.37.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x7d7db999
+           Available: kernel-4.14.47-63.37.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x7d7db999
+           Available: kernel-4.14.47-64.38.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0x7d7db999
+           Available: kernel-4.14.55-68.37.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0xe2fb322b
+           Available: kernel-4.14.59-68.43.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0xe2fb322b
+           Available: kernel-4.14.62-70.117.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0xe2fb322b
+           Available: kernel-4.14.67-71.56.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0xe2fb322b
+           Available: kernel-4.14.70-72.55.amzn2.x86_64 (amzn2-core)
+               kernel(module_put) = 0xe2fb322b
+Error: Package: kmod-lttng-modules-2.10.6-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: kernel(try_module_get) = 0x84c274f9
+           Installed: kernel-4.14.51-66.38.amzn2.x86_64 (@amzn2-core)
+               kernel(try_module_get) = 0xc2a890a2
+           Available: kernel-4.9.62-10.57.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0xe3db1a12
+           Available: kernel-4.9.70-2.243.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0x8d8079dd
+           Available: kernel-4.9.75-1.56.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0x6ef42996
+           Available: kernel-4.9.76-38.79.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0x6ef42996
+           Available: kernel-4.9.77-41.59.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0x6ef42996
+           Available: kernel-4.9.81-44.57.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0x37e66fc8
+           Available: kernel-4.9.85-46.56.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0x37e66fc8
+           Installing: kernel-4.9.85-47.59.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0x37e66fc8
+           Available: kernel-4.14.26-54.32.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0xeb30150d
+           Available: kernel-4.14.33-59.34.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0xeb30150d
+           Available: kernel-4.14.33-59.37.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0xeb30150d
+           Available: kernel-4.14.42-61.37.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0x8b3dc8d1
+           Available: kernel-4.14.47-63.37.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0x8b3dc8d1
+           Available: kernel-4.14.47-64.38.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0x8b3dc8d1
+           Available: kernel-4.14.55-68.37.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0xc2a890a2
+           Available: kernel-4.14.59-68.43.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0xc2a890a2
+           Available: kernel-4.14.62-70.117.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0xc2a890a2
+           Available: kernel-4.14.67-71.56.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0xc2a890a2
+           Available: kernel-4.14.70-72.55.amzn2.x86_64 (amzn2-core)
+               kernel(try_module_get) = 0xc2a890a2
+Error: Package: kmod-lttng-modules-2.10.6-1.el7.x86_64 (EfficiOS-RHEL7-x86-64)
+           Requires: kernel(free_cpumask_var) = 0xdbc34085
+           Installed: kernel-4.14.51-66.38.amzn2.x86_64 (@amzn2-core)
+               kernel(free_cpumask_var) = 0x8cac8c08
+           Available: kernel-4.9.62-10.57.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.70-2.243.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.75-1.56.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.76-38.79.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.77-41.59.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.81-44.57.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.85-46.56.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.9.85-47.59.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x7b8f94e8
+           Available: kernel-4.14.55-68.37.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x8cac8c08
+           Available: kernel-4.14.59-68.43.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x8cac8c08
+           Available: kernel-4.14.62-70.117.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x8cac8c08
+           Available: kernel-4.14.67-71.56.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x8cac8c08
+           Available: kernel-4.14.70-72.55.amzn2.x86_64 (amzn2-core)
+               kernel(free_cpumask_var) = 0x8cac8c08
+           Available: kernel-4.14.26-54.32.amzn2.x86_64 (amzn2-core)
+               Not found
+           Available: kernel-4.14.33-59.34.amzn2.x86_64 (amzn2-core)
+               Not found
+           Available: kernel-4.14.33-59.37.amzn2.x86_64 (amzn2-core)
+               Not found
+           Available: kernel-4.14.42-61.37.amzn2.x86_64 (amzn2-core)
+               Not found
+           Available: kernel-4.14.47-63.37.amzn2.x86_64 (amzn2-core)
+               Not found
+           Available: kernel-4.14.47-64.38.amzn2.x86_64 (amzn2-core)
+               Not found
+ You could try using --skip-broken to work around the problem
+ You could try running: rpm -Va --nofiles --nodigest
+ 
+
+
+Warm regards,
+
+Edited by: lbthanh on Oct 2, 2018 12:07 AM"
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+From EfficiOS-RHEL7-x86-64.repo:
+I tried on the fresh instance but it didn't work.
+
+From Source: https://lttng.org/docs/v2.7/#doc-building-from-source
+There was a lot of workarounds to build source without error but command didn't work at all.  
+
+Do you have any suggestion to let perfcollect work on AL2?
+
+Many thanks,"
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+I am doing final test for this version:https://github.com/lbthanh/corefx-tools/blob/master/src/performance/perfcollect/perfcollect"
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+Both glibc and glib2 are available but below error happened when I installed babeltrace
+
+		wget https://lttng.org/files/babeltrace/babeltrace-latest-1.2.tar.bz2 &&
+		tar -xf babeltrace-latest-1.2.tar.bz2 &&
+		cd babeltrace-1.2.* && 
+		./configure && 
+		make && 
+		sudo make install
+
+
+ERROR
+checking for GLIB - version >= 2.22.0... no
+*** Could not run GLIB test program, checking why...
+*** The test program failed to compile or link. See the file config.log for the
+*** exact error that occured. This usually means GLIB is incorrectly installed.
+configure: error: glib is required in order to compile BabelTrace - download it from ftp://ftp.gtk.org/pub/gtk
+
+
+Packages was installed already
+[ec2-user@ip-xxx perfcollect]$ sudo yum install glib2
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+Package glib2-2.54.2-2.amzn2.x86_64 already installed and latest version
+Nothing to do
+[ec2-user@ip-xxx perfcollect]$ sudo yum install glibc
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+Package glibc-2.26-28.amzn2.0.1.x86_64 already installed and latest version
+Nothing to do"
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+Hello
+
+I have tried installing perfcollect on AL2 latest kernel 4.14.70-72.55.amzn2.x86_64 and it worked for me perfectly. I would suggest you upgrade your kernel to 4.14.70-55. Please do a complete update to have all dependencies updated.
+
+
+sudo yum update
+
+
+Please let me us know if you had any other question.
+
+Thanks"
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+Thank you for your support.
+
+Which GitHub repo did you check it out? Forced version or the original one?
+In case you check the forced-version, I changed it to install babeltrace from epel, it seems old version.
+When I built babeltrace from source it raised glib2 error as I mentioned in the previous post.
+
+Currently, I got the issue when I want to view the result after collecting the trace events.
+sudo ./perfcollect view new1.trace.zip -viewer=lttng
+
+
+After run above command server was crashed then I could not login to server via ssh.
+My guess is probably due to version compatibility problem when babeltrace using/referring libraries.
+Its better to check out the latest version at here:https://lttng.org/files/ and build them together.
+
+Warm regards,"
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+The module build can be done in successfully with some work around. I hope that the epel repository will update the latest version of lttng.
+
+Thank you very much for you support."
+Amazon Linux	"Re: Kernel 4.14.51 has SSL error when 'make modules_install'
+Glad to hear that it resolved your issues. Thanks for reaching out to us.
+
+--Thanks"
+Amazon Linux	"Python script crashing after update to Amazon Linux 2018.03
+Hello,
+
+I recently updated a c1.medium (32-bit) instance to Amazon Linux 2018.03 and launched a new instance.  So far, twice in 2 days, one of my python scripts (which is always running) has crashed with the following log message, which I'll paste below.  Before this upgrade, this script has been running for years without crashing.  I'm wondering how can I determine what is causing this crashing?  Thanks
+
+kernel: [89488.043852] BUG: unable to handle kernel paging request at 0002ffa8
+kernel: [89488.058320] IP: __radix_tree_lookup+0x15/0xf0
+kernel: [89488.068806] *pdpt = 0000000001f73027 *pde = 0000000000000000 
+kernel: [89488.082367] Oops: 0000 [#2] SMP
+kernel: [89488.090026] Modules linked in: ipv6 crc_ccitt binfmt_misc ext4 crc16 mbcache jbd2 fscrypto crc32_pclmul crc32c_intel pcbc xen_blkfront aesni_intel aes_i586 crypto_simd cryptd dm_mirror dm_region_hash dm_log dm_mod dax
+kernel: [89488.134316] CPU: 1 PID: 6332 Comm: python Tainted: G      D         4.14.62-65.117.amzn1.i686 #1
+kernel: [89488.154572] task: ea439100 task.stack: c1fa0000
+kernel: [89488.165063] EIP: __radix_tree_lookup+0x15/0xf0
+kernel: [89488.175100] EFLAGS: 00210292 CPU: 1
+kernel: [89488.182931] EAX: 0002ffa4 EBX: 08fb8000 ECX: 00000000 EDX: 01ffffff
+kernel: [89488.197314] ESI: 00000000 EDI: 00000000 EBP: c1fa1dbc ESP: c1fa1da4
+kernel: [89488.211114]  DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0069
+kernel: [89488.223108] CR0: 80050033 CR2: 0002ffa8 CR3: 2b18d000 CR4: 00000660
+kernel: [89488.237738] Call Trace:
+kernel: [89488.243427]  radix_tree_lookup_slot+0x11/0x20
+kernel: [89488.253350]  ? kfree_skbmem+0x5c/0x60
+kernel: [89488.261710]  find_get_entry+0x22/0xe0
+kernel: [89488.269923]  pagecache_get_page+0x24/0x210
+kernel: [89488.279142]  lookup_swap_cache+0x3a/0xf0
+kernel: [89488.287944]  swap_readahead_detect+0x68/0x2b0
+kernel: [89488.297984]  ? xen_pte_clear+0x80/0x80
+kernel: [89488.306678]  ? xen_set_pte_at+0x81/0x150
+kernel: [89488.316088]  do_swap_page+0x23b/0x980
+kernel: [89488.325118]  ? xen_pte_clear+0x80/0x80
+kernel: [89488.333603]  ? __raw_callee_save___pv_queued_spin_unlock+0x9/0x10
+kernel: [89488.347643]  ? wp_page_copy+0x384/0x670
+kernel: [89488.356585]  ? kmap_atomic_prot+0x39/0x130
+kernel: [89488.365479]  handle_mm_fault+0x6a8/0xde0
+kernel: [89488.374334]  ? rwsem_down_read_failed+0xc5/0x100
+kernel: [89488.385899]  __do_page_fault+0x1da/0x480
+kernel: [89488.394731]  ? __do_page_fault+0x480/0x480
+kernel: [89488.403446]  do_page_fault+0x27/0xe0
+kernel: [89488.411554]  ? __do_page_fault+0x480/0x480
+kernel: [89488.420799]  common_exception+0x4d/0x52
+kernel: [89488.429332] EIP: 0xb7e4f275
+kernel: [89488.435869] EFLAGS: 00210293 CPU: 1
+kernel: [89488.443766] EAX: 00000000 EBX: b7e5a000 ECX: 00000000 EDX: 00000000
+kernel: [89488.457996] ESI: 00000002 EDI: 08fb8168 EBP: b66fc978 ESP: b66fc8c0
+kernel: [89488.472780]  DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b
+kernel: [89488.484925]  ? __do_page_fault+0x480/0x480
+kernel: [89488.494844] Code: 84 20 ff ff ff e9 0c ff ff ff 8d b6 00 00 00 00 8d bf 00 00 00 00 55 89 e5 57 56 53 83 ec 0c 89 45 ec 89 4d e8 89 55 f0 8b 45 ec <8b> 70 04 89 f0 83 e0 03 83 f8 01 0f 85 aa 00 00 00 89 f0 83 e0
+kernel: [89488.538021] EIP: __radix_tree_lookup+0x15/0xf0 SS:ESP: 0069:c1fa1da4
+kernel: [89488.553123] CR2: 000000000002ffa8
+kernel: [89488.560948] ---[ end trace c54d0a14bff653cf ]---"
+Amazon Linux	"Re: Python script crashing after update to Amazon Linux 2018.03
+Thanks for bringing this issue to our attention. We are tracking this issue internally and will update you as soon as we have a fix.
+
+Praveen"
+Amazon Linux	"Re: Python script crashing after update to Amazon Linux 2018.03
+Thanks Praveen.
+
+Here's what I have done to work around the issue - two changes:
+
+1. I launched a new instance (c1.medium, 32 bit)
+
+2. I am running Amazon Linux 2017.09 rather than 2018.03
+
+I'm not sure which one of these made the difference."
+Amazon Linux	"Re: Python script crashing after update to Amazon Linux 2018.03
+Hello,
+
+Good to hear you are able to find a work around. We are working on patching the kernel due to stack traces reported around do_swap_page() calls that end up with BUG() when calling __radix_tree_lookup(), similar to what you have reported.
+
+Can you please confirm what kernel version you are in the setup you mentioned it is more stable?
+Run: 
+ uname -r"
+Amazon Linux	"Re: Python script crashing after update to Amazon Linux 2018.03
+Hi EduardoV - Here's what I get on my current instance with Amazon Linux 2017.09:
+
+$ uname -r
+4.9.119-44.140.amzn1.i686"
+Amazon Linux	"Re: Python script crashing after update to Amazon Linux 2018.03
+Hello,
+
+I know you mentioned that you found a workaround for your case already, but I just wanted to let you know that we have released a v4.14.70 stable based kernel which should include the patches that fix stack traces similar to the one reported in this thread around do_swap_page(). Let us know if v4.14.70 kernel solves the issue for you.
+
+BR,"
+Amazon Linux	"Re: Python script crashing after update to Amazon Linux 2018.03
+Hi EduardoV,
+
+Thanks for the update - next time I have to bring up a new instance I will try the new version and I'll reply here if there's any problem."
+Amazon Linux	"Unable to resolve ALAS-2017-900, ALAS-2016-779, and ALAS-2018-1045
+Hello
+I appreciate it if you could help me resolve the following important security finding on amazon linux 2 docker image:
+https://alas.aws.amazon.com/ALAS-2017-900.html
+https://alas.aws.amazon.com/ALAS-2016-779.html
+https://alas.aws.amazon.com/ALAS-2018-1045.html
+As you know amazon linux 2 rpm repository doesn't include the fixed package versions.
+As a workaround, we were ok removing vim as we don't use it as well as it's not required by any installed package.
+We are not able to have file-libs and gnupg2 fixed properly.
+Many thanks
+Yousef"
+Amazon Linux	"Re: Unable to resolve ALAS-2017-900, ALAS-2016-779, and ALAS-2018-1045
+Hello,
+
+For the Amazon Linux 2 Docker image, you'll want to take a look at our Amazon Linux 2 security center, found here: https://alas.aws.amazon.com/alas2.html
+
+The advisories you've listed are applicable only to the previous Amazon Linux AMI and associated Docker image.
+
+Please let us know if you have any further questions, and thanks for using Amazon Linux 2!"
+Amazon Linux	"Re: Unable to resolve ALAS-2017-900, ALAS-2016-779, and ALAS-2018-1045
+Hello Sean
+Thanks for getting back to me on this. Yes, I've been looking at https://alas.aws.amazon.com/alas2.html
+We could only resolve ALAS-2016-779 (vim-minimal), by either:
+
+remove the package as we don't really need it or
+update vim using amazon-linux-extras
+
+The affected packages we are unable to resolve are:
+
+file-libs:
+
+Affected version: 5.11-33.amzn2
+Fix is in: 5.30-1
+
+gnupg2
+
+Affected version: 2.0.22-5.amzn2.0.2
+Fix is in: 2.0.28
+All in all, amazon linux 1 repo does have the fix but amazon linux 2 repo does not.
+Please, let me know if you require more information.
+Thanks
+Yousef"
+Amazon Linux	"Re: Unable to resolve ALAS-2017-900, ALAS-2016-779, and ALAS-2018-1045
+Hi Yousef,
+
+Just to clarify, ALAS-2016-779, ALAS-2017-900, and ALAS-2018-1045 do not apply to Amazon Linux 2. Even though the version strings on packages like gnupg2 and vim are lower than version strings listed on the ALAS page for Amazon Linux 1, these packages receive backported patches. We aim to achieve backwards compatibility between updates on AL2: many of the major/minor versions of packages might seem to fall behind whereas AL1 may not have; however, we still make sure to provide modern security patches for these packages in a backwards-compatible way.
+
+To go a bit further into an example, compare these security advisories for Amazon Linux and Amazon Linux 2:
+https://alas.aws.amazon.com/ALAS-2018-1045.html
+https://alas.aws.amazon.com/AL2/ALAS-2018-1045.html
+
+Both ALAS entries announce fixes for CVE-2018-12020. In the ALAS for AL1, you must update to gnupg2-2.0.28-2.32.amzn1.x86_64 in order to satisfy the advisory. Compare this to the ALAS for AL2, where you must update to gnupg2-2.0.22-5.amzn2.0.2.x86_64 in order to satisfy the advisory. Even though the AL2 version string (2.0.22-5.amzn2) is lower than the AL one (2.0.28-2.32.amzn1), it still provides a fix for the same CVE. This case serves as an example that there won't usually be parity between security vulnerabilities, version strings, and advisories in Amazon Linux and Amazon Linux 2. You should consider each distro in isolation from the other.
+
+I hope that helps, please let me know if I can answer any questions. Thanks again for using Amazon Linux 2!
+Sean"
+Amazon Linux	"Re: Unable to resolve ALAS-2017-900, ALAS-2016-779, and ALAS-2018-1045
+Thanks for the clarification Sean.
+Here is the result of TwistLock tool scan report:
+CVE, Package, Version, Severity, Status
+ALAS-2017-900, file-libs, 5.11-33.amzn2.0.2, important, fixed in 5.30-11.34
+ALAS-2018-1045, gnupg2, 2.0.22-5.amzn2.0.2, important, fixed in 2.0.28-2.32
+
+bash-4.2# yum install gnupg2-2.0.22-5.amzn2.0.2.x86_64
+Loaded plugins: ovl, priorities
+amzn2-core                                                                                                                                                          | 2.4 kB  00:00:00
+Package gnupg2-2.0.22-5.amzn2.0.2.x86_64 already installed and latest version
+Nothing to do
+
+Please, let me know if you need any additional information.
+Many thanks
+Yousef
+
+Edited by: YousefAcl on Sep 26, 2018 10:16 AM"
+Amazon Linux	"Re: Unable to resolve ALAS-2017-900, ALAS-2016-779, and ALAS-2018-1045
+Hi Yousef,
+
+Thanks for the feedback.
+This appears to be an issue with how TwistLock is interpreting Amazon Linux vs Amazon Linux 2. As Sean explained below, the NVRs between the two operating systems are different. I recommend you open a support case with TwistLock to update their understanding of the two OSes.
+
+Thanks again for using Amazon Linux 2!
+Richard"
+Amazon Linux	"Re: Unable to resolve ALAS-2017-900, ALAS-2016-779, and ALAS-2018-1045
+Thanks a lot Sean and Richard"
+Amazon Linux	"Help needed - Not able to install packages on Red Hat linux
+Hi Team,
+
+I am happy to sharing my question on forum. Quick help is really appreciated.
+I started using free tier AWS account and did launch Red Hat linux instance. Here I am facing some issues while installing any packages.I am getting issue like ""This system is not registered with an entitlement server. You can use subscription-manager to register"". Please find the same and help me out as soon as possible.
+
+$ sudo yum install python-pip
+Loaded plugins: amazon-id, product-id, rhui-lb, search-disabled-repos, subscription-manager
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+No package python-pip available.
+Error: Nothing to do
+
+Quick help would be highly appreciated.
+
+Thanks,
+Mukkanti
+
+Edited by: Mukkanti on Sep 20, 2018 12:44 PM"
+Amazon Linux	"Re: Help needed - Not able to install packages on Red Hat linux
+Hello Mukkanti,
+
+Could you please check the /etc/yum/pluginconf.d/subscription-manager.conf file on the instance and see if it is set to “enabled=0”? If not, please try changing to “enabled=0” as per example below and try running the yum install again. 
+===================================
+sudo vi subscription-manager.conf 
+https://forums.aws.amazon.com/
+enabled=0
+===================================
+Setting to “enabled=1” means the subscription-manager plugin was enabled, which is not needed for RHEL in AWS, as the subscription is managed automatically. By setting it to “enabled=0”, the subscription-manager plugin will be disabled. 
+
+Anudeep"
+Amazon Linux	"Re: Help needed - Not able to install packages on Red Hat linux
+Hi Anudeep,
+
+Thanks for your support. It's really appreciated. I did modify to '0' and tried to install some package and still not able to install it. Please find the same and help me out.
+
+sudo yum install python-pip
+Loaded plugins: amazon-id, product-id, rhui-lb, search-disabled-repos
+No package python-pip available.
+Error: Nothing to do
+
+And, this error is same for almost all packages. 
+
+I also observed something like below. please take a look at it. It could be helpful to analyse the issue.
+
+Loaded plugins: amazon-id, product-id, rhui-lb, search-disabled-repos
+Repo rhui-REGION-client-config-server-7 forced skip_if_unavailable=True due to: /etc/pki/rhui/cdn.redhat.com-chain.crt
+Repo rhui-REGION-client-config-server-7 forced skip_if_unavailable=True due to: /etc/pki/rhui/product/rhui-client-config-server-7.crt
+Repo rhui-REGION-client-config-server-7 forced skip_if_unavailable=True due to: /etc/pki/rhui/rhui-client-config-server-7.key
+Repo rhui-REGION-rhel-server-releases forced skip_if_unavailable=True due to: /etc/pki/rhui/cdn.redhat.com-chain.crt
+Repo rhui-REGION-rhel-server-releases forced skip_if_unavailable=True due to: /etc/pki/rhui/product/content-rhel7.crt
+Repo rhui-REGION-rhel-server-releases forced skip_if_unavailable=True due to: /etc/pki/rhui/content-rhel7.key
+Repo rhui-REGION-rhel-server-rh-common forced skip_if_unavailable=True due to: /etc/pki/rhui/cdn.redhat.com-chain.crt
+Repo rhui-REGION-rhel-server-rh-common forced skip_if_unavailable=True due to: /etc/pki/rhui/product/content-rhel7.crt
+Repo rhui-REGION-rhel-server-rh-common forced skip_if_unavailable=True due to: /etc/pki/rhui/content-rhel7.key
+Could not contact CDS load balancer rhui2-cds01.us-east-2.aws.ce.redhat.com, trying others.
+
+Could not contact any CDS load balancers: rhui2-cds01.us-east-2.aws.ce.redhat.com, rhui2-cds02.us-east-2.aws.ce.redhat.com.
+
+Thanks,
+Mukkanti"
+Amazon Linux	"Missing ant from bash-completion on Amazon Linux 2
+$ rpm -ql bash-completion | grep ant && echo ""Found"" || echo ""Missing""
+Missing
+ 
+$ yum info bash-completion
+Name        : bash-completion
+Arch        : noarch
+Epoch       : 1
+Version     : 2.1
+Release     : 6.amzn2
+Size        : 259 k
+Repo        : installed
+Summary     : Programmable completion for Bash
+URL         : http://bash-completion.alioth.debian.org/
+License     : GPLv2+
+Description : bash-completion is a collection of shell functions that take advantage
+            : of the programmable completion feature of bash.
+
+
+Edited by: RayRehbein on Sep 20, 2018 7:57 AM - fixed code tag"

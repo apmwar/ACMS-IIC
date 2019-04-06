@@ -1,0 +1,1553 @@
+label	description
+Amazon Simple Email Service	"All verfied domains and emails have vanished from my account
+At somepoint this morning all of the verified domains and emails vanished from my account resulting in my client not being able to send emails through our system.
+
+I'd like to know how in hell something like this can happen??"
+Amazon Simple Email Service	"How do I tell Amazon SES their IP addresses are blacklisted
+Is there an official way to tell Amazon SES about blacklisting, and ask them to talk to the other company involved? 
+
+I have had emails disappear this week and last week (Ironport doesn't even send proper bounces back to to my SNS endpoint) and discovered through https://mxtoolbox.com that Amazon's IP 54.240.3.26 is blacklisted by SORBS and Suomispam at the moment.
+
+How do I inform Amazon of this? The documentation (below) doesn't mention the process.
+Thank you.
+
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/blacklists.html
+We don't monitor blacklists that are unlikely to impact delivery across the entire Amazon SES service, or that don't have a measurable impact on delivery to major email providers. The blacklists offered by SORBS fall into this category. When one of our IP addresses appears on a blacklist in this category, we'll ask the provider to remove our IP addresses on a case-by-case basis."
+Amazon Simple Email Service	"How to get specific email record using aws-sdk cloudwatch for a custom
+I send an email using Amazon SES with an Open and Click events. I want to retrieve particular email records based on the events. When the user opens the emails by 4 times, then the record count for the particular email open event to 4. Just like that, I want the records for the total clicks, send, delivery, and bounce details for multiple emails. I tried Cloudwatch functions such as listMetrics, getMetricData, getMetricStatistics. But the functions did not return the outputs that I expected."
+Amazon Simple Email Service	"Status Code: 400; Error Code: MessageRejected; ----what is the reason?
+I used to send mail successfully after you moved my account out of the sandbox. But recently I again cannot send emails, my logs below:
+
+
+2019-02-20T21:09:39.920837+08:00Asia/Shanghai   Error message: Email address is not verified. The following identities failed the check in region US-WEST-2: 18600397802@163.com  (Service: AmazonSimpleEmailService; Status Code: 400; Error Code: MessageRejected; Request ID: c7a3561a-3510-11e9-a1b9-edb5e6ebb43c)
+
+How to fix this?
+
+more details for this issue:
+https://console.aws.amazon.com/support/cases#/5786351521/en"
+Amazon Simple Email Service	"Re: Status Code: 400; Error Code: MessageRejected; ----what is the reason?
+Hello,
+
+After checking your sending account in US-WEST-2, the email identity you mentioned is NOT verified.
+
+You can double confirm this from SES Console too.
+
+So it's possible you or somebody else removed the identity, we recommend to enable CloudTrail to trace all the API calls you will be able to track who deleted the identity.
+
+Thanks for using SES!"
+Amazon Simple Email Service	"Re: Status Code: 400; Error Code: MessageRejected; ----what is the reason?
+Given the truth that I have been moved out of the sandbox, Do I still need to add those email addresses I am sending mail to(for example, the mail address I mentioned) as verified email addresses?
+
+If so, what is the purpose of the sandbox? I think after I am out of the sandbox, I can send emails to any address(even unverified, like the address I mentioned) from my verified address(hanzhaogang@gamil.com, hanzhaogang@foxmail.com)
+
+What is more, I used to send emails to unverified addresses successfully, after I was moved out of the sandbox."
+Amazon Simple Email Service	"Re: Status Code: 400; Error Code: MessageRejected; ----what is the reason?
+I am sure that after I was removed from the sandbox, I can send mails to unverified addresses."
+Amazon Simple Email Service	"Viewing What E-Mail Addresses An SES Mailing Were Sent To...
+Hello!
+
+Is there a way to view what E-Mail addresses an SES mailing were sent to?  I recently lost my entire list (hard drive crash) and am looking to recover the data.
+
+Thanks!"
+Amazon Simple Email Service	"Re: Viewing What E-Mail Addresses An SES Mailing Were Sent To...
+Hello todd,
+
+As far as I am concerned you won't be able to unless you setup Cloudwatch
+
+I know it does not help for this time but for the next time you can use the following links:
+https://aws.amazon.com/about-aws/whats-new/2016/11/amazon-ses-now-provides-fine-grained-email-sending-metrics/
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/monitor-sending-activity.html"
+Amazon Simple Email Service	"Amazon SES not working with Google
+So this is my funnel so far for email marketing: SendHippo > Amazon SES via API > Gmail hosting example@busness.com email address. 
+
+SendHippo is essentially like MailChimp which requests emails being sent, I have put in my Amazon SES API information and the From: email is always the marketing email I have created from my Gsuite account. 
+
+Now this worked awesome for the first 300 emails but now SendHippo has hit me with the Send Limit Error which basically for them just means it's come back as can not send. 
+
+My send limit is 50,000 a day, 14 emails a second. I have been taken out of sandbox mode already. My email has been verified through Amazon SES already. 
+
+Is there anything I'm missing? Please let me know if it's an issue with Gmail bottle capping my limit."
+Amazon Simple Email Service	"Why hasn't my domain been verified?
+Hello,
+I added a new domain to my account, and added the TXT record to the DNS. As expected, it immediately showed as pending verification.
+However, it's been like that for a few days now. I haven't had any notification of any success or failure to verify, and the status is still pending.
+Anyone any idea how I get this verified? The other domains I've added were verified within a few hours.
+Thanks"
+Amazon Simple Email Service	"Re: Why hasn't my domain been verified?
+Amazing, been waiting days, and within an hour of posting, I got the verification email!
+
+Someone somewhere has powers of prophecy!"
+Amazon Simple Email Service	"How to best monitor each SES dedicated IP address?
+We would like to monitor the bounce rate of each SES dedicated IP address independently. However, SES Bounce notifications do not include the IP address of the server that sent the message.
+
+What is the best way to individually track the bounce rate of each of our dedicated IP addresses?"
+Amazon Simple Email Service	"Re: How to best monitor each SES dedicated IP address?
+Hi,
+
+reportingMTA from bounce object of your bounce notification should contain the info you want.
+
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/notification-contents.html#bounce-object
+
+Thanks for using SES!"
+Amazon Simple Email Service	"Amazon SES IPs Blacklisted by 0spam - nosolicitado - SORBS
+Hello,
+
+We are having a deliverability issue with our emails being rejected because a lot of Amazon SES IPs are blacklisted.
+
+Could not deliver message to the following recipient(s):
+Failed Recipient: xxx@optonline.net
+Reason: Remote host said: 554 5.7.1 Spam detected by content scanner.  Message rejected.
+Received: from a27-57.smtp-out.us-west-2.amazonses.com (a27-57.smtp-out.us-west-2.amazonses.com http://54.240.27.57) by mail.webgearmail.com with SMTP;
+   Fri, 22 Feb 2019 03:01:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=7v7vs6w47njt4pimodk5mmttbegzsi6n; d=amazonses.com; t=1550822514;
+	h=Date:To:From:Reply-To:Subject:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID;
+	bh=j1orgA9hSyDsqwWEuKh7a1ZFq83GINf3Kx/e08lnZDM=;
+	b=DScUW44JwcjgkNT211YcDoNKBl4Cz4jbDxXL6+eVckff3jXgwtoqHQm9ejC/Xwai
+	0gcU5PFoHe6fQbBTOFSAHMbWN8r9MM9Jsaz8mr6xT20YN97KqXqNWeQ+l4AT5xVaBNa
+	dLuTyUPSWwV02Wcdg4XvyraRjY+JVd5m4q5C8Rf0=
+Date: Fri, 22 Feb 2019 08:01:54 +0000
+
+https://mxtoolbox.com/SuperTool.aspx?action=blacklist%3a54.240.27.57&run=toolpage#
+
+https://0spam.org/check/?ipaddr=54.240.27.57
+DNSBL SOURCE	Result (if listed)	Reason (if listed)	STATUS
+bl.0spam.org	127.0.0.1 			Received: from a27-57.smtp-out.us-west-2.amazonses.com (http://54.240.27.57) Tue, 10 Apr 2018 09:59:04 -0500 Subject: 2018 International Association of Fire Chiefs Members	Listed!
+0spam.fusionzero.com127.0.0.1		Received: from a27-57.smtp-out.us-west-2.amazonses.com (http://54.240.27.57) Tue, 10 Apr 2018 09:59:04 -0500 Subject: 2018 International Association of Fire Chiefs Members Listed!
+
+http://www.nosolicitado.org/query.xba type the IP: 54.240.27.57
+The IP 54.240.27.57 is Blacklisted in NoSolicitado.org due to the unsolicited email received from it
+The ip 54.240.27.57 is part of a Class C network listed in NoSolicitado.org
+This means that several of your IP neighbours or you are sending massive spam, if you are sure that your server is not sending spam and has not been compromised, consider another hosting provider or datacenter, as Class C network removal is almost impossible, in the meantime, seek help from your datacenter in order to stop spam coming for this class C
+Reason for blocking: Amazon rate of spam is going up and now up to 98% rate. This is the result of cheap services, zero monitoring.
+
+Here are below a few more IPs that are blacklisted in the same C block (not only on nosolicitato but also on SORBS and 0spam):
+54.240.27.56
+54.240.27.55
+54.240.27.54
+54.240.27.53
+
+Edited by: Fgth29 on Feb 22, 2019 2:19 PM
+
+Edited by: Fgth29 on Feb 22, 2019 2:21 PM"
+Amazon Simple Email Service	"Re: Amazon SES IPs Blacklisted by 0spam - nosolicitado - SORBS
+Hi,
+
+Thanks for contacting AWS! I understand you are having delivery issues and are finding SES IPs on blacklists. 
+
+Specifically, I see that you are receiving the following error message: 
+
+""Remote host said: 554 5.7.1 Spam detected by content scanner. Message rejected.""
+
+
+Please note that this error is indicating that the content in your messages are triggering a spam filter and are being bounced for this reason. When you are effected by an email blacklist you will see bounce messages similar to the following:
+
+""554 5.7.1 Service unavailable; Client host [192.0.2.0] blocked using blacklistName; See: http://www.example.com/query/ip/192.0.2.0""
+
+
+It's important to note that different blacklists have different impacts on the successful delivery of a message. Major email providers—including Gmail, Hotmail, AOL, and Yahoo—seem to recognize a very small number of highly regarded blacklists, such as those offered by Spamhaus. In our experience, other blacklists tend to have a low impact, although some mail systems emphasize certain blacklists over others. 
+
+If you can provide evidence of messages that you are sending being returned due to blacklisting, please private message me this example and associated SES message ID for me to assist further.
+
+Additionally, we have a great blacklist FAQ that answer many common questions regarding this:
+
+    Amazon SES IP Blacklist FAQs - https://docs.aws.amazon.com/ses/latest/DeveloperGuide/blacklists.html
+
+Warm regards,
+
+Patrick V."
+Amazon Simple Email Service	"black list by  UCEPROTECT-Level2
+smtp; 550 (dnsbl) Net 54.240.8.0/21 is UCEPROTECT-Level2 listed because 55 abusers are hosted by AMAZON-AES - Amazon.com, Inc., US/AS14618 there. See: http://www.uceprotect.net/rblcheck.php?ipr=54.240.8.81
+
+Can we be informed when issue resolved?"
+Amazon Simple Email Service	"Re: black list by  UCEPROTECT-Level2
+Hi,
+
+Please reference our FAQ on IP blacklists below for more information on this situation.
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/blacklists.html
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Re: black list by  UCEPROTECT-Level2
+I don't agree, this single IP might not be listed but the block is listed at UCEPROTECT - Level2: 54.240.8.0/21
+http://www.uceprotect.net/en/rblcheck.php"
+Amazon Simple Email Service	"SES Click Tracking not applied to href in <v:roundrect>
+We are using https://beefree.io/bee-plugin/ as an editor for generating the HTML for our emails.
+
+It produces HTML as follows:
+<!--[if mso]> ... <v:roundrect xmlns:v=""urn:schemas-microsoft-com:vml"" xmlns:w=""urn:schemas-microsoft-com:office:word"" href=""THE_ORIGINAL_URL"" ...>... <![endif]-->
+<a href=""#"" ses:tags=""invitation:positive"" target=""_blank"" ...>
+
+
+This HTML gets handed over to SES. After SES has delivered the email to a recipient's inbox it looks like this:
+<!--[if mso]> ... <v:roundrect xmlns:v=""urn:schemas-microsoft-com:vml"" xmlns:w=""urn:schemas-microsoft-com:office:word"" href=""THE_ORIGINAL_URL"" ...>... <![endif]-->
+<a href=""https://mdg8lyt7.r.eu-west-1.awstrack.me/L0/THE_ORIGINAL_URL"" ses:tags=""invitation:positive"" target=""_blank"" ...>
+
+
+So only the href within the <a>
+ gets tracked, but the href within <v:roundrect>
+ remains untracked.
+
+However, when a recipient views the email in Outlook, she will access the href in <v:roundrect>
+ and therefore remain untracked.
+
+How can we make SES track the hrefs in <v:roundrect> as well?"
+Amazon Simple Email Service	"Re: SES Click Tracking not applied to href in <v:roundrect>
+Anybody else has had a similar problem yet? I think it is a quite generic issue as soon as you start introducing conditional HTML for specific email clients and a href outside of an anchor tag.
+
+What is the best practice for handling these cases with AWS SES?
+
+Looking forward to any hint. Thank you!!"
+Amazon Simple Email Service	"Re: SES Click Tracking not applied to href in <v:roundrect>
+Hi,
+
+I'm sorry to hear that link tracking is not working in that case. I will pass this along to the team as a feature request.
+
+Thanks,
+Morgan"
+Amazon Simple Email Service	"Re: SES Click Tracking not applied to href in <v:roundrect>
+Thanks a lot for your response, Morgan!
+
+Passing this along as a feature requests is great, but won't help me soon.
+
+I don't believe that my case is that special:
+
+using v:roundrect seems to be the best practice for Office-optimized emails
+using AWS SES based click tracking should also not be exotic for the folks around here
+
+
+--> What are workarounds which I can try out right now? How are others handling these situations?
+
+Thanks a million!"
+Amazon Simple Email Service	"SPF check failed for some domains
+Hi
+
+I've setup SPF records on my server like this:
+v=spf1 include:amazonses.com ~all
+
+It passed 4 days since this change, so the change is propagated by now.
+
+I've checked the records with https://mxtoolbox.com and everything seams to be ok. It passed, all green.
+
+But, some emails are still failing (returning as undelivarable) with this message: ""smtp; 554 5.7.1 This email from IP .... has been rejected, because the SPF check failed. Kindly ensure that your SPF record is up to date""
+
+I noticed that this error happens only for emails with iway.na and telecom.na domains.
+
+For some other failed email, with reason not related with SPF, I see in returned email body that SPF is correct, for example like this:
+""Received-SPF: pass (domain of .... designates .... as permitted sender)""
+
+So my conclusion is that my SPF records are set correctly! But why I'm getting returned emails with SPF error for .na emails???
+
+Example message ID: <01000168e06a27b5-3bfec6af-6f41-4bda-abc3-77e8a5bc580f-000000@email.amazonses.com>
+Returned message ID: <01000168e07a1e44-dbd3d30b-602c-4845-8714-e2c5057676e0-000000@email.amazonses.com>
+
+Please help, this is frustrating!
+
+Thanks
+
+Goran"
+Amazon Simple Email Service	"Re: SPF check failed for some domains
+Hi,
+
+The SPF record on your domain looks fine to me. You may have to reach out to the problem ISPs to inquire why they are unable to resolve your SPF record. In the mean time, you may try disabling Custom Mail From so that your messages are sent from SES's Mail From domain.
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Amazon SES - Open and Click Tracking- SES adding additional '.' in links
+I am using Amazon SES to send out emails from my sub domain.  I have setup the configuration set and my DNS to track the opens and clicks using the link. sub domain.  However, in some cases when Amazon injects their link around mine to create these links it adds an additional period between the domain and the .com causing the links to be broken.  I notice it happening about 5% of the time.
+
+Has anyone else experienced this before or know how to solve it?
+
+i.e.
+http://domain.com/blah
+becomes
+http://link.domain.com/CL0/http:%2F%2Fdomain..com/Blah"
+Amazon Simple Email Service	"Re: Amazon SES - Open and Click Tracking- SES adding additional '.' in links
+Hi,
+
+I'm sorry to hear you are having problems with SES link tracking. Can you please share the SES message ID of a message that this occurred to?
+
+Thanks,
+Morgan"
+Amazon Simple Email Service	"AMAZON SES open/click events returning the wrong UserAgent and ipAddress
+Hello,
+
+I have been testing Amazon SES /SNS for the open and click events using PHP V3 SDK , and in the respond back we are getting the wrong IpAddress & UserAgent, its not really accurate. I can give you an example of the messageId if you would like.
+
+My question is how accurate is the IP / UserAgent that Amazon SES returns? if you could help me I would really appreciate it
+
+MessageID : 01010168e74bf0e0-a240e405-5943-438b-a542-23b57bd6bddd-000000
+\""userAgent\"":\""Mozilla/5.0 (Windows NT 5.1; rv:11.0) Gecko Firefox/11.0 (via ggpht.com GoogleImageProxy)\"",\""ipAddress\"":\""66.102.9.131\""}}
+
+This is the wrong IP and UserAgent , because it was opened with macOS Safari and ip from Ukraine
+Could you check this and let me know
+
+Thanks
+
+Edited by: bill123 on Feb 13, 2019 9:36 AM"
+Amazon Simple Email Service	"Re: AMAZON SES open/click events returning the wrong UserAgent and ipAddress
+Hi,
+
+Unfortunately, SES only provides you with the IP address and user agent of the request we received. In your case, you can see that the user agent contains ""via ggpht.com GoogleImageProxy"" which indicates that the image/link was fetched by Google on behalf of a Gmail user. 
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Failed send campaign with Amazon SES SMTP in my inboxing pro platform
+Hi I need help , 
+
+I setup amazon ses smtp to my inboxing pro email marketing platform, but as I send test campaign, I get an error, its not sending.
+
+pls see screenshot attached"
+Amazon Simple Email Service	"Re: Failed send campaign with Amazon SES SMTP in my inboxing pro platform
+Hi,
+
+The error you posted does not seem to indicate an error connecting to SES's SMTP endpoint, but instead some other SMTP endpoint. I would make sure you have your program configured to connect to SES's SMTP endpoints.
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Email Forwards Fail because of Duplicate DKIM-Signature Header
+Dear Support,
+
+We're currently transitioning our email delivery from network nodes to using the SES service. We have successfully migrated our office email to use the service as well as our application servers. As a result we have seen better success in delivery to our customers as the AWS infrastructure has better email delivery reputation than random IP addresses on the Internet.
+
+However, when reporting an error message from our application server, an email is sent out through the SES service to our internal mail server. The mail server then expands the email alias and delivers the message locally as well as to external email addresses which bounces.
+
+Attached is a copy of the email source from the bounced message, in there are two error messages.
+
+
+reason: 501 Invalid MAIL FROM address provided
+reason: 554 Transaction failed: Duplicate header 'DKIM-Signature'.
+
+
+The first, Invalid MAIL FROM, I believe is a misnomer as emailing directly from our internal mail server works, and I have verified the email address/domain. I believe that the actual errors is because of the Duplicate DKIM header.
+
+We're using sendmail internally to deliver mail, and was thinking that adding a milter to remove the DKIM header when sending messages out would be the best solution. Am I on the right track, or is there something else that would be a better fix?
+
+Thank you."
+Amazon Simple Email Service	"Re: Email Forwards Fail because of Duplicate DKIM-Signature Header
+Hi,
+
+Although I'm not familiar with your email setup, I find it unusual for an email to be rejected due to multiple DKIM headers. Having more than one DKIM header is quite common these days so if possible I would try to remove that restriction.
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"IP address blacklisted in SORBS
+Amazon SES IP 52.240.4.12 address is listed in thw SORBS blacklist and is causing us issues.
+
+Need someone from Amazon to initiate the removal."
+Amazon Simple Email Service	"Re: IP address blacklisted in SORBS
+I really need this to be fixed because is damaging our reputation, Outlook provider is marking all my emails as SPAM"
+Amazon Simple Email Service	"Re: IP address blacklisted in SORBS
+Hi, 
+
+It looks like this IP is no longer listed on SORBS. For future reference, please see the below FAQ on IP listing.
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/blacklists.html
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"SES - iCloud - Domain not found
+Hi Team,
+I am using Amazon SES for sending transnational emails such as activation, forgot password and change password. Most of the emails sending correctly but I observed Yahoo and iCloud emails not delivering and bouncing with below message. I confirmed that icloud email is valid. Can you please help me out? 
+
+""diagnosticCode"":""smtp; 554 4.4.7 Message expired: unable to deliver in 840 minutes.<450 4.1.8 <01000168fd9932b8-4759246e-0071-4f55-89ea-0f096a6e3c85-000000@mail.domainname.com>: Sender address rejected: Domain not found>""}
+
+Note: I have configured and enabled below features.
+Email Feedback Forwarding:enabled
+DKIM Settings Generated:yes
+DKIM Signing:enabled
+MAIL FROM Domain:mail.domainname.com
+
+Thanks"
+Amazon Simple Email Service	"Re: SES - iCloud - Domain not found
+Hi,
+
+I can't say for sure why you are receiving these errors, but one reason might be if you don't have a website (or DNS A record) at the domain you are sending from. If this does not help, I would try to reach out to the ISPs in question to inquire more. You can also try disabling Custom Mail From to see if that helps.
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Please re-consider your decision to reject my email Sending Limit Increase
+Hi,
+
+I have recently requested a Sending Limit Increase for my SES account; case ID: 5765510991.
+
+This is what I had written in my 2nd request:
+
+""Thank you so much for giving me the opportunity to explain.
+
+Well, as I mentioned in my request, I am a blogger (new one actually), so my main use of Amazon SES will be to send notifications to my readers to update them about the new posts that I have published on my blog.
+
+Apart from that, there will be occasional informational emails on the topic of my blog and a few promotional emails.
+
+I am also planning a 7 days series of emails, so that would be set as an autoresponder. So, when someone signs up for this series they will receive the emails for 7 days, one after one in 5 to 24 hours interval.
+
+I have been using GetResponse for my email marketing. But the renewal cost of the tool is very high compared to my uses. So, I was just looking for a cheaper alternative and came across Sendy, and that's how I learned about Amazon SES.
+
+Since I am looking to cut down on some of my expenses, I am pretty much looking forward to using Sendy with Amazon SES.
+
+As of now, I have a list of almost 1600 subscribers, and all of them are genuine and collected through my blog and social media, and with the user's consent.
+
+So, I will be sending a max of 8 to 10 emails per subscriber per month, apart from the welcome email or the 7 days email series.
+
+Each email I sent out includes an unsubscribe link for the users, so, at any moment if any of my subscribers decide to unsubscribe they can do that easily.
+
+The email tool Sendy will take care of the bounce, and for the complaints, I will personally interact with the users, or they can anytime unsubscribe.
+
+My notification emails are usually an intro of the blog post and the link to read the full post.
+
+My promotional emails are usually related to special sales on hosting plans, domain names or digital marketing tools; for example, BlackFriday deals. And also I don't promote stuff that I haven't used personally.
+
+My other occasional emails are a small writeup on topics that are not too vast to post as a blog post or to share anything new that I have experienced (personal or professional), or sometimes just to say ""Hi"".
+
+I don't know if I have made myself clear enough or not. But I hope I did.
+
+If you need any more information please let me know. If anything technical you need to know, do let me that as well. I don't know if I would understand, but I will try to clear everything I can.""
+
+*bold*New information: I have confirmed Sendy will take care of the bounce as well as complaints.
+
+So, my sincere request to you please reconsider my case. I don't think I can be any more open than this. Still, if you need any more specific details please let me know; don't just cut me off like that.
+
+I am sorry if this is not the right place to post this request. I don't know how else can I reach you.
+
+Looking forward to a positive response.
+
+Thanks & Regards
+Biswajeet"
+Amazon Simple Email Service	"Re: Please re-consider your decision to reject my email Sending Limit Increase
+Hi,
+
+To appeal an enforcement, please follow the instructions here:
+
+To request a review, send an email to ses-review@amazon.com from the email address associated with your AWS account.
+
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/e-faq.html#e-faq-sp
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Email verification
+In my GoDaddy domain, I added all the CNAME and TXT records and it is still verification pending from the past week. I feel I did everything right but I am still not verified! Can you help!??? pleaseeeee..
+
+BTW I use Sendy for my emails
+
+Edited by: arpi on Feb 18, 2019 7:43 PM"
+Amazon Simple Email Service	"Re: Email verification
+Hi arpi,
+
+When you create a TXT record in GoDaddy's console, it automatically appends your domain name to the name that you entered in the Host field. So, if you add a TXT record with a Host value of _amazonses.example.com, GoDaddy converts it (without telling you) to _amazonses.example.com.example.com.
+
+If you edit the DNS record so that the value in the Host field is just ""_amazonses"" (without the quotes), you should be good to go.
+
+I hope this helps. Thanks for using Amazon SES!
+
+Brent @ AWS
+
+Edited by: AWSBrentM on Feb 19, 2019 9:04 AM"
+Amazon Simple Email Service	"Re: Email verification
+I've done that.. still it doesn't work. I've waited for more than 73 hours."
+Amazon Simple Email Service	"Re: Email verification
+Is there anything else I can do to make it work? I need to set up my email marketing ASAP!! Please I need your help.
+
+Here is a little background. I've transferred my hosting from HostGator to GoDaddy, and from there all these problems rose! 😩
+
+Edited by: arpi on Feb 19, 2019 5:38 PM
+
+Here are some screenshots
+http://prnt.sc/mnhmfn
+http://prnt.sc/mnhmho
+http://prnt.sc/mnhmjn
+http://prnt.sc/mnhmmc
+http://prnt.sc/mnhmon
+
+Edited by: arpi on Feb 19, 2019 9:05 PM"
+Amazon Simple Email Service	"Re: Email verification
+Hi, 
+
+It looks like your domain has since been successfully verified. Please let us know if you are still encountering issues. 
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Duplicate emails
+Hi!
+
+I've seen several posts on this topic but a good answer yet.
+
+We sometimes see that the emails we send using SES are delivered as two emails to the receivers.
+We are using Spring's JavaMailSender (spring boot 1.3.3) and in the logs (logging before and after the call to the javaMailSender.send method) there is clearly just one call for each mail that is received twice.
+
+Example of message ids:
+Message-ID: <01020168ebbc201b-d9fcdcb0-c466-4047-ae36-27fc61d30710-000000@eu-west-1.amazonses.com>
+Message-ID: <01020168ebbc1fa4-6c9227e6-26e9-42f8-a8eb-65ba2bd23ba6-000000@eu-west-1.amazonses.com>
+
+Any ideas on what might cause this?"
+Amazon Simple Email Service	"Re: Duplicate emails
+Hi,
+
+Each unique message ID represents a separate request sent to SES. It seems those two messages your provided were sent at the same time, to the same recipient. Is that the problem you are concerned about? If so, I would look at your application to make sure it's not making repeat calls to SES for certain cases.
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"SendBulkTemplatedEmail not working?
+I am trying to use this API (SendBulkTemplatedEmail: https://docs.aws.amazon.com/ses/latest/APIReference/API_SendBulkTemplatedEmail.html) the documentation states that destinations is an array if BulkEmailDestination, 
+
+So i tried using:
+Destinations.member.1.ToAddresses=allan%40example.com
+
+But, this generate an error:
+validation error detected: Value null at 'destinations.1.member.destination' failed to satisfy constraint: Member must not be null
+
+In the documentation (for send bulk templated email) destination is of Type: Destination object, and the toAddress is an array of strings (ToAddresses.member.N)
+
+Based on all of this the first person should be
+
+destinations.1.member.destination.ToAddresses.member.1=allan%40example.com
+
+But, when i tried to use the above  get error
+Top level element may not be treated as a list
+
+it doesnt have any sense"
+Amazon Simple Email Service	"Re: SendBulkTemplatedEmail not working?
+Hi,
+
+I'm sorry you're having troubles with this API. What SDK are you using to call SES?
+
+If you are using the AWS CLI, I find it easier to generate an example request JSON using the '--generate-cli-skeleton' flag and then pass the request into the CLI command with the '--cli-input-json' parameter. 
+
+Example:
+aws ses send-bulk-templated-email --generate-cli-skeleton
+
+
+aws ses send-bulk-templated-email --cli-input-json file://~/path-to/send-bulk-templated-req
+
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Help Getting Out Of The Sandbox
+We have a rather new website (2-3 months old) - ecommerce, selling fashion items. We started with gathering subscribers with mailchimp - but their pricing structure is based on the number of contact you have and not on the number of emails you send (we only send once per month). We reached a few thousands subscribers and decided to switch to another email service provider, as mailchimp was a bit too expensive for our sending needs. So we looked for another alternative. Found amazon ses which seemed to be cheap (compared to most others) and very reliable (it's amazon, duh). We then investigated and saw that sending via amazon ses is not that easy - as it has no interface / dashboard - and you need a software to ""plug"" ses into it and send your emails. We found 2 alternatives : interspire email marketer and sendy (sendy.com). We chose sendy as it was cheaper.
+
+Set up sendy on our host, configured everything, last step was to configure it's amazon ses settings. So we signed up for an aws account, verified the phone number, verified our credit card and in 24 hrs got access to ses and the other aws services.
+
+Verified our sending domain inside ses (and added the dkim keys), verified 2 email addresses (personal one and one hosted at the domain) and then we tried to send a few test emails. Then we found out that, just like all new accounts our account was in sandbox mode and we could only send emails to the addresses we verified in our account.
+
+So we then requested to raise our limits and get out of the sandbox. Here's the request i sent :
+
++""We'll be using ses to send emails to our subscribers - which we have gathered via our online store and newsletter signup forms (using double opt in). The emails we're sending to are all valid (just re-verified the whole list 3 days ago after exporting it from mailchimp - all complaints and bounces - both hard and soft - were removed). We have been using another email service provide for a long time now - mailchimp - but we're planning to move to SES because mailchimp was a bit expensive (their pricing structure was based on the number of subscribers, and not on the number of emails sent - we have a few thousands subscribers but we send emails to them only once a month - or once every 2 months - so paying just to have a bigger list was not right).
+
+We will be using sendy (sendy.com) to send the emails - sendy will handle bounces, complaints and unsubscribe requests effectively. We have already configured sendy to interact with ses in order to handle the bounces, complaints and subscribes.
+
+I have also verified our domain (and added the dkim keys) in the ses management console, and also verified 2 email addresses (my personal one and a business one hosted at our domain). Our domain is clean, it's not present on any blacklists, none of our email addresses are on any blacklist - the content of the emails we're sending is relevant to our subscribers (product updates and promotions).""+
+
+I requested 10k emails per day (although we'll probably send less than that per month), i selected that our emails comply with TOS and AUP, that we send to recipients who have requested our mails and that we have a process to handle bounces and complaints (sendy). For mail type, i selected subscription.
+
+24 hrs later, i was surprised by the reply i got :
+""We regret to inform you that we cannot grant your request for increased Amazon SES sending limits in AWS Region US East (N. Virginia) at this time. We have determined that your use of Amazon SES may adversely impact our services. For further information about our policies, please review our Acceptable Use Policy and Service Terms.""
+
+I mean, from what people were saying on the sendy forums, everyone got accepted into SES - so i don't know what the problem is. To me, this vague response looks like an auto-generated message. Is there anyone who can help us get out of the sandbox? Is there anything specific we should do? Or is amazon denying all new clients? Should we try and fix this, make it work somehow or are we doing something completely wrong and amazon ses is definitely not for us and we should give up on it?"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Anyone? Help? I see amazon support people are replying to other threads, why is no one interested in this one?"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+I am having the exact same issue and got the exact same response. I am also having a hard time finding the answer. Sorry I don't have it for you. If you find out, please let me know! I will do the same for you!"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Help! Anyone! Pls!"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Bump. Anyone?"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Hello christinej and Blondenerd,
+
+Would you mind updating the thread with the Support case numbers that were automatically generated when you submitted the SES production access request? We'd like to follow-up on this issue and we need the case numbers to get access to your AWS Account and SES details.
+
+Kind regards,
+Chris"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Case ID: 1961068931 - I need to get out of the sandbox too. We have setup our account with domain and email verification via DNS. My ticket got assigned General Guidance status. But we need raising the limit tomorrow or we will need to use some other service. We only send 2-3 (never more than 3 times) in a month. Hope you can help us. Thanks!!"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Case 1942073201"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Bump. I'm on the verge of using a different service soon. I can't wait much longer...."
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+ANYONE?!"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+https://forums.aws.amazon.com/thread.jspa?threadID=245372"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+We're having the same issue. We have been using SES under our own AWS account for YEARS and never had any problems.
+
+We recently launched a new project (a startup) and wanted to keep it separate from our existing business, so we setup a separate AWS account for it. 
+
+But now Amazon are refusing to take SES out of Sandbox and increase the sending limit - even though what I am asking for is the exact same thing we have asked for in the past and always been approved...
+
+i.e. 
+
+sending limit = relatively small 10K per day sending limit (which is higher than we need right now, but just in case).
+use case = account notification emails (signup, forgot password, new message, etc).
+
+
+We've asked 3 times in 3 different ways (thinking it might have just been the support person assigned not knowing what they were doing) but each time its the same rejection message about denying our Amazon SES sending limit increase request in AWS Region  US West (Oregon).
+
+Is Amazon phasing out SES? Is there something wrong with the Oregon region? Am I doing something wrong?
+
+Please help!
+
+Edited by: creatiotech on Dec 23, 2016 6:11 AM"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Our CASE ID is: 4532545821 and 4535235031, and we also have this same problem.
+
+Please, Can you help us?
+
+Thanks
+
+Qriswell"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Hi Qriswell, 
+
+I looked at our record and I believe you've already get out of the Sandbox.
+Thank for using SES!
+
+-Regards, 
+Lucen"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+We have the same problem and have no idea what's the problem.
+Maybe there is something we should do to avoid being rejected?
+Our case IDs are: 4552004191 and 4535981001.
+Please, can you help us?
+Thanks"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Can anyone help?
+I have no idea what to do with the situation.
+Thanks"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Hi LucentAtAWS,
+Can you help me also? my caseID 4910378781. I already using AWS before for my office projects, so i already know about AWS Acceptable Use Policy (http://aws.amazon.com/aup/) and Service Terms (http://aws.amazon.com/serviceterms/ at SES.
+
+I don't know why i got rejected since i didn't anything wrong.  I already explain the detail what i will do but my case just got the mark resolved without 'resolved'. please help. Thank you."
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+or can anyone help this problem?
+I don't have any idea what to do in this situation. I open the ticket and the support just closed my ticket without any help."
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Hi,
+I am also looking for help getting out of the Sandbox. Have sent 2 requests: 1 for a limit increase 2 for dedicated IP's as I have been using another service which charges an arm and leg for dedicated IP's. Does anyone have an answer on this matter or is this a matter of luck?
+Had a friend who I referred to SES and he was approved instantly and yet I was on here first and am beginning to feel like a 2nd rate citizen.
+
+My case info is below in case anyone from amazon happens to come across here.
+SubjectLimit Increase: SES Sending Limits
+Case ID4978814371StatusUnassigned
+CreatedApr 6, 2018
+02:21 PM -0400SeverityGeneral question
+Case typeService LimitsCategoryService Limit Increase, SES Sending Limits
+
+Rep on the phone said case numbers weren't even coming up in his system when we spoke over the phone.
+
+Anyone have a way to get out of the dreaded Sandbox?"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Hello, we applied for a Limit Increase: SES Sending Limit but it has been denied for some reason . I would like you to kindly approve our request .
+This the case I'd: 5007109501
+And thank you in advance"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Hello, we applied for a Limit Increase: SES Sending Limit but it has been denied for some reason . I would like you to kindly approve our request .
+This the case I'd: 5007109501
+And thank you in advance"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Same thing here, we only send out around 300 or 400 or so a month, and I really need to get the service running. 
+
+It shouldn't take this long should it? I only asked for a rate increase to 300 per day. 
+
+Case No:5035267961"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+case # 5059143961
+
+All I have is a private website for the board members of a non profit, we need to be able to send system notifications and invitations to sign up for web services so I requested the suggested minimum of 200 emails per day, but can't do anything until the 'sandbox' status is removed.  Coming up on 18 hours since I opened the ticket as of this post time."
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+Hi,
+
+I have an event on this coming Tuesday (9/25/2018) and I need to be able to send emails through SES on that date, but preferably before in order to get client approval on the workflow, email contents, etc. 
+
+I requested a rate increase on 9/20/2018, which was rejected because there was no bounce plan in place (case #5377248311). So, I addressed the bounce issue and re-opened my increased limit/sandbox request on 9/20/2018 (case #5380181651) and the ticket has been sitting as Unassigned ever since.
+
+Is there anything I can do to escalate this? I will upgrade the account, if necessary, I just need to be able to send emails to the world at large ASAP.
+
+Thanks,
+
+PRD"
+Amazon Simple Email Service	"Re: Help Getting Out Of The Sandbox
+We are in the same situation, can we please get an AWS engineer to take us out of the SES Sandbox?
+
+Case ID 5533228041 (ticket opened 17 hours ago)
+
+Thanks.."
+Amazon Simple Email Service	"PLEASE STOP IGNORING THIS THREAD:  E-mail not delivered to a Gmail address!
+Hello,
+
+Please stop ignoring this thread:  https://forums.aws.amazon.com/thread.jspa?messageID=888685&#888685
+
+You you have ignored our follow-ups.
+
+You have ignored our Private Messages.
+
+This is a very serious issue because Gmail is the most popular e-mail system in the world, so when Amazon SES has deliverability issues with Gmail, it needs to be taken seriously instead of ignored and swept underneath the carpet.
+
+Please advise ASAP.
+
+Thank you."
+Amazon Simple Email Service	"Re: PLEASE STOP IGNORING THIS THREAD:  E-mail not delivered to a Gmail address!
+I am having the exact same problem as you do but not only with Gmail! Amazon IPs are blacklisted in large amounts now, that is why I posted this:
+
+https://forums.aws.amazon.com/message.jspa?messageID=890914
+
+As you can see, I am still awaiting an answer. I hope I will get one soon or I will all have to consider an alternative SMTP provider!"
+Amazon Simple Email Service	"Authentication Credentials Invalid
+Well this blows. You do a 2 hours setup only to find out the service doesn't work.
+
+SES simply doesn't work. Everything is verified, I tried new credential keys. The credentials are ""Authentication Credentials Invalid"" even when they are 100% correct.
+
+1. yes I have the correct credentials
+2. yes the user has a policy access
+3. yes I can send email from the amazon console
+4. yes I tried sending with and without base64 encoded credentials
+5. yes I tried https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-email-smtp-client-command-line.html#send-email-smtp-client-command-line-testing 
+
+Can you make it any more harder?
+
+And no, I'm not gonna pay $29 a month because your service isn't working."
+Amazon Simple Email Service	"Re: Authentication Credentials Invalid
+Hi,
+
+I'm sorry you're having problems using SES. It sounds like you are trying to use the SMTP endpoint to send email, is this correct? Please make sure you are using credentials in the same region that they were generated from, as they do not work across all SES regions.
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Bounce Issue with from/MAIL FROM
+Hi,
+
+We're are using SES for some time now and are running into some problems with a German E-Mail-Provider. All E-Mails sent with SES bounce with code ""550 No valid sender in header"". We digged into this and it seems like they are having an issue with differences in the “from” and “MAIL FROM”.
+
+All our domains and email addresses in use have been verified and are ready for sending. But when we verify an address like “user@example.de”. and want so set a MAIL FROM, we are required to choose a subdomain, let's say “welcome.example.de”. 
+
+Now, when we send with mails from “user@example.com”, we have “example.de” as “from” and “welcome.example.de” as MAIL FROM. This difference seems to cause the bounces.
+
+I tried to verify an email address with a subdomain such as “welcome.example.de” but then we are required to add another subdomain for the “MAIL FROM” which would result in sth. like “mail.welcome.example.de”. Again, we would run into the ""no valid sender in header"" issue.
+
+Am I making a mistake in setting up the “MAIL FROMs” for email addresses and domains or is it just not possible to have “from” and “MAIL FROM” to be the same?
+
+I would appreciate any suggestions on what to change in our processes and settings.
+
+Thanks,
+Christof"
+Amazon Simple Email Service	"Re: Bounce Issue with from/MAIL FROM
+Hi Christof,
+
+I'm sorry to hear about your difficulties with this ISP. I have not heard of ISPs requiring a match between from header and MAIL FROM unless you have enabled DMARC authentication on your domain in 'strict' mode. 
+
+Regardless, you should be able to use a From header address at your custom MAIL FROM domain as long as the parent domain is verified. 
+
+For example:
+Verified domain: example.com
+Custom Mail From:  cmf.example.com
+SES SendEmail request with from parameter set to: ""test@cmf.example.com""
+
+The subdomain ""cmf.example.com"" does not need to be explicitly verified since you can send from any subdomain of an already verified domain.
+
+Hope this helps. For more info you can see the following two links:
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/mail-from.html
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/spf.html
+
+Morgan
+
+Edited by: MorganT@AWS on Feb 25, 2019 11:17 AM"
+Amazon Simple Email Service	"Delete Bouncing Emails
+Hi,
+I have send an email using SES SDK to a non existing email address. The email bounces and I get a SNS notification. The email bounces permanently and I keep getting SNS notifications permanently.
+Is there a way to delete emails from the sending queue if they bounce?
+Support suggested to unsubscribe from bouncing email notifications which is not really a solution for us."
+Amazon Simple Email Service	"Re: Delete Bouncing Emails
+Hi
+
+If you stop sending emails to the non-existent address you should stop receiving bounces. If this is not the case for you, can you share the SES message ID of the message that is bouncing?
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Re: Delete Bouncing Emails
+0102016925d433d6-0a42fda7-1db7-4bf2-9c7d-d4e9f4b144af-000000"
+Amazon Simple Email Service	"Bounced email notifications don't include header information
+Hello,
+
+in AWS SNS, I created a new topic for bounced emails. In SES, under the Domains section in Notifications, I added my SNS topic for bounces and checked the option Include original headers.
+
+When an email is not delivered - and is bounced, I get a webhook notification from AWS with a JSON object. This JSON object looks like this:
+{
+  ""notificationType""=>""Bounce"", 
+  ""bounce""=>{
+    ""bounceType""=>""Permanent"", 
+    ""bounceSubType""=>""General"", 
+    ""bouncedRecipients""=>[{
+      ""emailAddress""=>""something@somethnig.com"", 
+      ""action""=>""failed"", ""status""=>""5.1.1"", ""diagnosticCode""=>""smtp; 550-5.1.1 The email account that you tried to reach does not exist. Please try\n550-5.1.1 double-checking the recipient's email address for typos or\n550-5.1.1 unnecessary spaces. Learn more at\n550 5.1.1  https://support.google.com/mail/?p=NoSuchUser b9si9302589pgt.293 - gsmtp""
+      }], 
+      ""timestamp""=>""2019-02-17T08:31:24.795Z"", 
+      ""feedbackId""=>""..."", 
+      ""remoteMtaIp""=>""IP"", 
+      ""reportingMTA""=>""dsn; SOMETHING.smtp-out.us-west-2.amazonses.com""}, 
+      ""mail""=>{""timestamp""=>""2019-02-17T08:31:24.000Z"", 
+        ""source""=>""email@something.com"", 
+        ""sourceArn""=>""AWS source"", 
+        ""sourceIp""=>""IP"", 
+        ""sendingAccountId""=>""ID #"", 
+        ""messageId""=>""msg ID"", 
+        ""destination""=>[""email@adress.com""]
+      }
+}
+
+
+What I miss here in the JSON object is the section with headers - I want to retrieve the subject of the email that has been bounced.
+
+How do I do that?"
+Amazon Simple Email Service	"Re: Bounced email notifications don't include header information
+Hi,
+
+I noticed you have both a domain verified and email addresses under that domain verified. If there is an email address verified that matches the address you are sending from, SES will get the notification settings from that email address (not the domain).
+
+Please make sure you have ""include original headers"" enabled for the email address identity too.
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Re: Bounced email notifications don't include header information
+Hi Morgan,
+
+thank you - it works! Is there a way, though, to automatically enable this option for every single email address under the given domain name? The thing is that it can easily happen that we add multiple new email addresses to the system and forget to manually check the headers option for them.
+
+Thank you"
+Amazon Simple Email Service	"Please help us moving out of the sandbox - redirected from support centre
+Dear Support,
+
+We're having issue with the sandbox access.
+
+To move out of sandbox, we followed the message on top of the console to `Request a Sending Limit Increase`, case id 5772894811.
+
+The request was approved:
+Thank you for submitting your request for a sending quota increase . Your new sending quota is 50,000 messages per day. Your maximum send rate is now 14  messages per second. We have also moved your account out of the Amazon SES sandbox.
+
+The quota and send rate have been increased as described, however the account is still in the sandbox as showing in AWS console, and we cannot send emails to unverified addresses (from a verified domain) neither via the api nor aws console.
+
+So we reopened the case again with screenshots and email sending error message, twice, and the last reply was
+Unfortunately, I am not able to provide Amazon SES support through this channel. We encourage you to participate in the Amazon SES forum: https://forums.aws.amazon.com/forum.jspa?forumID=90 .
+ﾠ
+Can anyone here help us please?
+
+Thanks"
+Amazon Simple Email Service	"Re: Please help us moving out of the sandbox - redirected from support centre
+It turned out that the best way is to reopen the ticket again and again until someone can solve the issue."
+Amazon Simple Email Service	"Domain verification time
+Hi,
+
+I am trying to verify the domain bitsave.tech. Will it take 72 hours or is there a way to speed things up? We have an upcoming demo and will benefit greatly from a quick verification.
+
+Thanks
+
+Edited by: Yandreop on Feb 21, 2019 7:17 PM"
+Amazon Simple Email Service	"Re: Domain verification time
+Hi,
+
+I see that your domain is now verified. Hope your presentation goes well!
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Too many messages 404 - what to do?
+For a project I get quite alot of bounces with bounce type Transient and the diagnostic code similar to this: 
+
+""smtp; 554 4.4.7 Message expired: unable to deliver in 1440 minutes.<452 4.1.1 tU5NgBJaEw1f6tU5xgbqyu Too Many Messages https://forums.aws.amazon.com/>""
+
+The majority of these bounces are from a certain domain, telia.com (and telia.se).
+
+I have sent an email from my email client to some of those bouncing addresses without problems.
+
+Can someone help me pointing out where the problem can be? And what I can do about it?
+
+Any help is appreciated.
+
+Thanks
+Mattias"
+Amazon Simple Email Service	"Re: Too many messages 404 - what to do?
+Hi,
+
+Unfortunately SES cannot do much but retry when an ISP rejects a message. I would recommend you reach out to that recipient ISP and ask them why they are rejecting your messages.
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Error Sending email using SES smtp trhough Gmail and Gmass
+Hello,
+
+I'm using a tool in gmail called gmass to send marketing email, we are using the SES smtp.
+
+My problem is when I'm sending to my list around 1000 emails, all emails seeems to be sent at the same time and the limit on amazon ses of email sent per second is 50 email.
+
+Is it possible to have a bigger limit like a 1000 per second ?
+
+Thanks"
+Amazon Simple Email Service	"Re: Error Sending email using SES smtp trhough Gmail and Gmass
+Hi,
+
+Please see the following link for information on how to increase your sending limits.
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/increase-sending-limits.html
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"How can i assign IP to sender domain?
+how can i assign an amazon SES IP to a sender domain? i have 2 ip's and i'd like to use one for a domain and one for another, but i cant find out how
+
+this page https://docs.aws.amazon.com/ses/latest/DeveloperGuide/using-configuration-sets.html
+says: If you lease dedicated IP addresses to use with Amazon SES, you can create groups of these addresses, called dedicated IP pools. You can then associate these dedicated IP pools with configuration sets. A common use case is to create one pool of dedicated IP addresses for sending marketing communications, and another for sending transactional emails. Your sender reputation for transactional emails is then isolated from that of your marketing emails.
+
+Thats exactly what i want to do, but how can i assign a pool to a certain domain/email address?"
+Amazon Simple Email Service	"Re: How can i assign IP to sender domain?
+Hi,
+
+Once you've associated a dedicated IP pool with a configuration set, you can specify the configuration set every time you call SES to send email.
+
+If you're using the SendEmail or SendRawEmail APIs, you specify the configuration set parameter. If you're using the SMTP endpoint, you may specify the configuration set in a header. More information below.
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/using-configuration-sets-in-email.html
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"AWS SES ip is in blacklist
+we use SES to send mails to our customers.
+but IP address that used by SES (54.240.7.51) is in blacklist.
+so all mails are flagged as junk/spam mail by hotmail and the others.
+
+here is the result:
+https://mxtoolbox.com/SuperTool.aspx?action=blacklist:54.240.7.51&run=problempage
+
+can you solve this problem please.
+thanks."
+Amazon Simple Email Service	"Re: AWS SES ip is in blacklist
+Did you have any luck?
+I'm having the same problem since last week but only hotmail is sending my emails to spam"
+Amazon Simple Email Service	"Re: AWS SES ip is in blacklist
+Hi,
+
+Please see the following FAQ on IP blacklisting to get some more information on the issue and to understand what steps you can take.
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/blacklists.html
+
+Regards,
+Morgan"
+Amazon Simple Email Service	"Email from Lambda timeout error.
+Hi, 
+
+I am trying to send a mail from lambda using SES and python. I am getting connection timeout error (error :- ""Connect timeout on endpoint URL: ""https://email.us-west-2.amazonaws.com/"": ConnectTimeoutError""). 
+I have two verified email ids, and i am using code from ""https://docs.aws.amazon.com/ses/latest/DeveloperGuide/examples-send-using-smtp.html"" 
+The code does not proceed beyond the line ""server = smtplib.SMTP(HOST, PORT)""
+I even tried using boto3. 
+My profile is set with region ""us-west-2"" in linux. My email ids are verified in same region (Oregon). 
+I am calling the  invoke function cmd from linux ec2 machine. 
+The role for lambda execution has full rights to SES.
+Is there any step i need to do or i am missing. 
+
+Regards
+Prachin"
+Amazon Simple Email Service	"Re: Email from Lambda timeout error.
+i have the exact same issue, did you ever resolve your issue?  i have put in several debug print lines and narrowed down that it is hanging on the same server = line that yours is.  same code works from an ec2 instance, just not lambda.  thanks."
+Amazon Simple Email Service	"Send a Custom email template for new users added on IAM
+Hi All,
+
+I would like to send a custom email template to welcome new users that have been added. Is this possible? If so, where can modify the default template or add a new one and configure it to be send out with new user accounts that have been added using the IAM Service.
+
+I appreciate any advice or help on this.
+
+Thank You"
+Amazon Simple Email Service	"Re: Send a Custom email template for new users added on IAM
+Hi masonstorm,
+
+Thank you for reaching out to us. We have a feature called customer verification email, that exactly meets your requirements. I have pasted a link below to get you started. 
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/custom-verification-emails.html
+
+Thank you for using AWS Simple Email Service,
+Kenil B."
+Amazon Simple Email Service	"Re: Send a Custom email template for new users added on IAM
+Hi,
+
+We would like to modify the mail template that is send out when when a new user has been added. 
+
+The email template is the one which opens when you click on the ""send email"" button, next to each user. Where is this email template saved and how can we customize it? Is this possible?
+
+Thank You"
+Amazon Simple Email Service	"Must I verify all my emails destination?
+Hi, I verify my sender email. If I use the same email in sender and destination the mail arrive correctly. But if I use other destination (xxxxx@gmail.com) the response is this
+<Code>MessageReje (truncated...)\n
+ MessageRejected (client): Email address is not verified. The following identities failed the check in region EU-WEST-1: xxxxxxx@gmail.com - <ErrorResponse xmlns=""http://ses.amazonaws.com/doc/2010-12-01/"">
+
+
+Thanks.
+
+Edited by: monchyrcg on Feb 14, 2019 7:11 AM"
+Amazon Simple Email Service	"Re: Must I verify all my emails destination?
+Hi monchyrcg,
+
+It looks like your account is still in the sandbox. When your account is in the sandbox, you can only send email to verified addresses. For information about having your account removed from the sandbox, see https://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html.
+
+In the meantime, if you want to perform tests, you can send emails to the addresses associated with the Amazon SES email simulator. For more information, see https://docs.aws.amazon.com/ses/latest/DeveloperGuide/mailbox-simulator.html.
+
+I hope this helps. Thank you for using Amazon SES!
+
+Brent @ AWS"
+Amazon Simple Email Service	"Reject with SES increase limits. Still sandbox, Please help.
+Hi friend,
+We were using sendgrid and just started with AWS SES, and we were purchased sendy and their installation service.
+After the I received the you are all setup email from Sendy.co 
+I tried to test but after several failure, I realize I should get it out of sandbox first.
+
+1. we submited a request, some simple situation wrote, but I ask for 30K per months as we have 200K subscriber. 
+
+2. this request got denied in 24 hours and no reason to give, I thought our situation was not detail enough, so I wrote our company name and address, give the screen shot of our ERP where subscribers are. And a short describe of our email campaign as we are child and baby related e commerce site. But still got denied.
+
+3. I searched and look for people in my situation, and ask for help, I followed a form to write the detail info, add how we will handle complain and unsubscribe. ask for 15K/Month and 20/Sec rate.
+But still a no with no reason. 
+
+4. I just don't know what can I do now, 
+give up this account? change another domain? purchase sendy.co again? 
+
+I am just doing my job, and this is the goal should be done before shopping season.
+Hope you can kindly tell me what's wrong and let me fix it, or you can simply tell me don't send time on this.
+
+Any comment will be appreciated, 
+Thanks, Aurelia
+
+Edited by: aureliastore on Nov 3, 2016 7:32 PM"
+Amazon Simple Email Service	"Re: Reject with SES increase limits. Still sandbox, Please help.
+Did you ever get out of sandbox/increase sending limits?
+
+We are having the same problem with AWS rejecting our requests (even though what we are asking for has been approved many times in the past).
+
+Check this post for details: https://forums.aws.amazon.com/thread.jspa?threadID=242973&tstart=0"
+Amazon Simple Email Service	"Re: Reject with SES increase limits. Still sandbox, Please help.
+Hi
+we have the same problem
+Can you help us please, we are blocked...
+The case : 5794051331 and 5801804231
+
+thanks"
+Amazon Simple Email Service	"PHPList With SES Integration
+Hi team,
+We are using PHPList with SES integration, 
+While sending through AWS SES, we are getting email sent count mismatching compare to PHPLIST Count and AWS SES Count.
+Weekly Count of PHPLIST is “1,26,293” but in AWS SES email sent count is “37,000” only.
+How to check the mail log send from PHPLIST to AWS SES.
+How to resolve this issue, where is the problem occurs.
+
+How to check logs of send and receive email in SES and PHPList?"
+Amazon Simple Email Service	"Re: PHPList With SES Integration
+I checked event log, there are all the log shows positive. Is there any other option to check error logs in PHPLIST?
+
+Now i changed the AWS SES configuration setting as per your suggestions disabled the “send emails concurrently”.
+
+Actually i am sending reports everyday to my manager by generating query, in the query i am getting these count, below i give the query details also.
+
+SELECT COUNT(*) AS sentCount FROM `phplist_usermessage`
+        WHERE `entered` BETWEEN 'weekStartDateTime' AND 'weekDateEndTime'
+
+Result: 1,26,293
+
+But, While checking in the AWS SES email sent count is showing “37,000” only.
+Is there any possible way to sort this out? How to tally this count in both PHPLIST and AWS SES?"
+Amazon Simple Email Service	"Requested my first limit increase yesterday cases are still unassigned....
+Hi,
+
+We submitted 2 cases yesterday and they are still unassigned (so basically we aren't
+able to use SES till we are removed out of sandbox mode.)
+
+We've filled out each request with a good amount of use details. Both request
+are for Oregon region (since we have a verified email for that location.) And
+have also requested for (N. Virginia.)  
+
+Here's case 1:  5789027111
+Here's case 2: 5788741631
+
+We are hoping to use SES services really soon.
+
+Please advise.
+
+Thanks,
+RTM"
+Amazon Simple Email Service	"E-mail not delivered to a Gmail address!  What happened?
+Dear Support,
+
+We are experiencing a very disconcerting issue.
+
+Yesterday we sent out a mass e-mail to our user base of about 3,400 users.  We have SPK and DKIM all set up and PASS(ed).
+
+Our stats show over 4,000 e-mails sent yesterday (normally it's below 1,000), so that seems to suggest all e-mails went out.
+
+However, we just received 100% confirmation from one of the users who was supposed to have received the e-mail saying that they never received it (checked again today) and it's not in their inbox, spam, trash, etc.  They are using Gmail.
+
+Why wasn't this e-mail delivered to this Gmail address?
+
+This begs the terrifying question:  what other e-mails were not delivered?
+
+Please advise urgently as we need to understand what the problem is.
+
+Thank you."
+Amazon Simple Email Service	"Re: E-mail not delivered to a Gmail address!  What happened?
+Dear customer, 
+
+We are glad that you have enabled the SPF and DKIM signing for your domains. I quickly audited your account and it seems one of the domain does not have DKIM enabled. Can you please address that at your earliest? In addition, to better help you address the problem can you please provide a message id of an email that was not sent to the recipient? 
+
+Thank you for using AWS Simple Email Service,
+Kenil B."
+Amazon Simple Email Service	"Re: E-mail not delivered to a Gmail address!  What happened?
+Dear Kenil,
+
+The domain in question has both SPF and DKIM enabled correctly.
+
+This was part of a group of approximately 3,400 e-mails that were sent out yesterday via SMTP.
+
+Where would we find the message id of the e-mail in question considering the e-mail already went out over SMTP and the recipient never received it?"
+Amazon Simple Email Service	"Re: E-mail not delivered to a Gmail address!  What happened?
+KenilB@AWS, we are writing to follow-up on this urgent issue.  Please advise ASAP."
+Amazon Simple Email Service	"Re: E-mail not delivered to a Gmail address!  What happened?
+KenilB@AWS, why is this urgent thread being ignored?
+
+We replied to you 10 days ago and even sent you a Private Message with details about the message in question, yet you have not answered us in this thread nor in our Private Message.
+
+PLEASE ADVISE URGENTLY."
+Amazon Simple Email Service	"SORBS
+IP 54.240.8.192 currently blacklisted on SORBS"
+Amazon Simple Email Service	"Re: SORBS
+Thank you for bringing this to our attention, this has been escalated to our SES Team for investigation.
+
+Regards
+Imthian R"
+Amazon Simple Email Service	"Re: SORBS
+We confirm that the IP has been delisted.  Thank you for working with us.
+
+Regards
+Imthian R"
+Amazon Simple Email Service	"Re: SORBS
+54.240.8.195 is also listed now and we cannot send emails, please delist them."
+Amazon Simple Email Service	"Re: SORBS
+IP 54.240.9.92 is blacklisted on SORBS"
+Amazon Simple Email Service	"Re: SORBS
+Another one:
+http://www.sorbs.net/lookup.shtml?54.240.27.14"
+Amazon Simple Email Service	"Re: SORBS
+These also were detected .
+
+SORBS SPAM
+54.240.8.31 - http://www.sorbs.net/lookup.shtml?54.240.8.31
+54.240.8.32
+54.240.8.64
+54.240.8.33
+54.240.8.83
+54.240.8.96
+54.240.8.78
+54.240.8.86
+54.240.8.25
+54.240.8.59
+54.240.8.52
+54.240.8.94
+54.240.8.88
+54.240.8.56
+54.240.8.38
+
+0SPAM
+54.240.8.64"
+Amazon Simple Email Service	"Re: SORBS
+Could you also delist this IP: 54.240.4.21"
+Amazon Simple Email Service	"Re: SORBS
+Today, the 27th of november 2018, 54.240.4.21 is blacklisted again on SORBS. Could you please delist it?
+
+Thanks"
+Amazon Simple Email Service	"Re: SORBS
+54.240.4.21 bloccked again .... Could you delist it , please?"
+Amazon Simple Email Service	"Re: SORBS
+IP 54.240.4.21 blocked again.... could you please delist it?????"
+Amazon Simple Email Service	"Re: SORBS
+IP 54.240.4.21 blocked again. Could you please delist it?????"
+Amazon Simple Email Service	"Re: SORBS
+Could you also delist this IP: 54.240.4.20 ?"
+Amazon Simple Email Service	"Re: SORBS
+Hello, 
+
+This SES IP is showing as blacklisted and causing problems with our email delivery. Can this be addresses?
+
+54.240.8.25
+
+https://mxtoolbox.com/SuperTool.aspx?action=blacklist%3a54.240.8.25&run=toolpage#"
+Amazon Simple Email Service	"Re: SORBS
+Please unlist 54.240.4.21"
+Amazon Simple Email Service	"Re: SORBS
+This is now a huge issue for us, it's been going for for 4 months now and there is no end in sight.
+We started implementing other solutions because many of the crucial emails are not reaching our customers.
+
+Around 10% of all emails we send are rejected because of Sorbs blacklist.
+I understand it's a third party service and that it has it's problems... but in this state SES is unusable for us.
+
+Don't know how to fix this... maybe buy the SORBS list?"
+Amazon Simple Email Service	"Delivery Notifications SNS not working
+Hi,
+
+I have successfully set up SES Notifications through SNS for bouncing emails. But adding the same topic to Delivery Notifications SNS (https protocol) I still only get the bounce notifications, but not the delivery notifications.
+
+Any ideas how to troubleshoot this further?
+
+Thanks
+Mattias"
+Amazon Simple Email Service	"Showing a display name while sending emails from PinPoint
+How can I add a display name while sending emails from PinPoint service?
+This is a common thing that you can do with every email services like this:
+My Company <info@mycompany.com>
+And then 'My Company' will be appeared in recipients' mailboxes as the name that they will see."
+Amazon Simple Email Service	"Re: Showing a display name while sending emails from PinPoint
+Yes, you can include the display name in the sender field using that format if you are using a SDK."
+Amazon Simple Email Service	"Re: Showing a display name while sending emails from PinPoint
+Is there any way to do this in the UI.  I have some email marketers that are less sophisticated that will use pinpoint and they will not be able to use the SDK.  How can they do this without writing code, which they cannot?"
+Amazon Simple Email Service	"SES templates do not escape HTML in template data?
+Just noticed that SES isn't escaping template data when rendering the HTML template for a message. This means if you're including user inputted data (eg from a contact form) we need to escape it ourselves and potentially provide alternate data for the html template vs the text template.
+
+The SES docs imply that http://handlebarsjs.com/ is used to render the template (refers to it here: https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-personalized-email-advanced.html) but the handlebars docs say that {{variable}}
+ should automatically escape HTML entities and use triple-braces ({{{variable}}}
+) if you don't want that.
+
+Is this a known issue?"
+Amazon Simple Email Service	"Re: SES templates do not escape HTML in template data?
+Hi,
+
+This is by design because we have customers contacted us to not escape html and deliver the html output. We will update the document to clarify that."
+Amazon Simple Email Service	"Re: SES templates do not escape HTML in template data?
+Hello @Yiwei-AWS,
+
+As dan-didja pointed out, there was already functionality to insert raw HTML without escaping it, by simply using the triple stash. But now, there is no method of escaping HTML which forces us to use our own templating engines or sending double variables: html escaped for the HTML part and raw for the text part.
+
+So is there a way right now to create an email template that would allow marking a variable as requiring html escaping by SES and without sending "">"" as entities?"
+Amazon Simple Email Service	"Domain verifies successfully—then becomes unverified.
+Hi, I've supplied the TXT record and key for performantlabs.com, verified successfully, then received a message from AWS a few days later saying that the domain cannot be verified and will be revoked. Site5 cannot find a problem on their end and responded to my ticket with the following message and screenshot:
+
+Sorry to know about the issue which you are still experiencing with TXT records. While checking the DNS zone editor of domain name performantlabs.com , we could confirm that TXT records of domain is pointed to Amazon records successfully. Also, we could confirm that, the destination record of domain name performantlabs.com was pointed correctly to https://forums.aws.amazon.com/ . 
+
+You can check and confirm the TXT records that is updated in DNS zone editor of cPanel at: https://forums.aws.amazon.com/. This confirms, that the TXT records for the domain name is successfully updated from our end. You can forward the screen print to Amazon Support team, so that they can check the issue further from their end.
+When I perform:
+dig txt _amazonses.performantlabs.com +short
+
+I see the key correctly. There is a period at the end. Furthermore, DKIM verified successfully and seems to be sticking. 
+
+The advice in https://forums.aws.amazon.com/thread.jspa?threadID=283550&tstart=25 by Alan8888 doesn't seem to apply here as I am unable to remove the domain ""performantlabs.com"" from the key as the editor in cPanel just added it back when I tab out of the text field.
+
+Until this morning the DKIM records were verified but this morning nothing is verified, so, presumably, sending emails no longers works.
+
+Any guidance on how to correct this?
+
+Edited by: aangelinsf on Feb 5, 2019 7:06 AM"
+Amazon Simple Email Service	"Re: Domain verifies successfully—then becomes unverified.
+Hello aangelinsf,
+
+I have rechecked the verification status of you domain and it seems to be successfully verified. You should be able send emails using your verified domain. I also double checked your DNS configuration and everything seems to be in place. Rest assure we will look more into your query, but at present you should be able to successfully send messages. 
+
+Thank you for using AWS Simple Email Service,
+Kenil B."
+Amazon Simple Email Service	"Re: Domain verifies successfully—then becomes unverified.
+Hi, Kenil. Yes, it lasts for a day or so. Once again, I just received this email at 9:06am PST:
+*****************
+We detected that the CNAME records required for the DKIM setup of performantlabs.com are no longer present in your DNS settings.
+
+To protect your email deliverability, we have temporarily disabled DKIM signing for emails originating from performantlabs.com. If you use Amazon Pinpoint to send mail through this domain, those emails will also be affected.
+
+If the removal of the CNAME records was intentional, you do not need to take any additional action. In 5 days, performantlabs.com will no longer be considered to be configured for the purpose of DKIM signing.
+
+If it was unintentional, please restore the CNAME records to your DNS settings within 5 days. Once we confirm the presence of the CNAME records, we will re-enable DKIM signing.
+
+Please note that the settings for individually verified email addresses override domain-level settings. For example, if you enable DKIM signing for a verified domain but disable DKIM signing for a verified email address in that domain, then emails from that email address will not be DKIM-signed.
+
+For DKIM troubleshooting information, see http://docs.aws.amazon.com/ses/latest/DeveloperGuide/DKIM-problems.html .
+
+Please note that this email only relates to the US West (Oregon) region.
+
+Thank you for using Amazon Web Services.
+****************
+
+I have no idea why this keeps happening. This is the fourth time since the I started using the service. Would you mind investigating?
+-André
+
+Edited by: AndreAngelantoni on Feb 7, 2019 9:29 AM"
+Amazon Simple Email Service	"Re: Domain verifies successfully—then becomes unverified.
+Kenil,
+
+I have just (Feb 12, 2019: 11:18am PST) received another email from AWS stating that DKIM signing has been turned off because the cname records are not present.
+
+This is not true. When I went to the Domain section, both the DKIM and TXT records show as Verified.
+
+Now the system is sending me warning emails that aren't true. BTW, I have changed nothing on the DNS records since the last time.
+
+It appears you have one or more bugs here.
+
+Please advise. I'd like to stop getting these emails, which force me to redo work or at least confirm that everything is finel
+
+Cheers,
+André"
+Amazon Simple Email Service	"SES IP address blacklisted on SORBS
+This is causing delivery failures for us today. Please fix:
+
+http://www.sorbs.net/lookup.shtml?54.240.8.30"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Hi,
+
+Thanks for letting us know. We are currently investigating. 
+
+Regards,
+Julian H."
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Hello,
+
+The SES IP address was removed from SORBS black-list a few days back, and is no longer showing on SORBS as being blacklisted.
+
+Regards
+Daniel"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Another instance today:
+
+http://www.sorbs.net/lookup.shtml?54.240.9.149"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+More instances today:
+
+http://www.sorbs.net/lookup.shtml?54.240.9.122
+http://www.sorbs.net/lookup.shtml?54.240.9.95
+
+Please fix, as this is causing delivery failures for us."
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Hello,
+
+I have reached out to our team in order to get these IPs delisted.
+
+Best regards,
+Justin G."
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Good Day, 
+
+We have successfully delisted 54.240.9.149 and 54.240.9.122 - there may be a while before the change propagates to all of SORBS's users but the changes should be visible on the SORBS lookup page itself . 
+
+The 3rd IP address is only eligible for delisting on April 28th.
+
+I trust you find this information helpful.
+
+Regards
+
+Tawanda"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Another instance today is causing delivery failures for us:
+
+http://www.sorbs.net/lookup.shtml?54.240.9.140
+
+Thanks for working to delist these quickly."
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+54.240.9.140/32 is being blocked by SORBS."
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+More:
+
+http://www.sorbs.net/lookup.shtml?54.240.9.71
+http://www.sorbs.net/lookup.shtml?54.240.9.139"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Hello,
+
+54.240.9.140 has been delisted.
+
+I have asked engineering to resolve .9.71 and .9.139.
+
+I'll follow up when I hear from them.
+
+Richard"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Hi there, 
+
+Thank you for bringing this issue to our attention. 
+
+To mitigate immediate impact, we have disabled sending through the reported IPs. We are looking into what caused these listings to prevent this from happening in the future.
+
+Please let me know if you have any further issues. 
+
+Kind regards, 
+Belynda"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+another ip is listed on sorbs: 54.240.7.12"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Hello,
+
+I have asked engineering to resolve 54.240.7.12. I'll post back when it has been done.
+
+Richard"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Hello, 
+
+54.240.7.12 has been removed from SORBS blacklist. 
+
+Regards,
+Nick"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+These IP addresses are blacklisted and causing us significant delivery issues today:
+
+54.240.9.121
+54.240.9.122
+54.240.9.139
+
+Please remove ASAP or stop sending out through these IP's."
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Another:
+
+54.240.9.133"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+More:
+
+54.240.9.128
+54.240.9.71
+54.240.9.140"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+I've run into the same problem on 6/22/2015 and 6/23/2015 with IP 54.240.9.128."
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Hello-
+
+We are actively working on resolving all of these listings. Most of them should already be mitigated and we are looking into the rest. 
+
+Thanks all for your support.
+
+Regards-
+Nick"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+We have also encountered this with 54.240.9.126
+
+Can you please add to de-list?
+
+Thank you"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Another causing delivery failures for us:
+
+http://www.sorbs.net/lookup.shtml?54.240.9.82"
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Hello,
+
+We are working on removing these IPs from the blacklist. We will update you shortly. 
+
+Best Regards,
+-Chandra P."
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Hi,
+
+The SES team have requested SORBS & CASA to remove the two IP addresses below from their black-lists.
+
+54.240.9.82
+54.240.9.126
+
+SORBS has already confirmed that the IP addresses have been removed already, however CASA can take sometime to complete the removal request."
+Amazon Simple Email Service	"Re: SES IP address blacklisted on SORBS
+Another:
+
+http://www.sorbs.net/lookup.shtml?54.240.9.140"
+Amazon Simple Email Service	"Account SHUTDOWN with no notice.  Bounce + complaint rates very low.
+I've been using Amazon SES for over a year and generally been happy with it.  However, today my account was just SHUTDOWN without any explanation or notice.  It just says ""SHUTDOWN Direct Feedback"".
+
+I just checked my reputation dashboard and my bounce rate is 0.07% and my complaint rate is 0.06%.  I process both complaints and bounces religiously and I only send to people who have signed up to receive email from me.  I send around 100k emails a week maximum.
+
+I have emailed ses-review@amazon.com but no response yet.
+
+Any ideas what's going on?"
+Amazon Simple Email Service	"troubleshooting between SES and  Orange.fr/Wanadoo.fr
+Hi all,
+I'm facing with a problem with Orange (4% of my users ... very unhappy).
+All emails sent with SES using DKIM are rejected since 2th december.
+A solution is to stop to uses SES (but that's not I want) and to use another SMTP service (with the same expeditor address, it's working well).
+The logs examples are here bellow.
+I tried to contact Orange at abuse@orange.fr. They answer one time and ask me to send them logs and the IP adresse of SES. No more now (4 days ago).
+Do you have any idea of what I can do ? Is this a knowed issue between AWS SES and Orange ? 
+Thanks
+Renaud
+
+Reporting-MTA: dsn; a6-53.smtp-out.eu-west-1.amazonses.com
+Action: failed
+Final-Recipient: rfc822; xxxx@orange.fr
+Diagnostic-Code: smtp; 550 mwinf5c83 ME Service refuse. Veuillez essayer plus tard. Service refused, please try later. OFR006_103 54.240.6.53 https://forums.aws.amazon.com/
+Status: 5.3.0"
+Amazon Simple Email Service	"Re: troubleshooting between SES and  Orange.fr/Wanadoo.fr
+Hi AWS !
+
+Same problem for me :
+
+Many of my customers use an e-mail @orange.fr or @wanadoo.fr and no longer receive e-mails from our service that are sent via AWS SES.
+
+What do we have to do ?"
+Amazon Simple Email Service	"Re: troubleshooting between SES and  Orange.fr/Wanadoo.fr
+Hi all, AWS,
+I got a response from Orange - Abuse service.
+They said that they are waiting for AWS response ... 
+I love ping-pong but with a racket ...
+
+
+""Bonjour
+Votre addrese IP est hébérgé chez amzones. Elle a été bloquée suite à une 
+attaque de spam et nous sommes depuis dans l'attente d'un retour 
+d'Amazones pour solutionner cet incident.
+Cordialement
+Service Abuse Orange Internet"""
+Amazon Simple Email Service	"Re: troubleshooting between SES and  Orange.fr/Wanadoo.fr
+Hi all,
+
+It's the same for me.
+
+The service abuse Orange answered me after a test of deliverability :
+
+""Hello,
+
+The IP address of emission is hosted at Amazon SES. It was blocked following an attack of spam and we are now waiting for a return of Amazons to solve this incident.
+
+Abuse Orange Internet Service""
+
+AWS can try to solve the problem please ?
+It's been several days ... and I lose customers every day
+
+Thanks !"
+Amazon Simple Email Service	"Re: troubleshooting between SES and  Orange.fr/Wanadoo.fr
++1
+
+Exact same problem here. All our emails to @orange.fr as well as @wanadoo.fr are being blocked (not delivered to recipient) with following error or similar:
+
+smtp; 550 mwinf5c69 ME Service refuse. Veuillez essayer plus tard. Service refused, please try later. OFR006_103 54.240.3.11
+
+
+This is very problematic to us. Please AWS, do something!"
+Amazon Simple Email Service	"Re: troubleshooting between SES and  Orange.fr/Wanadoo.fr
++1"
+Amazon Simple Email Service	"Re: troubleshooting between SES and  Orange.fr/Wanadoo.fr
++1. This is an extremely serious issue as Orange is the largest ISP in France. I have also contacted abuse@orange.fr who said that AWS needs to contact them. And as an AWS Customer I believe that this should be a top priority for you. All our messages are getting rejected."
+Amazon Simple Email Service	"Re: troubleshooting between SES and  Orange.fr/Wanadoo.fr
+The problem is still going on. IS THERE SOMEONE AT AWS ON THE CASE ?"
+Amazon Simple Email Service	"Re: troubleshooting between SES and  Orange.fr/Wanadoo.fr
+Hello,
+
+We are aware of the issues that SES customers are having delivering mail to Orange, and we are working with Orange to resolve the problem.
+
+Thank you for your patience, and for using Amazon SES.
+
+-Nic W @ AWS"
+Amazon Simple Email Service	"Re: troubleshooting between SES and  Orange.fr/Wanadoo.fr
+We've now resolved this issue with cooperation from Orange's deliverability and support team.
+
+We apologize for the inconvenience and thank you for your patience as we worked through this issue. Thank you for using Amazon SES."
+Amazon Simple Email Service	"Re: troubleshooting between SES and  Orange.fr/Wanadoo.fr
+Ok thanks, I will test it ASAP.
+
+To avoid this problem, i had to use an alternative SMTP server specialy for orange.fr & wanadoo.fr domains."
+Amazon Simple Email Service	"Re: troubleshooting between SES and  Orange.fr/Wanadoo.fr
+Hi,
+
+We now have the same problem since the January 24th 2019. We cannot reach the orange.fr and wanadoo.fr email addresses. Could you please investigate this problem ?"
+Amazon Simple Email Service	"Re: troubleshooting between SES and  Orange.fr/Wanadoo.fr
+We are experimenting problems to deliver emails to orange.fr and wanadoo.fr. The problem is repeated over and over again. please fix it."
+Amazon Simple Email Service	"Email Feedback Forwarding From Address
+When Amazon forwards a feedback loop email when Email Feedback Forwarding is enabled, what will be the amazon From email?
+
+Knowing this will allow me to create a filter for that as headers are not filterable in Gmail."
+Amazon Simple Email Service	"Re: Email Feedback Forwarding From Address
+Hi velvetpixeldevcam,
+
+Please take a look at ""Email Feedback Forwarding Destination"" section in link below,
+https://docs.aws.amazon.com/ses/latest/DeveloperGuide/notifications-via-email.html#notifications-via-email-destination
+
+Thank you for using AWS Simple Email Service,
+Kenil B."
+Amazon Simple Email Service	"Re: Email Feedback Forwarding From Address
+Hi Kenil,
+
+Thank you for the link.
+It seems to only clarify the destination To: for forwards.
+
+I am looking for the From: address as it is written by Amazon during the forward.
+I am guessing it has ses and amazon as part of the address but would like confirmation."

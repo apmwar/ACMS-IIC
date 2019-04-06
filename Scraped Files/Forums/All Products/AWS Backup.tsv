@@ -1,0 +1,347 @@
+label	description
+AWS Backup	"Bugs affecting the console use of AWS Backup
+I have just created our first backup service plan, hoping to decommision the old EFS-EFS CloudFormation-based backup solution that we have used for years. The backup has not run yet, so I am only sharing the first experience of creating the plan.
+
+I have encountered several issues and bugs, and I would like to share those in hope someone at AWS wants to know of them to fix them:
+
+1. IAM default roles were not created automatically. I had to create them manually, for which I have used the existing AWS-provided policies.
+
+2. Two AWS KMS keys seem to have been created. One is called aws/cryotest and the other one is called aws/backup. This seems odd, especially the use of what looks like a codename (cryotest).
+
+3. It is not possible to create a new backup vault using the aws/backup KMS key. The only appearing in the drop-down list is aws/cryotest, which, again, seems oddly named.
+
+4. The UI for creating a backup rule ""recommends"" using a backup window. There is no reference anywhere in the UI to the window. Further, selecting the option seems to cause it to deselect itself upon a further visit to the plan and a time of 10pm is selected instead.
+
+5. Setting one's own backup window, saving it, then produces ""NaN hours NaN minutes"" output in the console, see attached screenshot.
+
+6. There are weird behaviours when trying to edit a rule while creating a plan, seems like the UI is out of synch with the options being selected. I recommend more thorough testing of the console.]
+
+7. Selecting AWS Backup in the Console's ""Services"" pull-down menu brings a sales-y page suggesting I create a new backup plan, even though one already exists. It should take me straight to the list of the existing plans, in line with other AWS resources.
+
+On another note, it would be good if the documentation was a little clearer about:
+A. The purposes of the AWS Backup IAM role
+B. Storage requirements considering having multiple backup rules. Specifically, do I double my storage requirements by having both a daily and a monthly rule in a single plan, or do they share a base snapshot of some sort and merely add their delta each time they run (EFS). This will have a considerable impact on the cost of using the service.
+
+Overall, this console UI experience makes one concerned about the actual reliability of the backup itself, so I would recommend further, more intensive, testing on AWS side. After all, this is not a free and open source project—but I also hope that the API behind the scenes is more robust than the UI makes it seem.
+
+Many thanks for introducing a potentially very useful service.
+
+Rafal Lukawiecki
+Ireland
+
+Edited by: RafalLukawiecki on Feb 20, 2019 6:56 AM"
+AWS Backup	"Re: Bugs affecting the console use of AWS Backup
+Hello and thank you for the detailed feedback. The AWS Backup team is investigating the items you raised."
+AWS Backup	"AWS Backup Failed to create default role
+I am eager to try out AWS Backup, but when I try to assign resources the default role fails to create.  The default role radio button is greyed out and has a red error saying ""Failed to create default role.""  
+
+Any info on possible causes, or a list of policies/access needed for a manually created role?
+
+Thanks!"
+AWS Backup	"Re: AWS Backup Failed to create default role
+Only an account administrator has the authority to create a role in a customer’s account.  The logged on user should ask the Account admin for Assistance in creating this role.  The Account Administrator can easily do this by using the AWS Backup Console and traversing to the “Create an on-demand backup” page.
+
+Note, that the user who wants to initiate a backup or add a selection must have permission to pass this role to backup.amazonaws.com. We will be creating Managed Polices for BackupAdmins and BackupOperators to make this easier."
+AWS Backup	"Re: AWS Backup Failed to create default role
+This happened to me. Mine failed after several consecutive attempts, and then it worked on the nth-attempt (I was using the root account).
+
+Edited by: areca on Feb 18, 2019 1:50 PM"
+AWS Backup	"AWS Backup & AWS PowerShell Module
+Will cmdlets for the AWS Backup service be added to the AWS PowerShell module soon?"
+AWS Backup	"Re: AWS Backup & AWS PowerShell Module
+Hello - Yes AWS Backup will be added to the AWS PowerShellModule in the coming weeks."
+AWS Backup	"Re: AWS Backup & AWS PowerShell Module
+AWS Backup has been added to the AWS PowerShell module."
+AWS Backup	"Feeling like an idiot...how to run a backup?
+Hi all,
+
+I'm feeling like an idiot here, but I need help with running a scheduled backup policy. It seems to run, but it's not backing up anything. Any assistance is greatly appreciated. 
+
+I have attached screenshots of the policy here. Let me know if you need further clarification.
+
+Pete
+
+Edited by: Pete2 on Feb 6, 2019 1:42 PM"
+AWS Backup	"Re: Feeling like an idiot...how to run a backup?
+Your backup plan's last run time was on Feb 6th, so it is running.  
+
+Your resource assignment is based on tags and I have no way of checking that the tags match anything.  If my understanding is correct, the volumes you are trying to backup need to match the tags of your resource assignment.  I don't think it is enough to just match a tag on the ec2 instance.
+
+Hope it helps."
+AWS Backup	"Stored Gateway - Stored Volume - AWS Backups
+Hi - 
+
+I posted this query in the storage gateway forum, but got no answers.
+
+Can AWS Backup manage backups for a storage gateway  ""STORED"" volume.
+A Stored  volume already  implements a forced daily snapshot.   I wonder if
+AWS Backup manages this, does it create a separate snapshot stream or does it
+use the existing snapshots being made.
+
+thanks, Steve"
+AWS Backup	"Re: Stored Gateway - Stored Volume - AWS Backups
+Hi Steve,
+
+AWS Backup can backup both cached and stored volumes of Volume Gateway. The default stored volume snapshot scheme remains in place. So if you create an AWS backup policy that backs up stored volumes, they will operate independently of Volume Gateway schedule. You will be able to see the snapshots created by AWS Backup in the EBS console and the snapshots created by AWS Backup of volume gateway volumes can only be managed from AWS Backup (and not from EBS console). 
+
+Hope this helps. If you have any other questions please let us know.
+
+Regards,
+Bhavin"
+AWS Backup	"AWS Backup endpoints not available
+I attempted to hit the US based endpoints for backup and they do not appear to be available.  Any idea when these will be available?
+
+awsbackup.us-east-1.amazonaws.com
+awsbackup.us-east-2.amazonaws.com"
+AWS Backup	"Re: AWS Backup endpoints not available
+Can you please specify how you are hitting the endpoints?"
+AWS Backup	"Re: AWS Backup endpoints not available
+I'm using API gateway.  If you can verify the endpoints are live, ill debug further."
+AWS Backup	"Re: AWS Backup endpoints not available
+All AWS Backup endpoints are live. Please try debugging further."
+AWS Backup	"Re: AWS Backup endpoints not available
+The AWS documentation has been updated to the following addresses.  These work
+
+backup.us-east-2.amazonaws.com
+backup.us-east-1.amazonaws.com"
+AWS Backup	"Aurora clusters support
+Hi,
+
+Is there any ETA to support Aurora Clusters? 
+
+RDS Client: The specified instance is a member of a cluster and a snapshot cannot be created directly. Please use the CreateDBClusterSnapshot API instead.
+
+Edited by: serje on Jan 17, 2019 2:09 AM"
+AWS Backup	"Re: Aurora clusters support
+Thank you for the feedback. We will be adding support for additional AWS resource types in the future, including types like Aurora clusters. We will prioritize resource types based on customer feedback, so your input is helpful."
+AWS Backup	"Re: Aurora clusters support
+Hi,
+
+I think there are two things to address here:
+
+1) Aurora clusters should ideally be supported
+
+2) The AWS Backup Console interface when you add a resource of type RDS auto lists out Aurora servers. So the AWS Backup Console very much implies and suggests that it will work - which makes it doubly confusing ( especially as there is no error visible until you find in CloudTrail )
+Getting the console and API sorted out initially to inform that Aurora Clusters ( and I am guessing other RDS types ) would be a big help.
+
+Regards"
+AWS Backup	"Re: Aurora clusters support
+Both points have been raised to the team and will be addressed. Thank you for the feedback!"
+AWS Backup	"Re: Aurora clusters support
++1"
+AWS Backup	"AWS backup - backup vault notifications not working
+Hi,
+For some odd reason backup vault notifications can be configured via the CLI but the actual notifications are not generated.
+No notifications are received on the SNS endpoint.
+
+I'd also like to propose the following enhancements:
+*Backup/Restore to separate AWS Account;
+*Backup restore to another AWS region;
+*Single file restore from EBS volume;
+*Integration with CloudWatch for Backup/Restore monitoring and reporting;
+
+Cheers,"
+AWS Backup	"Re: AWS backup - backup vault notifications not working
+Hello - have you added AWS Backup as a trusted entity in the resource-based policy of the SNS topic? See an example of the statement that should be added to your SNS topic below. Ensure that you use the relevant region (the example below is for us-west-
+
+And thank you for your feedback on the features. We have taken these as feature requests. 
+
+    {
+      ""Sid"": ""__console_pub_0"",
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""Service"": ""backup.amazonaws.com""
+      },
+      ""Action"": ""SNS:Publish"",
+      ""Resource"": ""arn:aws:sns:us-west-2:{accountId}:test""
+    }"
+AWS Backup	"Re: AWS backup - backup vault notifications not working
+Thank you! This solved the issue.
+
+BR"
+AWS Backup	"On-Premise Backup with Storage Gateway - how does it impact normal SG use?
+I previously researched using Storage Gateway in VTL (Tape Library) mode to hook it up to Veeam, but now am curious if ""AWS Backup"" is a completely on-prem solution (not that I would dump Veeam).
+
+If so, I think I understand Storage Gateways, but how exactly do I set AWS Backup for a Storage Gateway?  Do I create a ""Volume"" storage gateway, then associate it with AWS Backup?  If so, does AWS Backup work on top of what Storage Gateway already does (stores data in S3)?  Is it basically a management layer on moving the data around (lifespan)?  Or does ""AWS Backup"" work different from standard S3 storage via a Storage Gateway?
+
+How do I get data into the volume on the Storage Gateway?  Mount iSCSI, use volume however I like, and ""AWS Backup"" will manage everything else?
+
+I guess I'm hoping that it's that simple... use Storage Gateway as you normally would (in volume mode), which provides a mirrored copy of all data up in S3.  If a file is deleted locally, it's deleted in S3, etc...
+
+My further hope is that ""AWS Backup"" sits on top of this, and once enabled, manages versions and archiving and lifecycle for that data... i.e. If a file is deleted locally, it still exists in AWS until the lifetime ages it out.
+
+Thank you!
+
+Edited by: Novox on Jan 21, 2019 7:05 AM
+
+Edited by: Novox on Jan 21, 2019 7:25 AM
+
+Corrected: ""Volume"" gateways support iSCSI, not SMB."
+AWS Backup	"Re: On-Premise Backup with Storage Gateway - how does it impact normal SG use?
+Hi Novox,
+
+AWS Backup supports backing volumes of the Volume Gateway configuration of AWS Storage Gateway. The Volume Gateway presents block storage volumes to your applications using iSCSI connectivity. The data for these volumes is stored in Amazon S3 and you can take a snapshot of this data which is stored and can be accessed in the cloud as Amazon EBS snapshots. 
+
+You can use AWS Backup to simplify taking backups of Volume Gateway volumes and set automatic retention to delete the backups. The backups taken by AWS Backup for Volume Gateway volumes are stored in Amazon EBS. Here is a link to Storage Gateway documentation chapter on backing your volumes using AWS Backup.
+
+https://docs.aws.amazon.com/storagegateway/latest/userguide/backing-up-volumes.html
+
+Hope this helps. If you have any other questions, please let us know.
+
+Regards,
+Bhavin"
+AWS Backup	"Re: On-Premise Backup with Storage Gateway - how does it impact normal SG use?
+Ok, so if I'm understanding you correctly, let's say I'm already using a Storage Gateway in ""Volume"" mode (with iSCSI connectivity).
+
+If I DO NOT use AWS Backup with Storage Gateway, then the data in Storage Gateway is always my current data, unless I take manual snapshots via the console.
+
+If I DO use ""AWS Backup,"" it works on-top of Storage Gateway to automatically manage the lifecycle of the data.  This manages how long to retain data (when it should be deleted), when it should move to cold storage (transition to glacier), etc.  Changes I make to my data between ""backup windows"" are committed when the backup runs (snapshot taken and lifecycle retention policy applied).
+
+Please confirm I have this correct.
+
+Thank you!
+~Bill"
+AWS Backup	"Re: On-Premise Backup with Storage Gateway - how does it impact normal SG use?
+Hi Bill,
+
+I have answered below to your questions.
+If I DO NOT use AWS Backup with Storage Gateway, then the data in Storage Gateway is always my current data, unless I take manual snapshots via the console.
+
+Bhavin>>> Data from your Storage Gateway running on-premises or in EC2 is asynchronously uploaded to the Storage Gateway service in the cloud. If you take manual snapshots, you will get a point in time image of your data and this data is stored in EBS as EBS snapshot. You can restore this snapshot if you ever had a need to go back in time. 
+
+If I DO use ""AWS Backup,"" it works on-top of Storage Gateway to automatically manage the lifecycle of the data. This manages how long to retain data (when it should be deleted), when it should move to cold storage (transition to glacier), etc. Changes I make to my data between ""backup windows"" are committed when the backup runs (snapshot taken and lifecycle retention policy applied).
+
+Bhavin>>> Using AWS Backup you can set policy to take backups of Storage Gateway volumes at pre-determined times and automatically delete them also. These copies of data taken by AWS Backup are also stored as EBS snapshots. You cannot transition them however to a colder storage tier.
+
+Please let me know if I can help clarify anything else.
+
+Regards,
+Bhavin"
+AWS Backup	"Re: On-Premise Backup with Storage Gateway - how does it impact normal SG use?
+Understood.  If I may distill your response to a single sentence:
+
+AWS Backup, when used with an on-prem Storage Gateway adds the ability to schedule snapshot creation, schedule data expiration, and eventually... schedule transition to ""cold storage"" (glacier).
+
+Thank you,
+~Bill"
+AWS Backup	"Re: On-Premise Backup with Storage Gateway - how does it impact normal SG use?
+Hi Bill,
+
+Nice summary! On the last part, scheduling transition to Glacier is not available today for Storage Gateway volumes. If you could please PM me around your needs in that area, it will be great.
+
+Regards,
+Bhavin"
+AWS Backup	"Storage Gateway data can never transition to ""cold storage?""
+ONLY Storage Gateways in ""Volume"" mode are able to be backed up via AWS Backup.
+
+(""Q: What AWS Storage Gateway types can I manage through AWS Backup?
+
+You can manage backup and retention policies for cached and stored volume modes of Volume Gateway through AWS Backup."" (https://aws.amazon.com/storagegateway/faqs/))
+
+Also, Storage Gateway ""Volume"" backups are stored as EBS snapshots.
+
+(""Storage Gateway volume backups taken from AWS Backup are stored in Amazon S3 as Amazon EBS snapshots."" (https://docs.aws.amazon.com/storagegateway/latest/userguide/backing-up-volumes.html))
+
+Also, EBS snapshots don't work with ""cold storage.""
+
+(""Cold storage is currently supported for backups of EFS file systems only"" (https://aws.amazon.com/backup/pricing/)
+
+Therefore, Storage Gateway Volume backups can never be transitioned to cold storage?
+
+Please confirm?  If true, then any Storage Gateway backups will always be at the higher ""warm storage"" price of $0.05/GB and never the ""cold storage"" price of $0.01GB, correct?
+
+Is there any way to use a Storage Gateway with ""cold storage?""  i.e. a File Storage Gateway using EFS to transition to ""cold storage.""
+
+Thank you!
+~Bill
+
+Edited by: Novox on Jan 23, 2019 6:18 AM
+
+fixed boldness
+
+Edited by: Novox on Jan 23, 2019 6:18 AM
+
+Edited by: Novox on Jan 23, 2019 6:35 AM
+
+Edited by: Novox on Jan 23, 2019 7:21 AM
+
+Changed title... it appears Storage Gateway in ANY mode cannot transition to cold storage (none of it is EFS)..."
+AWS Backup	"Re: Storage Gateway data can never transition to ""cold storage?""
+Currently, AWS Backup supports transitioning backups of EFS file systems to cold storage. This feature will be extended to support other resource types, such as Storage Gateway volumes in the future. We have taken this as a feature request to the AWS Backup team. Thank you for your feedback."
+AWS Backup	"Re: Storage Gateway data can never transition to ""cold storage?""
+That's rather disappointing.
+
+Unfortunately, I'll need to wait to transition to AWS Backup on-premises because ""cold storage"" (glacier) isn't supported and I'd need to pay five times as much for archived data.
+
+I do look forward to the feature being added so I appreciate the creation of the feature request.
+
+Thank you,
+~Bill"
+AWS Backup	"Suggestion: Organizations integration
+Hi there,
+
+would be great some kind of integration with Organizations in order to manage all the backups plans from the organizations root accounts.
+
+Another posibility is to let define the backups plans at the root level of Organzatios and let all the acouns under Organizations use the backup plans tags.
+
+BR,
+Alvaro"
+AWS Backup	"Re: Suggestion: Organizations integration
+Thank you for the feedback! We will take this as a feature request to the AWS Backup team."
+AWS Backup	"Which Instance?
+For EBS volumes, is there any configuration option within AWS Backup to identify which Instance a volume goes with? We are looking to intra-region backups coming later in the year. If we are preparing for a Region outage, we are assuming that we will not have access to any information regarding which EBS volumes go with which instances. With AWS Backup, it looks like we would have hundreds of recoverable volumes but no definition on which where root volumes and which instances they went with. Recovery to another Region would be very difficult in this scenario."
+AWS Backup	"Re: Which Instance?
+Unfortunately, this configuration is currently not supported. This has been brought to the AWS Backup team as a feature request."
+AWS Backup	"AWS Backup custom IAM role
+Hi there,
+
+i see that we are allowed to user custom roles in AWS Backup, could you please let us know how to create the proper roles? it is not describe in the service documentation.
+
+BR,
+Alvaro"
+AWS Backup	"Re: AWS Backup custom IAM role
+I suggest first having AWS Backup create a default role on your behalf and using the managed policies that are attached to that default role as a reference for the permissions that are required in the custom role you create to pass to AWS Backup. You should see two managed policies attached to the default role, one for backups and one for restores."
+AWS Backup	"Re: AWS Backup custom IAM role
+thanks!
+
+already created a custom role and attached below two policies with terraform, i confirm it works.
+
+arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup
+arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores"
+AWS Backup	"AWS backup support restore to another AWS account
+Hi,
+I would like to know if the AWS backup recovery points can be restored on another AWS account.
+
+Thanks
+
+--gsu"
+AWS Backup	"Re: AWS backup support restore to another AWS account
+This feature is not yet supported. EBS and RDS snapshots can be shared with other accounts using those service's consoles or APIs, even if they are created using AWS Backup. 
+
+We will take this as a feature request. Thanks for the feedback."
+AWS Backup	"Cognito User Pool Backup?
+Any plans on adding support for backing-up Cognito User Pools?"
+AWS Backup	"Re: Cognito User Pool Backup?
+Thank you for the feedback. We will be adding support for additional AWS resource types in the future, including types like Cognito user pools. We will prioritize resource types based on customer feedback, so your input is helpful."
+AWS Backup	"Re: Cognito User Pool Backup?
+I am also interested in backing up cognito user pools asap"
+AWS Backup	"Validation Bug in Console
+Hi,
+
+when I try to assign a resource to a backup plan using the AWS console the UI shows an error message: ""Tags must contain only letters, digits, hyphens, spaces or the special characters + - = . _ : / @""
+The tag I try to create contains a slash in the key, e.g. test/a
+
+But I can actually create the selection using the CLI:
+
+aws backup create-backup-selection --backup-plan-id 5bdbddae-c6d4-488a-932c-d24e0648c19c --backup-selection 'SelectionName=volumes,IamRoleArn=arn:aws:iam::1234567890:role/service-role/AWSBackupDefaultServiceRole,ListOfTags=[{ConditionType=STRINGEQUALS,ConditionKey=test/a,ConditionValue=my}]'
+
+
+Greets!
+
+Edited by: tschmittni on Jan 18, 2019 12:56 AM"
+AWS Backup	"Re: Validation Bug in Console
+Hello, 
+
+Thank you for raising this. This has been brought to the team's attention. 
+
+Mas"

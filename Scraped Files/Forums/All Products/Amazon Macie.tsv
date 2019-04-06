@@ -1,0 +1,175 @@
+label	description
+Amazon Macie	"Amazon Macie with Amazon Lambda
+Hi Team, 
+Is it possible to query Amazon Macie from a lambda function to get the metadata of the file? I.e. we do not want to have to login to Macie's dashboard daily to review the scan results. But want to create a lambda function that can give us back the scan results like file_name, PII detected and risk ranking. 
+
+Best, 
+Tony"
+Amazon Macie	"Re: Amazon Macie with Amazon Lambda
+Hello Tonyz, 
+
+Currently, the results of content classifications are only accessible through Macie console. As a workaround, you could create a custom rule to alert you on any risky Amazon S3 objects. Amazon Macie presents all alerts/findings in the console and sends a copy to CloudWatch Events (CWE). You can set a rule in CWE to trigger a Lambda function to further analyze the detected sensitive information. Please refer to this blog post to learn how you can create your custom rule in Amazon Macie (https://aws.amazon.com/blogs/security/how-to-create-custom-alerts-with-amazon-macie/).   
+
+Thank You 
+Zaher"
+Amazon Macie	"Re: Amazon Macie with Amazon Lambda
+Hi Zaher, 
+
+Thanks for your response. I was able to setup CWE to trigger a Lambda function that parse the object name in S3 and its DLP risk score. However, I noticed that Macie could classify more than one S3 object at a time and it is difficult to parse the CWE because the DLP aggregates the risk score. Do you know if we can configure Macie to classify one object at a time or if there is an alternative way to format the CWE?
+
+{
+  ""summary"": {
+    ""Description"": ""Potential DLP Risk in S3 files. "",
+    ""Object"": {
+      ""s3_object_1"": 1,
+      ""s3_object_2"": 1,
+      ""s3_object_3"": 1,
+      ""s3_object_4"": 1
+    },
+    ""Record Count"": 28,
+    ""DLP risk"": {
+      ""0"": 2,
+      ""3"": 1,
+      ""5"": 1
+    }
+  }
+}
+
+Edited by: tonyz on Oct 26, 2018 10:02 AM"
+Amazon Macie	"Get PII text from Macie
+Hi Team,
+Good day.
+I have 4 queries regarding Macie. 
+
+1. When I give an address in a file and upload to S3, Macie is not classifying it as an address. Ex. 242 George Plaza,East Lawrencefurt, VA 37287-7620. Can you let me know how to get it enabled or make changes so that it classifies it as an address.
+2. How do we extract the PII information (or the line number) from the file. Example if my text file has a credit card number, can I get the credit card number or the line number where it is present. 
+3. How do we send the PII alerts as email from Macie to users with the details like the file name and the violations. (not the cloudwatch event with only sev and details)
+4. What all information are classified as PII , does gender, vehicle reg number, ethinicity etc are classified as PII.
+
+Regards,
+Preetish
+
+Edited by: Preetish on Jun 18, 2018 11:43 AM
+
+Edited by: Preetish on Jun 18, 2018 8:33 PM"
+Amazon Macie	"Re: Get PII text from Macie
+Hi
+I have the same question to Amazon Macie. How to get the detailed email, phone, or ssn from a file? where do these PIIs save? The Alerts won't help me a lot since I don't know if the Macie catches the right PII or not. If somebody knows the answer, please let me know.  
+Many thanks!
+
+Tiger"
+Amazon Macie	"Re: Get PII text from Macie
+Hello Preetish, 
+
+here are answers to your queries: 
+1- Macie uses ML to detect addresses. The model is trained to detect actual addresses in the US. Recently, we updated the model to include addresses in other regions such as EU and South America and enhanced the recall rate. I recommend that you try your test again. 
+
+2- Currently, Macie flags the Amazon S3 objects with sensitive data. We have a roadmap item to provide more information on where in the file, if possible, the credit card was found. We are not planning to retain any sensitive data within Macie. You are required to refer to the S3 object to inspect the detected sensitive data. 
+
+3- Macie in integrated with CloudWatch Events. You can use this integration to send emails to your users. We are working on augmenting the finding/alert format to include more details about the impacted resource.
+
+4- Macie PII definition is outlined in our documentation (https://docs.aws.amazon.com/macie/latest/userguide/macie-classify-objects-pii.html). 
+
+Zaher"
+Amazon Macie	"Re: Get PII text from Macie
+Hello Tiger, 
+
+Currently, Amazon Macie classifies and discovers the Amazon S3 objects with sensitive information such as PII. The provided results include the type of detected results and the number of distinct matches. We have a roadmap item to enhance the experience by providing more information about the location of the sensitive data in the file to make it easy for you to investigate the findings. Macie does not save any content. Therefore, the service will not report back the actual detected PII information. 
+
+Zaher
+
+Edited by: Zaherataws on Oct 4, 2018 2:01 PM"
+Amazon Macie	"Re: Get PII text from Macie
+Hi Zaher, 
+
+I have a similar question. I am using a test file to test out Amazon Macie with the following sample data. However, Macie was only able to detect the email address. Any idea why it is not picking up the rest?
+
+718-000-0000
+01-01-1900
+John Doe
+John.doe@someemail.com
+5454-5454-5454-5454
+
+Best, 
+Tony"
+Amazon Macie	"Re: Get PII text from Macie
+Hello Tonyz, 
+
+Thank you for reaching out to us. Amazon Macie uses multiple techniques to reduce false positives. For example, Macie runs the Luhn Algorithm check on any possible credit card number among other validation checks to report back actual credit numbers. For this reason, your test data was not detected by Macie. 
+
+Zaher"
+Amazon Macie	"PHI Data in Macie
+Hi, 
+
+Does Macie detect the full 18 PHI attributes. Looking at the documentation I see that the regex is looking for HIPAA PHI National Drug code. 
+
+Best, 
+Tony"
+Amazon Macie	"Re: PHI Data in Macie
+Hello Tonyz, 
+
+Macie can only analyze text. So, all Biometric identifiers and images such as full face photographic images are not supported. Also, identifiers that require customization are not supported. For example, the""account number"" and ""device identifier and serial numbers"" format changes from vendor to another and therefore are not supported. You can find the full list of supported data types by following this link https://docs.aws.amazon.com/macie/latest/userguide/macie-classify-data.html.
+
+Thank You 
+Zaher"
+Amazon Macie	"Macie realtime?
+I've been investigating Macie to detect PII in configured s3 buckets. After documents are uploaded, I don't see indications the data was analyzed for several minutes. Is this average? I was hoping for a response time in the range of seconds."
+Amazon Macie	"Re: Macie realtime?
+Hello Quest313, 
+
+Thank you for reaching out to us. Macie classifies new objects as soon as CloudTrail reports the PutObject API call. You should expect the results to be present in Macie's console within 60 minutes after uploading the object to Amazon S3. 
+
+Zaher"
+Amazon Macie	"Enable Macie
+After I created Roles for Macie and CloudTrail enabled, the ""ENABLE MACIE"" button is still not click-able (in grey color), did I miss anything here?
+
+Thanks!"
+Amazon Macie	"Re: Enable Macie
+NVM. GUI Thing."
+Amazon Macie	"Macie for GDPR assessment of data in S3.
+Hi,
+
+I'm interested in part of Macie can do.  My company is in the middle of a GDPR assessment to prepare for the upcoming enforcement date in the EU.  
+
+Macie's ability to crawl and classify my data in S3 to identify with PII is lurking could be really helpful. However, similar to how I can instruct Glue to crawl my data in S3 for external table mappings one time or a periodic schedule, I'd like to be able to instruct Macie to just crawl my data in S3 once and then allow us to consume the results without ""automatically"" crawling the new data or doing anything with CloudTrail logs.  Think of it as a batch or on demand crawl/classify task that the customer, not the service, controls when it executes.
+
+Is there any chance Macie could have the capability to do something like this soon?
+
+Bear in mind that GDPR enforcement starts May 25th, 2018.  So to be useful for GDPR assessment the feature would have to be available NLT Feb 1, 2018.  Any later than that and we wouldn't have enough time to react to what Macie discovers in S3 to be GDPR compliant by May 25th.
+
+Thanks,
+-Kurt"
+Amazon Macie	"Re: Macie for GDPR assessment of data in S3.
+Hi Kurt, 
+
+Thanks for your feedback. The ability of only classifying existing content is in our backlog for considerations for future release. We are working on re-prioritizing the planned feature set for 2018. We will take into considerations your proposed time-frame for this feature.  
+
+Cheers, 
+Zaher"
+Amazon Macie	"Re: Macie for GDPR assessment of data in S3.
+Hi Zaher,
+
+Thanks for considering this capability as a feature.  
+
+FWIW, when discussing this at the Macie walk up table at re:Invent there seemed to several AWS customers there that were all interested in the same limited use of Macie to help them too with their GDPR risk assessments of data at rest in S3.
+
+Now that it's in your backlog somewhere, we'll work with out TAM to see if we can't get some confidence about when the feature might become available.  
+
+Thanks,
+-Kurrt"
+Amazon Macie	"Macie - HIPAA Compliance timeframe
+I'm beginning the process of looking into DLP solutions for the healthcare startup I'm in... and I'm wondering what the timeframe for HIPAA compliance is. Do you all have any sense of that? I'd much rather use Macie than some 3rd-party solution."
+Amazon Macie	"Re: Macie - HIPAA Compliance timeframe
+Hello,
+Thanks for reaching out to us. We have escalated this to the service team. We will get back to you as soon as we get any reply from them.
+
+Best Regards,
+Masudur Rahaman Sayem"
+Amazon Macie	"Re: Macie - HIPAA Compliance timeframe
+Hello, 
+
+We are working on getting Amazon Macie HIPAA eligible. However, we do not have a specific date to share at this moment. I will update this thread once we have more information. 
+
+Thank You
+
+Zaher"

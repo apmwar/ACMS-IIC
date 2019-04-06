@@ -1,0 +1,1951 @@
+label	description
+AWS Glue	"How to publish tag information in the metadata catalog with AWS Glue
+Hi,
+
+I have created an S3 bucket and added a CSV file to the bucket. To that CSV file, I have added some tagging information as well.
+
+When I run the AWS Glue crawler on the file, the table schema / metadata catalog gets published in a database.
+
+My question is : How can I extract and publish the tag information to the metadata catalog as well?
+
+Is there a way I can do that  using an ETL job or the GetObjectTagging S3 operation?
+
+Looking for some additional input as I am new to AWS Glue.
+
+Thank you!"
+AWS Glue	"Re: How to publish tag information in the metadata catalog with AWS Glue
+As far as I know , it is not possible in crawler, if you want to add tag to table properties then you have to write python script to add to table properties from object tag .
+
+https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/glue.html#Glue.Client.update_table
+
+However, there is not table concept in glue table."
+AWS Glue	"Re: How to publish tag information in the metadata catalog with AWS Glue
+The question was answered. Thanks"
+AWS Glue	"write_dynamic_frame_from_catalog w/ partitionKeys doesn't create partition
+I have some code that starts with a DynamicFrame ""cll"" and adds two columns ""datepart"" and ""version"" which are partition key columns. Then I write the DynamicFrame to the catalog, to an existing Data Catalog table located in S3. The definition for the table in the Data Catalog has two string columns ""datepart"" and ""version"" defined as partition columns.
+
+I expected this to create partition(s) in the existing table matching the partition key values, but it just writes files to S3 in s3://bucket/prefix/datepart=<date value>/version=<version value> but doesn't update anything in the catalog. Here is the code:
+
+# Add partition columns
+output = cll.toDF().withColumn('datepart', lit(DATE_TO_RUN)).withColumn('version', lit(VERSION))
+ 
+# Write output
+dynOutput = DynamicFrame.fromDF(output, glueContext, 'dynOutput')
+glueContext.write_dynamic_frame_from_catalog(
+    frame=dynOutput,
+    database=DST_GLUE_DB,
+    table_name=DST_GLUE_TBL,
+    additional_options={""partitionKeys"": ['datepart', 'version']},
+)
+
+
+Is this expected not to create partitions in the catalog? What's the recommended way of writing to partitions in a Data Catalog table stored on S3?"
+AWS Glue	"AWS-GLUE encoding utf-8
+I have a problem when I submit a job in glue. My data in s3 contain ñ and accents, this causes that the job fails: unable to parse fail s3://...
+If i edit my job with the python header:  
+# -*- coding: utf-8 -*-   the jobs fail too.
+
+Any idea? Thank you beforehand.
+
+Edited by: anaP on Jan 24, 2018 4:10 AM
+
+Edited by: anaP on Jan 24, 2018 4:10 AM"
+AWS Glue	"Re: AWS-GLUE encoding utf-8
+Hi,
+
+I am facing the same problem. Are you able to get a fix for this? I really do not want to use Spark DataFrame API at this point after spending so much time making the Glue data catalog perfect."
+AWS Glue	"Re: AWS-GLUE encoding utf-8
+Specify the encoding at the top of your script:
+
+import sys
+ 
+reload(sys)
+sys.setdefaultencoding(""utf-8"")
+
+
+I used this in my job and it resolved the error."
+AWS Glue	"From DynamoDB to Redshift : How to flatten the table creation from json
+We are trying to copy data form DynamoDB to RedShift via Glue jobs. 
+
+Here is the background:
+
+dynamo tables contain json with nested lists/maps
+the glue catalog has been created, crawlers pull data on daily basis
+I am using GlueContext/SparkConext for the ETL to flatten the jsons before inserting them into Redshift
+the create_dynamic_frame is invoked to use the rationalize methdod
+
+
+So, records are loaded into RedShift as long as we strictly follow some rules (same table names, same fields).
+My question is .. how do you create the redshift table before copying the data into it ? is there any tool I can use from Glue Job to connect to redshift and create the tables based on its catalog ? I have spent days trying to read the AWS doc and finding a solution but sadly nothing came up. 
+
+I ended up having a Lambda triggered by CloudWatch once the crawler has finished its job, then query the glue catalog , parsing its crazy json which includes several struct nested fields, create a SQL statement (wich conists in many tables form the original json) then connection to redshift and CREATE TABLE there.
+
+Not easy to convert from json to sql during table creation .. I truly wonder if there is a simpler way to achieve it.
+
+Thanks in advance!
+
+Edited by: tundraspar on Feb 21, 2019 2:23 AM"
+AWS Glue	"Re: From DynamoDB to Redshift : How to flatten the table creation from json
+how do you create the redshift table before copying the data into it ? is there any tool I can use from Glue Job to connect to redshift and create the tables based on its catalog ? I have spent days trying to read the AWS doc and finding a solution but sadly nothing came up. 
+
+You can use preaction parameter in dynamicrame writer which would be executed before coping the data.
+
+""preactions"":""<DDL>"""
+AWS Glue	"Re: From DynamoDB to Redshift : How to flatten the table creation from json
+but how do you generate the DDL from the json ?
+One json might have  .. 7 .. or even 11 nested map/list/array .. corresponding to a new SQL table in redshift.
+I am happy to know about the ""preactions"" parameter, thanks for that .. but still cant find an easy way to pass a DDL script to that parameter ..
+
+Thanks anyway!"
+AWS Glue	"Re: From DynamoDB to Redshift : How to flatten the table creation from json
+I am not sure this is fully applicable to your situation, but I use Redshift Spectrum for this. We record the JSON stream of our DynamoDB table and then use Glue Jobs to process it with the Relationalize transform. No matter how deep the nesting is, that transform creates an output table for us, and then we write all of them to Parquet in S3. From there, a Glue Crawler inspects the schema and exposes it to Redshift Spectrum automatically.
+
+Then, when I want to materialize something in Redshift proper, I execute `CREATE TABLE AS ...` while querying the Spectrum tables. I use a tool called dbt (https://www.getdbt.com) executed via ECS/Fargate/Docker/Cron to schedule this daily.
+
+Now that you can query nested JSON directly via Spectrum, I'm working on skipping most of that and just reading from the non-relationalized json in my queries.
+
+Again, I'm not sure any of this helps what you're trying to do, but if so I'm happy to discuss it further."
+AWS Glue	"Re: From DynamoDB to Redshift : How to flatten the table creation from json
+archi-ian,
+
+I think you gave an interesting hint .. I am going to try and let you know how I get how, haven't heard about getdbt.com.
+
+Thanks, highly appreciated."
+AWS Glue	"I don't want Glue crawler to arbitrarily group my sub-dirs into a one.
+It is well known that AWS Glue crawler would group multiple sub-dirs into a single table with its own heuristics(70% schema similarity, maybe?). For example:
+
+    s3://bucket/base/a/data1.parquet
+    s3://bucket/base/b/data2.parquet
+    s3://bucket/base/c/data3.parquet
+--> When crawling starts with data store include path of 's3://bucket/base/', it would create merged single 'base' table. not 'a', 'b' and 'c'. Even though they have common fields, I want them as separate tables.
+
+This is a very annoying feature if you don't want it. (Explicit is better than implicit.)
+I've tried ""Create a single schema for each S3 path"" option, but the same result.
+To make matter worse, a merged table often have following error in Athena:
+
+    HIVE_INVALID_METADATA: Hive metadata for table daily is invalid: Table descriptor contains duplicate columns
+
+The only possible way around is to specify all sub-directories as a data store include path. (In my case, for 127 sub-dirs)
+
+Can somebody help me? ( For AWS Glue staff, Please fix it. )
+
+Edited by: haje01 on Feb 21, 2019 12:15 AM"
+AWS Glue	"Re: I don't want Glue crawler to arbitrarily group my sub-dirs into a one.
+You'll want to add each desired table as a data-source in a single crawler via adding another data store.
+
+More information available @ https://docs.aws.amazon.com/athena/latest/ug/glue-best-practices.html#schema-crawlers-data-sources.
+
+In this example, you'd have a single crawler with 3 data sources for:
+
+s3://bucket/base/a
+s3://bucket/base/b
+s3://bucket/base/c"
+AWS Glue	"Re: I don't want Glue crawler to arbitrarily group my sub-dirs into a one.
+Thanks for your reply. But, I've already read about the method you mentioned, and been using it for a while.
+
+I just can't understand why I should repeatedly add data store for all my 127 sub-dirs.
+Simple ""Disable grouping heuristic"" option would be a handy solution.
+
+Maybe, I'm just want to complain to the Glue staffs..."
+AWS Glue	"AWS Glue Crawlers Not Correctly Mapping CSV Column Data After Schema Change
+I'm posting here following identifying somebody having a problem similar to mine on SO @ https://stackoverflow.com/questions/53083243/how-handle-schema-changes-in-glue-and-get-the-expected-output-in-csv.
+
+The context is this:
+For the first n days, our CSV schema has columns:
+ col_a, col_b, col_c, col_d, col_e 
+
+
+Then, on n+1 days, the CSV schema updates to:
+col_a, col_b, col_z, col_c, col_d, col_e 
+
+
+The glue crawler is configured with:
+Schema updates in the data store
+Update the table definition in the data catalog for all data stores except S3. For tables that map to S3 data, add new columns only.
+
+Inherit schema from table
+Update all new and existing partitions with metadata from the table.
+
+Object deletion in the data store
+Mark the table as deprecated in the data catalog.
+
+What I've identified is rather than col_z being empty on data through n and populated on data on n+1 and beyond, is that:
+1. col_z is added to the end of the table schema, after all existing fields
+2. The data mapping is fine up through item n, as there is no new data
+3. Once the new data is introduced, it steps on exiting fields offsetting everything. col_z data is being loaded in the correct numeric location in the table, but as col_z is at the end of the schema it's effectively pushing data into col_c and everything out by one.
+
+I've worked with many permutations of the available settings, and haven't been able to get this to work. Is this an issue with the available CSV SerDes? For reference, we're using org.apache.hadoop.hive.serde2.OpenCSVSerde
+ for its quoted-csv parsing.
+
+Thanks!
+Will
+
+Edited by: willbastian on Feb 20, 2019 1:41 PM"
+AWS Glue	"Re: AWS Glue Crawlers Not Correctly Mapping CSV Column Data After Schema Change
+OpenCSVSerde uses index to map the column hence you can have optional column at the end however, It does not support in the middle."
+AWS Glue	"AWS Glue Crawler JSON
+Trying to use AWS Glue to automatically crawl and catalogue JSON files in an S3 bucket.
+
+Files smaller than 1mb are successfully catalogued however files greater than 1mb fail to be catalogued and are classified as Unknown.
+
+Have tried approach listed here which suggests a custom classifier using ""$[*]""
+https://stackoverflow.com/questions/46936721/aws-glue-crawler-classifies-json-file-as-unknown?rq=1
+https://forums.aws.amazon.com/thread.jspa?threadID=262675&tstart=0
+
+However this custom classifier makes no difference.
+
+Is this a known limitation of the AWS Glue crawler or am I missing something else?"
+AWS Glue	"Re: AWS Glue Crawler JSON
+Hi there,
+
+Please note that this is known behavior of Glue where it is unable to classify JSON files whose size is greater than 1 MB and thus, classifies these files as ""UNKNOWN"". The service team is working on a fix and will deploy it after testing it thoroughly.
+
+-Juhi"
+AWS Glue	"Re: AWS Glue Crawler JSON
+Hey Juhi Pat,
+
+Any update on providing Glue capacity to correctly classify JSON files whose size is greater than 1 MB?
+
+Thanks,
+Ryan"
+AWS Glue	"Glue Dev Endpoint session keeps vanishing
+I'm using a Sagemaker notebook to work on a Glue dev endpoint, and I've noticed that if I leave the underlying Spark session idle, it goes away after a while and the notebook interpreter stops working. After that happens I get an error:
+
+An error was encountered:
+Invalid status code '404' from http://localhost:8998/sessions/2 with error payload: ""Session '2' not found.""
+
+
+from every usage of Spark in the notebook, and I have to halt and close the notebook and reopen it to continue working; this is very annoying and is there any way to prevent it from happening?"
+AWS Glue	"Multiple data sources and outputs in one job script
+Hi,
+
+We currently have several data sources in the form of RDS tables, and for each of these data sources, we have a job that converts the RDS data and puts it in ORC format within S3.
+
+There's a couple of these jobs that take a long time to run, but the majority of them are 1 min jobs. I was wondering if there was any way of condensing all of the individual job into one big file? Currently we use this code for it, but when adding the same code for other data sources we get an error:
+
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+ 
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+ 
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+datasource0 = glueContext.create_dynamic_frame.from_catalog(database = ""db-connection"", table_name = ""table"", transformation_ctx = ""datasource0"")
+applymapping1 = ApplyMapping.apply(frame = datasource0, mappings = [(MAPPINGS)], transformation_ctx = ""applymapping1"")
+resolvechoice2 = ResolveChoice.apply(frame = applymapping1, choice = ""make_struct"", transformation_ctx = ""resolvechoice2"")
+dropnullfields3 = DropNullFields.apply(frame = resolvechoice2, transformation_ctx = ""dropnullfields3"")
+datasink4 = glueContext.write_dynamic_frame.from_options(frame = dropnullfields3, connection_type = ""s3"", connection_options = {""path"": ""s3://bucket/glue/table/""}, format = ""orc"", transformation_ctx = ""datasink4"")
+job.commit()
+
+
+I've tried putting the code one after another, removing multiple job.commit() functions and just having one, running it through a for loop and nothing seems to work so far.
+
+Would anyone be able to let me know if it is possible and if it is, how I do it?
+
+Cheers."
+AWS Glue	"AWS Glue not fetching dash (-) character
+While fetching data from catalog with Glue (Pyspark):
+datasource0 = glueContext.create_dynamic_frame.from_catalog(database = ""XXX"", table_name = ""XXX"", transformation_ctx = ""datasource0"")
+
+the data of the table is changing to null if it´s a simple dash character .
+
+I´ve tried to change the fields with "" -"" ""- "" and it´s working good, but when the source is a simple ""-"" it returns null:
+
+------- |VERSION| ------- null
+
+They are the same data type (string) in origin, but when they are fetched, ""-"" becomes to null and "" -"" to string –
+
+How can I fetch the dash value without adding spaces? Thanks"
+AWS Glue	"AWS Glue sets some columns to NULL
+Hi all,
+
+I have a Glue job that exports a table from RDS/MySQL to S3/Parquet. When viewing the output parquet file (via Athena in the AWS console) all the columns are present, but some are populated with NULL. (i.e. the original data is missing)
+
+In all cases that i've seen so far, the original datatype in MySQL was MEDIUMINT NOT NULL. The glue crawler detected the type as 'int' and mapped it to 'int' in the parquet file.
+
+My Glue script was created using the wizard, and is attached. The only modification I have tried is removing the DropNullColumns step.
+
+Any clues appreciated!
+Cheers,
+Ben"
+AWS Glue	"Re: AWS Glue sets some columns to NULL
+Hi, ben00:
+have you checked the data type of the NULL columns and see if they fit the actual data? I had the same issue, only to realize the specific data types I used for my NULL columns were not compatible with the data. And changing data type solved the problem for me.
+
+Best,
+Xia"
+AWS Glue	"Re: AWS Glue sets some columns to NULL
+Can you try BIGINT for example and see if it works?"
+AWS Glue	"Re: AWS Glue sets some columns to NULL
+Hi,
+
+Did you find a solution to this? A similar thing is happening with our tables. Most (if not all) of the -int columns contain empty values when using Glue to convert RDS/MySQL to ORC."
+AWS Glue	"Problem when connect to jdbc
+Hi everyone,
+I have a trouble when conncet to mysql in ec2. The problem is I don't know IAM role in this case should include which roles? Can someone suggest me? Everytime I test the new role I have this problem show up 
+
+ERROR : At least one security group must open all ingress ports.To limit traffic, the source security group in your inbound rule can be restricted to the same security group (Service: AWSGlueJobExecutor; Status Code: 400; Error Code: InvalidInputException;
+
+I appreciate all of your answer 
+Thang"
+AWS Glue	"Re: Problem when connect to jdbc
+Try the following: 
+
+in IAM console, create a role with the following policies: 
+
+  AmazonRDSReadOnlyAccess (or full access if you need to write to the db)
+  AWSGlueServiceRole 
+  AWSGlueConsoleFullAccess
+  AmazonS3FullAccess
+  AmazonEC2FullAccess (this might not be necessary)
+
+This should solve the IAM role problem. 
+
+As for the security group, you need to have a self referenced security group. So create a new security group with a rule as follows: 
+
+Type = All TCP
+Protocol = TCP 
+Port Range = 0 - 65535
+Source =  *
+Description = whatever you want (e.g. self-reference rule)
+
+You put the security group ID (e.g. sg-096f6b7f4f2692t61) of the security group itself. 
+
+Note: not sure you immediately have the security group ID at the time of the creation. If not, when creating the security group add a All TCP rule with your IP as source, then once created, add the above-mentioned rule. 
+
+Now if you use that role and that security group in your Glue connection it should work."
+AWS Glue	"Re: Problem when connect to jdbc
+Hi fabioSama,
+I have changed security group like you said, but right now I still get this error when I run my crawler with IAM console. Sorry for reply too late
+
+ERROR : At least one security group must open all ingress ports.To limit traffic, the source security group in your inbound rule can be restricted to the same security group
+(Service: AWSGlueJobExecutor; Status Code: 400; Error Code: InvalidInputException; ...)"
+AWS Glue	"Is it possible to queue jobs for Glue Job
+Hi guys, I'm investigating Glue Job and I've found it really convenient especially with StepFunctions, Lambda to build a ETL workflow.
+
+I'd like to run a Glue Job with different parameters. I found it's `Number of concurrent job runs per job = 3` property here https://docs.aws.amazon.com/glue/latest/dg/troubleshooting-service-limits.html. I need much more than 3 (I know I could ask for its raise but sooner or later we have more jobs along with our services grow), but they don't have to be run at the same time.
+
+So here's my question: Is it possible to hold jobs before executing by Glue Job when maximum number of jobs are already running?
+
+Any advice would be appreciated. Thank you in advance."
+AWS Glue	"Command failed with exit code 1 , No errors in logs
+Below code works fine when i loop over 1 or 2 days. But if I loop over 240 days, the job fails with Command failed with exit code 1. 
+When the job fails with exit code 1, i cannot find any errors in the logs or error logs.
+The job fails if I run with 10 or 50 DPUs.
+
+The data source is 240 old csv files stored on S3 with average size of 1.5 mb.
+
+The job metrics look fine. There is no indication of OOM but the CPU loads goes above 50% threshold few times. 
+
+I am clueless. Please help!!
+
+/*
+ * Copyright 2016-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Licensed under the Amazon Software License (the ""License""). You may not use
+ * this file except in compliance with the License. A copy of the License is
+ * located at
+ *
+ *  http://aws.amazon.com/asl/
+ *
+ * or in the ""license"" file accompanying this file. This file is distributed
+ * on an ""AS IS"" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express
+ * or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+//package my.glueapp.Clustering
+ 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+ 
+import com.amazonaws.services.glue.util.JsonOptions
+import com.amazonaws.services.glue.{DynamicFrame, GlueContext}
+import org.apache.spark.SparkContext
+import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
+import org.apache.spark.mllib.linalg
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.{DataFrame, SparkSession}
+ 
+object Clustering {
+  case class ObjectDay(realnumber: Double, bnumber : Double, blockednumber: Double,
+                    creationdate : String, fname : String, uniqueid : Long, registrationdate : String,
+                    plusnumber : Double, cvalue : Double, hvalue : Double)
+  case class ClusterInfo( instance: Int, centers: String)
+ 
+  def main(args: Array[String]): Unit = {
+    val sc: SparkContext = new SparkContext()
+    val glueContext: GlueContext = new GlueContext(sc)
+    val spark: SparkSession = glueContext.getSparkSession
+    import spark.implicits._
+ 
+    // write your code here - start
+    // Data Catalog: database and table name
+    val dbName = ""dbname""
+    val tblName = ""raw""
+    val sqlText = ""SELECT <columns removed> FROM viewname WHERE `creation_date` =""
+ 
+    // S3 location for output
+    val outputDir = ""s3://blucket/path/""
+ 
+    // Read data into a DynamicFrame using the Data Catalog metadata
+    val rawDyf: DynamicFrame = glueContext.getCatalogSource(database = dbName, tableName = tblName).getDynamicFrame()
+ 
+    // get only single day data with only numbers
+    // Spark SQL on a Spark dataframe
+    val numberDf = rawDyf.toDF()
+    numberDf.createOrReplaceTempView(""viewname"")
+ 
+    def getDataViaSql(runDate : LocalDate): RDD[ObjectDay] ={
+      val data = spark.sql(s""${sqlText} '${runDate.toString}'"")
+      data.as[ObjectDay].rdd
+    }
+ 
+    def getDenseVector(rddnumbers: RDD[ObjectDay]): RDD[linalg.Vector]={
+      rddnumbers.map(s => Vectors.dense(Array(s.realnumber, s.bnumber, s.blockednumber))).cache()
+    }
+ 
+    def getClusters( numbers: RDD[linalg.Vector] ): RDD[ClusterInfo]  = {
+      // Trains a k-means model
+      val model: KMeansModel = KMeans.train(numbers, 2, 20)
+      val centers: Array[linalg.Vector] = model.clusterCenters
+ 
+      //put together unique_ids with cluster predictions
+      val clusters: RDD[Int] = model.predict(numbers)
+ 
+      clusters.map{ clusterInstance =>
+          ClusterInfo(clusterInstance.toInt, centers(clusterInstance).toJson)
+      }
+    }
+    def combineDataAndClusterInstances(rddnumbers : RDD[ObjectDay], clusterCenters: RDD[ClusterInfo]): DataFrame ={
+      val numbersWithCluster = rddnumbers.zip(clusterCenters)
+        numbersWithCluster.map(
+          x =>
+            (x._1.realnumber, x._1.bnumber, x._1.blockednumber, x._1.creationdate, x._1.fname,
+            x._1.uniqueid, x._1.registrationdate, x._1.plusnumber, x._1.cvalue, x._1.hvalue,
+              x._2.instance, x._2.centers)
+        )
+        .toDF(""realnumber"", ""bnumber"", ""blockednumber"", ""creationdate"",
+        ""fname"",""uniqueid"", ""registrationdate"", ""plusnumber"", ""cvalue"", ""hvalue"",
+        ""clusterInstance"", ""clusterCenter"")
+    }
+    def process(runDate : LocalDate): DataFrame = {
+      val rddnumbers = getDataViaSql( runDate)
+      val dense = getDenseVector(rddnumbers)
+      val clusterCenters = getClusters(dense)
+      combineDataAndClusterInstances(rddnumbers, clusterCenters)
+    }
+ 
+    val startdt = LocalDate.parse(""2018-01-01"", DateTimeFormatter.ofPattern(""yyyy-MM-dd""))
+ 
+    val dfByDates = (0 to 240)
+      .map(days => startdt.plusDays(days))
+      .map(process(_))
+ 
+    val result = dfByDates.tail.fold(dfByDates.head)((accDF, newDF) => accDF.union(newDF))
+ 
+    val output = DynamicFrame(result, glueContext).withName(name=""prediction"")
+ 
+    // write your code here - end
+    glueContext.getSinkWithFormat(connectionType = ""s3"",
+      options = JsonOptions(Map(""path"" -> outputDir)), format = ""csv"").writeDynamicFrame(output)
+  }
+}
+
+
+Edited by: nikhilshikarkhane on Sep 26, 2018 10:48 AM"
+AWS Glue	"Re: Command failed with exit code 1 , No errors in logs
+exit 1 happens for many reasons. so resource issue is out of options hence I suspect there was a code issue and glue is not giving detailed error at the moment  so you may need to review the code on the possibility of error."
+AWS Glue	"Re: Command failed with exit code 1 , No errors in logs
+The reason for exit code 1 for so many reasons, one of the reason could be if you are using DML any statement like INSERT/SELECT there could be a DB blocks Hence the issue. 
+
+if you can clear DB blocks with the help of DBA then you will be able to run the job. Thanks!
+
+Regards,
+Arjun"
+AWS Glue	"Replicate from AWS DMS S3 target to Redshift via Glue
+Hey AWS community!
+
+I am trying to set up a data replication from an S3 bucket to Redshift via Glue.
+The source for the replication is an S3 bucket populated with DMS(Database migration service) ongoing tasks.
+The target for the replication is a Redshift cluster/DB.
+
+The files created by DMS have different columns. The initial full load file (Load000001.csv) has one less column then the files created for the ongoing replication. The later files have an initial column which is populated with either U(Update), I(Insert), D(Delete) instructions.
+
+When running crawlers they add the first column to the table schema. Which then causes problems later on.
+
+Example row of load file:
+   data, data, data
+Example row of ongoing data changes file:
+I, data, data, data 
+
+Crawler table example:
+Col1, Col2, Col3, Col4 <- I would think the crawler would ignore the first column
+
+When executing jobs with Glue it happens that the data from the initial load file is shifted by one column. The resulting table data looks like this:
+
+Col1, Col2, Col3, Col4
+data, data, data
+I     , data, data, data
+
+Is there a way how to achieve data replication from such an S3 source into Redshift and let redshift respect the instructions in the first column?
+
+Thank you for your help!"
+AWS Glue	"REPL with Glue + Zeppelin is Slow - expected?
+Overview
+I'm proving out Glue as a replacement to our ETL pipeline, and am butting up against some potential deal breakers in migrating by way of speed, performance and interactivity of the REPL process while developing the transformations.
+
+Environment
+
+Proof of concept on a single CSV file, gzipped, and stored in an s3 bucket. Compressed this file is 458MB. Uncompressed this file is 3.4GB.
+I am testing transforms using the recommended approach of a a Zeppelin notebook running against a Glue developer endpoint
+
+
+Observations
+
+Doing a straightforward map into a new column, and counting the rows over this dataset takes long than I'd expect:
+
+%pyspark
+def normalize_fields(dynamicRecord):
+    # medium
+    if dynamicRecord['app_id'] is None:
+        dynamicRecord['medium'] = 2
+    elif dynamicRecord['app_id'].lower() == 'unknown' or dynamicRecord['app_id'].lower() == '_unknown':
+        dynamicRecord['medium'] = 0
+    elif dynamicRecord['app_id'] is not None:
+        dynamicRecord['medium'] = 1
+    else:
+        dynamicRecord['medium'] = 0
+calculated1 = Map.apply(frame=impressions_datasource0,
+                        f=normalize_fields, transformation_ctx=""calculate1"")
+calculated1.count()
+
+4248637L
+(Took 21 min 41 sec. Last updated by anonymous at February 11 2019, 10:49:46 AM.)
+
+Question
+Does this stack up as what we'd expect for performance while working in the Zeppelin REPL? If not, any recommendations on improving this performance?
+
+Regards,
+Will
+
+Edited by: willbastian on Feb 11, 2019 8:32 AM"
+AWS Glue	"Glue Crawler excluding many files from table after running on S3 json GZIP
+I have a lambda that is ingesting json data from a load balancer and then writing each individual json record with a PUT to a kinesis stream.  The kinesis stream is the producer for kinesis firehose, which deposits GZIP into S3 bucket under prefix 'raw'.  Files are rougly 5 KB to 100 kb in size.  Example JSON record:
+
+    {""level"":""INFO"",""hash"":""3c351293-11e3-4e32-baa2- 
+    bf810ed44466"",""source"":""FE"",""hat_name"":""2249444f-c3f4-4e3d-8572- 
+    c38c3dab4848"",""event_type"":""MELT_DOWN"",""payload"":{""checking"": ""true""}}
+
+I created an x-ray trace in the producing lambda so I have an idea of how many PUT request (so each individual JSON record).  In the time period I had this ingestion turned ""On"", I sent about 18,000 records to kinesis stream.  When I ran the crawler on the table with prefix ""raw"" ( I used default settings but checked in ""Crawlers Output"" section ""Update all new and existing partitions with metadata from the table."" to avoid the HIVE_PARTITION_SCHEMA_MISMATCH.  The crawler runs and successfully detects the schema, and looks like this:
+
+    column . data type
+    level .  string
+    hash     string
+    source .  string
+    hat_name string
+    event_type string
+    payload string .    <--- (only nested json field that has lots of possible internal structure)
+    parition_0  string
+    partition_1 string
+    partition_2 string
+    partition_3 string
+
+Once the table is created I notice that there are only about 4,000 records, and it should have about 4 times the amount of records.  Later I reran the crawler and I noticed in the logs that one line says:
+
+INFO : Some files do not match the schema detected. Remove or exclude the following files from the crawler
+
+I examined some of the files excluded, the majority of them had valid JSON data, however one or two the file had truncated json record at the end of the file like so:
+
+    {""level"":""INFO"",""hash"":""3c351293-11e3-4e32-baa2- 
+    bf810ed44466"",""source"":""FE"",""hat_name"":""2249444f-c3f4-4e3d-8572- 
+    c38c3dab4848"",""event_type"":""MELT_DOWN"",""payload"":{""checking"": 
+    ""true""}}{""level"":""INFO"",""hash"":""3c351293-11e3-4e32-baa2- 
+    bf810ed44466"",""source"":""FE"",""hat_name"":""2249444f-c3f4-4e3d-8572- 
+    c38c3dab4848"",""event_type"":""MELT_DOWN"",""payl
+
+
+What do I need to do in glue to have all records loaded into the table, i should have around 18,000 not 4,200?  I think one issue is the schema may not match exaclty on some records?  But I validate in the kinesis producer that it is a valid json strucutre with appropriate top level fields.  The second issue I see is the file with truncated json record?  I am assuming this may be an issue with firehose batching the files?  Any help is appreciated.
+
+Note:  I have tried to manually create the json table defining all top level fields, and I still have the same problem, It only finds around 4,200 entries when I query in athena."
+AWS Glue	"Handling UUIDs in Postgres database
+Hi all,
+
+   Looking for a way to move data containing UUIDs from a source Postgres database into a target Postgres database.
+
+   The crawler discovers the UUID columns as type 'string'.
+
+   I have tried writing the ETL Job script to cast as UUID but that doesn't seem to be recognized as a valid type and the job fails.
+
+   There doesn't seem to be any documentation/examples of how to accomplish this transformation.
+
+   Thanks in advance for any help you can provide.
+
+-Dennis"
+AWS Glue	"HIVE_PARTITION_SCHEMA_MISMATCH
+Hi,
+
+Love the AWS Glue product, looks like it could be really powerful. I'm just running into a few teething issues at the moment.
+
+I run my crawler on a set of partitioned JSON files. Everything looks correct and I see all the tables I would expect in Athena. When I run a query in Athena I see the following error:
+
+HIVE_PARTITION_SCHEMA_MISMATCH: There is a mismatch between the table and partition schemas. The column '[foo]' in table 'db.table_name' is declared as type 'int', but partition 'timestring=2017-08-17-17-41' declared column '[bar]' as type 'string'.
+
+
+This is strange as:
+
+The s3 files look to have a consistent datatypes to me
+The AWS Glue/AWS Athena schema looks correct to me
+The error message says there is a mismatch, but then compares the types of two different columns
+
+
+Has anyone else seen a similar error?
+
+Happy to send more details.
+
+Thanks,
+
+Rob"
+AWS Glue	"Re: HIVE_PARTITION_SCHEMA_MISMATCH
+Hi,
+
+Thanks for trying out Glue!
+
+Athena expects both the table and all its partition to have the same schema.  There are a couple of workarounds we documented here:
+
+http://docs.aws.amazon.com/athena/latest/ug/glue-best-practices.html 
+
+Under a section called - Syncing Partition Schema to Avoid ""HIVE_PARTITION_SCHEMA_MISMATCH""
+
+Basically, you can drop all the partitions and run MSCK REPAIR which will rebuild the partitions while keeping the schema consistent.
+
+Thanks,
+Austin"
+AWS Glue	"Re: HIVE_PARTITION_SCHEMA_MISMATCH
+Back looking into this issue again. Thanks for the documentation, yes, I had seen that.
+
+I feel so sure that the s3 data is consistent, but of course there must be a type mismatch somewhere.
+
+Is it just me though or is the error message incorrect?
+
+The column '[foo]' in table 'db.table_name' is declared as type 'int', but partition 'timestring=2017-08-17-17-41' declared column '[bar]' as type 'string'.
+
+
+The above is not logically inconsistent, so makes it harder to pinpoint the underlying issue in the raw data.
+
+Thanks!"
+AWS Glue	"Re: HIVE_PARTITION_SCHEMA_MISMATCH
+It seems to me that the problem is that each of my partitions does not necessarily contain every column.
+
+In the setup I'm looking at (slightly different to original comment):
+= my partitions represent days
+= my files represent events
+= Each event is a json blob
+= An event contains a subset of columns (dependent on the type of event)
+= The 'schema' of the entire table is the full set of columns for all the event types (this looks correct in Glue)
+= The 'schema' of each partition is the subset of columns for the event types that occurred on that day (hence in Glue each partition potentially has a different subset of columns)
+= This inconsistency causes the error in Athena??
+
+What can I do to remedy this? I'd really appreciate any advice, as I would love to leverage the benefits of Glue."
+AWS Glue	"Re: HIVE_PARTITION_SCHEMA_MISMATCH
+For example, there's no way I could force the partition schemas to inherit the table schema?
+
+For reference, I have also asked about this on Stack Overflow: https://stackoverflow.com/questions/46241088/how-to-create-aws-glue-table-where-partitions-have-different-columns-hive-par"
+AWS Glue	"Re: HIVE_PARTITION_SCHEMA_MISMATCH
+I had this same error with parquet; in my case one of my first partitions had a column with datatype long and a later partition defined the same column as a string.
+
+JSON isnt typed so in this case perhaps the column datatype change was more drastic, eg a numeric string to a date string?
+
+ I would compare the partition listed in the error trace to the first partition or another randomly selected partition in the dataset."
+AWS Glue	"Re: HIVE_PARTITION_SCHEMA_MISMATCH
+Thanks for the suggestion. I actually realised it wasn't a change in type for one column between partitions. Instead the problem is that different partitions contain different subsets of columns from the overall table schema. I definitely understand that I would have to fix for the former (as you can't operate on a table with multiple types in one column). But for the latter, I think Glue should be able to handle this, as it can include all table columns in SerDe and then columns which are missing in each partition would be treated as null."
+AWS Glue	"Re: HIVE_PARTITION_SCHEMA_MISMATCH
+I am having a similar issue.  I used a Glue crawler to detect all my tables in S3, which are gzipped JSON and partitioned by date.  Each day's schema may be slightly different than the last due to periodic changes over time.  The query I'm trying to run should just be looking at two columns (an ID and a price, the schema of which have remained consistent), but it's giving me schema mismatch errors for columns I that aren't being selected in the query.
+
+I can't really use it for anything given this current limitation. I just want it to ignore the fields I'm not using and let me query on the tables where the values are present and accounted for (and better yet, ignore any table that doesn't conform to the schema).  Is there a way I can do this, or do I have to process it all again to make the schemas consistent?"
+AWS Glue	"Re: HIVE_PARTITION_SCHEMA_MISMATCH
+This actually happens with the Glue crawler tutorial.    Run through the tutorial and then try to use it in Athena or Quicksight and you will get this mismatch error."
+AWS Glue	"Re: HIVE_PARTITION_SCHEMA_MISMATCH
+Hey,
+
+Saved me a lot of time there. Thanks. Answer in StackOverflow works for me.
+
+Regards.
+JJ"
+AWS Glue	"Re: HIVE_PARTITION_SCHEMA_MISMATCH
+This fixed my issue too. Thank you!"
+AWS Glue	"AWS Glue crawler detecting a .(dot) before header of a csv file
+I am trying to crawl a csv file in utf-8 encoding format but the crawler is detecting a dot before the header. I cannot see any dot when i open the file in text or excel.
+https://imgur.com/b5Rfhfk
+
+Edited by: kmn on Jan 30, 2019 6:54 AM
+
+Edited by: kmn on Jan 30, 2019 6:55 AM"
+AWS Glue	"Re: AWS Glue crawler detecting a .(dot) before header of a csv file
+That looks more like a white space to me. You sure there's no space in there?"
+AWS Glue	"Re: AWS Glue crawler detecting a .(dot) before header of a csv file
+No. There is no white space, this issue only happens when the file is encoded to utf-8"
+AWS Glue	"Issue with accessing Glue Data Catalog with Spark
+Hello!
+I'm forwarding my issue from StackOverflow where I was unable to find correct answer.
+I'm using Spark 2.4.0 on EMR from spark-shell (executed by user hadoop on master node) and trying to store simple Dataframe in S3 using AWS Glue Data Catalog. EMR has automatically generated default IAM roles. The code is below: 
+val peopleTable = spark.sql(""select * from emrdb.testtableemr"")
+val filtered = peopleTable.filter(""name = 'Andrzej'"")
+filtered.repartition(1).write.format(""hive"").mode(""append"").saveAsTable(""emrdb.destDir"")
+
+table emrdb.testtableemr exists in my Glue Data Catalog and was created by Glue Crawler on S3 directory where only one json file exists:
+{""Name"": ""Andrzej"", ""Surname"": ""WenWen"", ""age"": ""32""}
+{""Name"": ""Tomasz"", ""Surname"": ""Tomtom"", ""age"": ""42""}
+{""Name"": ""Andrzej"", ""Surname"": ""Golota"", ""age"": ""52""}
+
+Above code works as expected- data is filtered and stored in s3 directory that is linked with AWS Glue table emrdb.destDir. (emrdb.destDir table was also created by crowler- in table's directory I put same file for crowler to create same structure) The issue I got is: although it works correctly it still throws below exception:
+scala> filtered.repartition(1).write.format(""hive"").mode(""append"").saveAsTable(""emrdb.destDir"")
+org.apache.spark.sql.AnalysisException: java.lang.IllegalArgumentException: Can not create a Path from an empty string;
+  at org.apache.spark.sql.hive.HiveExternalCatalog.withClient(HiveExternalCatalog.scala:106)
+  at org.apache.spark.sql.hive.HiveExternalCatalog.loadTable(HiveExternalCatalog.scala:843)
+  at org.apache.spark.sql.catalyst.catalog.ExternalCatalogWithListener.loadTable(ExternalCatalogWithListener.scala:159)
+  at org.apache.spark.sql.hive.execution.InsertIntoHiveTable.processInsert(InsertIntoHiveTable.scala:259)
+  at org.apache.spark.sql.hive.execution.InsertIntoHiveTable.run(InsertIntoHiveTable.scala:99)
+  at org.apache.spark.sql.hive.execution.CreateHiveTableAsSelectCommand.run(CreateHiveTableAsSelectCommand.scala:66)
+  at org.apache.spark.sql.execution.command.DataWritingCommandExec.sideEffectResult$lzycompute(commands.scala:104)
+  at org.apache.spark.sql.execution.command.DataWritingCommandExec.sideEffectResult(commands.scala:102)
+  at org.apache.spark.sql.execution.command.DataWritingCommandExec.doExecute(commands.scala:122)
+  at org.apache.spark.sql.execution.SparkPlan$$anonfun$execute$1.apply(SparkPlan.scala:131)
+  at org.apache.spark.sql.execution.SparkPlan$$anonfun$execute$1.apply(SparkPlan.scala:127)
+  at org.apache.spark.sql.execution.SparkPlan$$anonfun$executeQuery$1.apply(SparkPlan.scala:155)
+  at org.apache.spark.rdd.RDDOperationScope$.withScope(RDDOperationScope.scala:151)
+  at org.apache.spark.sql.execution.SparkPlan.executeQuery(SparkPlan.scala:152)
+  at org.apache.spark.sql.execution.SparkPlan.execute(SparkPlan.scala:127)
+  at org.apache.spark.sql.execution.QueryExecution.toRdd$lzycompute(QueryExecution.scala:80)
+  at org.apache.spark.sql.execution.QueryExecution.toRdd(QueryExecution.scala:80)
+  at org.apache.spark.sql.DataFrameWriter$$anonfun$runCommand$1.apply(DataFrameWriter.scala:668)
+  at org.apache.spark.sql.DataFrameWriter$$anonfun$runCommand$1.apply(DataFrameWriter.scala:668)
+  at org.apache.spark.sql.execution.SQLExecution$$anonfun$withNewExecutionId$1.apply(SQLExecution.scala:78)
+  at org.apache.spark.sql.execution.SQLExecution$.withSQLConfPropagated(SQLExecution.scala:125)
+  at org.apache.spark.sql.execution.SQLExecution$.withNewExecutionId(SQLExecution.scala:73)
+  at org.apache.spark.sql.DataFrameWriter.runCommand(DataFrameWriter.scala:668)
+  at org.apache.spark.sql.DataFrameWriter.createTable(DataFrameWriter.scala:465)
+  at org.apache.spark.sql.DataFrameWriter.saveAsTable(DataFrameWriter.scala:444)
+  at org.apache.spark.sql.DataFrameWriter.saveAsTable(DataFrameWriter.scala:400)
+  ... 49 elided
+Caused by: java.lang.IllegalArgumentException: Can not create a Path from an empty string
+  at org.apache.hadoop.fs.Path.checkPathArg(Path.java:163)
+  at org.apache.hadoop.fs.Path.<init>(Path.java:175)
+  at org.apache.hadoop.hive.metastore.Warehouse.getDatabasePath(Warehouse.java:172)
+  at org.apache.hadoop.hive.metastore.Warehouse.getTablePath(Warehouse.java:184)
+  at org.apache.hadoop.hive.metastore.Warehouse.getFileStatusesForUnpartitionedTable(Warehouse.java:520)
+  at org.apache.hadoop.hive.metastore.MetaStoreUtils.updateUnpartitionedTableStatsFast(MetaStoreUtils.java:180)
+  at com.amazonaws.glue.shims.AwsGlueSparkHiveShims.updateTableStatsFast(AwsGlueSparkHiveShims.java:62)
+  at com.amazonaws.glue.catalog.metastore.GlueMetastoreClientDelegate.alterTable(GlueMetastoreClientDelegate.java:534)
+  at com.amazonaws.glue.catalog.metastore.AWSCatalogMetastoreClient.alter_table(AWSCatalogMetastoreClient.java:400)
+  at org.apache.hadoop.hive.ql.metadata.Hive.alterTable(Hive.java:497)
+  at org.apache.hadoop.hive.ql.metadata.Hive.alterTable(Hive.java:485)
+  at org.apache.hadoop.hive.ql.metadata.Hive.loadTable(Hive.java:1669)
+  at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+  at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+  at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+  at java.lang.reflect.Method.invoke(Method.java:498)
+  at org.apache.spark.sql.hive.client.Shim_v0_14.loadTable(HiveShim.scala:878)
+  at org.apache.spark.sql.hive.client.HiveClientImpl$$anonfun$loadTable$1.apply$mcV$sp(HiveClientImpl.scala:780)
+  at org.apache.spark.sql.hive.client.HiveClientImpl$$anonfun$loadTable$1.apply(HiveClientImpl.scala:780)
+  at org.apache.spark.sql.hive.client.HiveClientImpl$$anonfun$loadTable$1.apply(HiveClientImpl.scala:780)
+  at org.apache.spark.sql.hive.client.HiveClientImpl$$anonfun$withHiveState$1.apply(HiveClientImpl.scala:275)
+  at org.apache.spark.sql.hive.client.HiveClientImpl.liftedTree1$1(HiveClientImpl.scala:213)
+  at org.apache.spark.sql.hive.client.HiveClientImpl.retryLocked(HiveClientImpl.scala:212)
+  at org.apache.spark.sql.hive.client.HiveClientImpl.withHiveState(HiveClientImpl.scala:258)
+  at org.apache.spark.sql.hive.client.HiveClientImpl.loadTable(HiveClientImpl.scala:779)
+  at org.apache.spark.sql.hive.HiveExternalCatalog$$anonfun$loadTable$1.apply$mcV$sp(HiveExternalCatalog.scala:845)
+  at org.apache.spark.sql.hive.HiveExternalCatalog$$anonfun$loadTable$1.apply(HiveExternalCatalog.scala:843)
+  at org.apache.spark.sql.hive.HiveExternalCatalog$$anonfun$loadTable$1.apply(HiveExternalCatalog.scala:843)
+  at org.apache.spark.sql.hive.HiveExternalCatalog.withClient(HiveExternalCatalog.scala:97)
+  ... 74 more
+
+
+I got same error trying to execute below:
+filtered.repartition(1).write.mode(""append"").insertInto(""emrdb.destDir"")
+
+
+but I'm able to store data bypassing Glue Data Catalog:
+filtered.repartition(1).write.format(""json"").mode(""append"").save(""s3://awenclaw-emr-test/destDir/"")
+
+This make me thinking the issue is on Data Catalog site.
+
+The solution suggested on StackOverflow throws same error:
+filtered.repartition(1).write.option(""path"", ""s3://awenclaw-emr-test/destDir/"").format(""hive"").mode(""append"").saveAsTable(""emrdb.destDir"")
+
+
+So my question is how to correctly store Spark DataFrame into Glue Data Catalog table without all error messages mentioned above?
+
+And link to StackOverflow if you need more details on answer I received.
+https://stackoverflow.com/questions/54441163/writing-spark-dataframe-to-hive-table-through-aws-glue-data-cataloug
+Thanks in advance.
+Andrzej
+
+Edited by: awenclaw on Feb 6, 2019 1:25 AM"
+AWS Glue	"Unable to convert type Integer to Double using ApplyMapping
+I have source data in S3 in the format of JSON that contains a column with mostly integer values with a few double values:
+
+	{ ""name"": ""example_one"", ""value"": 1 }
+	{ ""name"": ""example_two"", ""value"": 2 }
+	{ ""name"": ""example_three"", ""value"": 3 }
+	{ ""name"": ""example_four"", ""value"": 4.9 }
+
+To prevent lossy conversion of the data, I am attempting to convert all integer values to double (a widening conversion). I have created a Glue catalog which uses the double type for this column and correctly retrieves data through Athena queries. I want to be able to convert the JSON data to Parquet.  Currently I am using a Glue jobs to do that.
+
+Using a DynamicFrame in Glue I receive the following schema definition for the column:
+
+	|-- scbcrse_bill_hr_low: choice 
+	| |-- double 
+	| |-- int
+
+I can use the Glue catalog to retrieve the desired data type of double. Using ""ApplyMapping.apply(...)"" I can attempt to map the column to double, however when I do this it will attempt to cast the integers to doubles and will fail, resulting in a null value (and losing all integer data).
+
+My source data contains an unknown number of tables (probably in the order of hundreds) so I am expecting to be able to perform this type of conversion using a single generic Glue job. I would expect ApplyMappings to be able to perform a smart conversion between integer and double data types. Is there a way to convert the data types without losing data?"
+AWS Glue	"Re: Unable to convert type Integer to Double using ApplyMapping
+For anyone else that ends up here from google the answer is the 'resolveChoice' function on the DynamicFrame object
+
+https://github.com/aws-samples/aws-glue-samples/blob/master/examples/resolve_choice.md"
+AWS Glue	"Py4JJavaError: An error occurred while calling o62.getDynamicFrame. : java.
+Hi,
+
+I am getting bellow error while running AWS Glue job which is trying to connect AWS RDS hosting microsoft sql server 2016. Kindly help me to resolve the issue
+
+Job name: studenttabletostorage
+Job run id: jr_1f101005b43b94e07ab25d0b1c9522bf652feb468627d156e90888b20f2239da
+Error : An error occurred while calling o62.getDynamicFrame. : java.lang.NullPointerException at com.amazonaws.services.glue.JDBCDataSource.getPrimaryKeys(DataSource.scala:678)
+Account ID: 350615252183 
+Glue script : 
+
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+
+
+
+
+@params: https://forums.aws.amazon.com/
+
+
+
+args = getResolvedOptions(sys.argv, )
+
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args, args)
+
+
+
+@type: DataSource
+@args: 
+@return: datasource0
+@inputs: []
+
+
+
+datasource0 = glueContext.create_dynamic_frame.from_catalog(database = ""gluecrawlerdata"", table_name = ""gluepoc_dbo_books"", transformation_ctx = ""datasource0"")
+job.commit()
+
+Log Message :
+
+Exception in thread ""main""
+org.apache.spark.SparkException: Application application_1548769593341_0001 finished with failed status
+at org.apache.spark.deploy.yarn.Client.run(Client.scala:1122)
+at org.apache.spark.deploy.yarn.Client$.main(Client.scala:1168)
+at org.apache.spark.deploy.yarn.Client.main(Client.scala)
+at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+at java.lang.reflect.Method.invoke(Method.java:498) at org.apache.spark.deploy.SparkSubmit$.org$apache$spark$deploy$SparkSubmit$$runMain(SparkSubmit.scala:775)
+at org.apache.spark.deploy.SparkSubmit$.doRunMain$1(SparkSubmit.scala:180) at org.apache.spark.deploy.SparkSubmit$.submit(SparkSubmit.scala:205)
+at org.apache.spark.deploy.SparkSubmit$.main(SparkSubmit.scala:119) at org.apache.spark.deploy.SparkSubmit.main(SparkSubmit.scala)
+19/01/29 13:52:02 INFO ShutdownHookManager: Shutdown hook called
+19/01/29 13:52:02 INFO ShutdownHookManager: Deleting directory /tmp/spark-323cd624-5ccc-4447-9d15-22c8504e62f7
+Container: container_1548769593341_0001_01_000001 on ip-172-31-39-55.us-east-2.compute.internal_8041 ====================================================================================================== LogType:stderr Log Upload Time:Tue Jan 29 13:52:04 +0000 2019 LogLength:16966 Log Contents: SLF4J: Class path contains multiple SLF4J bindings. SLF4J: Found binding in  SLF4J: Found binding in  SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation. SLF4J: Actual binding is of type http://org.slf4j.impl.Log4jLoggerFactory 19/01/29 13:51:50 INFO SignalUtils: Registered signal handler for TERM 19/01/29 13:51:50 INFO SignalUtils: Registered signal handler for HUP 19/01/29 13:51:50 INFO SignalUtils: Registered signal handler for INT 19/01/29 13:51:51 INFO ApplicationMaster: Preparing Local resources 19/01/29 13:51:51 INFO ApplicationMaster: ApplicationAttemptId: appattempt_1548769593341_0001_000001 19/01/29 13:51:52 INFO SecurityManager: Changing view acls to: yarn,root 19/01/29 13:51:52 INFO SecurityManager: Changing modify acls to: yarn,root 19/01/29 13:51:52 INFO SecurityManager: Changing view acls groups to: 19/01/29 13:51:52 INFO SecurityManager: Changing modify acls groups to: 19/01/29 13:51:52 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(yarn, root); groups with view permissions: Set(); users with modify permissions: Set(yarn, root); groups with modify permissions: Set() 19/01/29 13:51:52 INFO ApplicationMaster: Starting the user application in a separate Thread 19/01/29 13:51:52 INFO ApplicationMaster: Waiting for spark context initialization... 19/01/29 13:51:53 INFO SparkContext: Running Spark version 2.2.1 19/01/29 13:51:53 INFO SparkContext: Submitted application: tape 19/01/29 13:51:53 INFO SecurityManager: Changing view acls to: yarn,root 19/01/29 13:51:53 INFO SecurityManager: Changing modify acls to: yarn,root 19/01/29 13:51:53 INFO SecurityManager: Changing view acls groups to: 19/01/29 13:51:53 INFO SecurityManager: Changing modify acls groups to: 19/01/29 13:51:53 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(yarn, root); groups with view permissions: Set(); users with modify permissions: Set(yarn, root); groups with modify permissions: Set() 19/01/29 13:51:53 INFO Utils: Successfully started service 'sparkDriver' on port 41739. 19/01/29 13:51:53 INFO SparkEnv: Registering MapOutputTracker 19/01/29 13:51:53 INFO SparkEnv: Registering BlockManagerMaster 19/01/29 13:51:53 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information 19/01/29 13:51:53 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up 19/01/29 13:51:53 INFO DiskBlockManager: Created local directory at /mnt/yarn/usercache/root/appcache/application_1548769593341_0001/blockmgr-75b1b3ab-3019-415f-b5e1-fde1bbf57bb0 19/01/29 13:51:53 INFO MemoryStore: MemoryStore started with capacity 2.8 GB 19/01/29 13:51:53 INFO SparkEnv: Registering OutputCommitCoordinator 19/01/29 13:51:53 INFO JettyUtils: Adding filter: org.apache.hadoop.yarn.server.webproxy.amfilter.AmIpFilter 19/01/29 13:51:53 INFO Utils: Successfully started service 'SparkUI' on port 34755. 19/01/29 13:51:53 INFO SparkUI: Bound SparkUI to 0.0.0.0, and started at http://172.31.39.55:34755 19/01/29 13:51:53 INFO YarnClusterScheduler: Created YarnClusterScheduler 19/01/29 13:51:53 INFO SchedulerExtensionServices: Starting Yarn extension services with app application_1548769593341_0001 and attemptId Some(appattempt_1548769593341_0001_000001) 19/01/29 13:51:53 WARN Utils: spark.executor.instances less than spark.dynamicAllocation.minExecutors is invalid, ignoring its setting, please update your configs. 19/01/29 13:51:53 INFO Utils: Using initial executors = 1, max of spark.dynamicAllocation.initialExecutors, spark.dynamicAllocation.minExecutors and spark.executor.instances 19/01/29 13:51:53 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 43967. 19/01/29 13:51:53 INFO NettyBlockTransferService: Server created on 172.31.39.55:43967 19/01/29 13:51:53 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy 19/01/29 13:51:53 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 172.31.39.55, 43967, None) 19/01/29 13:51:53 INFO BlockManagerMasterEndpoint: Registering block manager 172.31.39.55:43967 with 2.8 GB RAM, BlockManagerId(driver, 172.31.39.55, 43967, None) 19/01/29 13:51:53 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 172.31.39.55, 43967, None) 19/01/29 13:51:53 INFO BlockManager: external shuffle service port = 7337 19/01/29 13:51:53 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 172.31.39.55, 43967, None) 19/01/29 13:51:54 WARN Utils: spark.executor.instances less than spark.dynamicAllocation.minExecutors is invalid, ignoring its setting, please update your configs. 19/01/29 13:51:54 INFO Utils: Using initial executors = 1, max of spark.dynamicAllocation.initialExecutors, spark.dynamicAllocation.minExecutors and spark.executor.instances 19/01/29 13:51:54 WARN YarnSchedulerBackend$YarnSchedulerEndpoint: Attempted to request executors before the AM has registered! 19/01/29 13:51:54 INFO YarnSchedulerBackend$YarnSchedulerEndpoint: ApplicationMaster registered as NettyRpcEndpointRef(spark://YarnAM@172.31.39.55:41739) 19/01/29 13:51:54 INFO ApplicationMaster: =============================================================================== YARN executor launch context: env: CLASSPATH -> ./*:/usr/lib/hadoop-lzo/lib/*:/usr/share/aws/emr/emrfs/conf:/usr/share/aws/emr/emrfs/lib/*:/usr/share/aws/emr/emrfs/auxlib/*:/usr/share/aws/glue/etl/jars/aws-glue-datacatalog-spark-client-1.8.0-SNAPSHOT.jar<CPS>{{PWD}}<CPS>{{PWD}}/__spark_conf__<CPS>{{PWD}}/__spark_libs__/*<CPS>$HADOOP_CONF_DIR<CPS>$HADOOP_COMMON_HOME/*<CPS>$HADOOP_COMMON_HOME/lib/*<CPS>$HADOOP_HDFS_HOME/*<CPS>$HADOOP_HDFS_HOME/lib/*<CPS>$HADOOP_MAPRED_HOME/*<CPS>$HADOOP_MAPRED_HOME/lib/*<CPS>$HADOOP_YARN_HOME/*<CPS>$HADOOP_YARN_HOME/lib/*<CPS>/usr/lib/hadoop-lzo/lib/*<CPS>/usr/share/aws/emr/emrfs/conf<CPS>/usr/share/aws/emr/emrfs/lib/*<CPS>/usr/share/aws/emr/emrfs/auxlib/*<CPS>/usr/share/aws/emr/lib/*<CPS>/usr/share/aws/emr/ddb/lib/emr-ddb-hadoop.jar<CPS>/usr/share/aws/emr/goodies/lib/emr-hadoop-goodies.jar<CPS>/usr/share/aws/emr/kinesis/lib/emr-kinesis-hadoop.jar<CPS>/usr/share/aws/emr/cloudwatch-sink/lib/*<CPS>/usr/share/aws/aws-java-sdk/*<CPS>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*<CPS>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*<CPS>/usr/lib/hadoop-lzo/lib/*<CPS>/usr/share/aws/emr/emrfs/conf<CPS>/usr/share/aws/emr/emrfs/lib/*<CPS>/usr/share/aws/emr/emrfs/auxlib/*<CPS>/usr/share/aws/emr/lib/*<CPS>/usr/share/aws/emr/ddb/lib/emr-ddb-hadoop.jar<CPS>/usr/share/aws/emr/goodies/lib/emr-hadoop-goodies.jar<CPS>/usr/share/aws/emr/kinesis/lib/emr-kinesis-hadoop.jar<CPS>/usr/share/aws/emr/cloudwatch-sink/lib/*<CPS>/usr/share/aws/aws-java-sdk/* SPARK_YARN_STAGING_DIR -> *********(redacted) SPARK_USER -> *********(redacted) SPARK_YARN_MODE -> true command: LD_LIBRARY_PATH=""/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:$LD_LIBRARY_PATH"" \ {{JAVA_HOME}}/bin/java \ -server \ -Xmx5120m \ '-XX:+UseConcMarkSweepGC' \ '-XX:CMSInitiatingOccupancyFraction=70' \ '-XX:MaxHeapFreeRatio=70' \ '-XX:+CMSClassUnloadingEnabled' \ '-XX:OnOutOfMemoryError=kill -9 %p' \ '-XX:+UseCompressedOops' \ '-Djavax.net.ssl.trustStore=InternalAndExternalAndAWSTrustStore.jks' \ '-Djavax.net.ssl.trustStoreType=JKS' \ '-Djavax.net.ssl.trustStorePassword=amazon' \ '-DRDS_ROOT_CERT_PATH=rds-combined-ca-bundle.pem' \ '-DREDSHIFT_ROOT_CERT_PATH=redshift-ssl-ca-cert.pem' \ '-DRDS_TRUSTSTORE_URL=file:RDSTrustStore.jks' \ -Djava.io.tmpdir={{PWD}}/tmp \ -Dspark.yarn.app.container.log.dir=<LOG_DIR> \ org.apache.spark.executor.CoarseGrainedExecutorBackend \ --driver-url \ spark://CoarseGrainedScheduler@172.31.39.55:41739 \ --executor-id \ <executorId> \ --hostname \ <hostname> \ --cores \ 4 \ --app-id \ application_1548769593341_0001 \ --user-class-path \ file:$PWD/__app__.jar \ --user-class-path \ file:$PWD/glue-assembly.jar \ 1><LOG_DIR>/stdout \ 2><LOG_DIR>/stderr resources: rds-combined-ca-bundle.pem -> resource { scheme: ""hdfs"" host: ""ip-172-31-41-85.us-east-2.compute.internal"" port: 8020 file: ""/user/root/.sparkStaging/application_1548769593341_0001/rds-combined-ca-bundle.pem"" } size: 26016 timestamp: 1548769906061 type: FILE visibility: PRIVATE glue-assembly.jar -> resource { scheme: ""hdfs"" host: ""ip-172-31-41-85.us-east-2.compute.internal"" port: 8020 file: ""/user/root/.sparkStaging/application_1548769593341_0001/glue-assembly.jar"" } size: 385021029 timestamp: 1548769905872 type: FILE visibility: PRIVATE glue-override.conf -> resource { scheme: ""hdfs"" host: ""ip-172-31-41-85.us-east-2.compute.internal"" port: 8020 file: ""/user/root/.sparkStaging/application_1548769593341_0001/glue-override.conf"" } size: 271 timestamp: 1548769905916 type: FILE visibility: PRIVATE __app__.jar -> resource { scheme: ""hdfs"" host: ""ip-172-31-41-85.us-east-2.compute.internal"" port: 8020 file: ""/user/root/.sparkStaging/application_1548769593341_0001/glue_job.jar"" } size: 3453 timestamp: 1548769883596 type: FILE visibility: PRIVATE __spark_conf__ -> resource { scheme: ""hdfs"" host: ""ip-172-31-41-85.us-east-2.compute.internal"" port: 8020 file: ""/user/root/.sparkStaging/application_1548769593341_0001/__spark_conf__.zip"" } size: 7523 timestamp: 1548769906162 type: ARCHIVE visibility: PRIVATE RDSTrustStore.jks -> resource { scheme: ""hdfs"" host: ""ip-172-31-41-85.us-east-2.compute.internal"" port: 8020 file: ""/user/root/.sparkStaging/application_1548769593341_0001/RDSTrustStore.jks"" } size: 19135 timestamp: 1548769906104 type: FILE visibility: PRIVATE redshift-ssl-ca-cert.pem -> resource { scheme: ""hdfs"" host: ""ip-172-31-41-85.us-east-2.compute.internal"" port: 8020 file: ""/user/root/.sparkStaging/application_1548769593341_0001/redshift-ssl-ca-cert.pem"" } size: 8621 timestamp: 1548769906084 type: FILE visibility: PRIVATE InternalAndExternalAndAWSTrustStore.jks -> resource { scheme: ""hdfs"" host: ""ip-172-31-41-85.us-east-2.compute.internal"" port: 8020 file: ""/user/root/.sparkStaging/application_1548769593341_0001/InternalAndExternalAndAWSTrustStore.jks"" } size: 122402 timestamp: 1548769906037 type: FILE visibility: PRIVATE __spark_libs__ -> resource { scheme: ""hdfs"" host: ""ip-172-31-41-85.us-east-2.compute.internal"" port: 8020 file: ""/user/root/.sparkStaging/application_1548769593341_0001/__spark_libs__4269773236754067071.zip"" } size: 218234389 timestamp: 1548769883387 type: ARCHIVE visibility: PRIVATE glue-default.conf -> resource { scheme: ""hdfs"" host: ""ip-172-31-41-85.us-east-2.compute.internal"" port: 8020 file: ""/user/root/.sparkStaging/application_1548769593341_0001/glue-default.conf"" } size: 382 timestamp: 1548769905895 type: FILE visibility: PRIVATE image-creation-time -> resource { scheme: ""hdfs"" host: ""ip-172-31-41-85.us-east-2.compute.internal"" port: 8020 file: ""/user/root/.sparkStaging/application_1548769593341_0001/image-creation-time"" } size: 11 timestamp: 1548769906125 type: FILE visibility: PRIVATE =============================================================================== 19/01/29 13:51:54 INFO RMProxy: Connecting to ResourceManager at ip-172-31-41-85.us-east-2.compute.internal/172.31.41.85:8030 19/01/29 13:51:54 INFO YarnRMClient: Registering the ApplicationMaster 19/01/29 13:51:54 WARN Utils: spark.executor.instances less than spark.dynamicAllocation.
+minExecutors is invalid, ignoring its setting, please update your configs. 19/01/29 13:51:54 INFO Utils: Using initial executors = 1, max of spark.dynamicAllocation.initialExecutors, spark.dynamicAllocation.minExecutors and spark.executor.instances 19/01/29 13:51:54 INFO YarnAllocator: Will request 1 executor container(s), each with 4 core(s) and 5632 MB memory (including 512 MB of overhead) 19/01/29 13:51:54 INFO YarnAllocator: Submitted 1 unlocalized container requests. 19/01/29 13:51:54 INFO ApplicationMaster: Started progress reporter thread with (heartbeat : 3000, initial allocation : 200) intervals 19/01/29 13:51:54 INFO AMRMClientImpl: Received new token for : ip-172-31-45-166.us-east-2.compute.internal:8041 19/01/29 13:51:54 INFO YarnAllocator: Launching container container_1548769593341_0001_01_000002 on host ip-172-31-45-166.us-east-2.compute.internal for executor with ID 1 19/01/29 13:51:54 INFO YarnAllocator: Received 1 containers from YARN, launching executors on 1 of them. 19/01/29 13:51:54 INFO ContainerManagementProtocolProxy: yarn.client.max-cached-nodemanagers-proxies : 0 19/01/29 13:51:54 INFO ContainerManagementProtocolProxy: Opening proxy : ip-172-31-45-166.us-east-2.compute.internal:8041 19/01/29 13:52:00 INFO YarnSchedulerBackend$YarnDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (172.31.45.166:33476) with ID 1 19/01/29 13:52:00 INFO ExecutorAllocationManager: New executor 1 has registered (new total is 1) 19/01/29 13:52:00 INFO BlockManagerMasterEndpoint: Registering block manager ip-172-31-45-166.us-east-2.compute.internal:33073 with 2.8 GB RAM, BlockManagerId(1, ip-172-31-45-166.us-east-2.compute.internal, 33073, None) 19/01/29 13:52:00 INFO YarnClusterSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.8 19/01/29 13:52:00 INFO YarnClusterScheduler: YarnClusterScheduler.postStartHook done 19/01/29 13:52:00 INFO GlueContext: GlueMetrics not configured ERROR StatusLogger No log4j2 configuration file found. Using default configuration: logging only errors to the console. 19/01/29 13:52:01 INFO AmazonHttpClient: Configuring Proxy. Proxy Host: 169.254.76.0 Proxy Port: 8888 19/01/29 13:52:02 INFO AmazonHttpClient: Configuring Proxy. Proxy Host: 169.254.76.0 Proxy Port: 8888 19/01/29 13:52:02 INFO GlueContext: nameSpace: gluecrawlerdata, tableName: gluepoc_dbo_employee, connectionName RDSJDBCConnection, vendor: sqlserver 19/01/29 13:52:02 INFO JDBCWrapper: INFO: using ssl properties: Map(encrypt -> true, trustServerCertificate -> false) 19/01/29 13:52:02 ERROR ApplicationMaster: User class threw exception: java.lang.NullPointerException java.lang.NullPointerException at com.amazonaws.services.glue.JDBCDataSource.getPrimaryKeys(DataSource.scala:678) at com.amazonaws.services.glue.JDBCDataSource.getDynamicFrame(DataSource.scala:645) at com.amazonaws.services.glue.DataSource$class.getDynamicFrame(DataSource.scala:71) at com.amazonaws.services.glue.SparkSQLDataSource.getDynamicFrame(DataSource.scala:544) at GlueApp$.main(script_2019-01-29-13-50-37.scala:23) 19/01/29 13:52:02 INFO ApplicationMaster: Final app status: FAILED, exitCode: 15, (reason: User class threw exception: java.lang.NullPointerException) 19/01/29 13:52:02 INFO SparkContext: Invoking stop() from shutdown hook 19/01/29 13:52:02 INFO SparkUI: Stopped Spark web UI at http://172.31.39.55:34755 19/01/29 13:52:02 INFO YarnAllocator: Driver requested a total number of 0 executor(s). 19/01/29 13:52:02 INFO YarnClusterSchedulerBackend: Shutting down all executors 19/01/29 13:52:02 INFO YarnSchedulerBackend$YarnDriverEndpoint: Asking each executor to shut down 19/01/29 13:52:02 INFO SchedulerExtensionServices: Stopping SchedulerExtensionServices (serviceOption=None, services=List(), started=false) 19/01/29 13:52:02 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped! 19/01/29 13:52:02 INFO MemoryStore: MemoryStore cleared 19/01/29 13:52:02 INFO BlockManager: BlockManager stopped 19/01/29 13:52:02 INFO BlockManagerMaster: Blo
+ckManagerMaster stopped 19/01/29 13:52:02 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped! 19/01/29 13:52:02 INFO SparkContext: Successfully stopped SparkContext 19/01/29 13:52:02 INFO ApplicationMaster: Unregistering ApplicationMaster with FAILED (diag message: User class threw exception: java.lang.NullPointerException) 19/01/29 13:52:02 INFO AMRMClientImpl: Waiting for application to be successfully unregistered. 19/01/29 13:52:02 INFO ApplicationMaster: Deleting staging directory hdfs://ip-172-31-41-85.us-east-2.compute.internal:8020/user/root/.sparkStaging/application_1548769593341_0001 19/01/29 13:52:02 INFO ShutdownHookManager: Shutdown hook called 19/01/29 13:52:02 INFO ShutdownHookManager: Deleting directory /mnt/yarn/usercache/root/appcache/application_1548769593341_0001/spark-784ec963-4d2e-45d4-ba85-efc093200d61 End of LogType:stderr LogType:stdout Log Upload Time:Tue Jan 29 13:52:04 +0000 2019 LogLength:52 Log Contents: End of LogType:stdout Container: container_1548769593341_0001_01_000002 on ip-172-31-45-166.us-east-2.compute.internal_8041 ======================================================================================================= LogType:stderr Log Upload Time:Tue Jan 29 13:52:03 +0000 2019 LogLength:4380 Log Contents: SLF4J: Class path contains multiple SLF4J bindings. SLF4J: Found binding in  SLF4J: Found binding in  SLF4J: Found binding in  SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation. SLF4J: Actual binding is of type http://org.slf4j.impl.Log4jLoggerFactory 19/01/29 13:51:59 INFO CoarseGrainedExecutorBackend: Started daemon with process name: 10865@ip-172-31-45-166.us-east-2.compute.internal 19/01/29 13:51:59 INFO SignalUtils: Registered signal handler for TERM 19/01/29 13:51:59 INFO SignalUtils: Registered signal handler for HUP 19/01/29 13:51:59 INFO SignalUtils: Registered signal handler for INT 19/01/29 13:51:59 INFO SecurityManager: Changing view acls to: yarn,root 19/01/29 13:51:59 INFO SecurityManager: Changing modify acls to: yarn,root 19/01/29 13:51:59 INFO SecurityManager: Changing view acls groups to: 19/01/29 13:51:59 INFO SecurityManager: Changing modify acls groups to: 19/01/29 13:51:59 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(yarn, root); groups with view permissions: Set(); users with modify permissions: Set(yarn, root); groups with modify permissions: Set() 19/01/29 13:52:00 INFO TransportClientFactory: Successfully created connection to /172.31.39.55:41739 after 44 ms (0 ms spent in bootstraps) 19/01/29 13:52:00 INFO SecurityManager: Changing view acls to: yarn,root 19/01/29 13:52:00 INFO SecurityManager: Changing modify acls to: yarn,root 19/01/29 13:52:00 INFO SecurityManager: Changing view acls groups to: 19/01/29 13:52:00 INFO SecurityManager: Changing modify acls groups to: 19/01/29 13:52:00 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(yarn, root); groups with view permissions: Set(); users with modify permissions: Set(yarn, root); groups with modify permissions: Set() 19/01/29 13:52:00 INFO TransportClientFactory: Successfully created connection to /172.31.39.55:41739 after 1 ms (0 ms spent in bootstraps) 19/01/29 13:52:00 INFO DiskBlockManager: Created local directory at /mnt/yarn/usercache/root/appcache/application_1548769593341_0001/blockmgr-4b46ce9d-7780-43cf-a312-8c25d92d6aa6 19/01/29 13:52:00 INFO MemoryStore: MemoryStore started with capacity 2.8 GB 19/01/29 13:52:00 INFO CoarseGrainedExecutorBackend: Connecting to driver: spark://CoarseGrainedScheduler@172.31.39.55:41739 19/01/29 13:52:00 INFO CoarseGrainedExecutorBackend: Successfully registered with driver 19/01/29 13:52:00 INFO Executor: Starting executor ID 1 on host ip-172-31-45-166.us-east-2.compute.internal 19/01/29 13:52:00 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 33073. 19/01/29 13:52:00 INFO NettyBlockTransferService: Server created on ip-172-31-45-166.us-east-2.compute.internal:33073 19/01/29 13:52:00 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy 19/01/29 13:52:00 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(1, ip-172-31-45-166.us-east-2.compute.internal, 33073, None) 19/01/29 13:52:00 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(1, ip-172-31-45-166.us-east-2.compute.internal, 33073, None) 19/01/29 13:52:00 INFO BlockManager: external shuffle service port = 7337 19/01/29 13:52:00 INFO BlockManager: Registering executor with local external shuffle service. 19/01/29 13:52:00 INFO TransportClientFactory: Successfully created connection to ip-172-31-45-166.us-east-2.compute.internal/172.31.45.166:7337 after 1 ms (0 ms spent in bootstraps) 19/01/29 13:52:01 INFO BlockManager: Initialized BlockManager:"
+AWS Glue	"AWS Glue: create Job for whole Schema not 1 table at a time
+Is there a way to create a Job that will copy the whole Schema not just 1 table at a time?"
+AWS Glue	"Re: AWS Glue: create Job for whole Schema not 1 table at a time
+I think you need to edit the script and add the other sources manually. This is what I did to combine data from multiple tables and generate a json output, anyway. Can you be a little bit more specific about what you want to achieve?"
+AWS Glue	"Working only new data in aws glue
+Hi everyone,
+I have a math need to solve. I have new data importing to s3 everyday, Right now I have to run all data include old one everyday which is costly but the thing is I only need to convert the new data. Can anyone know how to just only run new data in ETL job in Glue? And how to Glue know and skip all the things it done and only run the new things - which haven't done yet
+
+I appreciate all your comment
+Regards
+Thang
+
+Edited by: phithang711 on Jan 29, 2019 2:25 PM"
+AWS Glue	"Re: Working only new data in aws glue
+discover the job bookmark in aws glue. Hope it helps me. Close this topic right here"
+AWS Glue	"Glue Job Timeout error connecting to S3 outside my account
+Hi there!
+
+I'm having a problem connecting to a S3 in another account from a Glue Job run in my account. 
+In a Zeppelin Dev Endpoint environment it works perfectly (providing AccessKey and SecretKey of the target account obviously), but for some reasons when I run the same script in Glue, it returns with the following timeout error: 
+
+ConnectTimeout: HTTPSConnectionPool(host='s3.target-region.amazonaws.com', port=443): Max retries exceeded with url: /target.bucket?list-type=2&prefix=targetPrefix%2F&delimiter=%2F (Caused by ConnectTimeoutError(<botocore.awsrequest.AWSHTTPSConnection object at 0x7fad7026490>, 'Connection to s3.target-region.amazonaws.com timed out. (connect timeout=60)'))
+
+Is there any possibility I cannot connect to an S3 bucket outside my account from a Glue job still providing AccessKey and SecretKey of such account? If that's the case, what could be a workaround? 
+
+Thank you in advance!
+
+EDIT: looking around on the Web it seems to be a networking problem but I do not understand why it works in a Dev Endpoint environment (created using the same connection - so VPC, subnet and security group - of the Glue Job) and not in the actual Glue Job. My SG has open outbound rules (to prevent any question about that).
+Only thing that comes to mind is the fact that when I set up a Dev Endpoint, to access it via SSH I first need to get an Elastic IP and then associate it to the Dev Endpoint. This is a passage I don't do when setting up a Glue Job. Is it possible I need to set up a NAT Gateway to make the Glue Job able to connect to resources (S3 in this case) external to my account?
+
+EDIT: when I start a Glue Job, I notice two (Elastic) Network Interfaces appear in the NI panel under the EC2 Console which obviously do not have any public IP. My idea is that this way the ""job"" is not accessible from outside the account (as the Dev Endpoint would not be accessible without an associated Elastic IP) and that provokes the Timeout Error. The problem is that I do not know how to associate an Elastic IP to those elastic network interfaces created by the Glue Job (admitting that this is the solution)."
+AWS Glue	"Re: Glue Job Timeout error connecting to S3 outside my account
+Are you using connection in glue job ? if so, make sure that route table has NAT or s3 end point to connect s3."
+AWS Glue	"Re: Glue Job Timeout error connecting to S3 outside my account
+Hi. 
+Again thank you for your answer. 
+Anyway, here's my configuration: 
+
+The job is using a connection (previously set for another job to connect to an RDS inside my account) which is linked to the default VPC and its 3 public subnets (they're public, so connected to the internet gateway already, so they should not need a NAT, should they?) 
+As for the endpoint, if I go to Endpoints panel (VPC console) and create an Endpoint, I think under ""Service Category"" I should select ""Find service by name"" to connect to an S3 OUTSIDE my account (right?). If so, how can I identify the S3 of the account I'd like to connect to? Do I need the other account to create a Service Endpoint attached to its S3 first, so I can call it from my account? 
+
+I'am asking this because if I select AWS Services, it lists all the services in my account, for example com.amazonaws.eu-central-1.s3 (which I used to connect to MY S3) and I think that is enough for the system since I'm calling it from inside my account; whereas if I try to select ""Find service by name"" and type com.amazonaws.eu-west-1.s3 it obviously fails the verification (I think it simply looks for s3 service in my account in the eu-west-1 region, which I don't have). So possibly the string to type when connecting to an external (other account) service must be a little bit more specific. Let me know what you think about that. 
+
+Thank you so much!
+
+EDIT: what confuses me is why don't I need such a endpoint (or whatever it is that I am missing) to the external account when launching the script from the Dev Endpoint. From there it is sufficient to provide Access and Secret Key of the external account to the boto3.client call to get access to the external bucket. What's the difference between Dev Endpoint and Serverless Glue Service that's creating such a problem?
+
+Edited by: fabioSama on Jan 25, 2019 3:12 AM"
+AWS Glue	"Re: Glue Job Timeout error connecting to S3 outside my account
+S3 endpoint only checks the region (I think it does not check account unless you have added policy in end point).so, each region should have own end point.
+
+they're public, so connected to the internet gateway already, so they should not need a NAT, should they?
+
+==> yes, Glue does not support IGW so you need to have NAT or end point for each region."
+AWS Glue	"Re: Glue Job Timeout error connecting to S3 outside my account
+Thank you for your answer. 
+
+Well, I have already added an S3 endpoint in my account (region eu-central-1). 
+You are telling me that to have everything working properly when I launch a job from inside Glue (in Zeppelin from my Dev Endpoint it already works) I simply need the other account (regio eu-west-1) to set an S3 endpoint? No NAT, no Service Endpoint, right?"
+AWS Glue	"Glue job doesn't process new data
+I use Glue job to transform JSON to Parquet and relationalize data. Source table has 6 partitions  sub,year, month, day, hour, min.
+My code is:
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+ 
+## @params: [JOB_NAME]
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+datasource0 = glueContext.create_dynamic_frame.from_catalog(database = ""logs"", table_name = ""act_logs"", transformation_ctx = ""datasource0"")
+resolve0 = ResolveChoice.apply(frame = datasource0, specs = [('time','cast:timestamp')], transformation_ctx = ""resolve0"")
+dropped0 = DropFields.apply(frame = resolve0, paths = ['category','location','resultType','min','properties'], transformation_ctx = ""dropped0"")
+relatio0 = Relationalize.apply(frame = dropped0, staging_path = ""s3://#####/temp/"", name = ""roottable"", transformation_ctx = ""relatio0"")
+datasink0 = glueContext.write_dynamic_frame.from_options(frame = relatio0, connection_type = ""s3"", connection_options = {""path"":""s3://#####/converted/act_logs"", ""partitionKeys"": ['sub','y','m','d']}, format = ""parquet"", transformation_ctx = ""datasink0"")
+job.commit()
+
+For output I use only sub, y,m,d partitions. 
+
+My problem is when I run this job for the first time (with empty output .../converted/act_logs in S3) it works proprly. All data from input is read and processed. But when I try to run this with the new data (data from next day) it looks like job doesn't see new data. I even don't see new data in logs.
+I tryed enable/disable/reset bookmarks. No effect.
+If I clean output folder, job will process all data properly. I think it may be related with paritions but I don't understand how."
+AWS Glue	"Re: Glue job doesn't process new data
+make sure next day partition were added to the table,you can check using getpartition api or on console."
+AWS Glue	"What join options are available using AWS Glue's Join.Apply()
+I just ran through this tutorial (https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-python-samples-legislators.html) successfully.  However, it raised some questions as to how the Join.Apply method works behind the scenes.
+
+In the tutorial, the first join takes the following two tables:
+
+person
+|-- family_name: string
+|-- name: string
+|-- links: array
+|    |-- element: struct
+|    |    |-- note: string
+|    |    |-- url: string
+|-- gender: string
+|-- image: string
+|-- identifiers: array
+|    |-- element: struct
+|    |    |-- scheme: string
+|    |    |-- identifier: string
+|-- other_names: array
+|    |-- element: struct
+|    |    |-- lang: string
+|    |    |-- note: string
+|    |    |-- name: string
+|-- sort_name: string
+|-- images: array
+|    |-- element: struct
+|    |    |-- url: string
+|-- given_name: string
+|-- birth_date: string
+|-- id: string
+|-- contact_details: array
+|    |-- element: struct
+|    |    |-- type: string
+|    |    |-- value: string
+|-- death_date: string
+
+memberships
+|-- area_id: string
+|-- on_behalf_of_id: string
+|-- organization_id: string
+|-- role: string
+|-- person_id: string
+|-- legislative_period_id: string
+|-- start_date: string
+|-- end_date: string
+
+The join syntax is:
+persons_and_memberships = Join.apply(persons, memberships, 'id', 'person_id')
+
+
+So, we are joining memberships to persons on the person_id.  Makes sense, and the resulting schema is what I would expect:
+
+persons_and_memberships
+|-- role: string
+|-- links: array
+|    |-- element: struct
+|    |    |-- note: string
+|    |    |-- url: string
+|-- person_id: string
+|-- sort_name: string
+|-- area_id: string
+|-- images: array
+|    |-- element: struct
+|    |    |-- url: string
+|-- on_behalf_of_id: string
+|-- other_names: array
+|    |-- element: struct
+|    |    |-- note: string
+|    |    |-- name: string
+|    |    |-- lang: string
+|-- birth_date: string
+|-- name: string
+|-- organization_id: string
+|-- gender: string
+|-- legislative_period_id: string
+|-- identifiers: array
+|    |-- element: struct
+|    |    |-- scheme: string
+|    |    |-- identifier: string
+|-- given_name: string
+|-- image: string
+|-- family_name: string
+|-- id: string
+|-- contact_details: array
+|    |-- element: struct
+|    |    |-- type: string
+|    |    |-- value: string
+|-- start_date: string
+|-- end_date: string
+|-- death_date: string
+
+Makes sense, right?  All the columns from the persons and memberships tables are there.  Now, we join the organizations table into this new persons_and_memberships table, and this is where it gets confusing (for me).
+
+organizations
+|-- classification: string
+|-- org_id: string
+|-- org_name: string
+|-- image: string
+|-- links: array
+|    |-- element: struct
+|    |    |-- note: string
+|    |    |-- url: string
+|-- seats: int
+|-- type: string
+
+and now we join in like this:
+master_table = Join.apply(organizations, persons_and_memberships, 'org_id', 'organization_id').drop_fields(['person_id','org_id'])
+
+
+Notice that both the organizations and persons_and_memberships schemas have a 'links' column, and 'image' column.  The resulting join gives me (note, this is roughly the same as what the tutorial expects, so it is behaving ""properly""):
+
+master_table
+|-- role: string
+|-- seats: int
+|-- org_name: string
+|-- links: array
+|    |-- element: struct
+|    |    |-- note: string
+|    |    |-- url: string
+|-- type: string
+|-- sort_name: string
+|-- area_id: string
+|-- images: array
+|    |-- element: struct
+|    |    |-- url: string
+|-- on_behalf_of_id: string
+|-- other_names: array
+|    |-- element: struct
+|    |    |-- lang: string
+|    |    |-- note: string
+|    |    |-- name: string
+|-- name: string
+|-- birth_date: string
+|-- organization_id: string
+|-- gender: string
+|-- classification: string
+|-- death_date: string
+|-- legislative_period_id: string
+|-- identifiers: array
+|    |-- element: struct
+|    |    |-- scheme: string
+|    |    |-- identifier: string
+|-- image: string
+|-- given_name: string
+|-- start_date: string
+|-- family_name: string
+|-- id: string
+|-- contact_details: array
+|    |-- element: struct
+|    |    |-- type: string
+|    |    |-- value: string
+|-- end_date: string
+
+I would expect there to be some column duplication, but it seems the ""image"" and ""links"" columns from organizations (or maybe from persons?) is gone.  To test, I tried renaming the columns on organizations to ""org_image"" and ""org_links"":
+
+|-- classification: string
+|-- org_id: string
+|-- org_name: string
+|-- org_image: string
+|-- org_links: array
+|    |-- element: struct
+|    |    |-- note: string
+|    |    |-- url: string
+|-- seats: int
+|-- type: string
+
+But, when I perform the join - same result.  Okay, maybe all of the records that are joined in don't have an org_image or org_links set.  Looking at the data, I find this to be true, since only the hashed organization_ids (8fa6c3d2* & d56acebe*) are present in the person table:
+
++--------------------+--------------------+
+|              org_id|           org_image|
++--------------------+--------------------+
+|party/republican-...|                null|
+|            party/al|                null|
+|party/popular_dem...|                null|
+|      party/democrat|https://upload.wi...|
+|party/democrat-li...|                null|
+|d56acebe-8fdc-47b...|                null|
+|    party/republican|https://upload.wi...|
+|   party/independent|                null|
+|8fa6c3d2-71dc-478...|                null|
+|party/new_progres...|https://upload.wi...|
++--------------------+--------------------+
+
+
+So, question 1:  Does glue omit columns from a join if all of the rows joined in have null values?  Does the order of tables are called in Join.apply matter?
+
+To test, I decided to undo the org_image/org_links column renaming, and reverse the order of the join.  The code now looks like this:
+
+master_table = Join.apply(persons_and_memberships, organizations, 'organization_id', 'org_id').drop_fields(['person_id','org_id'])
+
+
+Now, I get -
+master_table
+|-- role: string
+|-- seats: int
+|-- org_name: string
+|-- type: string
+|-- sort_name: string
+|-- area_id: string
+|-- images: array
+|    |-- element: struct
+|    |    |-- url: string
+|-- .image: string
+|-- on_behalf_of_id: string
+|-- other_names: array
+|    |-- element: struct
+|    |    |-- lang: string
+|    |    |-- note: string
+|    |    |-- name: string
+|-- name: string
+|-- birth_date: string
+|-- organization_id: string
+|-- gender: string
+|-- .links: array
+|    |-- element: struct
+|    |    |-- note: string
+|    |    |-- url: string
+|-- classification: string
+|-- death_date: string
+|-- identifiers: array
+|    |-- element: struct
+|    |    |-- scheme: string
+|    |    |-- identifier: string
+|-- legislative_period_id: string
+|-- given_name: string
+|-- start_date: string
+|-- family_name: string
+|-- id: string
+|-- contact_details: array
+|    |-- element: struct
+|    |    |-- type: string
+|    |    |-- value: string
+|-- end_date: string
+
+Now, the image and links columns are prefixed with a period ""."" -  Question 2:  Why are some columns prefixed with a period?
+
+If I try renaming the columns back to org_image and org_links, the columns go back to not showing at all.  Question 3:  If I wanted all the columns to show, despite having only null values  (an outer join), how do I do that?
+
+When I use the native DataFrame.join method (http://www.learnbymarketing.com/1100/pyspark-joins-by-example/), which gives options to specify inner, outer, and left/right, the results are more inline with what I would expect.
+
+Question 4: If you need more control over complex joins is the preferred method to join structures as DataFrames, and then convert back to a DynamicFrame?  Or, is there a way to specify join options when calling Join.Apply()?"
+AWS Glue	"Re: What join options are available using AWS Glue's Join.Apply()
+I'm curious to know any answer to this, too. 
+
+I'd like to be able to perform a LEFT OUTER JOIN between DynamicFrames if possible. Have you found out anything about that? 
+
+Thanks"
+AWS Glue	"Extracting data from dynamodb table with 'OnDemand' configuration
+Hi,
+
+We wanted to extract data from dynamodb tables and place them into s3 using AWS Glue's ETL.
+Our tables are using new feature 'OnDemand' which doesn't require us to provide provisioned read/write throughput. 
+
+Pyspark ETL script is reading from ones of these tables and what surprised me is the speed at which data is being extracted from the table. It reads data at 1 RCU.
+
+I have tried to use connection_options to solve this issue:
+
+datasource0 = glueContext.create_dynamic_frame.from_options(
+    connection_type = ""dynamodb"",
+    connection_options = {
+        ""dynamodb.input.tableName"" : ""<table_name>"",
+        ""dynamodb.throughput.read.percent"" : ""1.5""
+    }
+)
+
+
+connection_options allows us to specify which percent of read throughput we can use from our table (allowed range is from 0.5 = 50% to 1.5 = 150%). It seems that what ever i pass to dynamodb.throughput.read.percent property it has no effect on RCU that are being consumed.
+
+Is there anything I am missing here or AWS Glue cannot work with DynamoDB tables that have 'OnDemand' feature turned on?"
+AWS Glue	"Re: Extracting data from dynamodb table with 'OnDemand' configuration
+I have not tested , could you try with ""dynamodb.throughput.read"" ?
+
+""dynamodb.throughput.read"":""6000""
+
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.InitialThroughput"
+AWS Glue	"Re: Extracting data from dynamodb table with 'OnDemand' configuration
+Hi Shivan,
+
+Thanks for your reply. I have tried your suggestions (even though that property is not written in documentation) and unfortunately same result.
+
+I did go through documentation once more (https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html)
+I wanted to makes sure if i missed something and found this: 
+
+Note
+On-demand is currently not supported by AWS Data Pipeline, the DynamoDB import/export tool, and AWS Glue.
+
+
+It seems as of now it ain't supported yet"
+AWS Glue	"Re: Extracting data from dynamodb table with 'OnDemand' configuration
+Thanks for trying. so other workaround is , change the table to provision mode then run the job . once job done , change capacity back to ondemand if it is one time activity."
+AWS Glue	"S3ServiceException:The specified key does not exist.,Status 404
+Hello,
+
+I've got a number of Glue jobs which read from RDS and write to Redshift. Occasionally they will fail with the error message: 
+
+Caused by: java.sql.SQLException: https://forums.aws.amazon.com/(500310) Invalid operation: S3ServiceException:The specified key does not exist.,Status 404,Error NoSuchKey,Rid 8D3E1160D58B32A7,ExtRid ldW9c30QUHJeloYKjIn0SFrle/B+lE/FqLPSk9/dj1XUZrQyvEcAU4wGw0+xzULz48GuahbuSf0=,CanRetry 1
+Details:
+
+error: S3ServiceException:The specified key does not exist.,Status 404,Error NoSuchKey,Rid 8D3E1160D58B32A7,ExtRid ldW9c30QUHJeloYKjIn0SFrle/B+lE/FqLPSk9/dj1XUZrQyvEcAU4wGw0+xzULz48GuahbuSf0=,CanRetry 1
+code: 8001
+context: S3 key being read : s3://BUCKET_NAME/etl-tmp/c94cab9d-d037-4225-b733-1ea0ab75dd3a/part-00017-2295247e-df75-4c0d-bf1d-f37bf3d6dd3e-c000.csv
+query: 28157
+location: table_s3_scanner.cpp:357
+process: query1_109_28157 https://forums.aws.amazon.com/
+
+Looking in the S3 console I do see the file exists. 
+
+Is this some internal error? 
+
+Additionally, what's the best recourse for users to debug these types of issues when they arise?"
+AWS Glue	"Re: S3ServiceException:The specified key does not exist.,Status 404
+It looks like consistent issue.  is bucket version enabled ? if so, could you disable or change the glue temp location to bucket where version is not enabled .
+
+s3://BUCKET_NAME/etl-tmp/c94cab9d-d037-4225-b733-1ea0ab75dd3a/part-00017-2295247e-df75-4c0d-bf1d-f37bf3d6dd3e-c000.csv"
+AWS Glue	"Re: S3ServiceException:The specified key does not exist.,Status 404
+Appreciate the response Shivan. It does seem like it could be a consistency issue. The bucket has Versioning disabled."
+AWS Glue	"Re: S3ServiceException:The specified key does not exist.,Status 404
+Good to know, you can mark this as answered"
+AWS Glue	"Re: S3ServiceException:The specified key does not exist.,Status 404
+The issue still happens from time to time, it certainly has been less. Just so it's clear: I have not changed anything in either the glue script/job or the S3 bucket configuration. I'm not certain how to reproduce it and have no good way (that I'm aware of) to debug it."
+AWS Glue	"Re: S3ServiceException:The specified key does not exist.,Status 404
+Glue create a manifest file and run copy command. redshift use that manifest and load the data . I think manifest file contains the location but s3 returns file not found exception which can happen due to version enabled in s3 bucket."
+AWS Glue	"Did Bookmarks Break in AWS Glue?
+Did anyone run into issues relating to bookmarks today?  we archive all of our raw data that's older than 2 months old and run json to parquet conversion loads using bookmarks and it's been working fine.  but today all of our jobs are failing because it's looking for for data that's already been archived but it shouldn't be because that data has already been loaded."
+AWS Glue	"DataCatalogue with Redshift connection results in IllegalArgumentException
+I'm having created a data catalogue with a redshift connection.
+Connection is proved to be working and catalogue contains reasonable tables.
+According to documentation, connecting should work like this:
+
+df = glueContext.create_dynamic_frame.from_catalog(
+    database=""my_database_name"",
+    table_name=""my_table_name"",
+    additional_options={""aws_iam_role"": ""my_redshift_role""})
+
+
+When trying to use glueContext together with the catalogue, this results in a IllegalArgument Exception:
+ File ""/tmp/zeppelin_pyspark-908166715716271261.py"", line 367, in <module>
+    raise Exception(traceback.format_exc())
+Exception: Traceback (most recent call last):
+  File ""/tmp/zeppelin_pyspark-908166715716271261.py"", line 360, in <module>
+    exec(code, _zcUserQueryNameSpace)
+  File ""<stdin>"", line 14, in <module>
+  File ""/usr/share/aws/glue/etl/python/PyGlue.zip/awsglue/context.py"", line 136, in create_dynamic_frame_from_catalog
+    return source.getFrame(**kwargs)
+  File ""/usr/share/aws/glue/etl/python/PyGlue.zip/awsglue/data_source.py"", line 36, in getFrame
+    jframe = self._jsource.getDynamicFrame()
+  File ""/usr/lib/spark/python/lib/py4j-0.10.4-src.zip/py4j/java_gateway.py"", line 1133, in __call__
+    answer, self.gateway_client, self.target_id, self.name)
+  File ""/usr/lib/spark/python/pyspark/sql/utils.py"", line 79, in deco
+    raise IllegalArgumentException(s.split(': ', 1)[1], stackTrace)
+IllegalArgumentException: u'Unrecognized scheme null; expected s3, s3n, or s3a'
+ 
+
+Also when using the 'from_options()' method with credentials the same error occurs.
+
+I'm running the code in a notebook, running on a local zeppelin instance which is connected to
+a glue dev-endpoint via ssh.
+
+Edited by: nicsl0s on Jan 21, 2019 8:57 AM"
+AWS Glue	"Re: DataCatalogue with Redshift connection results in IllegalArgumentException
+Hi,
+I have an update on this issue.
+We found, that reading from_catalog works, when using parameter redshift_tmp_dir
+with an s3 bucket. This is not obvious from the this 
+documentation https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-pyspark-extensions-dynamic-frame-reader.html#aws-glue-api-crawler-pyspark-extensions-dynamic-frame-reader-from_catalog.
+But seems to work at least.
+Is there a fix for this?"
+AWS Glue	"AWS Glue logging/debugging and rdd data manipulation
+Hi!
+
+I'm struggling a bit with a custom PySpark Glue job script. I managed to get some tables from the previously crawled data, convert them into several dataframes (using toDF() method) and join them so to have a very big df to work with. 
+Now, calling  df.repartition(1).write.json('s3://my_destination_bucket/my_folder') it works fine, giving in output a very big JSON file. Now, the problem is that the output json is something like: 
+
+{ 
+    ""firstname"":""Fabio"",
+    ""lastname"":""Sama"",
+    ""email"":""fabio.sama@test.it"",
+    ""user_id"":10,
+    ""total_price"":4.00,
+    ""order_id"":530,
+    ""policy_number"": ""100003053"",
+    ""product_name"":""product_1""
+}
+{ 
+    ""firstname"":""Fabio"",
+    ""lastname"":""Sama"",
+    ""email"":""fabio.sama@test.it"",
+    ""user_id"":10,
+    ""total_price"":8.00,
+    ""order_id"":123,
+    ""policy_number"": ""100003053"",
+    ""product_name"":""product_2""
+}
+Obviously I have one json per line, here they are beautified for reading purposes.
+
+Now, my goal is to have a nested structure where each user (so each different 'user_id') is present only ONCE, and all the orders linked to that user are grouped inside a nested JSON object, like the following: 
+{ 
+    ""firstname"":""Fabio"",
+    ""lastname"":""Sama"",
+    ""email"":""fabio.sama@test.it"",
+    ""user_id"":10,
+    ""orders"": [ 
+     {
+        ""total_price"":4.00,
+        ""order_id"":530,
+        ""policy_number"": ""100003053"",
+        ""product_name"":""product_1""
+     },
+     {
+        ""total_price"":8.00,
+        ""order_id"":123,
+        ""policy_number"": ""100003053"",
+        ""product_name"":""product_2""
+     }
+    ]
+}
+
+So, I imagine the right path to take is to convert the DataFrame into a RDD first (is 'df.rdd' sufficient? should I repartition(1) or coalesce(1) or collect first?) and then work on that to create a nested JSON (any idea on how to do that?). Finally I should bring it back to DF so I can output it with write.json(...).
+
+My biggest problems are linked to the fact that I cannot find a way to properly carry on a debugging process on Glue, since my logging is not working (I tried to import logging and then call 'logging.warning(df.rdd)' but I do not find it in CloudWatch) nor I manage to print a rdd (I tried calling df.rdd.saveAsTextFile(...) but it returns a 'java.lang.ClassNotFoundException: Class org.apache.hadoop.mapred.DirectOutputCommitter not found' )
+
+Can you help me with that? 
+Thank you so much in advance!"
+AWS Glue	"Re: AWS Glue logging/debugging and rdd data manipulation
+1.How to create nested json , convert to df and use below link for creating array 
+
+https://stackoverflow.com/questions/51361499/group-array-type-columns-in-pyspark
+
+2. Repartition(1) or colease is not best practice in big data echo . system as it runs on one worker . it would be slow or fail the job
+
+3. Glue does not provide the worker log hence you cannot get executor log except driver log."
+AWS Glue	"Re: AWS Glue logging/debugging and rdd data manipulation
+First of all thank you so much for your kind answer! It did help me indirectly since I started looking for a way to create the nested json directly during the join insted of work on it later and I ended up sorting out the problem using groupBy, agg and collect_list inside the join. 
+
+As for the logging, I manage to have something logged using logging.warning(df.take(1)).
+
+Now I have two needs: 
+
+1) In my final json I have the nested structure I wanted, but I also have a nested column ('order_user_id' used to carry out the join between users and orders dataframes) that I should not have. Do you know any simple way to drop a nested column? Something as simple as df.drop('orders.order_user_id')? 
+
+Edit: to better explain my situation this is the schema I have at the moment (output of ""users_orders.printSchema()""): 
+root
+ |-- firstname: string (nullable = false)
+ |-- lastname: string (nullable = false)
+ |-- email: string (nullable = false)
+ |-- orders: array (nullable = true)
+ |    |-- element: struct (containsNull = true)
+ |    |    |-- total: decimal(5,2) (nullable = true)
+ |    |    |-- completed_at: string (nullable = false)
+ |    |    |-- order_id: integer (nullable = true)
+ |    |    |-- order_user_id: integer (nullable = true)
+ |    |    |-- policy_number: string (nullable = true)
+ |    |    |-- product_name: string (nullable = true)
+
+I need to remove that nested ""order_user_id"". Ideas? 
+
+2) I know repartition(1) is not a best practice but I need to have the output as a single file, not spread over hundreds of different files. Is there a way to accomplish such a goal but exploiting the slaves parallelism?
+
+Edited by: fabioSama on Jan 22, 2019 12:47 AM"
+AWS Glue	"OOTB Job Tutorial Issue
+Hi, I followed the AWS Glue tutorial OOTB to create job to convert, csv to parquet. It fails thus, see below. Any idea why this does not work? Thanks. 
+
+S3AbortableInputStream: Not all bytes were read from the S3ObjectInputStream, aborting HTTP connection. This is likely an error and may result in sub-optimal behavior. Request only the bytes you need via a ranged GET or drain the input stream after use. 19/01/22 01:24:51 INFO Executor: Executor interrupted and killed task 5.1 in stage 0.0 (TID 40), reason: stage cancelled 19/01/22 01:24:51 ERROR FileFormatWriter: Job job_20190122012448_0000 aborted. 19/01/22 01:24:51 WARN S3AbortableInputStream: Not all bytes were read from the S3ObjectInputStream, aborting HTTP connection. This is likely an error and may result in sub-optimal behavior. Request only the bytes you need via a ranged GET or drain the input stream after use. 19/01/22 01:24:51 INFO Executor: Executor interrupted and killed task 7.1 in stage 0.0 (TID 44), reason: stage cancelled 19/01/22 01:24:51 INFO CoarseGrainedExecutorBackend: Driver commanded a shutdown 19/01/22 01:24:51 INFO CoarseGrainedExecutorBackend: Driver from 172.32.87.168:42673 disconnected during shutdown 19/01/22 01:24:51 INFO CoarseGrainedExecutorBackend: Driver from 172.32.87.168:42673 disconnected during shutdown 19/01/22 01:24:51 INFO MultipartUploadOutputStream: close closed:false s3://sjmparquetoutput/root2/_temporary/0/_temporary/attempt_20190122012341_0000_m_000004_0/part-00004-d06b738d-73f0-4b43-a5be-b8600edeb10e-c000.snappy.parquet 19/01/22 01:24:51 INFO MemoryStore: MemoryStore cleared 19/01/22 01:24:51 INFO BlockManager: BlockManager stopped 19/01/22 01:24:51 INFO ShutdownHookManager: Shutdown hook called End of LogType:stderr LogType:stdout Log Upload Time:Tue Jan 22 01:24:52 +0000 2019 LogLength:0 Log Contents: End of LogType:stdout"
+AWS Glue	"Glue job error ""Too many connections""
+Hello, I'm pretty new to Glue and I keep getting this ""Too many connections"" error on a job that I can't figure out. Basically I have an RDS instance with two databases, one is the source and the other is the target for transformed data. I'm using Python. RDS size is t2.small, but I checked its logs and it says number of connections never exceeds 100. T2.small limit should be 150. I'm not even sure if this error is referring to database connections to the RDS instance, or Glue connections.
+
+My jobs before have worked fine, this problem only came up when I tried adding newest table in the database. All my jobs have two Glue connections, since there are two databases, but everything has worked fine prior to this.
+
+Should I be explicitly closing connections in the job? My normal jobs have multiple DynamicFrames written to database at various times, so that could create multiple connections. But I tried creating separate job just for that one table, and  I still get same error.
+
+Caused by: com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException: Too many connections"
+AWS Glue	"AWS Glue crawler reading GZIP header info
+Hello,
+  I have set up a crawler in Glue, which crawls compressed CSV files (GZIP format) from S3 bucket. I have an ETL job which converts this CSV into Parquet and another crawler which read parquet file and populates parquet table.
+
+The first crawler which reads compressed CSV file (GZIP format) seems like reading GZIP file header information. CSV file has five fields. Below is the sample data
+
+3456789,1,200,20190118,9040
+
+However after crawler populates the table, row looks like below.
+
+xyz.csv0000644000175200017530113404730513420142427014701 0ustar wlsadmin3456789 1 200 20190118 9040
+
+First column has some additional data which has file name and the user name of the machine where the GZIP file created.
+
+Any idea, how can I avoid this situation and read correct values."
+AWS Glue	"Tested fine but JDBC connections cause job to fail
+Tried to use a verified JDBC source. Runs for 12 minutes and then get run status of failed, NO LOG, NO ERROR LOG, just ""Reverse dns resolution of ip 10.0.13.111 failed"" where the last quad changes every time. The connection to JDBC passes all tests and we don't have any servers in 10.0.13.*. It's a different address in 10.0.13 every time: 
+
+Run results:
+jr_d751847840a3ba43136ab0b446e8eed9c5cba536a6798f62f4bec533c8e865fa Reverse dns resolution of ip 10.0.13.111 failed 
+jr_b9702e3ab911ad538199561047bfd0e192fe18e6f8c2ded5f761446d76d14f6d Reverse dns resolution of ip 10.0.13.157 failed 
+jr_ebacad3790d3fae96c799702b4387cdeda98cef1fd462fbe8d8de2ab60037dd6 Reverse dns resolution of ip 10.0.13.39 failed 
+jr_b890677750f3642809d7cdd880031e7fca0ce4dbfd2bb0394d21c327fb0d9852 Reverse dns resolution of ip 10.0.13.89 failed
+
+I tried calling support and sat on hold for 90 minutes and then I hung up. I'm currently waiting for their chat to respond.
+
+Job script attached...
+
+Edited by: JoshuaGuttman on Nov 20, 2017 12:51 PM"
+AWS Glue	"Re: Tested fine but JDBC connections cause job to fail
+Hello - 
+
+    I am running into this as well.  I am not using any Custom DNS in my VPC, and I have followed the (extremely vague and non-helpful) documentation for this error, but I am still getting it.  I am currently evaluating ETL packages for a large project we are working on, and I was hoping to keep everything in AWS, but this is a show stopper since I cannot figure it out.  I have been able to get S3 -> S3 jobs running, but it is failing with RDS -> S3.  As the OP noted, the ""test connection"" succeeds for the source, but the jobs pulling from that connection fail.  There are no error logs, no output logs, just a cryptic ""reverse dns resolution of ip x.x.x.x failed"".
+
+Thanks"
+AWS Glue	"Re: Tested fine but JDBC connections cause job to fail
+Reverse dns resolution of ip 10.0.13.111 failed
+==> it is due to custom DNS, get the subnet from RDS/JDBC glue connection. go to VPC for the subnet and check the DNS setting. if VPC has custom DNS then you have to add A/PTR record for all the ips of subnet 
+
+Error from initial validation before job kick start hence there would not be any logs in cloud watch ."
+AWS Glue	"AWS GLUE job failure working with partitioned Parquet files
+Hi 
+
+I need help. I get the following error when running a GLUE job over partitioned parquet files 
+Unable to infer schema for Parquet. It must be specified manually
+
+I have set up my crawler and successfully obtained the schema for my parquet files. I can view the data in Athena. I have created the schema manually on my target Redshift. 
+I can load the files via GLUE into Redshift if all my data is in one folder only.
+ BUT when I point at a folder  that has nested folders, e.g. folder X - has 04  and 05  - the GLUE job fails with the message
+Unable to infer schema for Parquet. It must be specified manually
+
+which is strange as it works if i put all these files into the same folder"
+AWS Glue	"Re: AWS GLUE job failure working with partitioned Parquet files
+add star ""*"" at the end of s3 path example, 
+
+s3://<path>/*
+
+
+Edited by: Shivan on Jan 18, 2019 10:50 AM"
+AWS Glue	"Error when i try to create a Job
+I am trying to choose a data source, when I press the next button, after selected a table, nothing happens. Checking the chrome/firefox/edge console the next error appears: 
+glue-0.js:5313 Thu Jan 17 20:33:18 GMT-600 2019 
+SEVERE: Uncaught exception
+com.google.gwt.core.client.JavaScriptException: (TypeError) : Cannot read property 'is' of null
+	at Unknown.JJg(glue-1.js)
+	at Unknown.PKg(glue-1.js)
+	at Unknown.UWf(glue-0.js)
+	at Unknown.ve(glue-0.js)
+	at Unknown.Ae(glue-0.js)
+	at Unknown.De(glue-0.js)
+	at Unknown.Ge(glue-0.js)
+	at Unknown.jLm(glue-0.js)
+	at Unknown.Te(glue-0.js)
+	at Unknown.fUj(glue-0.js)
+	at Unknown.tUj(glue-0.js)
+	at Unknown.eval(glue-0.js)
+	at Unknown.qKj(glue-0.js)
+	at Unknown.tKj(glue-0.js)
+	at Unknown.eval(glue-0.js)
+
+
+Can someone help me?"
+AWS Glue	"Error with crawler for JSON type files
+Hi,
+
+I recently used AWS Glue, but received an error: 'Internal Service Exception'. This happened when creating a crawler for an S3 file type that is in JSON format. I was successful in creating a crawler for a CSV formatted file. 
+
+Are JSON file types currently not supported for crawlers?
+
+Thanks,"
+AWS Glue	"Re: Error with crawler for JSON type files
+The docs say JSON is covered by the built-in classifiers: http://docs.aws.amazon.com/glue/latest/dg/add-classifier.html#classifier-built-in
+
+It may be that your json is not strict or the classifier is fragile. I would submit a support case. I found a problem with the CSV classifier and support was very responsive.
+
+You could also post an example of your json."
+AWS Glue	"Re: Error with crawler for JSON type files
+Hi,
+
+Thank you for trying out Glue.  Yes, JSON is definitely supported.  If you send me your job ID via private message, we will look into your job failure.
+
+Thanks,
+Austin"
+AWS Glue	"Re: Error with crawler for JSON type files
+Hello Geordie,
+Were you able to figure out the issue with crawling JSON? I am running into the same issue where the crawler works for CSV but fails for JSON.
+Any pointers will be appreciated.
+
+I tried hpv.json (attached) which is properly formatted JSON. It did not work. Then I just sent the json elements without the array hpi-monkeyed.json (attached) and that did not work either. 
+Srini"
+AWS Glue	"Re: Error with crawler for JSON type files
+I have success crawling JSON files, but mine are formatted with one JSON object on each line. Try something like my attached further monkeyed version."
+AWS Glue	"AWS Glue job from s3 to Postgresql Aurora failing: relation already exists
+We're currently having trouble importing the contents of an s3 bucket into an existing Postgresql table. The source is a table generated from an s3 bucket + prefix and the terminal is a table located on a Postgresql Aurora instance. Both belong to the same database in AWS glue with the tables generated via crawlers. We're using the AWS Glue job wizard to create and autogenerate the transform code in order to convert the fields in the JSON objects to the proper columns in the SQL database, however, running the code results in: ERROR: ERROR: relation ""table_name"" already exists
+
+
+We've previously run jobs which imported JSONs from an s3 bucket which created a table in a postgresql database, however, we've been unable at this point to load data into an existing table. Is this a problem with the autogenerated code that's created from the AWS job wizard. Or does AWS Glue not support inserting data into existing SQL databases."
+AWS Glue	"Re: AWS Glue job from s3 to Postgresql Aurora failing: relation already exists
+Hi sirkaiserkai.
+Have you had a chance to resolve the issue? I just run into the same one. If anybody else have an idea - please share."
+AWS Glue	"Cannot Use Glue Endpoints
+Looking for some advice on using Glue endpoints as they are currently unusable for me. I have tried multiple times to spin up endpoints, with an S3 bucket for extra JARs. When I SSH into the endpoint:
+
+ssh glue@ec2-18-210-11-197.compute-1.amazonaws.com -t gluepyspark
+
+
+ I receive the errors below and cannot create a GlueContext. Best I can tell, the endpoint is not able to sync with my S3 bucket to pull in the JARs. I cannot reproduce at the moment, but I was previously getting errors around the AWS S3 sync command when trying the Scala endpoint. I can confirm the role is sufficient to pull in the JARs, as I have tried manually using the AWS cli on the endpoint.
+
+The error below references scott which I presume comes from the dependent JARs path: s3://aws-glue-jars-082134150143-us-east-1/scott
+
+I have tried in both us-west-2 and us-east-1 endpoints & buckets with the same results.
+
+The role used is has the AWSGlueServiceRole policy attached, and nothing else.
+
+Update: Looks like an issue with dependent JARs as there are no errors if I do not specify a dependent JARs bucket. This is a requirement, so I'm still stuck.
+
+Update: Seems the dependent jars path requires specific JAR files, which can be comma separated. Still investigating.
+
+Python 2.7.12 (default, Nov  2 2017, 19:20:38) 
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-11)] on linux2
+Type ""help"", ""copyright"", ""credits"" or ""license"" for more information.
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/usr/share/aws/glue/etl/jars/glue-assembly.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/usr/lib/spark/jars/slf4j-log4j12-1.7.16.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+Warning: Local jar /home/glue/downloads/jars/scott does not exist, skipping.
+Setting default log level to ""WARN"".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+19/01/05 22:57:23 ERROR SparkContext: Failed to add file:/home/glue/downloads/jars/scott to Spark environment
+java.io.FileNotFoundException: Jar /home/glue/downloads/jars/scott not found
+	at org.apache.spark.SparkContext.addJarFile$1(SparkContext.scala:1814)
+	at org.apache.spark.SparkContext.addJar(SparkContext.scala:1840)
+	at org.apache.spark.SparkContext$$anonfun$12.apply(SparkContext.scala:466)
+	at org.apache.spark.SparkContext$$anonfun$12.apply(SparkContext.scala:466)
+	at scala.collection.immutable.List.foreach(List.scala:381)
+	at org.apache.spark.SparkContext.<init>(SparkContext.scala:466)
+	at org.apache.spark.api.java.JavaSparkContext.<init>(JavaSparkContext.scala:58)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at py4j.reflection.MethodInvoker.invoke(MethodInvoker.java:247)
+	at py4j.reflection.ReflectionEngine.invoke(ReflectionEngine.java:357)
+	at py4j.Gateway.invoke(Gateway.java:236)
+	at py4j.commands.ConstructorCommand.invokeConstructor(ConstructorCommand.java:80)
+	at py4j.commands.ConstructorCommand.execute(ConstructorCommand.java:69)
+	at py4j.GatewayConnection.run(GatewayConnection.java:214)
+	at java.lang.Thread.run(Thread.java:748)
+19/01/05 22:57:25 WARN Client: Neither spark.yarn.jars nor spark.yarn.archive is set, falling back to uploading libraries under SPARK_HOME.
+19/01/05 22:57:30 ERROR SparkContext: Error initializing SparkContext.
+java.io.FileNotFoundException: File file:/home/glue/downloads/jars/scott does not exist
+	at org.apache.hadoop.fs.RawLocalFileSystem.deprecatedGetFileStatus(RawLocalFileSystem.java:616)
+	at org.apache.hadoop.fs.RawLocalFileSystem.getFileLinkStatusInternal(RawLocalFileSystem.java:829)
+	at org.apache.hadoop.fs.RawLocalFileSystem.getFileStatus(RawLocalFileSystem.java:606)
+	at org.apache.hadoop.fs.FilterFileSystem.getFileStatus(FilterFileSystem.java:431)
+	at org.apache.hadoop.fs.FileUtil.copy(FileUtil.java:337)
+	at org.apache.hadoop.fs.FileUtil.copy(FileUtil.java:289)
+	at org.apache.spark.deploy.yarn.Client.copyFileToRemote(Client.scala:357)
+	at org.apache.spark.deploy.yarn.Client.org$apache$spark$deploy$yarn$Client$$distribute$1(Client.scala:476)
+	at org.apache.spark.deploy.yarn.Client$$anonfun$prepareLocalResources$11$$anonfun$apply$6.apply(Client.scala:598)
+	at org.apache.spark.deploy.yarn.Client$$anonfun$prepareLocalResources$11$$anonfun$apply$6.apply(Client.scala:597)
+	at scala.collection.mutable.ArraySeq.foreach(ArraySeq.scala:74)
+	at org.apache.spark.deploy.yarn.Client$$anonfun$prepareLocalResources$11.apply(Client.scala:597)
+	at org.apache.spark.deploy.yarn.Client$$anonfun$prepareLocalResources$11.apply(Client.scala:596)
+	at scala.collection.immutable.List.foreach(List.scala:381)
+	at org.apache.spark.deploy.yarn.Client.prepareLocalResources(Client.scala:596)
+	at org.apache.spark.deploy.yarn.Client.createContainerLaunchContext(Client.scala:832)
+	at org.apache.spark.deploy.yarn.Client.submitApplication(Client.scala:170)
+	at org.apache.spark.scheduler.cluster.YarnClientSchedulerBackend.start(YarnClientSchedulerBackend.scala:56)
+	at org.apache.spark.scheduler.TaskSchedulerImpl.start(TaskSchedulerImpl.scala:173)
+	at org.apache.spark.SparkContext.<init>(SparkContext.scala:509)
+	at org.apache.spark.api.java.JavaSparkContext.<init>(JavaSparkContext.scala:58)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at py4j.reflection.MethodInvoker.invoke(MethodInvoker.java:247)
+	at py4j.reflection.ReflectionEngine.invoke(ReflectionEngine.java:357)
+	at py4j.Gateway.invoke(Gateway.java:236)
+	at py4j.commands.ConstructorCommand.invokeConstructor(ConstructorCommand.java:80)
+	at py4j.commands.ConstructorCommand.execute(ConstructorCommand.java:69)
+	at py4j.GatewayConnection.run(GatewayConnection.java:214)
+	at java.lang.Thread.run(Thread.java:748)
+19/01/05 22:57:30 WARN YarnSchedulerBackend$YarnSchedulerEndpoint: Attempted to request executors before the AM has registered!
+19/01/05 22:57:30 ERROR Utils: Uncaught exception in thread Thread-2
+java.lang.NullPointerException
+	at org.apache.spark.network.shuffle.ExternalShuffleClient.close(ExternalShuffleClient.java:140)
+	at org.apache.spark.storage.BlockManager.stop(BlockManager.scala:1485)
+	at org.apache.spark.SparkEnv.stop(SparkEnv.scala:90)
+	at org.apache.spark.SparkContext$$anonfun$stop$11.apply$mcV$sp(SparkContext.scala:1944)
+	at org.apache.spark.util.Utils$.tryLogNonFatalError(Utils.scala:1317)
+	at org.apache.spark.SparkContext.stop(SparkContext.scala:1943)
+	at org.apache.spark.SparkContext.<init>(SparkContext.scala:587)
+	at org.apache.spark.api.java.JavaSparkContext.<init>(JavaSparkContext.scala:58)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at py4j.reflection.MethodInvoker.invoke(MethodInvoker.java:247)
+	at py4j.reflection.ReflectionEngine.invoke(ReflectionEngine.java:357)
+	at py4j.Gateway.invoke(Gateway.java:236)
+	at py4j.commands.ConstructorCommand.invokeConstructor(ConstructorCommand.java:80)
+	at py4j.commands.ConstructorCommand.execute(ConstructorCommand.java:69)
+	at py4j.GatewayConnection.run(GatewayConnection.java:214)
+	at java.lang.Thread.run(Thread.java:748)
+Traceback (most recent call last):
+  File ""/usr/lib/spark/python/pyspark/shell.py"", line 40, in <module>
+    spark = SparkSession.builder \
+  File ""/usr/lib/spark/python/pyspark/sql/session.py"", line 173, in getOrCreate
+    sc = SparkContext.getOrCreate(sparkConf)
+  File ""/usr/lib/spark/python/pyspark/context.py"", line 334, in getOrCreate
+    SparkContext(conf=conf or SparkConf())
+  File ""/usr/lib/spark/python/pyspark/context.py"", line 118, in __init__
+    conf, jsc, profiler_cls)
+  File ""/usr/lib/spark/python/pyspark/context.py"", line 180, in _do_init
+    self._jsc = jsc or self._initialize_context(self._conf._jconf)
+  File ""/usr/lib/spark/python/pyspark/context.py"", line 273, in _initialize_context
+    return self._jvm.JavaSparkContext(jconf)
+  File ""/usr/lib/spark/python/lib/py4j-0.10.4-src.zip/py4j/java_gateway.py"", line 1401, in __call__
+  File ""/usr/lib/spark/python/lib/py4j-0.10.4-src.zip/py4j/protocol.py"", line 319, in get_return_value
+py4j.protocol.Py4JJavaError: An error occurred while calling None.org.apache.spark.api.java.JavaSparkContext.
+: java.io.FileNotFoundException: File file:/home/glue/downloads/jars/scott does not exist
+	at org.apache.hadoop.fs.RawLocalFileSystem.deprecatedGetFileStatus(RawLocalFileSystem.java:616)
+	at org.apache.hadoop.fs.RawLocalFileSystem.getFileLinkStatusInternal(RawLocalFileSystem.java:829)
+	at org.apache.hadoop.fs.RawLocalFileSystem.getFileStatus(RawLocalFileSystem.java:606)
+	at org.apache.hadoop.fs.FilterFileSystem.getFileStatus(FilterFileSystem.java:431)
+	at org.apache.hadoop.fs.FileUtil.copy(FileUtil.java:337)
+	at org.apache.hadoop.fs.FileUtil.copy(FileUtil.java:289)
+	at org.apache.spark.deploy.yarn.Client.copyFileToRemote(Client.scala:357)
+	at org.apache.spark.deploy.yarn.Client.org$apache$spark$deploy$yarn$Client$$distribute$1(Client.scala:476)
+	at org.apache.spark.deploy.yarn.Client$$anonfun$prepareLocalResources$11$$anonfun$apply$6.apply(Client.scala:598)
+	at org.apache.spark.deploy.yarn.Client$$anonfun$prepareLocalResources$11$$anonfun$apply$6.apply(Client.scala:597)
+	at scala.collection.mutable.ArraySeq.foreach(ArraySeq.scala:74)
+	at org.apache.spark.deploy.yarn.Client$$anonfun$prepareLocalResources$11.apply(Client.scala:597)
+	at org.apache.spark.deploy.yarn.Client$$anonfun$prepareLocalResources$11.apply(Client.scala:596)
+	at scala.collection.immutable.List.foreach(List.scala:381)
+	at org.apache.spark.deploy.yarn.Client.prepareLocalResources(Client.scala:596)
+	at org.apache.spark.deploy.yarn.Client.createContainerLaunchContext(Client.scala:832)
+	at org.apache.spark.deploy.yarn.Client.submitApplication(Client.scala:170)
+	at org.apache.spark.scheduler.cluster.YarnClientSchedulerBackend.start(YarnClientSchedulerBackend.scala:56)
+	at org.apache.spark.scheduler.TaskSchedulerImpl.start(TaskSchedulerImpl.scala:173)
+	at org.apache.spark.SparkContext.<init>(SparkContext.scala:509)
+	at org.apache.spark.api.java.JavaSparkContext.<init>(JavaSparkContext.scala:58)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at py4j.reflection.MethodInvoker.invoke(MethodInvoker.java:247)
+	at py4j.reflection.ReflectionEngine.invoke(ReflectionEngine.java:357)
+	at py4j.Gateway.invoke(Gateway.java:236)
+	at py4j.commands.ConstructorCommand.invokeConstructor(ConstructorCommand.java:80)
+	at py4j.commands.ConstructorCommand.execute(ConstructorCommand.java:69)
+	at py4j.GatewayConnection.run(GatewayConnection.java:214)
+	at java.lang.Thread.run(Thread.java:748)
+
+
+Edited by: camperscott on Jan 5, 2019 3:33 PM
+
+Edited by: camperscott on Jan 5, 2019 3:34 PM
+
+Edited by: camperscott on Jan 5, 2019 4:14 PM
+
+Edited by: camperscott on Jan 5, 2019 8:47 PM"
+AWS Glue	"Re: Cannot Use Glue Endpoints
+use below command to ssh 
+
+ssh glue@ec2-18-210-11-197.compute-1.amazonaws.com
+
+check the path whether jar exist or not in /home/glue/downloads/jars/scott
+
+if not, then it could be s3 connectivity issue from master. try
+
+ aws s3 cp <s3 jar path> /home/glue/downloads/jars/scott/ from master"
+AWS Glue	"Adding Python Library path in Dev Endpoint or Glue Job causes boto to fail
+I am adding an external library that I added as a zip file in s3.  and pointed to it with a Python Library Path the libraries are working and can be imported but then boto is breaking with a 
+botocore.vendored.requests.exceptions.SSLError: Errno 20 Not a directory
+error message whenever I try to do anything.  For example getting an ssm parameter using the ssm.get_parameter method or creating an object using the s3.Object method.  When I don't include a python library path it seems to be working correctly with boto but I can't use those external libraries.  Does anyone know why this is happening or has a solution as to how to fix it?  Let me know, thanks!
+
+Edited by: jamesmission on Jan 11, 2019 10:16 AM
+
+Edited by: jamesmission on Jan 11, 2019 10:17 AM"
+AWS Glue	"Re: Adding Python Library path in Dev Endpoint or Glue Job causes boto to fail
+the package that i zipped up was the jira python library.  And what I did was a pip install --target . jira
+and zipped the file as jira.zip and uploaded it to s3.  when I make a very simple python library and zip it up boto3 seems to work fine."
+AWS Glue	"ERROR : Internal Service Exception for DynamoDB crawler
+Hi,
+
+I'm new to AWS glue, I've just created a crawler for one of my DynamoDB databases, there doesn't seem to be much to it in terms of configuration, so I'm not sure what to include here, but it fails very quickly with ""ERROR : Internal Service Exception"", which sounds like it's an error with the service rather than what I'm doing.
+
+Can someone help?
+
+F"
+AWS Glue	"Re: ERROR : Internal Service Exception for DynamoDB crawler
+How big your table is ? if it is too big then crawler might have crashed as it needs to scan all the rows find out the schema of the table.
+
+if it is huge then create  a table manually in datacatalog if you know the schema of table as 
+ a workaround."
+AWS Glue	"Re: ERROR : Internal Service Exception for DynamoDB crawler
+Hello,
+
+Internal service exception is a generic error which may be encountered due to multiple reasons, one of them has been documented below:
+https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html#encryption-kms-vpc-endpoint
+
+I would request you to reach out with the crawler name, account ID, AWS region in concern over a support case for further help.
+
+
+Juhi"
+AWS Glue	"GLUE Job creation-- multiple data sources?
+During the GLUE job creation via the console UI, there is a page, ""Choose your data sources"" (plural).  But the list of tables from the catalog are using radio buttons-- is it possible to select multiple source tables in prep for join operations at this stage?   Does the ""Map source columns to target columns"" operate with multiple source tables?
+
+I've tried using the UI to add a datasource, the code gets generated, I plug appropriate names into the template, but then generate diagram can't figure it out.   The annotations are there, the code actually works, but the diagrammer seems confused and there's no indication why.   I'm beginning to suspect that no one uses this, given there seems to be no discussion whatsoever in the GLUE forum on the diagram feature.
+
+--
+
+Zinc"
+AWS Glue	"Re: GLUE Job creation-- multiple data sources?
+Hi, you can add sources to the script on the Edit page but however reflecting in the diagram is a challenge I am also facing."
+AWS Glue	"Re: GLUE Job creation-- multiple data sources?
+First, you need to make sure that you use all 4 annotations (type/ args/ return/ inputs).
+If you skip one of them it will not generate anything.
+Second, @return and @inputs values have to correspond to real names you use inside your code.
+
+(@args) You may leave it empty.
+(@inputs) If @inputs is empty, it is considered to be a starting point. Otherwise, put source for that step.
+(@type) If it is ""DataSource"" it is depicted with database symbol. If it is ""DataSink"", it is depicted as a target database symbol. If you name it differently (whatever name you want), it will be depicted as a transformation symbol.
+
+Example:
+## @type: DataSource
+## @args: [database=database, table_name=tableName]
+## @return: s3
+## @inputs: []
+s3 = glueContext.create_dynamic_frame_from_catalog(database=database, table_name=tableName, transformation_ctx=""s3"")
+## @type: UseAnyNameYouWant
+## @args: []
+## @return: stage
+## @inputs: [frame = s3]
+stage = ApplyMapping.apply(frame=s3, mappings=s3ToStageColumnMapping, transformation_ctx=""s3ToStageTC"")"
+AWS Glue	"Does Data Need To Be Transformed Prior To Being Queried ?
+This question may pertain slightly more towards Amazon lake formation however I could not find a forum section for that, and this does slightly come under glue's jurasdiction so to speak so I will do my best at asking it here, In a clear and concise manner. 
+
+the company I work for is looking into migrating to the cloud this year. I have been tasked with doing the reccy so to speak for my department and doing a demonstration and a Q&A session on AWS and its products. 
+
+Now I know one of the things they are hugely keen on is a data lake. And I know within a data lake data can be stored in it's native formats, so within one lake you have all kinds of data. 
+My question is this; Is the data queryable in the data lake in it's native formats? (with or without using glue) Or does it all need to be transformed in one way or another into one format in order to be queryable. 
+
+So for example, If I had a database file stored in there, and I also had Picture and excel files in there. Could I query the data within even though everything is stored in different formats, Or would I need to use glue to transform it all prior to it being queryable by athena,Glue or redshift etc? 
+
+Thank you for your answers in advance , If anyone has any further questions they need answered please let me know."
+AWS Glue	"Failed ETL Job ""cannot be cast to java.lang.Double""
+Hi there.
+I tried to dump data from RDS PostgreSQL 9.6 to parquet files on S3.
+It was success a small and simple table but another table failed with below error.
+
+Caused by: org.apache.spark.SparkException: Job aborted due to stage failure: Task 0 in stage 1.0 failed 4 times, most recent failure: Lost task 0.3 in stage 1.0 (TID 4, ip-10-146-1-157.ap-northeast-1.compute.internal, executor 1): java.lang.ClassCastException: [Ljava.lang.Double; cannot be cast to java.lang.Double
+
+
+I used scripts that auto created by Glue wizard.
+The table had error that has column type ""double"" , so i tried no mapping its column , but same error accord.
+
+Below is full size error.
+at org.apache.spark.sql.execution.command.ExecutedCommandExec.sideEffectResult(commands.scala:56)
+at org.apache.spark.sql.execution.command.ExecutedCommandExec.doExecute(commands.scala:74)
+at org.apache.spark.sql.execution.SparkPlan$$anonfun$execute$1.apply(SparkPlan.scala:117)
+at org.apache.spark.sql.execution.SparkPlan$$anonfun$execute$1.apply(SparkPlan.scala:117)
+at org.apache.spark.sql.execution.SparkPlan$$anonfun$executeQuery$1.apply(SparkPlan.scala:138)
+at org.apache.spark.rdd.RDDOperationScope$.withScope(RDDOperationScope.scala:151)
+at org.apache.spark.sql.execution.SparkPlan.executeQuery(SparkPlan.scala:135)
+at org.apache.spark.sql.execution.SparkPlan.execute(SparkPlan.scala:116)
+at org.apache.spark.sql.execution.QueryExecution.toRdd$lzycompute(QueryExecution.scala:92)
+at org.apache.spark.sql.execution.QueryExecution.toRdd(QueryExecution.scala:92)
+at org.apache.spark.sql.execution.datasources.DataSource.writeInFileFormat(DataSource.scala:435)
+at org.apache.spark.sql.execution.datasources.DataSource.write(DataSource.scala:471)
+at org.apache.spark.sql.execution.datasources.SaveIntoDataSourceCommand.run(SaveIntoDataSourceCommand.scala:50)
+at org.apache.spark.sql.execution.command.ExecutedCommandExec.sideEffectResult$lzycompute(commands.scala:58)
+at org.apache.spark.sql.execution.command.ExecutedCommandExec.sideEffectResult(commands.scala:56)
+at org.apache.spark.sql.execution.command.ExecutedCommandExec.doExecute(commands.scala:74)
+at org.apache.spark.sql.execution.SparkPlan$$anonfun$execute$1.apply(SparkPlan.scala:117)
+at org.apache.spark.sql.execution.SparkPlan$$anonfun$execute$1.apply(SparkPlan.scala:117)
+at org.apache.spark.sql.execution.SparkPlan$$anonfun$executeQuery$1.apply(SparkPlan.scala:138)
+at org.apache.spark.rdd.RDDOperationScope$.withScope(RDDOperationScope.scala:151)
+at org.apache.spark.sql.execution.SparkPlan.executeQuery(SparkPlan.scala:135)
+at org.apache.spark.sql.execution.SparkPlan.execute(SparkPlan.scala:116)
+at org.apache.spark.sql.execution.QueryExecution.toRdd$lzycompute(QueryExecution.scala:92)
+at org.apache.spark.sql.execution.QueryExecution.toRdd(QueryExecution.scala:92)
+at org.apache.spark.sql.DataFrameWriter.runCommand(DataFrameWriter.scala:609)
+at org.apache.spark.sql.DataFrameWriter.save(DataFrameWriter.scala:233)
+at com.amazonaws.services.glue.SparkSQLDataSink.writeDynamicFrame(DataSink.scala:123)
+at com.amazonaws.services.glue.DataSink.pyWriteDynamicFrame(DataSink.scala:38)
+at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+at java.lang.reflect.Method.invoke(Method.java:498)
+at py4j.reflection.MethodInvoker.invoke(MethodInvoker.java:244)
+at py4j.reflection.ReflectionEngine.invoke(ReflectionEngine.java:357)
+at py4j.Gateway.invoke(Gateway.java:280)
+at py4j.commands.AbstractCommand.invokeMethod(AbstractCommand.java:132)
+at py4j.commands.CallCommand.execute(CallCommand.java:79)
+at py4j.GatewayConnection.run(GatewayConnection.java:214)
+at java.lang.Thread.run(Thread.java:748)
+Caused by: org.apache.spark.SparkException: Job aborted due to stage failure: Task 0 in stage 1.0 failed 4 times, most recent failure: Lost task 0.3 in stage 1.0 (TID 4, ip-10-146-1-157.ap-northeast-1.compute.internal, executor 1): java.lang.ClassCastException: [Ljava.lang.Double; cannot be cast to java.lang.Double
+at scala.runtime.BoxesRunTime.unboxToDouble(BoxesRunTime.java:114)
+at org.apache.spark.sql.catalyst.util.GenericArrayData.getDouble(GenericArrayData.scala:65)
+at org.apache.spark.sql.catalyst.expressions.GeneratedClass$GeneratedIterator.processNext(Unknown Source)
+at org.apache.spark.sql.execution.BufferedRowIterator.hasNext(BufferedRowIterator.java:43)
+at org.apache.spark.sql.execution.WholeStageCodegenExec$$anonfun$8$$anon$1.hasNext(WholeStageCodegenExec.scala:395)
+at scala.collection.Iterator$$anon$11.hasNext(Iterator.scala:408)
+
+
+Is there anyone who knows about that?"
+AWS Glue	"S3 Expired Token for long running jobs
+I've got a long running job (2hrs+) that fails because of S3 Expired token.
+error: S3ServiceException:The provided token has expired.,Status 400,Error ExpiredToken,Rid .....,ExtRid .......,CanRetry 1
+code: 8001
+context: Failed to write data to S3 output stream. S3 path: s3://mybucket/aws-glue-temp/73b723d9-943c-4651-89a4-1a6cce6e7b79/0062_part_02
+query: 5090162
+location: s3_unloader.cpp:430
+process: query3_543 [pid=122221]
+
+
+For a smaller job that finishes within 5min, this does not occur. This makes me think that Glue is getting temporary tokens even though it has full access to S3 and my bucket. How can I avoid the token expired error for long running jobs?"
+AWS Glue	"Re: S3 Expired Token for long running jobs
+Has anyone seen this before? Either community or AWS engineers?"
+AWS Glue	"Re: S3 Expired Token for long running jobs
+I got a reply on Support Case that this is a known issue and that the dev team is working on it. No ETA yet though."
+AWS Glue	"Re: S3 Expired Token for long running jobs
+Was there any provided workaround to this issue? 
+
+I too am running into this error."
+AWS Glue	"Re: S3 Expired Token for long running jobs
+At re:invent my colleague was told, changes are coming. honestly not sure what ""soon"" timeline is.
+
+The only workaround is to break down the job into smaller parts so like instead of processing 1 whole year's data break it down to by day or by week. but this works only if your data and processing tasks are easy to split this way"
+AWS Glue	"Re: S3 Expired Token for long running jobs
+I just had this error while running a Glue job after ~50min. Is there any update on this issue, or when this would be fixed?
+
+It would be really nice if this was raised on Glue docs as this is not acceptable for a service that is supposed to be production-ready."
+AWS Glue	"Re: S3 Expired Token for long running jobs
+I'm having the same issue, I would love to see this fixed"
+AWS Glue	"Re: S3 Expired Token for long running jobs
+I contacted the AWS support team. They acknowledged the issue, and are working actively on a fix."
+AWS Glue	"Re: S3 Expired Token for long running jobs
+Hi guys!
+Any update on that matter?"
+AWS Glue	"Re: S3 Expired Token for long running jobs
+Are you reading or writing in Redshift cluster , if so,use ""aws_iam_role"" so that , glue would not generate temp credential 
+
+https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-redshift.html"
+AWS Glue	"Crawler can't skip header first line
+Hi All,
+I trying to use crawler to add tables in a Glue Database from CSV files. That works in the most folder/tables, but if the file have only strings separated by commas, crawler can't identify the first line by the name of columns and each one receive names like: col1, col2, etc..
+
+In the tables properties with wrong schemas I can't see this property: ""skip.header.line.count"": 1
+
+Someone of you know how can I force crawler to skip the first line?
+
+Thank you."
+AWS Glue	"Re: Crawler can't skip header first line
+Make sure that csv file contains mixed datatypes (string, numeric)  and rerun the crawler 
+
+Example,
+
+name,age
+""john"",10"
+AWS Glue	"Re: Crawler can't skip header first line
+Hi Shivan
+
+Thank you for your answer.
+
+This CSV file have only string data, not mixed datatypes.
+
+You know: Why in this case the crawler can't identify correctly?"
+AWS Glue	"Re: Crawler can't skip header first line
+I do not know however, you can add manually skip header table property manually and change the column but, it beats the crawler purpose."
+AWS Glue	"Only 2 executors for spark job in Glue
+I'm running an ETL in Glue, which usually takes ~40min om my 5-workers spark cluster. In Glue it takes more than twice as long. Looking at the metrics I see that except for reading the input and writing the output - only 2 executors are active during the job. I know that my data is well distributed (input comes either from ~800 parquet files in S3 or from a Glue table, I tried both). What I suspect is happening is that I ""loose"" the executors when I convert from a DynamicFrame to a spark DataFrame and continue the processing with sparkSQL. I do that because I'm missing features in the DynamicFrame API (specifically AFAIK I can't explode an array-column as in spark).
+So my ETL looks something like this:
+val spark: SparkContext = new SparkContext()
+val glueContext: GlueContext = new GlueContext(spark)
+val sqlContext = glueContext.getSparkSession
+...
+ val df = glueContext.getSourceWithFormat(...).getDynamicFrame().toDF()
+// continue my ETL with sqlContext...
+val toLoad = DynamicFrame(theResult)
+val datasink = glueContext.getSinkWithFormat(...).writeDynamicFrame(toLoad)
+
+Is there something I need to configure in order to get more executors? According to the metrics I should have many available.
+
+Thanks.
+
+Edited by: nira on Nov 27, 2018 11:51 PM"
+AWS Glue	"Re: Only 2 executors for spark job in Glue
+Dynamic frame optimize the executor if you have small files , you can use repartition api before writing to s3 to increase the partitions.
+
+dynamicframe has getpartition and repartition then check whether spark and glue has same number or less."

@@ -1,0 +1,2611 @@
+label	description
+AWS IoT Analytics	"Change User portal URL for AWS SSO Directory
+I want to change the url, or at least change the component preceding ""*.awsapps.com/start"" for one of my directories."
+AWS IoT Analytics	"Re: Change User portal URL for AWS SSO Directory
+If anyone could assist on renaming my SSO directory URL it would be great. There isn't any cli commands to do so."
+AWS IoT Analytics	"Renamed AWS Accounts not showing correctly in console
+Hi,
+Im repurposed and renamed 2 of my accounts but dont see the title reflected in SSO. Is there some other way of renaming the AWS Accounts under SSO?
+
+Thanks"
+AWS IoT Analytics	"Re: Renamed AWS Accounts not showing correctly in console
+Having the same issue. Must just be a hidden property somewhere. Hopefully they fix this soon since they've been rolling out other improvements lately."
+AWS IoT Analytics	"Re: Renamed AWS Accounts not showing correctly in console
+Thanks a lot. We have added this feature request to our backlog and will prioritize it for future releases."
+AWS IoT Analytics	"Users can only sign in once to the user portal link. Must reset password.
+We're using AWS SSO using the AWS SSO directory with AWS organizations. Currently users have can only login once using the user portal URL. After that they have to reset their password. 100% reproducible. Super inconvenient. It's as if all passwords are one time use only.
+
+Has anyone seen this or know why?
+
+Not using any VPN or proxies. Tried different browsers from different locations.
+
+Edited by: jamesfauna on Feb 5, 2019 11:39 AM
+
+Edited by: jamesfauna on Feb 5, 2019 11:39 AM"
+AWS IoT Analytics	"Re: Users can only sign in once to the user portal link. Must reset password.
+Thanks a lot. Could you reach out to AWS Support to help with your specific issue?"
+AWS IoT Analytics	"Use CLI to retrieve credential from SSO
+Hello,
+Is there a way to retrieve a credential from SSO using a cli utility?
+
+I do see the option to get the credential after signing in to the login page, and to copy-paste it into the shell, and that's nifty but not really usable for programmatic access.
+
+Ideally, to me, there would be a utility that worked with the credential_process option of the AWS config file. I do see that a SAML identity provider is created in the configured accounts, so I had hopes that SSO would expose a SAML authentication endpoint, and that `awsprocesscreds` would handle it, but I'm not seeing a way to make that work currently. I opened an issue there also. Linking it here in case the SSO team was unaware of such utilities.
+
+https://github.com/awslabs/awsprocesscreds/issues/26"
+AWS IoT Analytics	"Re: Use CLI to retrieve credential from SSO
+Thanks a lot for your feedback regarding using SSO to retrieve the password for CLI access. We have added this feature to our backlog and will consider it for future prioritization."
+AWS IoT Analytics	"Re: Use CLI to retrieve credential from SSO
++1 for interest on this feature. Is there any new progress on it? Thanks."
+AWS IoT Analytics	"Enforce TOTP MFA & Strong Password Policies w/ Rotation
+It was incredibly exciting to see the release of the AWS SSO managed directory, a free AWS alternative to Microsoft Active Directory.
+
+Announcement: https://aws.amazon.com/about-aws/whats-new/2018/10/now-you-can-create-and-manage-users-within-aws-single-sign-on/
+Blog Post: https://aws.amazon.com/blogs/security/how-to-create-and-manage-users-within-aws-sso/
+
+According to https://aws.amazon.com/directoryservice/pricing/, AWS managed AD costs $288-$432/mo minimum. For my organization, any flat monthly rate above the cost of a t3.nano requires good justification for approval. That much money did not justify moving away from IAM users.
+
+Because of this huge reduction in price, I am sure some organizations will use AWS SSO right now. However, my organization will not be comfortable using this service for two reasons.
+
+1) MFA - Specifically, Time-based One-Time Passwords cannot be configured and required for all users.
+2) Password policies cannot be tailored. We use a password manager, so it is no problem to enforce 30-90 day rotation and 16+ character passwords.
+
+When will these two enhancements to AWS SSO built-in directory be released?"
+AWS IoT Analytics	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+Thanks a lot for your feedback. We have added these features to our backlog and will consider these for future prioritization. 
+
+Regarding 1) Just to clarify that you are referring to a time-based one-time MFA code that can configure for your users?
+Regarding 2) You want the capability to the interval after which the password expires requiring the user to reset the password.
+
+Thanks a lot and we appreciate your feedback."
+AWS IoT Analytics	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+1) We wouldn't mind supplying the QR code to our users from an admin interface. However, it would be nice to have users manage their own TOTP device. Until the device is configured correctly, the user should not be able to do anything besides login to configure the TOTP device.
+2) A custom password policy is less important than #1, but I imagine this could be done similar to the IAM User password policy capability.
+
+Thanks."
+AWS IoT Analytics	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+Looks like OTP is now configurable in the AWS SSO console.  https://aws.amazon.com/blogs/security/add-a-layer-of-security-for-aws-sso-user-portal-sign-in-with-context-aware-email-based-verification/ 
+
+Looks like AWS is moving in the right direction, as always. This is good enough to answer my question."
+AWS IoT Analytics	"SSO Start Page - UI Modification
+Is it possible to customize the UI of the login page for AWS SSO."
+AWS IoT Analytics	"Re: SSO Start Page - UI Modification
+Thanks a lot for your feedback. We have added your request to customize the SSO Start page to our feature backlog and will consider it for future prioritization. 
+
+What type of modifications would you want to do for the Start Page? Are you looking to have your own logo? Anything else?"
+AWS IoT Analytics	"When will we see AWS Single Sign-On in EU ?
+Hi there..
+
+With the newly build-in directory in AWS Single Sign-On, the service really got interesting, but with the GDPR regulation we still cannot use it here in EU.
+AWS Single Sign-On has been out since 2017, when can we expect to see it ""Over here"" ?
+
+Looking forward..
+David"
+AWS IoT Analytics	"Re: When will we see AWS Single Sign-On in EU ?
+Thanks a lot David. We have added your request to our feature back log and will update the thread once the service is available in EU region."
+AWS IoT Analytics	"Customer Managed Policies in SSO
+I've come across what seems to be a surprising omission from SSO: Customer Managed Policies.
+
+From my understanding the most custom Permission Set you can create is by using 10 AWS Managed Policies alongside the 1 inline IAM policy.
+
+The problem with this is the permissions we require do not always fit into managed policies and having to 'complete' them by an additional inline policy seems 'hacky' and a poor way to manage permissions when trying to give 'least privilege where possible'.
+
+We could live with the inline policy creator however the byte limit severely limits the kind of policies you can create.
+
+Is there anything in the pipeline to be able to add Customer Managed Policies to Permission Sets, or at least the ability to increase the inline policy byte limit?"
+AWS IoT Analytics	"Re: Customer Managed Policies in SSO
+Thank you for your feedback. We will consider your inputs while planning the future roadmap of the product.
+-Anand Murugesan"
+AWS IoT Analytics	"Re: Customer Managed Policies in SSO
+Disregard this.  I see custom policies are supported now.
+
+Edited by: JGardner123 on Jan 15, 2019 9:23 AM"
+AWS IoT Analytics	"MFA Prompt moved?
+It seems that our MFA prompt is no longer on the main SSO login page. Our users used to see three fields (Username+Password+MFA). Now they just see (UserName+Password).
+
+Our users are still prompted for MFA, but as a second step, after the user authenticates against our directory.
+
+Was this a design change? I don't see this as configurable anywhere. Our directory still has MFA enabled and I can't see any obvious settings to configure this.
+
+Someone over in infosec escalated this without trying to login - ""oh heck, who disabled mfa?"""
+AWS IoT Analytics	"Re: MFA Prompt moved?
+like it never disappeared, the MFA prompt is back on the SSO Login page."
+AWS IoT Analytics	"How to use AWS SSO with Amazon RedShift
+Hi
+
+I see that AWS SSO service for AWS organizations support SAML. Also Amazon Redshift supports SAML. But I can't find any documentation how to use AWS SSO service with redshift.
+
+Is it possible to use AWS SSO with Amazon Redshift?
+
+Best
+Steffen"
+AWS IoT Analytics	"How to change default directory alias in AWS SSO?
+AWS SSO doesn't allow changing directory alias. How can I do that? Is it possible to remove default directory or remove/disable whole SSO and configure it from the beginning or maybe from CLI?"
+AWS IoT Analytics	"Re: How to change default directory alias in AWS SSO?
+The default alias for your directory is your directory's id (format ""d-""). You can change the directory alias by navigating to the directory tab. Note that you can change the directory alias only once. Once you change the directory alias, you cannot change it again. Please let us know if you have issues"
+AWS IoT Analytics	"Re: How to change default directory alias in AWS SSO?
+In addition, you can also change the default directory to use a Microsoft AD (AWS Managed Microsoft AD or AD Connector ) directory by choosing ""Change Directory"" in the Directory tab in the AWS SSO Console."
+AWS IoT Analytics	"Re: How to change default directory alias in AWS SSO?
+Ok, I thought there is a posibility to release given alias because I wanted to use this alias for my Microsoft AD Directory."
+AWS IoT Analytics	"General Question about AWS Single Sign On
+If I enable AWS Single Sign On in my master account and root org, if I determine this service is not for me, can it be disabled and/or removed?"
+AWS IoT Analytics	"Re: General Question about AWS Single Sign On
+Yes, you can disable SSO by navigating to the AWS Organizations console and choose Settings. You can disable AWS Single Sign-On by choosing the Disable button next to AWS Single Sign-On. Here is the deep link to the settings page: https://console.aws.amazon.com/organizations/home?region=us-east-1#/organization/settings"
+AWS IoT Analytics	"How do I add a new SSO connector for Tallyfy?
+AWS offers a list of pre-existing apps as connectors - such as Salesforce, Box, etc.
+
+I want to have  https://tallyfy.com as a default listing on this directory - how do I build a connector such that it's published in that listing?
+
+Edited by: amitarelli on Nov 6, 2018 2:06 AM"
+AWS IoT Analytics	"AWS SSO for applications that need AccessKey / Secret Access key
+Hi,
+
+maybe a stupid question, but i couldn´t find a definitive answer: What is the intended way to use AWS SSO with an application that needs AccessKey and SecretAccessKey as credentials to login? 
+
+There are some descriptions about how to do it with a script that gets (temporary) credentials using a script, saving them in the current users credentials files and going ahead from there:
+https://aws.amazon.com/de/blogs/security/how-to-implement-a-general-solution-for-federated-apicli-access-using-saml-2-0/ 
+
+https://aws.amazon.com/de/blogs/big-data/connect-to-amazon-athena-with-federated-identities-using-temporary-credentials/
+
+I wonder if this is the only / intended way to go, or if there is something more ""elegant"" that i keep on missing? Is there any way of getting non-temporary credentials this way, or do i have to manually create IAM-users if i want permanent ones?
+
+Thank you"
+AWS IoT Analytics	"AWS SSO login with UPN suffix
+Currenty we have AWS SSO connected to AWS AD (domain.com), and AWS AD has a two way trust with other AD domains (e.g. corp.trusteddomain.com).
+
+When we assign username@corp.trusteddomain.com to an account and permission set, the console lists the user as : corp.trusteddomain.com\username. 
+
+In the user portal for AWS accounts, it's possible to logon as corp.trusteddomain.com\username but not as username@corp.trusteddomain.com (authentication fails) or with the AD UPN suffix defined for that user (username@trusteddomain.com).
+
+Most users are familiar with username@trusteddomain.com as a universal way to login, since it's also often their email. Is there any way to allow UPN login?"
+AWS IoT Analytics	"AWS Console display suggestions for AWS SSO Federated access
+When using AWS SSO to login, the ""AWS console"" user is displayed as:
+
+AWSReservedSSO_Administrat...
+
+You need to hover with the mouse to get a tooltip and see the full permissionset name, account and user name:
+
+AWSReservedSSO_AdministratorAccess_13109712941410932/user@fqdn @awsaccountnameor#
+
+From a customer's standpoint, the most relevant info is user@fqdn, permissionset and aws account name or number. AWSReservedSSO and the number string are not as relevant yet they take up most of the screen real estate in the navbar. It would save time if the relevant info was always visible. Also, when frequently switching between multiple accounts, it's helpful to know at a glance which account you're in to avoid mistakes. 
+
+Would it be possible to display the info like this instead:
+
+user@fqdn @awsaccountname /AdministratorAccess"
+AWS IoT Analytics	"Why should we use Federation with AWS Single Sign on Endpoint
+Hi,
+
+We have Ping federation configured on-prem which is directly send the SAML assertion to the AWS sign in endpoint for SAML (https://signin.aws.amazon.com/saml). The endpoint uses the AssumeRoleWithSAML API to request temporary security credentials and then constructs a sign-in URL for the AWS Management Console using those credentials.
+
+It's simple and straightforward. 
+
+I see, there's another option where we can use AWS Single Sign-on (SSO) endpoint. The endpoint requests temporary security credentials on behalf of the user and creates a console sign-in URL.
+AWS sends the sign-in URL back to the client as a redirect.
+
+My question's why should we use AWS SSO endpoint integration with Ping federate when we can get the same functionality with AWS sign-in endpoint with SAML (https://signin.aws.amazon.com/saml).
+
+Please check the following links and guide us which option's best.
+
+AWS SSO endpoint:- https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_enable-console-saml.html
+
+AWS Sign-in endpoint with SAML:
+https://aws.amazon.com/blogs/security/how-to-establish-federated-access-to-your-aws-resources-by-using-active-directory-user-attributes/"
+AWS IoT Analytics	"We were unable to sign you in
+Suddenly getting an issue signing in, nothing has changed in my set up, any ideas?
+
+https://xyz.awsapps.com/start/error/400.html
+
+We were unable to sign you in.
+This is due to an error with how single sign-on was originally configured.
+Please contact your system administrator and ask them to verify that all attribute mappings are valid.
+Try signing in again
+
+
+Joe"
+AWS IoT Analytics	"Re: We were unable to sign you in
+Seems to have resolved itself, curious what the issue was? Nothing reported on aws status page."
+AWS IoT Analytics	"Connect non-org account to AWS SSO as a custom SAML app. Attributes help
+I have an account that is not part of my org but I would like to add it as a custom SAML 2.0 app in my AWS SSO. Is this possible? 
+
+https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-accounts.html  states that it is possible:
+
+""You can also connect an AWS account that is not part of your organization by setting up the account as a custom SAML application in AWS SSO. In this scenario, you provision and manage the IAM roles and trust relationships that are required to enable SSO access. For more information on how to do this, see Add and Configure a Custom SAML 2.0 Application.""
+
+I have all this set up but I can't seem to find the proper attribute mappings for the assertion. Anyone have any info or advice?"
+AWS IoT Analytics	"Re: Connect non-org account to AWS SSO as a custom SAML app. Attributes help
+A big thank you to Jose Eduardo at AWS Support for the help. 
+
+""Assuming that you have already created the application in SSO and the role to be assumed in the other account, the following three attributes are needed when configuring access to an AWS account as a Custom SAML application in AWS SSO:
+
+User attribute in the application: Subject
+Maps to this string value or user attribute in AWS SSO: $null
+Format: persistent
+
+User attribute in the application: https://aws.amazon.com/SAML/Attributes/Role
+Maps to this string value or user attribute in AWS SSO: arn:aws:iam::012345678910:role/NAME-OF-YOUR-ROLE,arn:aws:iam::012345678910:saml-provider/NAME-OF-IDENTITY-PROVIDER
+Format: unspecified
+
+User attribute in the application: https://aws.amazon.com/SAML/Attributes/RoleSessionName
+Maps to this string value or user attribute in AWS SSO: $null
+Format: unspecified
+
+Note that if you use the user attribute $null as a mapping value then the user must have a value configured in the email address field in Active Directory. Alternatively, you can also specify other supported attributes. For more information about supported attributes in AWS SSO please see link [1] in the references below.
+
+Finally, please note that the attributes above are case-sensitive, therefore, they must be set exactly to https://aws.amazon.com/SAML/Attributes/Role and https://aws.amazon.com/SAML/Attributes/RoleSessionName. For more information about the required attributes in SAML responses for authentication to AWS please see link [2] in the references below.""
+
+References:
+
+[1] Supported AWS SSO Attributes
+https://docs.aws.amazon.com/singlesignon/latest/userguide/attributemappingsconcept.html
+
+[2] Configuring SAML Assertions for the Authentication Response
+https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_saml_assertions.html"
+AWS IoT Analytics	"Re: Connect non-org account to AWS SSO as a custom SAML app. Attributes help
+Hey ITGuyDennis,
+
+Just adding a link to another thread which you asked this on. I provided the answer there, the same as you have posted here, but with the formatting fixed so that NULL isn't displayed. Just for anyone who comes here to find the solution:
+
+https://forums.aws.amazon.com/thread.jspa?threadID=282953"
+AWS IoT Analytics	"Use SSO to access accounts outside of an Organization
+The AWS SSO FAQ mentions that SSO allows access to accounts within your Organization.
+
+Is SSO able to allow access to accounts in an org AND accounts in another org or not in any org?"
+AWS IoT Analytics	"Re: Use SSO to access accounts outside of an Organization
+AWS SSO can be setup in your AWS Organization. Then, AWS SSO provides single sign-on access to all the accounts managed with in your AWS Organization. I want to learn more about your use case that would require you to manage SSO to accounts managed outside your AWS Organization."
+AWS IoT Analytics	"Re: Use SSO to access accounts outside of an Organization
+I work for an MSP.
+
+We currently use Switch Role but SSO has all the links to account consoles in the SSO GUI and Switch Role we need to manage those Switch Role URLs manually.
+
+Edited by: velvetpixeldevcam on May 29, 2018 4:30 PM"
+AWS IoT Analytics	"Re: Use SSO to access accounts outside of an Organization
+Understood. AWS SSO does not have support for managed service providers use cases at this time. I appreciate your feedback. We will consider your inputs while planning for future releases of AWS SSO.
+--Anand Murugesan
+
+Edited by: anandmataws on May 29, 2018 4:35 PM"
+AWS IoT Analytics	"Re: Use SSO to access accounts outside of an Organization
+Thanks for the confirmation"
+AWS IoT Analytics	"Re: Use SSO to access accounts outside of an Organization
+I just wanted to tag on to this question. I have an account that is not part of my org but I would like to add it as a custom SAML 2.0 app in my AWS SSO. Is this possible? The documentation at https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-accounts.html states that it is possible:
+
+""You can also connect an AWS account that is not part of your organization by setting up the account as a custom SAML application in AWS SSO. In this scenario, you provision and manage the IAM roles and trust relationships that are required to enable SSO access. For more information on how to do this, see Add and Configure a Custom SAML 2.0 Application.""
+
+I have all this set up but I can't seem to find the proper attribute mappings for the assertion. Anyone have any info or advice?"
+AWS IoT Analytics	"Re: Use SSO to access accounts outside of an Organization
+Hey ITGuyDennis,
+
+Indeed this is possible. It can be achieved by configuring a Custom SAML 2.0 Application, but bear the following in mind:
+
+
+Users will only be able to assume a single role within the target AWS account
+Unlike the AWS Accounts application, you will not be able to obtain temporary credentials for programmatic use via the app in the SSO User Portal.
+
+
+The steps below are how I achieved this in my own environment:
+
+1) Create a new Custom SAML 2.0 application.
+2) Download the 'AWS SSO SAML metadata' file.
+3) Go to your target account and create an Idp in IAM, uploading the metadata file which you downloaded.
+4) Create an IAM Role to allow for federated access with SAML - Select the Idp which you just created, allow for Console access, attach the IAM Policies you wish.
+5) Go back to the account where you're configuring the SSO application.
+6) For 'Application Metadata' select to manually enter the data.
+7) Enter the following:
+	i) Application ACS URL - https://signin.aws.amazon.com/saml
+	ii) Application SAML audience - urn:amazon:webservices
+	iii) Leave 'Application start URL' blank.
+8) In Attribute Mappings, enter the following (user attribute - map string value - format):
+	i) Subject - $\{user:email\} - persistent
+	ii) https://aws.amazon.com/SAML/Attributes/RoleSessionName - $\{user:email\} - unspecified
+	iii) https://aws.amazon.com/SAML/Attributes/Role - arn:aws:iam::account_number:saml-provider/Idp_name,arn:aws:iam::account_number:role/role_name - unspecified
+9) Assign a user to access the application and save the changes.
+
+N.B. Remember to remove the '\' from the user attributes above. I had to put those in so that the values weren't show as null.
+
+I hope that this helps.
+
+Regards,
+Ciarán C
+
+Edited by: CiaranC-AWS on Aug 20, 2018 5:34 AM - Has to reformat the user attributes as they were coming up as '$null' when saved."
+AWS IoT Analytics	"Removing CLI option from SSO Portal
+Hi,
+
+AWS SSO dashboard shows ""Management Console | Command Line access"". Is there a way I can hide or not show CLI option?
+
+Thanks
+Bala
+
+Edited by: ACN-Bala on May 7, 2018 5:43 AM"
+AWS IoT Analytics	"Re: Removing CLI option from SSO Portal
+You cannot hide the CLI option from the user portal. May I ask what is the motivation for that?
+Thanks,
+Anand Murugesan."
+AWS IoT Analytics	"Re: Removing CLI option from SSO Portal
+Its just that I want to limit users to have access through Console only.
+
+Thanks
+Bala"
+AWS IoT Analytics	"Re: Removing CLI option from SSO Portal
+I understand. If the user can perform an operation through Console, the same operation can be performed through API route as well. Users have the same permission immaterial of the route the use to access those API/features. Would you please elaborate what is your thought when you said you wanted to not provide access to your users from the command line/programmatic access. I am trying to understand the benefits/need for that setup. 
+Thanks,
+Anand Murugesan."
+AWS IoT Analytics	"Re: Removing CLI option from SSO Portal
+I think this option would be handy to stop those who may be inexperienced with CLI attempting something which could potentially bring down an account."
+AWS IoT Analytics	"How to enable Master account for AWS SSO
+Hi,
+
+As part of testing, I have been able to create an AWS Organizations with different OUs and AWS SSO enabled for the member accounts with AWS Microsoft AD directory services.
+
+But for the master account I was not able to assign users, the ""Assign Users"" option is greyed out. So, I added IAM Roles for directory users and groups, from the ""AWS Management Console"" option under my instance of Directory Service. With this I am able to SSO into master account as well, but the URL is different i.e I have to use https://myportal.awsapps.com/console.
+
+For all the rest of the member accounts, I use the https://myportal.awsapps.com/start, as this lists all the member accounts, and when you select any of them, it shows the corresponding roles, f more than 1 created.
+
+My question is - how do I enable Master account to show up in the common URL -
+https://myportal.awsapps.com/start, rather than using two URLs - one for Master account and another for all the member accounts.
+
+Request clarity and addition info on this requirement of mine.
+
+Thanks
+Bala"
+AWS IoT Analytics	"Re: How to enable Master account for AWS SSO
+Thank you for sharing your feedback. We are aware of the request to enable SSO access to master accounts. Currently AWS SSO does not support SSO access to master accounts. We are looking to enable this in the future.
+
+Edited by: anandmataws on May 2, 2018 10:24 AM"
+AWS IoT Analytics	"Re: How to enable Master account for AWS SSO
+Thanks Anand for the clarification."
+AWS IoT Analytics	"Re: How to enable Master account for AWS SSO
+We recently launched a feature to enable single sign-on to master account. You can find more details here: https://aws.amazon.com/about-aws/whats-new/2018/07/aws-single-sign-on-streamlines-access-to-aws-organizations-master-account-resources/
+
+Please let us know if you have additional questions."
+AWS IoT Analytics	"OpenVPN integration
+Any chance of adding OpenVPN integration to SSO? This would be a crucial piece for our organisation.
+
+Many thanks,
+B"
+AWS IoT Analytics	"AWS SSO - Error when saving attribute mapping.
+I'm trying to set up a SSO from AWS SSO to QuickSight. I'm getting the attached error when saving the attribute mapping. Any ideas whats going on here?"
+AWS IoT Analytics	"Office 365 Sign-In Issue
+We're trialing AWS SSO as an identity provider for Office 365 using a test tenant. Federation has been configured successfully as per AWS SSO guidelines.
+
+A user can sign in to the AWS SSO portal and then click on Office 365 icon to launch the app. The sign-in process works successfully and the user is logged in to the Office 365 portal.
+
+However, if a user who has not logged in to AWS SSO goes directly to the Office 365 portal, the sign in request is automatically redirected to AWS SSO and once credentials are entered, an error is displayed.
+
+<URL> - https://portal.sso.us-east-1.amazonaws.com/saml/assertion/Nzg0ODMzNTMwNjkyX2lucy0yZGIwMDVhNDVhMjY2NGQ1
+
+403
+Please contact your System Administrator
+No access
+
+Something went wrong and we could not sign you in to the application. 
+
+This message is received by any user attempting to sign in from Outlook 2016 or iOS native mail client on the sign in page.
+
+However if the user once again navigates to portal.office.com and tries to sign, the process is successful. The difference being, the user is already signed on to AWS SSO.
+
+Can anyone assist with further troubleshooting on this error. 
+
+Thanks
+Kasun"
+AWS IoT Analytics	"Re: Office 365 Sign-In Issue
+AWS SSO supports single sign-on to business applications such as Office365  through web browsers only. AWS SSO does not support single sign-on from mobile or desktop native applications.
+
+Edited by: anandmataws on Apr 30, 2018 6:55 AM"
+AWS IoT Analytics	"Re: Office 365 Sign-In Issue
+I dont think you have understood the question.
+
+If AWS is my federated authentication provider for Office 365, I would expect that I can sign in to my email from outlook or any other client that supports modern authentication. i'm only referring to authentication and not true SSO (passthrough authentication) from a client device. 
+
+The issue is that I receive an error if the authentication request is initiated from the application side (i.e. user going to portal.office.com in a browser, then redirected to AWS SSO and error post authentication). No issues if i log in to AWS SSO first in the browser and then click on the Office 365 tile.
+
+Has anyone tried this and is this expected behavior?"
+AWS IoT Analytics	"Re: Office 365 Sign-In Issue
+Thank you for bringing this issue (i.e. user going to portal.office.com in a browser, then redirected to AWS SSO and error post authentication) to our notice. We are aware of this issue and we are working on a fix for this."
+AWS IoT Analytics	"Re: Office 365 Sign-In Issue
+We have fixed this issue. Please retry your use case."
+AWS IoT Analytics	"AWS SSO - SAML Integration with G-Suite Not Working
+Hi,
+
+I have recently configured AWS SSO for GSuite using the configuration link available in AWS Console. 
+When I login to the AWS SSO Portal, I get to see the GSuite icon and when I click, it takes me to Google Drive (as I have configured ""Application start URL https://drive.google.com/a/acnbalamurugan.in""), and then I get the below error:
+
+400 -Please contact your System Administrator
+Mapped property (NameId) cannot be empty. Please check Attribute Source
+
+Request some guidance on resolving this attribute issue.
+
+Thanks
+Bala"
+AWS IoT Analytics	"Re: AWS SSO - SAML Integration with G-Suite Not Working
+I was able to resolve this. It was a simple fix - had to set the email address filed in user account properties in my connected directory."
+AWS IoT Analytics	"Bug - unable to sign on with Chrome
+Hello,
+
+I've been scratching my head for a while as to why my SSO setup wasn't working - turns out it is just not in Chrome.
+
+Running on Chrome Version 65.0.3325.146 (Official Build) (64-bit), both in standard mode with a couple of extensions (uBlock Origin and React Developer Tools) and incognito mode with no extensions running. The console is showing a 401 on https://portal.sso.us-east-1.amazonaws.com/token/whoAmI
+
+Using the same URL and login details on IE 11 works without issues."
+AWS IoT Analytics	"Re: Bug - unable to sign on with Chrome
+We cannot reproduce this issue in latest version of chrome -- Version 65.0.3325.181 (Official Build) (64-bit). I would recommend to upgrade to this version of chrome."
+AWS IoT Analytics	"Cant delete SSO after leaving organisation
+I decided to move SSO to another account due to access restriction however, now I cant delete AD due to it being connected to SSO (Your request has a problem. Please see the following details. A different organization with id:o-amexdo86gg already exists for accountId:XXXXX Please contact support.)
+
+The SSO id in question is o-amexdo86gg and AD in question is d-90672d1796.
+
+Any help on getting SSO deleted on my account is greatly appreciated, thanks!"
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+Please disconnect the directory from AWS SSO. Then you can remove the directory."
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+Thanks for getting back to me,
+
+The problem now is I cant delete the AD due to the associated SSO, but I cant even see the SSO due to me leaving the organisation. I have tried reenable SSO to delete it but Im getting the error shown in the attached screenshot."
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+You can manage AWS SSO only from the master account.  Do you still have access to the master organization? If so login to the master organization to delete the directory. Please describe the list of events that got you into the current state."
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+So this account was originally the master account until I switched it to another one.
+
+AccountA
+enable SSO, setup windows AD
+
+At the point when AccountA was all set up I decided I needed to move it to another org due to restriction in SSOing to the master account.
+
+AccountB
+leave accountA org, set accountB as master, add accountA.
+
+In adding accountB I left the organization in which accountA was the master.
+
+Now Im in a state where AccountA can not enable SSO regardless of being the master or not.
+
+I hope this is enough information in replicating the issue.
+
+Edited by: JustJoe on Mar 2, 2018 3:00 PM"
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+Thank you for sharing your use case. We are aware of this bug and working on a fix. Can you please file an AWS Support Ticket for us to help you further."
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+I only have basic support, how would I go about doing this?"
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+I only have basic support, is there any way to progress this further?"
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+Hi,
+We are working on a fix for this issue. In them mean time, I have sent you a personal message in the forum with instructions on how to proceed further. Please review."
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+This bug has been fixed."
+AWS IoT Analytics	"G Suite SSO to AWS: SSO requests from users with pre-existing IAM
+I am referencing ""How to Set Up Federated Single Sign-On to AWS Using Google Apps"":  https://aws.amazon.com/blogs/security/how-to-set-up-federated-single-sign-on-to-aws-using-google-apps/ 
+
+How does this handle pre-existing IAM users? What if a pre-existing IAM user's email address matches an SSO negotiation? Is the SSO session logged into the existing IAM user, or a new temporary one? Obviously being able to merge existing IAM users with SSO requests that match their email address (or somehow) is optimal."
+AWS IoT Analytics	"Re: G Suite SSO to AWS: SSO requests from users with pre-existing IAM
+You need to connect a user directory (AD) with users who want to allow authentication through AWS SSO user portal. Please refer here https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-connected-directory.html
+
+Edited by: anandmataws on Mar 24, 2018 8:11 AM"
+AWS IoT Analytics	"AWS SSO New User Registration
+We are trying to evaluate AWS SSO along with Amazon Cognito. Does AWS SSO come with new user registration screens/flows out of the box? With Cognito I was at least able to find some example angular code to drop right in for things like forgot password, new user registration, etc. I was hoping AWS SSO was a full security product similar to Auth0 or Keycloak and had those things built in. Is AWS SSO relying entirely on some external mechanism to create users in the connected Active Directory?
+
+Also, how do AWS SSO users authenticate against AWS Resources like API Gateway? Cognito Identity Pools assign iam roles to authenticated cognito user pool users. Otherwise, a custom authorizer can take an issued token, verify it and allow access. Can AWS SSO issue SAML tokens? If so, how do I get the SAML tokens to pass on to a custom authorizer?"
+AWS IoT Analytics	"Re: AWS SSO New User Registration
+AWS SSO does not provide new user registration screens/flows out of the box. It depends on underlying AD for users. It is possible to build a custom user registration flow on top of underlying AD using AD/LDAP protocols on your own.
+
+AWS SSO does not allow authentication to AWS Resources like API Gateway like Amazon Cognito does. AWS SSO does not issue SAML tokens through API. But, it does issue SAML tokens to integrated applications (you can configure a custom SAML application) in the browser login flow only."
+AWS IoT Analytics	"Possible BUG with SSO and Organizations
+It seems if you create an organization, delete it, then create another one the previous organization will be listed along with your current. When attempting to sign up for SSO the following error message occurs for me;
+
+""Your request has a problem. Please see the following details. A different organization with id:o-w1gs180c6w already exists for accountId:255993005091 Please contact support.""
+
+Since there's no way to specify which Organization to delete with the CLI or to work with SSO through the CLI it seems that it was meant that only one Organization was meant to exist at one time. However, it also seems previous Organizations are recorded."
+AWS IoT Analytics	"Re: Possible BUG with SSO and Organizations
+Thank you for your feedback. We are aware of this bug and working on a solution. In the mean time, please raise a support ticket so that we could help you further."
+AWS IoT Analytics	"Re: Possible BUG with SSO and Organizations
+Hi,
+
+Is there a chance you could just delete that old organization from our account? We only have a basic support plan.
+
+Thanks!"
+AWS IoT Analytics	"Re: Possible BUG with SSO and Organizations
+Seems to be working now"
+AWS IoT Analytics	"Re: Possible BUG with SSO and Organizations
+Thanks for confirming. We have fixed this bug. This should work from now on."
+AWS IoT Analytics	"AWS SSO and AD Connector groups
+We primarily use the eu-west-1 region, but have created a presence in us-east-1 with an AD Connector back to London over VPN to trial AWS SSO.
+
+The AD connector and SSO account access works well when we assign accounts/roles directly to user objects, but when assigning to groups instead of directly to users it doesn't seem to pick these up.
+
+At first I assumed this was going to be the same limitation that the Directory Console runs into where nested groups are not picked up. But I've tried this with flat groups too and still does not work.
+
+Is this expected behaviour with groups over AD Connector, or should this functionality work?"
+AWS IoT Analytics	"Re: AWS SSO and AD Connector groups
+Assignments to AD groups are supported. But AD nested groups are not supported."
+AWS IoT Analytics	"Re: AWS SSO and AD Connector groups
+Thanks @anandmataws 
+
+That is great, except the groups are not nested, and it doesn't work. How might one go about debugging?
+
+Sam
+
+Edited by: SamB on Feb 28, 2018 6:53 AM"
+AWS IoT Analytics	"Re: AWS SSO and AD Connector groups
+Sam,
+After the user signs in to the portal please go to the URL https://portal.sso.us-east-1.amazonaws.com/user to see what groups for the users are getting picked up. This will help debug this issue further.
+
+You can  file a support ticket, if you need help further.
+Thanks,
+Anand."
+AWS IoT Analytics	"Federated users error: Token must be redeemed within 5 minutes of issuance
+I was troubleshooting a SAML error and thought I'd leave my fix here for anyone that has ADFS SSO enabled for user federation and encounters this error. I looked in the docs at ( https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_saml.html ) but did not see it mentioned. 
+
+Federated users error: Token must be redeemed within 5 minutes of issuance (Service: AWSSecurityTokenService; Status Code: 400; Error Code: ExpiredTokenException
+
+Found the ADFS server clock was out of sync by more than 5 minutes. I corrected the time and restarted the ADFS service. My test user was able to login normally. 
+
+Hope this helps someone in the future!"
+AWS IoT Analytics	"api and cli access
+Will SSO also provide access to STS for api and cli access in addition to the console?"
+AWS IoT Analytics	"Re: api and cli access
+As of today, AWS SSO does not support that. We will consider your feedback as we develop the service going forward."
+AWS IoT Analytics	"Re: api and cli access
+Hi,
+I came here with the same question, thanks for confirming, would be nice if this was noted in the documentation. 
+
+Cheers"
+AWS IoT Analytics	"Re: api and cli access
+Hi, we have enabled API and CLI access. See https://forums.aws.amazon.com/ann.jspa?annID=5267."
+AWS IoT Analytics	"Tableau - Referer header is missing
+Hello,
+
+I have AWS SSO setup with our Tableau Online instance. I can authenticate via the web fine, but when I try to login from Tableau Desktop I get a ""{""message"":""Referer header is missing""}"" error.
+
+Here is a copy of the request/response:
+
+GET https://portal.sso.us-east-1.amazonaws.com/auth/wd?auth_code=XXX&organization=d-XXXX&region=us-east-1 HTTP/1.1
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,/;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/538.1 (KHTML, like Gecko) Tableau/10.5 Safari/538.1
+Accept-Language: en-us
+Cookie: x-amz-sso_state=XXXXXX
+Connection: Keep-Alive
+Accept-Encoding: gzip, deflate
+Host: portal.sso.us-east-1.amazonaws.com
+
+HTTP/1.1 400 Bad Request
+Date: Fri, 02 Feb 2018 19:39:40 GMT
+Content-Type: application/json
+Content-Length: 39
+Connection: keep-alive
+Server: Apache-Coyote/1.1
+RequestId: a79280c6-9b76-4d28-9ad2-5f43a27ad4af
+
+{""message"":""Referer header is missing""}
+
+Any thoughts?
+
+Thanks,"
+AWS IoT Analytics	"Re: Tableau - Referer header is missing
+AWS SSO supports single sign-on to business applications through web browsers only."
+AWS IoT Analytics	"sso-saml-logging-into-idp-from-service-provicer
+SP is an app which have its own Auth mechanism and local identities, User can directly login.
+
+Is there a way SP can notify IDP about the logged in user so that other SP are logged in from IDP(salesforce)
+
+https://forums.aws.amazon.com/ -> https://forums.aws.amazon.com/
+
+https://forums.aws.amazon.com/ ---login req--> https://forums.aws.amazon.com/ -> https://forums.aws.amazon.com/
+
+Problem is SP1 have set of users which is not part of idp and other SPs
+
+SP = Service provider
+
+IDP = Identity provider
+
+Edited by: simon007 on Feb 7, 2018 3:21 AM"
+AWS IoT Analytics	"Re: sso-saml-logging-into-idp-from-service-provicer
+All users have to be mastered in IDP/Directory Service for SSO to work."
+AWS IoT Analytics	"Simple AD support
+I'm only using Active Directory for basic auth in a proxy and some on-prem applications that support it. I would also like to use AWS SSO to move users off AWS IAM users. Is there a plan to support Simple AD with SSO?"
+AWS IoT Analytics	"Re: Simple AD support
+AWS SSO supports AWS Directory Service for Microsoft Active Directory, also known as AWS Managed Microsoft AD, and AD Connector. AWS SSO will not support Simple AD."
+AWS IoT Analytics	"Region Availability
+Hello AWS Team,
+
+Keen to get started with AWS SSO connected to our AD in London, it would seem crazy not to offer SSO in the regions AD is available, are you able to share an expected availability date in the other major regions such as London?
+
+Thanks
+James"
+AWS IoT Analytics	"Re: Region Availability
+Thank you for your valuable inputs. We will consider your inputs as we plan the future releases."
+AWS IoT Analytics	"Re: Region Availability
+Replied."
+AWS IoT Analytics	"OpenId Connect Support
+According to FAQ https://aws.amazon.com/single-sign-on/faqs/ currently there's no support for OIDC protocol - Is this temporary and support for OIDC will be added in forthcoming updates?
+
+I know that SAML is mature and comprehensive protocol but OIDC is web (js) friendly and seems to be 
+a interoperable standard among different identity providers (Facebook, Twitter, Google, etc.). When you compare the specifications you’ll find that OIDC was designed to work with the web while SAML was retrofitted to work on top of the web.
+
+Best regards, 
+Marcin"
+AWS IoT Analytics	"Re: OpenId Connect Support
+Marcin,
+Appreciate your feedback.
+Can you please elaborate your use case? OpenID Connect support could mean many things. It would be helpful if can describe what is the use case and how are you planning use this feature. We are considering adding this feature. This will help us to address this use case correctly in the future.
+Thanks,
+Anand."
+AWS IoT Analytics	"Re: OpenId Connect Support
+Hi Anand, 
+
+Thanks for your reply. I'd like to have possibility to use AWS SSO as an OIDC identity provider and  also federate it with 3rd party identity providers, either for my custom apps or 3rd party services which are offering OIDC integration. I'd expect similar functionalities as provided by solutions like Keycloak or (to a smaller extent) ADFS but offered as PaaS service, like i.e. AzureAD. 
+
+AFAIK currently there's no AWS equivalent of such services. Cognito i.e. operates on tokens compatible with OIDC but the protocol it's not fully implemented and cannot be exposed as a OIDC identity provider. (https://forums.aws.amazon.com/thread.jspa?threadID=231517). I hoped that AWS SSO will fill that gap. 
+
+Best regards,
+Marcin
+
+Edited by: krlm on Dec 13, 2017 1:58 AM"
+AWS IoT Analytics	"Re: OpenId Connect Support
+answered"
+AWS IoT Analytics	"Re: OpenId Connect Support
+I'm going through this blog post, but it seems the support for OpenId was removed???
+https://aws.amazon.com/blogs/security/building-an-app-using-amazon-cognito-and-an-openid-connect-identity-provider/"
+AWS IoT Analytics	"Re: OpenId Connect Support
+Hi, the post you are referring to is from Amazon Congito Product. Cognito still supports OpenID Connect. This post talks about AWS Single Sign-on, a separate service for managing access to AWS accounts and cloud business applications."
+AWS IoT Analytics	"API information for custom mobile application integration
+Can you point me to documentation on Auth or Identity API for custom mobile application integration jwt or otherwise , including TOTP challenges. Thanks ... 
+
+update:
+Looks like SAML 2 is the answer.
+
+Edited by: jumptack on Dec 13, 2017 4:46 AM"
+AWS IoT Analytics	"Re: API information for custom mobile application integration
+For custom mobile application development, we recommend using Amazon Cognito -> https://aws.amazon.com/cognito/"
+AWS IoT Analytics	"AWS Account SSO - Your request included an invalid SAML response
+I created a new standard AD directory in AWS Directory Service, connected it to SSO and assigned access to my root AWS account to the standard ""Admin"" user in AD. I can sign into the application portal and see the AWS Management Console application with my permission set, but when I click on it, I get an error saying ""Your request included an invalid SAML response. To logout, click here"" on the AWS SAML sign-in page. I tried repairing my identity provider and verified the SSO console and my AWS Directory instance is in us-east-1. Is anyone else seeing this or am I missing something?
+
+Edited by: snixon123 on Dec 8, 2017 11:49 AM"
+AWS IoT Analytics	"Re: AWS Account SSO - Your request included an invalid SAML response
+It could be that the out of the box AD users are missing email. Try adding 'Email' to the out of the box users are try creating a native AD users."
+AWS IoT Analytics	"Re: AWS Account SSO - Your request included an invalid SAML response
+This helped. It turned out it wasn't the email address but the UPN that was missing. Looks like the admin user out of the box doesn't have a UPN set by default and that must have been part of the claims sent to the AWS SAML endpoint. I set the UPN on the user and it worked like a charm. Thank you!"
+AWS IoT Analytics	"Change User portal URL for AWS SSO Directory
+I want to change the url, or at least change the component preceding ""*.awsapps.com/start"" for one of my directories."
+AWS IoT Analytics	"Re: Change User portal URL for AWS SSO Directory
+If anyone could assist on renaming my SSO directory URL it would be great. There isn't any cli commands to do so."
+AWS IoT Analytics	"Renamed AWS Accounts not showing correctly in console
+Hi,
+Im repurposed and renamed 2 of my accounts but dont see the title reflected in SSO. Is there some other way of renaming the AWS Accounts under SSO?
+
+Thanks"
+AWS IoT Analytics	"Re: Renamed AWS Accounts not showing correctly in console
+Having the same issue. Must just be a hidden property somewhere. Hopefully they fix this soon since they've been rolling out other improvements lately."
+AWS IoT Analytics	"Re: Renamed AWS Accounts not showing correctly in console
+Thanks a lot. We have added this feature request to our backlog and will prioritize it for future releases."
+AWS IoT Analytics	"Users can only sign in once to the user portal link. Must reset password.
+We're using AWS SSO using the AWS SSO directory with AWS organizations. Currently users have can only login once using the user portal URL. After that they have to reset their password. 100% reproducible. Super inconvenient. It's as if all passwords are one time use only.
+
+Has anyone seen this or know why?
+
+Not using any VPN or proxies. Tried different browsers from different locations.
+
+Edited by: jamesfauna on Feb 5, 2019 11:39 AM
+
+Edited by: jamesfauna on Feb 5, 2019 11:39 AM"
+AWS IoT Analytics	"Re: Users can only sign in once to the user portal link. Must reset password.
+Thanks a lot. Could you reach out to AWS Support to help with your specific issue?"
+AWS IoT Analytics	"Use CLI to retrieve credential from SSO
+Hello,
+Is there a way to retrieve a credential from SSO using a cli utility?
+
+I do see the option to get the credential after signing in to the login page, and to copy-paste it into the shell, and that's nifty but not really usable for programmatic access.
+
+Ideally, to me, there would be a utility that worked with the credential_process option of the AWS config file. I do see that a SAML identity provider is created in the configured accounts, so I had hopes that SSO would expose a SAML authentication endpoint, and that `awsprocesscreds` would handle it, but I'm not seeing a way to make that work currently. I opened an issue there also. Linking it here in case the SSO team was unaware of such utilities.
+
+https://github.com/awslabs/awsprocesscreds/issues/26"
+AWS IoT Analytics	"Re: Use CLI to retrieve credential from SSO
+Thanks a lot for your feedback regarding using SSO to retrieve the password for CLI access. We have added this feature to our backlog and will consider it for future prioritization."
+AWS IoT Analytics	"Re: Use CLI to retrieve credential from SSO
++1 for interest on this feature. Is there any new progress on it? Thanks."
+AWS IoT Analytics	"Enforce TOTP MFA & Strong Password Policies w/ Rotation
+It was incredibly exciting to see the release of the AWS SSO managed directory, a free AWS alternative to Microsoft Active Directory.
+
+Announcement: https://aws.amazon.com/about-aws/whats-new/2018/10/now-you-can-create-and-manage-users-within-aws-single-sign-on/
+Blog Post: https://aws.amazon.com/blogs/security/how-to-create-and-manage-users-within-aws-sso/
+
+According to https://aws.amazon.com/directoryservice/pricing/, AWS managed AD costs $288-$432/mo minimum. For my organization, any flat monthly rate above the cost of a t3.nano requires good justification for approval. That much money did not justify moving away from IAM users.
+
+Because of this huge reduction in price, I am sure some organizations will use AWS SSO right now. However, my organization will not be comfortable using this service for two reasons.
+
+1) MFA - Specifically, Time-based One-Time Passwords cannot be configured and required for all users.
+2) Password policies cannot be tailored. We use a password manager, so it is no problem to enforce 30-90 day rotation and 16+ character passwords.
+
+When will these two enhancements to AWS SSO built-in directory be released?"
+AWS IoT Analytics	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+Thanks a lot for your feedback. We have added these features to our backlog and will consider these for future prioritization. 
+
+Regarding 1) Just to clarify that you are referring to a time-based one-time MFA code that can configure for your users?
+Regarding 2) You want the capability to the interval after which the password expires requiring the user to reset the password.
+
+Thanks a lot and we appreciate your feedback."
+AWS IoT Analytics	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+1) We wouldn't mind supplying the QR code to our users from an admin interface. However, it would be nice to have users manage their own TOTP device. Until the device is configured correctly, the user should not be able to do anything besides login to configure the TOTP device.
+2) A custom password policy is less important than #1, but I imagine this could be done similar to the IAM User password policy capability.
+
+Thanks."
+AWS IoT Analytics	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+Looks like OTP is now configurable in the AWS SSO console.  https://aws.amazon.com/blogs/security/add-a-layer-of-security-for-aws-sso-user-portal-sign-in-with-context-aware-email-based-verification/ 
+
+Looks like AWS is moving in the right direction, as always. This is good enough to answer my question."
+AWS IoT Analytics	"SSO Start Page - UI Modification
+Is it possible to customize the UI of the login page for AWS SSO."
+AWS IoT Analytics	"Re: SSO Start Page - UI Modification
+Thanks a lot for your feedback. We have added your request to customize the SSO Start page to our feature backlog and will consider it for future prioritization. 
+
+What type of modifications would you want to do for the Start Page? Are you looking to have your own logo? Anything else?"
+AWS IoT Analytics	"When will we see AWS Single Sign-On in EU ?
+Hi there..
+
+With the newly build-in directory in AWS Single Sign-On, the service really got interesting, but with the GDPR regulation we still cannot use it here in EU.
+AWS Single Sign-On has been out since 2017, when can we expect to see it ""Over here"" ?
+
+Looking forward..
+David"
+AWS IoT Analytics	"Re: When will we see AWS Single Sign-On in EU ?
+Thanks a lot David. We have added your request to our feature back log and will update the thread once the service is available in EU region."
+AWS IoT Analytics	"Customer Managed Policies in SSO
+I've come across what seems to be a surprising omission from SSO: Customer Managed Policies.
+
+From my understanding the most custom Permission Set you can create is by using 10 AWS Managed Policies alongside the 1 inline IAM policy.
+
+The problem with this is the permissions we require do not always fit into managed policies and having to 'complete' them by an additional inline policy seems 'hacky' and a poor way to manage permissions when trying to give 'least privilege where possible'.
+
+We could live with the inline policy creator however the byte limit severely limits the kind of policies you can create.
+
+Is there anything in the pipeline to be able to add Customer Managed Policies to Permission Sets, or at least the ability to increase the inline policy byte limit?"
+AWS IoT Analytics	"Re: Customer Managed Policies in SSO
+Thank you for your feedback. We will consider your inputs while planning the future roadmap of the product.
+-Anand Murugesan"
+AWS IoT Analytics	"Re: Customer Managed Policies in SSO
+Disregard this.  I see custom policies are supported now.
+
+Edited by: JGardner123 on Jan 15, 2019 9:23 AM"
+AWS IoT Analytics	"Change User portal URL for AWS SSO Directory
+I want to change the url, or at least change the component preceding ""*.awsapps.com/start"" for one of my directories."
+AWS IoT Analytics	"Re: Change User portal URL for AWS SSO Directory
+If anyone could assist on renaming my SSO directory URL it would be great. There isn't any cli commands to do so."
+AWS IoT Analytics	"Renamed AWS Accounts not showing correctly in console
+Hi,
+Im repurposed and renamed 2 of my accounts but dont see the title reflected in SSO. Is there some other way of renaming the AWS Accounts under SSO?
+
+Thanks"
+AWS IoT Analytics	"Re: Renamed AWS Accounts not showing correctly in console
+Having the same issue. Must just be a hidden property somewhere. Hopefully they fix this soon since they've been rolling out other improvements lately."
+AWS IoT Analytics	"Re: Renamed AWS Accounts not showing correctly in console
+Thanks a lot. We have added this feature request to our backlog and will prioritize it for future releases."
+AWS IoT Analytics	"Users can only sign in once to the user portal link. Must reset password.
+We're using AWS SSO using the AWS SSO directory with AWS organizations. Currently users have can only login once using the user portal URL. After that they have to reset their password. 100% reproducible. Super inconvenient. It's as if all passwords are one time use only.
+
+Has anyone seen this or know why?
+
+Not using any VPN or proxies. Tried different browsers from different locations.
+
+Edited by: jamesfauna on Feb 5, 2019 11:39 AM
+
+Edited by: jamesfauna on Feb 5, 2019 11:39 AM"
+AWS IoT Analytics	"Re: Users can only sign in once to the user portal link. Must reset password.
+Thanks a lot. Could you reach out to AWS Support to help with your specific issue?"
+AWS IoT Analytics	"Use CLI to retrieve credential from SSO
+Hello,
+Is there a way to retrieve a credential from SSO using a cli utility?
+
+I do see the option to get the credential after signing in to the login page, and to copy-paste it into the shell, and that's nifty but not really usable for programmatic access.
+
+Ideally, to me, there would be a utility that worked with the credential_process option of the AWS config file. I do see that a SAML identity provider is created in the configured accounts, so I had hopes that SSO would expose a SAML authentication endpoint, and that `awsprocesscreds` would handle it, but I'm not seeing a way to make that work currently. I opened an issue there also. Linking it here in case the SSO team was unaware of such utilities.
+
+https://github.com/awslabs/awsprocesscreds/issues/26"
+AWS IoT Analytics	"Re: Use CLI to retrieve credential from SSO
+Thanks a lot for your feedback regarding using SSO to retrieve the password for CLI access. We have added this feature to our backlog and will consider it for future prioritization."
+AWS IoT Analytics	"Re: Use CLI to retrieve credential from SSO
++1 for interest on this feature. Is there any new progress on it? Thanks."
+AWS IoT Analytics	"Enforce TOTP MFA & Strong Password Policies w/ Rotation
+It was incredibly exciting to see the release of the AWS SSO managed directory, a free AWS alternative to Microsoft Active Directory.
+
+Announcement: https://aws.amazon.com/about-aws/whats-new/2018/10/now-you-can-create-and-manage-users-within-aws-single-sign-on/
+Blog Post: https://aws.amazon.com/blogs/security/how-to-create-and-manage-users-within-aws-sso/
+
+According to https://aws.amazon.com/directoryservice/pricing/, AWS managed AD costs $288-$432/mo minimum. For my organization, any flat monthly rate above the cost of a t3.nano requires good justification for approval. That much money did not justify moving away from IAM users.
+
+Because of this huge reduction in price, I am sure some organizations will use AWS SSO right now. However, my organization will not be comfortable using this service for two reasons.
+
+1) MFA - Specifically, Time-based One-Time Passwords cannot be configured and required for all users.
+2) Password policies cannot be tailored. We use a password manager, so it is no problem to enforce 30-90 day rotation and 16+ character passwords.
+
+When will these two enhancements to AWS SSO built-in directory be released?"
+AWS IoT Analytics	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+Thanks a lot for your feedback. We have added these features to our backlog and will consider these for future prioritization. 
+
+Regarding 1) Just to clarify that you are referring to a time-based one-time MFA code that can configure for your users?
+Regarding 2) You want the capability to the interval after which the password expires requiring the user to reset the password.
+
+Thanks a lot and we appreciate your feedback."
+AWS IoT Analytics	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+1) We wouldn't mind supplying the QR code to our users from an admin interface. However, it would be nice to have users manage their own TOTP device. Until the device is configured correctly, the user should not be able to do anything besides login to configure the TOTP device.
+2) A custom password policy is less important than #1, but I imagine this could be done similar to the IAM User password policy capability.
+
+Thanks."
+AWS IoT Analytics	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+Looks like OTP is now configurable in the AWS SSO console.  https://aws.amazon.com/blogs/security/add-a-layer-of-security-for-aws-sso-user-portal-sign-in-with-context-aware-email-based-verification/ 
+
+Looks like AWS is moving in the right direction, as always. This is good enough to answer my question."
+AWS IoT Analytics	"SSO Start Page - UI Modification
+Is it possible to customize the UI of the login page for AWS SSO."
+AWS IoT Analytics	"Re: SSO Start Page - UI Modification
+Thanks a lot for your feedback. We have added your request to customize the SSO Start page to our feature backlog and will consider it for future prioritization. 
+
+What type of modifications would you want to do for the Start Page? Are you looking to have your own logo? Anything else?"
+AWS IoT Analytics	"When will we see AWS Single Sign-On in EU ?
+Hi there..
+
+With the newly build-in directory in AWS Single Sign-On, the service really got interesting, but with the GDPR regulation we still cannot use it here in EU.
+AWS Single Sign-On has been out since 2017, when can we expect to see it ""Over here"" ?
+
+Looking forward..
+David"
+AWS IoT Analytics	"Re: When will we see AWS Single Sign-On in EU ?
+Thanks a lot David. We have added your request to our feature back log and will update the thread once the service is available in EU region."
+AWS IoT Analytics	"Customer Managed Policies in SSO
+I've come across what seems to be a surprising omission from SSO: Customer Managed Policies.
+
+From my understanding the most custom Permission Set you can create is by using 10 AWS Managed Policies alongside the 1 inline IAM policy.
+
+The problem with this is the permissions we require do not always fit into managed policies and having to 'complete' them by an additional inline policy seems 'hacky' and a poor way to manage permissions when trying to give 'least privilege where possible'.
+
+We could live with the inline policy creator however the byte limit severely limits the kind of policies you can create.
+
+Is there anything in the pipeline to be able to add Customer Managed Policies to Permission Sets, or at least the ability to increase the inline policy byte limit?"
+AWS IoT Analytics	"Re: Customer Managed Policies in SSO
+Thank you for your feedback. We will consider your inputs while planning the future roadmap of the product.
+-Anand Murugesan"
+AWS IoT Analytics	"Re: Customer Managed Policies in SSO
+Disregard this.  I see custom policies are supported now.
+
+Edited by: JGardner123 on Jan 15, 2019 9:23 AM"
+AWS IoT Analytics	"MFA Prompt moved?
+It seems that our MFA prompt is no longer on the main SSO login page. Our users used to see three fields (Username+Password+MFA). Now they just see (UserName+Password).
+
+Our users are still prompted for MFA, but as a second step, after the user authenticates against our directory.
+
+Was this a design change? I don't see this as configurable anywhere. Our directory still has MFA enabled and I can't see any obvious settings to configure this.
+
+Someone over in infosec escalated this without trying to login - ""oh heck, who disabled mfa?"""
+AWS IoT Analytics	"Re: MFA Prompt moved?
+like it never disappeared, the MFA prompt is back on the SSO Login page."
+AWS IoT Analytics	"How to use AWS SSO with Amazon RedShift
+Hi
+
+I see that AWS SSO service for AWS organizations support SAML. Also Amazon Redshift supports SAML. But I can't find any documentation how to use AWS SSO service with redshift.
+
+Is it possible to use AWS SSO with Amazon Redshift?
+
+Best
+Steffen"
+AWS IoT Analytics	"How to change default directory alias in AWS SSO?
+AWS SSO doesn't allow changing directory alias. How can I do that? Is it possible to remove default directory or remove/disable whole SSO and configure it from the beginning or maybe from CLI?"
+AWS IoT Analytics	"Re: How to change default directory alias in AWS SSO?
+The default alias for your directory is your directory's id (format ""d-""). You can change the directory alias by navigating to the directory tab. Note that you can change the directory alias only once. Once you change the directory alias, you cannot change it again. Please let us know if you have issues"
+AWS IoT Analytics	"Re: How to change default directory alias in AWS SSO?
+In addition, you can also change the default directory to use a Microsoft AD (AWS Managed Microsoft AD or AD Connector ) directory by choosing ""Change Directory"" in the Directory tab in the AWS SSO Console."
+AWS IoT Analytics	"Re: How to change default directory alias in AWS SSO?
+Ok, I thought there is a posibility to release given alias because I wanted to use this alias for my Microsoft AD Directory."
+AWS IoT Analytics	"General Question about AWS Single Sign On
+If I enable AWS Single Sign On in my master account and root org, if I determine this service is not for me, can it be disabled and/or removed?"
+AWS IoT Analytics	"Re: General Question about AWS Single Sign On
+Yes, you can disable SSO by navigating to the AWS Organizations console and choose Settings. You can disable AWS Single Sign-On by choosing the Disable button next to AWS Single Sign-On. Here is the deep link to the settings page: https://console.aws.amazon.com/organizations/home?region=us-east-1#/organization/settings"
+AWS IoT Analytics	"How do I add a new SSO connector for Tallyfy?
+AWS offers a list of pre-existing apps as connectors - such as Salesforce, Box, etc.
+
+I want to have  https://tallyfy.com as a default listing on this directory - how do I build a connector such that it's published in that listing?
+
+Edited by: amitarelli on Nov 6, 2018 2:06 AM"
+AWS IoT Analytics	"AWS SSO for applications that need AccessKey / Secret Access key
+Hi,
+
+maybe a stupid question, but i couldn´t find a definitive answer: What is the intended way to use AWS SSO with an application that needs AccessKey and SecretAccessKey as credentials to login? 
+
+There are some descriptions about how to do it with a script that gets (temporary) credentials using a script, saving them in the current users credentials files and going ahead from there:
+https://aws.amazon.com/de/blogs/security/how-to-implement-a-general-solution-for-federated-apicli-access-using-saml-2-0/ 
+
+https://aws.amazon.com/de/blogs/big-data/connect-to-amazon-athena-with-federated-identities-using-temporary-credentials/
+
+I wonder if this is the only / intended way to go, or if there is something more ""elegant"" that i keep on missing? Is there any way of getting non-temporary credentials this way, or do i have to manually create IAM-users if i want permanent ones?
+
+Thank you"
+AWS IoT Analytics	"AWS SSO login with UPN suffix
+Currenty we have AWS SSO connected to AWS AD (domain.com), and AWS AD has a two way trust with other AD domains (e.g. corp.trusteddomain.com).
+
+When we assign username@corp.trusteddomain.com to an account and permission set, the console lists the user as : corp.trusteddomain.com\username. 
+
+In the user portal for AWS accounts, it's possible to logon as corp.trusteddomain.com\username but not as username@corp.trusteddomain.com (authentication fails) or with the AD UPN suffix defined for that user (username@trusteddomain.com).
+
+Most users are familiar with username@trusteddomain.com as a universal way to login, since it's also often their email. Is there any way to allow UPN login?"
+AWS IoT Analytics	"AWS Console display suggestions for AWS SSO Federated access
+When using AWS SSO to login, the ""AWS console"" user is displayed as:
+
+AWSReservedSSO_Administrat...
+
+You need to hover with the mouse to get a tooltip and see the full permissionset name, account and user name:
+
+AWSReservedSSO_AdministratorAccess_13109712941410932/user@fqdn @awsaccountnameor#
+
+From a customer's standpoint, the most relevant info is user@fqdn, permissionset and aws account name or number. AWSReservedSSO and the number string are not as relevant yet they take up most of the screen real estate in the navbar. It would save time if the relevant info was always visible. Also, when frequently switching between multiple accounts, it's helpful to know at a glance which account you're in to avoid mistakes. 
+
+Would it be possible to display the info like this instead:
+
+user@fqdn @awsaccountname /AdministratorAccess"
+AWS IoT Analytics	"Why should we use Federation with AWS Single Sign on Endpoint
+Hi,
+
+We have Ping federation configured on-prem which is directly send the SAML assertion to the AWS sign in endpoint for SAML (https://signin.aws.amazon.com/saml). The endpoint uses the AssumeRoleWithSAML API to request temporary security credentials and then constructs a sign-in URL for the AWS Management Console using those credentials.
+
+It's simple and straightforward. 
+
+I see, there's another option where we can use AWS Single Sign-on (SSO) endpoint. The endpoint requests temporary security credentials on behalf of the user and creates a console sign-in URL.
+AWS sends the sign-in URL back to the client as a redirect.
+
+My question's why should we use AWS SSO endpoint integration with Ping federate when we can get the same functionality with AWS sign-in endpoint with SAML (https://signin.aws.amazon.com/saml).
+
+Please check the following links and guide us which option's best.
+
+AWS SSO endpoint:- https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_enable-console-saml.html
+
+AWS Sign-in endpoint with SAML:
+https://aws.amazon.com/blogs/security/how-to-establish-federated-access-to-your-aws-resources-by-using-active-directory-user-attributes/"
+AWS IoT Analytics	"We were unable to sign you in
+Suddenly getting an issue signing in, nothing has changed in my set up, any ideas?
+
+https://xyz.awsapps.com/start/error/400.html
+
+We were unable to sign you in.
+This is due to an error with how single sign-on was originally configured.
+Please contact your system administrator and ask them to verify that all attribute mappings are valid.
+Try signing in again
+
+
+Joe"
+AWS IoT Analytics	"Re: We were unable to sign you in
+Seems to have resolved itself, curious what the issue was? Nothing reported on aws status page."
+AWS IoT Analytics	"Connect non-org account to AWS SSO as a custom SAML app. Attributes help
+I have an account that is not part of my org but I would like to add it as a custom SAML 2.0 app in my AWS SSO. Is this possible? 
+
+https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-accounts.html  states that it is possible:
+
+""You can also connect an AWS account that is not part of your organization by setting up the account as a custom SAML application in AWS SSO. In this scenario, you provision and manage the IAM roles and trust relationships that are required to enable SSO access. For more information on how to do this, see Add and Configure a Custom SAML 2.0 Application.""
+
+I have all this set up but I can't seem to find the proper attribute mappings for the assertion. Anyone have any info or advice?"
+AWS IoT Analytics	"Re: Connect non-org account to AWS SSO as a custom SAML app. Attributes help
+A big thank you to Jose Eduardo at AWS Support for the help. 
+
+""Assuming that you have already created the application in SSO and the role to be assumed in the other account, the following three attributes are needed when configuring access to an AWS account as a Custom SAML application in AWS SSO:
+
+User attribute in the application: Subject
+Maps to this string value or user attribute in AWS SSO: $null
+Format: persistent
+
+User attribute in the application: https://aws.amazon.com/SAML/Attributes/Role
+Maps to this string value or user attribute in AWS SSO: arn:aws:iam::012345678910:role/NAME-OF-YOUR-ROLE,arn:aws:iam::012345678910:saml-provider/NAME-OF-IDENTITY-PROVIDER
+Format: unspecified
+
+User attribute in the application: https://aws.amazon.com/SAML/Attributes/RoleSessionName
+Maps to this string value or user attribute in AWS SSO: $null
+Format: unspecified
+
+Note that if you use the user attribute $null as a mapping value then the user must have a value configured in the email address field in Active Directory. Alternatively, you can also specify other supported attributes. For more information about supported attributes in AWS SSO please see link [1] in the references below.
+
+Finally, please note that the attributes above are case-sensitive, therefore, they must be set exactly to https://aws.amazon.com/SAML/Attributes/Role and https://aws.amazon.com/SAML/Attributes/RoleSessionName. For more information about the required attributes in SAML responses for authentication to AWS please see link [2] in the references below.""
+
+References:
+
+[1] Supported AWS SSO Attributes
+https://docs.aws.amazon.com/singlesignon/latest/userguide/attributemappingsconcept.html
+
+[2] Configuring SAML Assertions for the Authentication Response
+https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_saml_assertions.html"
+AWS IoT Analytics	"Re: Connect non-org account to AWS SSO as a custom SAML app. Attributes help
+Hey ITGuyDennis,
+
+Just adding a link to another thread which you asked this on. I provided the answer there, the same as you have posted here, but with the formatting fixed so that NULL isn't displayed. Just for anyone who comes here to find the solution:
+
+https://forums.aws.amazon.com/thread.jspa?threadID=282953"
+AWS IoT Analytics	"Use SSO to access accounts outside of an Organization
+The AWS SSO FAQ mentions that SSO allows access to accounts within your Organization.
+
+Is SSO able to allow access to accounts in an org AND accounts in another org or not in any org?"
+AWS IoT Analytics	"Re: Use SSO to access accounts outside of an Organization
+AWS SSO can be setup in your AWS Organization. Then, AWS SSO provides single sign-on access to all the accounts managed with in your AWS Organization. I want to learn more about your use case that would require you to manage SSO to accounts managed outside your AWS Organization."
+AWS IoT Analytics	"Re: Use SSO to access accounts outside of an Organization
+I work for an MSP.
+
+We currently use Switch Role but SSO has all the links to account consoles in the SSO GUI and Switch Role we need to manage those Switch Role URLs manually.
+
+Edited by: velvetpixeldevcam on May 29, 2018 4:30 PM"
+AWS IoT Analytics	"Re: Use SSO to access accounts outside of an Organization
+Understood. AWS SSO does not have support for managed service providers use cases at this time. I appreciate your feedback. We will consider your inputs while planning for future releases of AWS SSO.
+--Anand Murugesan
+
+Edited by: anandmataws on May 29, 2018 4:35 PM"
+AWS IoT Analytics	"Re: Use SSO to access accounts outside of an Organization
+Thanks for the confirmation"
+AWS IoT Analytics	"Re: Use SSO to access accounts outside of an Organization
+I just wanted to tag on to this question. I have an account that is not part of my org but I would like to add it as a custom SAML 2.0 app in my AWS SSO. Is this possible? The documentation at https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-accounts.html states that it is possible:
+
+""You can also connect an AWS account that is not part of your organization by setting up the account as a custom SAML application in AWS SSO. In this scenario, you provision and manage the IAM roles and trust relationships that are required to enable SSO access. For more information on how to do this, see Add and Configure a Custom SAML 2.0 Application.""
+
+I have all this set up but I can't seem to find the proper attribute mappings for the assertion. Anyone have any info or advice?"
+AWS IoT Analytics	"Re: Use SSO to access accounts outside of an Organization
+Hey ITGuyDennis,
+
+Indeed this is possible. It can be achieved by configuring a Custom SAML 2.0 Application, but bear the following in mind:
+
+
+Users will only be able to assume a single role within the target AWS account
+Unlike the AWS Accounts application, you will not be able to obtain temporary credentials for programmatic use via the app in the SSO User Portal.
+
+
+The steps below are how I achieved this in my own environment:
+
+1) Create a new Custom SAML 2.0 application.
+2) Download the 'AWS SSO SAML metadata' file.
+3) Go to your target account and create an Idp in IAM, uploading the metadata file which you downloaded.
+4) Create an IAM Role to allow for federated access with SAML - Select the Idp which you just created, allow for Console access, attach the IAM Policies you wish.
+5) Go back to the account where you're configuring the SSO application.
+6) For 'Application Metadata' select to manually enter the data.
+7) Enter the following:
+	i) Application ACS URL - https://signin.aws.amazon.com/saml
+	ii) Application SAML audience - urn:amazon:webservices
+	iii) Leave 'Application start URL' blank.
+8) In Attribute Mappings, enter the following (user attribute - map string value - format):
+	i) Subject - $\{user:email\} - persistent
+	ii) https://aws.amazon.com/SAML/Attributes/RoleSessionName - $\{user:email\} - unspecified
+	iii) https://aws.amazon.com/SAML/Attributes/Role - arn:aws:iam::account_number:saml-provider/Idp_name,arn:aws:iam::account_number:role/role_name - unspecified
+9) Assign a user to access the application and save the changes.
+
+N.B. Remember to remove the '\' from the user attributes above. I had to put those in so that the values weren't show as null.
+
+I hope that this helps.
+
+Regards,
+Ciarán C
+
+Edited by: CiaranC-AWS on Aug 20, 2018 5:34 AM - Has to reformat the user attributes as they were coming up as '$null' when saved."
+AWS IoT Analytics	"Removing CLI option from SSO Portal
+Hi,
+
+AWS SSO dashboard shows ""Management Console | Command Line access"". Is there a way I can hide or not show CLI option?
+
+Thanks
+Bala
+
+Edited by: ACN-Bala on May 7, 2018 5:43 AM"
+AWS IoT Analytics	"Re: Removing CLI option from SSO Portal
+You cannot hide the CLI option from the user portal. May I ask what is the motivation for that?
+Thanks,
+Anand Murugesan."
+AWS IoT Analytics	"Re: Removing CLI option from SSO Portal
+Its just that I want to limit users to have access through Console only.
+
+Thanks
+Bala"
+AWS IoT Analytics	"Re: Removing CLI option from SSO Portal
+I understand. If the user can perform an operation through Console, the same operation can be performed through API route as well. Users have the same permission immaterial of the route the use to access those API/features. Would you please elaborate what is your thought when you said you wanted to not provide access to your users from the command line/programmatic access. I am trying to understand the benefits/need for that setup. 
+Thanks,
+Anand Murugesan."
+AWS IoT Analytics	"Re: Removing CLI option from SSO Portal
+I think this option would be handy to stop those who may be inexperienced with CLI attempting something which could potentially bring down an account."
+AWS IoT Analytics	"How to enable Master account for AWS SSO
+Hi,
+
+As part of testing, I have been able to create an AWS Organizations with different OUs and AWS SSO enabled for the member accounts with AWS Microsoft AD directory services.
+
+But for the master account I was not able to assign users, the ""Assign Users"" option is greyed out. So, I added IAM Roles for directory users and groups, from the ""AWS Management Console"" option under my instance of Directory Service. With this I am able to SSO into master account as well, but the URL is different i.e I have to use https://myportal.awsapps.com/console.
+
+For all the rest of the member accounts, I use the https://myportal.awsapps.com/start, as this lists all the member accounts, and when you select any of them, it shows the corresponding roles, f more than 1 created.
+
+My question is - how do I enable Master account to show up in the common URL -
+https://myportal.awsapps.com/start, rather than using two URLs - one for Master account and another for all the member accounts.
+
+Request clarity and addition info on this requirement of mine.
+
+Thanks
+Bala"
+AWS IoT Analytics	"Re: How to enable Master account for AWS SSO
+Thank you for sharing your feedback. We are aware of the request to enable SSO access to master accounts. Currently AWS SSO does not support SSO access to master accounts. We are looking to enable this in the future.
+
+Edited by: anandmataws on May 2, 2018 10:24 AM"
+AWS IoT Analytics	"Re: How to enable Master account for AWS SSO
+Thanks Anand for the clarification."
+AWS IoT Analytics	"Re: How to enable Master account for AWS SSO
+We recently launched a feature to enable single sign-on to master account. You can find more details here: https://aws.amazon.com/about-aws/whats-new/2018/07/aws-single-sign-on-streamlines-access-to-aws-organizations-master-account-resources/
+
+Please let us know if you have additional questions."
+AWS IoT Analytics	"OpenVPN integration
+Any chance of adding OpenVPN integration to SSO? This would be a crucial piece for our organisation.
+
+Many thanks,
+B"
+AWS IoT Analytics	"AWS SSO - Error when saving attribute mapping.
+I'm trying to set up a SSO from AWS SSO to QuickSight. I'm getting the attached error when saving the attribute mapping. Any ideas whats going on here?"
+AWS IoT Analytics	"Office 365 Sign-In Issue
+We're trialing AWS SSO as an identity provider for Office 365 using a test tenant. Federation has been configured successfully as per AWS SSO guidelines.
+
+A user can sign in to the AWS SSO portal and then click on Office 365 icon to launch the app. The sign-in process works successfully and the user is logged in to the Office 365 portal.
+
+However, if a user who has not logged in to AWS SSO goes directly to the Office 365 portal, the sign in request is automatically redirected to AWS SSO and once credentials are entered, an error is displayed.
+
+<URL> - https://portal.sso.us-east-1.amazonaws.com/saml/assertion/Nzg0ODMzNTMwNjkyX2lucy0yZGIwMDVhNDVhMjY2NGQ1
+
+403
+Please contact your System Administrator
+No access
+
+Something went wrong and we could not sign you in to the application. 
+
+This message is received by any user attempting to sign in from Outlook 2016 or iOS native mail client on the sign in page.
+
+However if the user once again navigates to portal.office.com and tries to sign, the process is successful. The difference being, the user is already signed on to AWS SSO.
+
+Can anyone assist with further troubleshooting on this error. 
+
+Thanks
+Kasun"
+AWS IoT Analytics	"Re: Office 365 Sign-In Issue
+AWS SSO supports single sign-on to business applications such as Office365  through web browsers only. AWS SSO does not support single sign-on from mobile or desktop native applications.
+
+Edited by: anandmataws on Apr 30, 2018 6:55 AM"
+AWS IoT Analytics	"Re: Office 365 Sign-In Issue
+I dont think you have understood the question.
+
+If AWS is my federated authentication provider for Office 365, I would expect that I can sign in to my email from outlook or any other client that supports modern authentication. i'm only referring to authentication and not true SSO (passthrough authentication) from a client device. 
+
+The issue is that I receive an error if the authentication request is initiated from the application side (i.e. user going to portal.office.com in a browser, then redirected to AWS SSO and error post authentication). No issues if i log in to AWS SSO first in the browser and then click on the Office 365 tile.
+
+Has anyone tried this and is this expected behavior?"
+AWS IoT Analytics	"Re: Office 365 Sign-In Issue
+Thank you for bringing this issue (i.e. user going to portal.office.com in a browser, then redirected to AWS SSO and error post authentication) to our notice. We are aware of this issue and we are working on a fix for this."
+AWS IoT Analytics	"Re: Office 365 Sign-In Issue
+We have fixed this issue. Please retry your use case."
+AWS IoT Analytics	"AWS SSO - SAML Integration with G-Suite Not Working
+Hi,
+
+I have recently configured AWS SSO for GSuite using the configuration link available in AWS Console. 
+When I login to the AWS SSO Portal, I get to see the GSuite icon and when I click, it takes me to Google Drive (as I have configured ""Application start URL https://drive.google.com/a/acnbalamurugan.in""), and then I get the below error:
+
+400 -Please contact your System Administrator
+Mapped property (NameId) cannot be empty. Please check Attribute Source
+
+Request some guidance on resolving this attribute issue.
+
+Thanks
+Bala"
+AWS IoT Analytics	"Re: AWS SSO - SAML Integration with G-Suite Not Working
+I was able to resolve this. It was a simple fix - had to set the email address filed in user account properties in my connected directory."
+AWS IoT Analytics	"Bug - unable to sign on with Chrome
+Hello,
+
+I've been scratching my head for a while as to why my SSO setup wasn't working - turns out it is just not in Chrome.
+
+Running on Chrome Version 65.0.3325.146 (Official Build) (64-bit), both in standard mode with a couple of extensions (uBlock Origin and React Developer Tools) and incognito mode with no extensions running. The console is showing a 401 on https://portal.sso.us-east-1.amazonaws.com/token/whoAmI
+
+Using the same URL and login details on IE 11 works without issues."
+AWS IoT Analytics	"Re: Bug - unable to sign on with Chrome
+We cannot reproduce this issue in latest version of chrome -- Version 65.0.3325.181 (Official Build) (64-bit). I would recommend to upgrade to this version of chrome."
+AWS IoT Analytics	"Cant delete SSO after leaving organisation
+I decided to move SSO to another account due to access restriction however, now I cant delete AD due to it being connected to SSO (Your request has a problem. Please see the following details. A different organization with id:o-amexdo86gg already exists for accountId:XXXXX Please contact support.)
+
+The SSO id in question is o-amexdo86gg and AD in question is d-90672d1796.
+
+Any help on getting SSO deleted on my account is greatly appreciated, thanks!"
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+Please disconnect the directory from AWS SSO. Then you can remove the directory."
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+Thanks for getting back to me,
+
+The problem now is I cant delete the AD due to the associated SSO, but I cant even see the SSO due to me leaving the organisation. I have tried reenable SSO to delete it but Im getting the error shown in the attached screenshot."
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+You can manage AWS SSO only from the master account.  Do you still have access to the master organization? If so login to the master organization to delete the directory. Please describe the list of events that got you into the current state."
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+So this account was originally the master account until I switched it to another one.
+
+AccountA
+enable SSO, setup windows AD
+
+At the point when AccountA was all set up I decided I needed to move it to another org due to restriction in SSOing to the master account.
+
+AccountB
+leave accountA org, set accountB as master, add accountA.
+
+In adding accountB I left the organization in which accountA was the master.
+
+Now Im in a state where AccountA can not enable SSO regardless of being the master or not.
+
+I hope this is enough information in replicating the issue.
+
+Edited by: JustJoe on Mar 2, 2018 3:00 PM"
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+Thank you for sharing your use case. We are aware of this bug and working on a fix. Can you please file an AWS Support Ticket for us to help you further."
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+I only have basic support, how would I go about doing this?"
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+I only have basic support, is there any way to progress this further?"
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+Hi,
+We are working on a fix for this issue. In them mean time, I have sent you a personal message in the forum with instructions on how to proceed further. Please review."
+AWS IoT Analytics	"Re: Cant delete SSO after leaving organisation
+This bug has been fixed."
+AWS IoT Analytics	"G Suite SSO to AWS: SSO requests from users with pre-existing IAM
+I am referencing ""How to Set Up Federated Single Sign-On to AWS Using Google Apps"":  https://aws.amazon.com/blogs/security/how-to-set-up-federated-single-sign-on-to-aws-using-google-apps/ 
+
+How does this handle pre-existing IAM users? What if a pre-existing IAM user's email address matches an SSO negotiation? Is the SSO session logged into the existing IAM user, or a new temporary one? Obviously being able to merge existing IAM users with SSO requests that match their email address (or somehow) is optimal."
+AWS IoT Analytics	"Re: G Suite SSO to AWS: SSO requests from users with pre-existing IAM
+You need to connect a user directory (AD) with users who want to allow authentication through AWS SSO user portal. Please refer here https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-connected-directory.html
+
+Edited by: anandmataws on Mar 24, 2018 8:11 AM"
+AWS IoT Analytics	"AWS SSO New User Registration
+We are trying to evaluate AWS SSO along with Amazon Cognito. Does AWS SSO come with new user registration screens/flows out of the box? With Cognito I was at least able to find some example angular code to drop right in for things like forgot password, new user registration, etc. I was hoping AWS SSO was a full security product similar to Auth0 or Keycloak and had those things built in. Is AWS SSO relying entirely on some external mechanism to create users in the connected Active Directory?
+
+Also, how do AWS SSO users authenticate against AWS Resources like API Gateway? Cognito Identity Pools assign iam roles to authenticated cognito user pool users. Otherwise, a custom authorizer can take an issued token, verify it and allow access. Can AWS SSO issue SAML tokens? If so, how do I get the SAML tokens to pass on to a custom authorizer?"
+AWS IoT Analytics	"Re: AWS SSO New User Registration
+AWS SSO does not provide new user registration screens/flows out of the box. It depends on underlying AD for users. It is possible to build a custom user registration flow on top of underlying AD using AD/LDAP protocols on your own.
+
+AWS SSO does not allow authentication to AWS Resources like API Gateway like Amazon Cognito does. AWS SSO does not issue SAML tokens through API. But, it does issue SAML tokens to integrated applications (you can configure a custom SAML application) in the browser login flow only."
+AWS IoT Analytics	"Possible BUG with SSO and Organizations
+It seems if you create an organization, delete it, then create another one the previous organization will be listed along with your current. When attempting to sign up for SSO the following error message occurs for me;
+
+""Your request has a problem. Please see the following details. A different organization with id:o-w1gs180c6w already exists for accountId:255993005091 Please contact support.""
+
+Since there's no way to specify which Organization to delete with the CLI or to work with SSO through the CLI it seems that it was meant that only one Organization was meant to exist at one time. However, it also seems previous Organizations are recorded."
+AWS IoT Analytics	"Re: Possible BUG with SSO and Organizations
+Thank you for your feedback. We are aware of this bug and working on a solution. In the mean time, please raise a support ticket so that we could help you further."
+AWS IoT Analytics	"Re: Possible BUG with SSO and Organizations
+Hi,
+
+Is there a chance you could just delete that old organization from our account? We only have a basic support plan.
+
+Thanks!"
+AWS IoT Analytics	"Re: Possible BUG with SSO and Organizations
+Seems to be working now"
+AWS IoT Analytics	"Re: Possible BUG with SSO and Organizations
+Thanks for confirming. We have fixed this bug. This should work from now on."
+AWS IoT Analytics	"AWS SSO and AD Connector groups
+We primarily use the eu-west-1 region, but have created a presence in us-east-1 with an AD Connector back to London over VPN to trial AWS SSO.
+
+The AD connector and SSO account access works well when we assign accounts/roles directly to user objects, but when assigning to groups instead of directly to users it doesn't seem to pick these up.
+
+At first I assumed this was going to be the same limitation that the Directory Console runs into where nested groups are not picked up. But I've tried this with flat groups too and still does not work.
+
+Is this expected behaviour with groups over AD Connector, or should this functionality work?"
+AWS IoT Analytics	"Re: AWS SSO and AD Connector groups
+Assignments to AD groups are supported. But AD nested groups are not supported."
+AWS IoT Analytics	"Re: AWS SSO and AD Connector groups
+Thanks @anandmataws 
+
+That is great, except the groups are not nested, and it doesn't work. How might one go about debugging?
+
+Sam
+
+Edited by: SamB on Feb 28, 2018 6:53 AM"
+AWS IoT Analytics	"Re: AWS SSO and AD Connector groups
+Sam,
+After the user signs in to the portal please go to the URL https://portal.sso.us-east-1.amazonaws.com/user to see what groups for the users are getting picked up. This will help debug this issue further.
+
+You can  file a support ticket, if you need help further.
+Thanks,
+Anand."
+AWS IoT Analytics	"Federated users error: Token must be redeemed within 5 minutes of issuance
+I was troubleshooting a SAML error and thought I'd leave my fix here for anyone that has ADFS SSO enabled for user federation and encounters this error. I looked in the docs at ( https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_saml.html ) but did not see it mentioned. 
+
+Federated users error: Token must be redeemed within 5 minutes of issuance (Service: AWSSecurityTokenService; Status Code: 400; Error Code: ExpiredTokenException
+
+Found the ADFS server clock was out of sync by more than 5 minutes. I corrected the time and restarted the ADFS service. My test user was able to login normally. 
+
+Hope this helps someone in the future!"
+AWS IoT Analytics	"api and cli access
+Will SSO also provide access to STS for api and cli access in addition to the console?"
+AWS IoT Analytics	"Re: api and cli access
+As of today, AWS SSO does not support that. We will consider your feedback as we develop the service going forward."
+AWS IoT Analytics	"Re: api and cli access
+Hi,
+I came here with the same question, thanks for confirming, would be nice if this was noted in the documentation. 
+
+Cheers"
+AWS IoT Analytics	"Re: api and cli access
+Hi, we have enabled API and CLI access. See https://forums.aws.amazon.com/ann.jspa?annID=5267."
+AWS IoT Analytics	"Tableau - Referer header is missing
+Hello,
+
+I have AWS SSO setup with our Tableau Online instance. I can authenticate via the web fine, but when I try to login from Tableau Desktop I get a ""{""message"":""Referer header is missing""}"" error.
+
+Here is a copy of the request/response:
+
+GET https://portal.sso.us-east-1.amazonaws.com/auth/wd?auth_code=XXX&organization=d-XXXX&region=us-east-1 HTTP/1.1
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,/;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/538.1 (KHTML, like Gecko) Tableau/10.5 Safari/538.1
+Accept-Language: en-us
+Cookie: x-amz-sso_state=XXXXXX
+Connection: Keep-Alive
+Accept-Encoding: gzip, deflate
+Host: portal.sso.us-east-1.amazonaws.com
+
+HTTP/1.1 400 Bad Request
+Date: Fri, 02 Feb 2018 19:39:40 GMT
+Content-Type: application/json
+Content-Length: 39
+Connection: keep-alive
+Server: Apache-Coyote/1.1
+RequestId: a79280c6-9b76-4d28-9ad2-5f43a27ad4af
+
+{""message"":""Referer header is missing""}
+
+Any thoughts?
+
+Thanks,"
+AWS IoT Analytics	"Re: Tableau - Referer header is missing
+AWS SSO supports single sign-on to business applications through web browsers only."
+AWS IoT Analytics	"sso-saml-logging-into-idp-from-service-provicer
+SP is an app which have its own Auth mechanism and local identities, User can directly login.
+
+Is there a way SP can notify IDP about the logged in user so that other SP are logged in from IDP(salesforce)
+
+https://forums.aws.amazon.com/ -> https://forums.aws.amazon.com/
+
+https://forums.aws.amazon.com/ ---login req--> https://forums.aws.amazon.com/ -> https://forums.aws.amazon.com/
+
+Problem is SP1 have set of users which is not part of idp and other SPs
+
+SP = Service provider
+
+IDP = Identity provider
+
+Edited by: simon007 on Feb 7, 2018 3:21 AM"
+AWS IoT Analytics	"Re: sso-saml-logging-into-idp-from-service-provicer
+All users have to be mastered in IDP/Directory Service for SSO to work."
+AWS IoT Analytics	"Simple AD support
+I'm only using Active Directory for basic auth in a proxy and some on-prem applications that support it. I would also like to use AWS SSO to move users off AWS IAM users. Is there a plan to support Simple AD with SSO?"
+AWS IoT Analytics	"Re: Simple AD support
+AWS SSO supports AWS Directory Service for Microsoft Active Directory, also known as AWS Managed Microsoft AD, and AD Connector. AWS SSO will not support Simple AD."
+AWS IoT Analytics	"Region Availability
+Hello AWS Team,
+
+Keen to get started with AWS SSO connected to our AD in London, it would seem crazy not to offer SSO in the regions AD is available, are you able to share an expected availability date in the other major regions such as London?
+
+Thanks
+James"
+AWS IoT Analytics	"Re: Region Availability
+Thank you for your valuable inputs. We will consider your inputs as we plan the future releases."
+AWS IoT Analytics	"Re: Region Availability
+Replied."
+AWS IoT Analytics	"OpenId Connect Support
+According to FAQ https://aws.amazon.com/single-sign-on/faqs/ currently there's no support for OIDC protocol - Is this temporary and support for OIDC will be added in forthcoming updates?
+
+I know that SAML is mature and comprehensive protocol but OIDC is web (js) friendly and seems to be 
+a interoperable standard among different identity providers (Facebook, Twitter, Google, etc.). When you compare the specifications you’ll find that OIDC was designed to work with the web while SAML was retrofitted to work on top of the web.
+
+Best regards, 
+Marcin"
+AWS IoT Analytics	"Re: OpenId Connect Support
+Marcin,
+Appreciate your feedback.
+Can you please elaborate your use case? OpenID Connect support could mean many things. It would be helpful if can describe what is the use case and how are you planning use this feature. We are considering adding this feature. This will help us to address this use case correctly in the future.
+Thanks,
+Anand."
+AWS IoT Analytics	"Re: OpenId Connect Support
+Hi Anand, 
+
+Thanks for your reply. I'd like to have possibility to use AWS SSO as an OIDC identity provider and  also federate it with 3rd party identity providers, either for my custom apps or 3rd party services which are offering OIDC integration. I'd expect similar functionalities as provided by solutions like Keycloak or (to a smaller extent) ADFS but offered as PaaS service, like i.e. AzureAD. 
+
+AFAIK currently there's no AWS equivalent of such services. Cognito i.e. operates on tokens compatible with OIDC but the protocol it's not fully implemented and cannot be exposed as a OIDC identity provider. (https://forums.aws.amazon.com/thread.jspa?threadID=231517). I hoped that AWS SSO will fill that gap. 
+
+Best regards,
+Marcin
+
+Edited by: krlm on Dec 13, 2017 1:58 AM"
+AWS IoT Analytics	"Re: OpenId Connect Support
+answered"
+AWS IoT Analytics	"Re: OpenId Connect Support
+I'm going through this blog post, but it seems the support for OpenId was removed???
+https://aws.amazon.com/blogs/security/building-an-app-using-amazon-cognito-and-an-openid-connect-identity-provider/"
+AWS IoT Analytics	"Re: OpenId Connect Support
+Hi, the post you are referring to is from Amazon Congito Product. Cognito still supports OpenID Connect. This post talks about AWS Single Sign-on, a separate service for managing access to AWS accounts and cloud business applications."
+AWS IoT Analytics	"AWS Account SSO - Your request included an invalid SAML response
+I created a new standard AD directory in AWS Directory Service, connected it to SSO and assigned access to my root AWS account to the standard ""Admin"" user in AD. I can sign into the application portal and see the AWS Management Console application with my permission set, but when I click on it, I get an error saying ""Your request included an invalid SAML response. To logout, click here"" on the AWS SAML sign-in page. I tried repairing my identity provider and verified the SSO console and my AWS Directory instance is in us-east-1. Is anyone else seeing this or am I missing something?
+
+Edited by: snixon123 on Dec 8, 2017 11:49 AM"
+AWS IoT Analytics	"Re: AWS Account SSO - Your request included an invalid SAML response
+It could be that the out of the box AD users are missing email. Try adding 'Email' to the out of the box users are try creating a native AD users."
+AWS IoT Analytics	"Re: AWS Account SSO - Your request included an invalid SAML response
+This helped. It turned out it wasn't the email address but the UPN that was missing. Looks like the admin user out of the box doesn't have a UPN set by default and that must have been part of the claims sent to the AWS SAML endpoint. I set the UPN on the user and it worked like a charm. Thank you!"
+AWS IoT Analytics	"CVE-2019-5736 not detected?
+I have some EC2 instances which has a docker-runc of version ""1.0.0-rc2"" which is (proven myself) affected by the vulnerability in CVE-2019-5736:https://nvd.nist.gov/vuln/detail/CVE-2019-5736.
+
+Running Amazon Inspector against that EC2 instance produces 3 other High severity findings but not CVE-2019-5736.
+CVE-2019-5736 is clearly in the list of CVEs found here: (https://docs.aws.amazon.com/inspector/latest/userguide/inspector_cves.html, https://s3-eu-west-1.amazonaws.com/rules-engine.eu-west-1/CVEList.txt)
+
+Anyone know why the Inspector fails to detect it?"
+AWS IoT Analytics	"Elapsed time between CVE release and Inspector scanning capabilities
+Does anyone know how often the CVE list gets updated for Inspector? Specifically I am trying to find out if a new CVE is released, how quickly is Inspector able to scan for it? Is this within a matter of hours? Days? Weeks? All I could find in the documentation is ""The CVE rules package is updated regularly""....but like whats ""regularly""? Any info would be fantastic."
+AWS IoT Analytics	"awsagent should set a user-agent when querying metadata
+Hi!
+
+I made a tool designed to enhance the security of EC2 servers by restricting what services can call the EC2 metadata service. This is to prevent e.g. RCE exploits from stealing EC2 credentials. Currently it lets requests through based on a whitelist of user-agents, but the awsagent does not set a user-agent, so it is not being let through.
+
+Here's my project for more information: https://github.com/stefansundin/ec2-metadata-filter
+
+Here's the error from the logs:
+Feb 02 05:46:32 aws ec2-metadata-filter[887]: 2019/02/02 05:46:32 Blocked request to /latest/meta-data/instance-id from User-Agent:
+Feb 02 05:46:32 aws awsagent[988]: Core/MetaDataClient.cpp:47:Failed to get resource information: latest/meta-data/instance-id from EC2 meta data client service with HttpResponseError: 400
+Feb 02 05:46:32 aws awsagent[988]: Publishers/Publisher.cpp:48:Failed to read system settings file /opt/aws/awsagent/etc/system_settings.cfg with error -59, cannot retrieve aws region
+Feb 02 05:46:32 aws awsagent[988]: Service/InspectorService.cpp:342:Error while reading configuration file /opt/aws/awsagent/etc/agent.cfg, agent cannot start : -59
+
+
+I think it would be useful if you could set a user-agent so we know what is querying the metadata service. I am sure this team in particular will understand how my project can help hardening the security of EC2 overall.
+
+I am looking forward to hearing from you. Thank you!
+
+Regards, Stefan
+
+Edited by: stefansundin on Feb 1, 2019 10:09 PM"
+AWS IoT Analytics	"Inspector finding vulnerabilities that are already patched
+AWS Inspector is finding vulnerabilities for CVEs that have already been patched through yum update. Examples of CVEs being found:
+
+CVE-2018-1000028
+CVE-2017-1000405
+CVE-2017-15115
+etc
+
+
+These CVEs are all listed in the Amazon Linux Security Center as being solved: https://alas.aws.amazon.com/index.html
+
+And my AWS Linux AMI images are on the most up-to-date versions (sudo yum update ran and no packages left for update). All images have been rebooted after the update as well, to make sure the Kernel tweaks are applied as well.
+
+Inspector is set to run with these templates:
+
+Common Vulnerabilities and Exposures-1.1
+CIS Operating System Security Configuration Benchmarks-1.0
+Runtime Behavior Analysis-1.0
+Security Best Practices-1.0
+
+
+Am I doing something wrong with the updates, or is Inspector at fault?"
+AWS IoT Analytics	"Re: Inspector finding vulnerabilities that are already patched
+Hi,
+
+I face same problem, my instant is run Ubuntu 18.04.1 OS and use Common Vulnerabilities and Exposures-1.1 for template, 
+
+CVE-2016-4484
+CVE-2017-9525
+CVE-2018-1000021
+
+all vulnerable package is already update but Inspector result mark the package as High.
+
+How can we address this issue ?"
+AWS IoT Analytics	"Re: Inspector finding vulnerabilities that are already patched
+Hi, 
+
+Regarding the availability of the CIS rules ,  the CIS Benchmarks rule package is not yet supported. However, other customers have also asked for this, there is already an open feature request to bring the Inspector CIS rule set to Ubuntu 18.04.
+
+[+] Amazon Inspector Supported Operating Systems and Regions  - https://docs.aws.amazon.com/inspector/latest/userguide/inspector_supported_os_regions.html
+
+I'd also suggest that you can follow up the vulnerabilities you have got in your result, in the link they would provide you the newest information about resolution. 
+ -- https://nvd.nist.gov/vuln/detail/CVE-2017-15115
+ -- https://people.canonical.com/~ubuntu-security/cve/2018/CVE-2018-1000021.html
+ -- https://nvd.nist.gov/vuln/detail/CVE-2017-1000405
+ -- https://nvd.nist.gov/vuln/detail/CVE-2018-1000028
+
+Thanks and Best Regards, 
+
+Edited by: BettyAWS on Jan 30, 2019 6:20 AM"
+AWS IoT Analytics	"Unable to install Inspector on Windows 2016
+I've downloaded the agent from https://d1wk0tztpsntt1.cloudfront.net/windows/installer/latest/AWSAgentInstall.exe, but the install fails with ""Service 'Amazon Web Services Agent' (AWSAgent) could not be stopped. Verify that you have sufficient privileges to stop system services"".
+
+I did find this on https://forums.aws.amazon.com/thread.jspa?messageID=833213󋚽
+But we are unable to reboot PROD systems. 
+
+Does AWS have a fix for this issue?"
+AWS IoT Analytics	"Re: Unable to install Inspector on Windows 2016
+Hello, 
+
+I understand that you're looking for a fix for the Inspector on Windows 2016, as far as I know there is no official fix for this issue. 
+
+However, there are forum links that have same issue you can see from here : 
+
+https://forums.aws.amazon.com/thread.jspa?messageID=833448&tstart=0 
+https://forums.aws.amazon.com/ann.jspa?annID=5505
+
+[+] Working with Amazon Inspector Agents on Windows-based Operating Systems  - https://docs.aws.amazon.com/inspector/latest/userguide/inspector_agents-on-win.html
+
+Thanks"
+AWS IoT Analytics	"Change User portal URL for AWS SSO Directory
+I want to change the url, or at least change the component preceding ""*.awsapps.com/start"" for one of my directories."
+AWS IoT Analytics	"Re: Change User portal URL for AWS SSO Directory
+If anyone could assist on renaming my SSO directory URL it would be great. There isn't any cli commands to do so."
+AWS IoT Analytics	"Renamed AWS Accounts not showing correctly in console
+Hi,
+Im repurposed and renamed 2 of my accounts but dont see the title reflected in SSO. Is there some other way of renaming the AWS Accounts under SSO?
+
+Thanks"
+AWS IoT Analytics	"Re: Renamed AWS Accounts not showing correctly in console
+Having the same issue. Must just be a hidden property somewhere. Hopefully they fix this soon since they've been rolling out other improvements lately."
+AWS IoT Analytics	"Re: Renamed AWS Accounts not showing correctly in console
+Thanks a lot. We have added this feature request to our backlog and will prioritize it for future releases."
+AWS IoT Analytics	"Users can only sign in once to the user portal link. Must reset password.
+We're using AWS SSO using the AWS SSO directory with AWS organizations. Currently users have can only login once using the user portal URL. After that they have to reset their password. 100% reproducible. Super inconvenient. It's as if all passwords are one time use only.
+
+Has anyone seen this or know why?
+
+Not using any VPN or proxies. Tried different browsers from different locations.
+
+Edited by: jamesfauna on Feb 5, 2019 11:39 AM
+
+Edited by: jamesfauna on Feb 5, 2019 11:39 AM"
+AWS IoT Analytics	"Re: Users can only sign in once to the user portal link. Must reset password.
+Thanks a lot. Could you reach out to AWS Support to help with your specific issue?"
+AWS IoT Analytics	"Use CLI to retrieve credential from SSO
+Hello,
+Is there a way to retrieve a credential from SSO using a cli utility?
+
+I do see the option to get the credential after signing in to the login page, and to copy-paste it into the shell, and that's nifty but not really usable for programmatic access.
+
+Ideally, to me, there would be a utility that worked with the credential_process option of the AWS config file. I do see that a SAML identity provider is created in the configured accounts, so I had hopes that SSO would expose a SAML authentication endpoint, and that `awsprocesscreds` would handle it, but I'm not seeing a way to make that work currently. I opened an issue there also. Linking it here in case the SSO team was unaware of such utilities.
+
+https://github.com/awslabs/awsprocesscreds/issues/26"
+AWS IoT Analytics	"Re: Use CLI to retrieve credential from SSO
+Thanks a lot for your feedback regarding using SSO to retrieve the password for CLI access. We have added this feature to our backlog and will consider it for future prioritization."
+AWS IoT Analytics	"Re: Use CLI to retrieve credential from SSO
++1 for interest on this feature. Is there any new progress on it? Thanks."
+AWS IoT Analytics	"Enforce TOTP MFA & Strong Password Policies w/ Rotation
+It was incredibly exciting to see the release of the AWS SSO managed directory, a free AWS alternative to Microsoft Active Directory.
+
+Announcement: https://aws.amazon.com/about-aws/whats-new/2018/10/now-you-can-create-and-manage-users-within-aws-single-sign-on/
+Blog Post: https://aws.amazon.com/blogs/security/how-to-create-and-manage-users-within-aws-sso/
+
+According to https://aws.amazon.com/directoryservice/pricing/, AWS managed AD costs $288-$432/mo minimum. For my organization, any flat monthly rate above the cost of a t3.nano requires good justification for approval. That much money did not justify moving away from IAM users.
+
+Because of this huge reduction in price, I am sure some organizations will use AWS SSO right now. However, my organization will not be comfortable using this service for two reasons.
+
+1) MFA - Specifically, Time-based One-Time Passwords cannot be configured and required for all users.
+2) Password policies cannot be tailored. We use a password manager, so it is no problem to enforce 30-90 day rotation and 16+ character passwords.
+
+When will these two enhancements to AWS SSO built-in directory be released?"
+AWS IoT Analytics	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+Thanks a lot for your feedback. We have added these features to our backlog and will consider these for future prioritization. 
+
+Regarding 1) Just to clarify that you are referring to a time-based one-time MFA code that can configure for your users?
+Regarding 2) You want the capability to the interval after which the password expires requiring the user to reset the password.
+
+Thanks a lot and we appreciate your feedback."
+AWS IoT Analytics	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+1) We wouldn't mind supplying the QR code to our users from an admin interface. However, it would be nice to have users manage their own TOTP device. Until the device is configured correctly, the user should not be able to do anything besides login to configure the TOTP device.
+2) A custom password policy is less important than #1, but I imagine this could be done similar to the IAM User password policy capability.
+
+Thanks."
+AWS IoT Analytics	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+Looks like OTP is now configurable in the AWS SSO console.  https://aws.amazon.com/blogs/security/add-a-layer-of-security-for-aws-sso-user-portal-sign-in-with-context-aware-email-based-verification/ 
+
+Looks like AWS is moving in the right direction, as always. This is good enough to answer my question."
+AWS IoT Analytics	"SSO Start Page - UI Modification
+Is it possible to customize the UI of the login page for AWS SSO."
+AWS IoT Analytics	"Re: SSO Start Page - UI Modification
+Thanks a lot for your feedback. We have added your request to customize the SSO Start page to our feature backlog and will consider it for future prioritization. 
+
+What type of modifications would you want to do for the Start Page? Are you looking to have your own logo? Anything else?"
+AWS IoT Analytics	"When will we see AWS Single Sign-On in EU ?
+Hi there..
+
+With the newly build-in directory in AWS Single Sign-On, the service really got interesting, but with the GDPR regulation we still cannot use it here in EU.
+AWS Single Sign-On has been out since 2017, when can we expect to see it ""Over here"" ?
+
+Looking forward..
+David"
+AWS IoT Analytics	"Re: When will we see AWS Single Sign-On in EU ?
+Thanks a lot David. We have added your request to our feature back log and will update the thread once the service is available in EU region."
+AWS IoT Analytics	"Customer Managed Policies in SSO
+I've come across what seems to be a surprising omission from SSO: Customer Managed Policies.
+
+From my understanding the most custom Permission Set you can create is by using 10 AWS Managed Policies alongside the 1 inline IAM policy.
+
+The problem with this is the permissions we require do not always fit into managed policies and having to 'complete' them by an additional inline policy seems 'hacky' and a poor way to manage permissions when trying to give 'least privilege where possible'.
+
+We could live with the inline policy creator however the byte limit severely limits the kind of policies you can create.
+
+Is there anything in the pipeline to be able to add Customer Managed Policies to Permission Sets, or at least the ability to increase the inline policy byte limit?"
+AWS IoT Analytics	"Re: Customer Managed Policies in SSO
+Thank you for your feedback. We will consider your inputs while planning the future roadmap of the product.
+-Anand Murugesan"
+AWS IoT Analytics	"Re: Customer Managed Policies in SSO
+Disregard this.  I see custom policies are supported now.
+
+Edited by: JGardner123 on Jan 15, 2019 9:23 AM"
+AWS IoT Analytics	"MFA Prompt moved?
+It seems that our MFA prompt is no longer on the main SSO login page. Our users used to see three fields (Username+Password+MFA). Now they just see (UserName+Password).
+
+Our users are still prompted for MFA, but as a second step, after the user authenticates against our directory.
+
+Was this a design change? I don't see this as configurable anywhere. Our directory still has MFA enabled and I can't see any obvious settings to configure this.
+
+Someone over in infosec escalated this without trying to login - ""oh heck, who disabled mfa?"""
+AWS IoT Analytics	"Re: MFA Prompt moved?
+like it never disappeared, the MFA prompt is back on the SSO Login page."
+AWS IoT Analytics	"How to use AWS SSO with Amazon RedShift
+Hi
+
+I see that AWS SSO service for AWS organizations support SAML. Also Amazon Redshift supports SAML. But I can't find any documentation how to use AWS SSO service with redshift.
+
+Is it possible to use AWS SSO with Amazon Redshift?
+
+Best
+Steffen"
+AWS IoT Analytics	"How to change default directory alias in AWS SSO?
+AWS SSO doesn't allow changing directory alias. How can I do that? Is it possible to remove default directory or remove/disable whole SSO and configure it from the beginning or maybe from CLI?"
+AWS IoT Analytics	"Re: How to change default directory alias in AWS SSO?
+The default alias for your directory is your directory's id (format ""d-""). You can change the directory alias by navigating to the directory tab. Note that you can change the directory alias only once. Once you change the directory alias, you cannot change it again. Please let us know if you have issues"
+AWS IoT Analytics	"Re: How to change default directory alias in AWS SSO?
+In addition, you can also change the default directory to use a Microsoft AD (AWS Managed Microsoft AD or AD Connector ) directory by choosing ""Change Directory"" in the Directory tab in the AWS SSO Console."
+AWS IoT Analytics	"Re: How to change default directory alias in AWS SSO?
+Ok, I thought there is a posibility to release given alias because I wanted to use this alias for my Microsoft AD Directory."
+AWS IoT Analytics	"General Question about AWS Single Sign On
+If I enable AWS Single Sign On in my master account and root org, if I determine this service is not for me, can it be disabled and/or removed?"
+AWS IoT Analytics	"Re: General Question about AWS Single Sign On
+Yes, you can disable SSO by navigating to the AWS Organizations console and choose Settings. You can disable AWS Single Sign-On by choosing the Disable button next to AWS Single Sign-On. Here is the deep link to the settings page: https://console.aws.amazon.com/organizations/home?region=us-east-1#/organization/settings"
+AWS IoT Analytics	"How do I add a new SSO connector for Tallyfy?
+AWS offers a list of pre-existing apps as connectors - such as Salesforce, Box, etc.
+
+I want to have  https://tallyfy.com as a default listing on this directory - how do I build a connector such that it's published in that listing?
+
+Edited by: amitarelli on Nov 6, 2018 2:06 AM"
+AWS IoT Analytics	"Failed to find an inspector agent OpsWorks Ubuntu 14.04.3 LTS
+This worked last week on two other instances, but I'm trying to set up the agent in a newly-created instance in my existing OpsWorks stack layer this morning and I'm getting 'Failed to find an inspector agent package for this OS: ubuntu-3.13.0-66-generic-x86_64.'.
+
+ubuntu@nodejs-app3:~$ lsb_release -a
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 14.04.3 LTS
+Release:	14.04
+Codename:	trusty
+ubuntu@nodejs-app3:~$ wget https://s3-us-west-2.amazonaws.com/inspector.agent.us-west-2/latest/install
+--2015-10-19 17:32:55--  https://s3-us-west-2.amazonaws.com/inspector.agent.us-west-2/latest/install
+Resolving s3-us-west-2.amazonaws.com (s3-us-west-2.amazonaws.com)... 54.231.176.10
+Connecting to s3-us-west-2.amazonaws.com (s3-us-west-2.amazonaws.com)|54.231.176.10|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 9855 (9.6K) [binary/octet-stream]
+Saving to: ‘install.2’
+ 
+100%[==========================================================================================>] 9,855       --.-K/s   in 0s      
+ 
+2015-10-19 17:32:55 (100 MB/s) - ‘install.2’ saved [9855/9855]
+ 
+ubuntu@nodejs-app3:~$ sudo bash install.2
+Validated signature with: Primary key fingerprint: DDA0 D4C5 10AE 3C20 6F46  6DC0 2474 0960 5836 0418
+Failed to find an inspector agent package for this OS: ubuntu-3.13.0-66-generic-x86_64.
+Please contact AWS support with this identifier to report this issue.
+ubuntu@nodejs-app3:~$ 
+
+
+Any idea what I might be doing differently, and/or what changed over the last couple of days?
+
+Any help appreciated, thanks!
+
+
+Tim"
+AWS IoT Analytics	"Re: Failed to find an inspector agent OpsWorks Ubuntu 14.04.3 LTS
+Tim,
+
+Sorry for the not replying to this more promptly! Thanks for information below.
+
+We'll take a look and get back to you.
+
+Alex."
+AWS IoT Analytics	"Re: Failed to find an inspector agent OpsWorks Ubuntu 14.04.3 LTS
+I'm having the same problem. Are the inspector agents trailing the images for Ubuntu?"
+AWS IoT Analytics	"Re: Failed to find an inspector agent OpsWorks Ubuntu 14.04.3 LTS
+Yes, the Inspector agent does trail the build.  Our agent build system has to detect that there's a new build of (whatever flavor) Linux, then deploy that Linux and build the agent for it."
+AWS IoT Analytics	"Re: Failed to find an inspector agent OpsWorks Ubuntu 14.04.3 LTS
+Please post your solved solution here, we are experience the same error but with the new Amazon Linux AMI 2015.09 image."
+AWS IoT Analytics	"Re: Failed to find an inspector agent OpsWorks Ubuntu 14.04.3 LTS
+Ubuntu 14.04.3 LTS should be supported now.  Please let us know if you are still having problems."
+AWS IoT Analytics	"Re: Failed to find an inspector agent OpsWorks Ubuntu 14.04.3 LTS
+Still seeing this same issue:
+
+Welcome to Ubuntu 14.04.3 LTS (GNU/Linux 3.13.0-74-generic x86_64)
+
+wget https://s3-us-west-2.amazonaws.com/inspector.agent.us-west-2/latest/install
+bash install
+
+Validated signature with: Primary key fingerprint: DDA0 D4C5 10AE 3C20 6F46  6DC0 2474 0960 5836 0418
+Failed to find an inspector agent package for this OS: ubuntu-3.13.0-74-generic-x86_64.
+Please contact AWS support with this identifier to report this issue.
+
+Works fine on Amazon AMI, but not the newest release of 14.04"
+AWS IoT Analytics	"Re: Failed to find an inspector agent OpsWorks Ubuntu 14.04.3 LTS
+Hello there,
+
+The engineering team has released a new agent that supports Ubuntu kernel ""ubuntu-3.13.0-74-generic-x86_64"". Please try again and let us know if you run into any issues.
+
+Regards,
+Adolfo M."
+AWS IoT Analytics	"Re: Failed to find an inspector agent OpsWorks Ubuntu 14.04.3 LTS
+Hi all,
+
+I'm having the same problem with the following: ubuntu-3.13.0-95-generic-x86_64. Everything seems to be legit. Is there anything I can do or is there still a problem with the script. I've downloaded my script from the following location: https://s3-us-west-2.amazonaws.com/aws-agent-discovery.us-west-2/linux/latest/install
+
+Update:
+I've tried this again with a different instance and I'm getting the issue with: ubuntu-3.13.0-91-generic-x86_64.
+
+Edited by: Don123 on Oct 19, 2016 1:13 PM
+
+Edited by: Don123 on Oct 19, 2016 1:15 PM"
+AWS IoT Analytics	"Failed to find an inspector agent package for this OS: ubuntu-3.13.0-96-gen
+Greetings!
+I'm getting this failed AWS Inspector Agent installation.
+Please help.
+Thanks
+______________________________________________________________________
+lsb_release -a
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 14.04.5 LTS
+Release:	14.04
+Codename:	trusty
+
+**************************************************
+          INSTALLATION PHASE-2                  
+**************************************************
+Failed to find an inspector agent package for this OS: ubuntu-3.13.0-96-generic-x86_64.
+Please contact AWS support with this identifier to report this issue."
+AWS IoT Analytics	"Re: Failed to find an inspector agent package for this OS: ubuntu-3.13.0-96-gen
+Hello,
+
+Would you be able to provide entire output when you try to install AWS Inspector agent on the instance?
+
+Thanks,
+Jay"
+AWS IoT Analytics	"Re: Failed to find an inspector agent package for this OS: ubuntu-3.13.0-96-gen
+This should be fixed now.  The current version of the AWS Agent installation (updated Sept. 22) includes support for ubuntu-3.13.0-96-generic-x86_64."
+AWS IoT Analytics	"Re: Failed to find an inspector agent package for this OS: ubuntu-3.13.0-96-gen
+installation error is now rectified. thanks for the help"
+AWS IoT Analytics	"Failed to find an inspector agent package for this OS: ubuntu-3.2.0-40-virt
+Ubuntu version
+Distributor ID:	Ubuntu
+Description:	Ubuntu 12.04.5 LTS
+Release:	12.04
+Codename:	precise
+
+Which is an LTS , so I believe should be supported
+
+Any help with this?"
+AWS IoT Analytics	"Re: Failed to find an inspector agent package for this OS: ubuntu-3.2.0-40-virt
+AWS Agent currently doesn't support Ubuntu 12.04, only Ubuntu 14.04 LTS.  See the list of supported agent OSes."
+AWS IoT Analytics	"Amazon Inspector Agent on Amazon Linux AMI 2016.03
+I have an EC2 instance with Amazon Linux AMI 2016.03. I tried installing the Inspector Agent on the instance. When I run sudo bash install
+ I get the following:
+
+Validated signature with: Primary key fingerprint: DDA0 D4C5 10AE 3C20 6F46  6DC0 2474 0960 5836 0418
+Failed to find an inspector agent package for this OS: amzn-4.4.5-15.26.amzn1.x86_64-x86_64.
+Please contact AWS support with this identifier to report this issue.
+
+
+How can I get inspector working on the latest Amazon Linux AMI?
+
+Edited by: D. Olsen on Apr 18, 2016 7:22 PM"
+AWS IoT Analytics	"Re: Amazon Inspector Agent on Amazon Linux AMI 2016.03
+Hello,
+
+Inspector agent is currently not available for newest kernel version. I have reached out to AWS inspector team to look into the problem. We will update you on this thread shortly."
+AWS IoT Analytics	"Re: Amazon Inspector Agent on Amazon Linux AMI 2016.03
+AWS Agent (formerly Inspector agent) is available for the newest Amazon Linux kernel version.  The preview version of the Inspector agent is not; you need to uninstall the preview agent and install the release version.
+
+Instructions for uninstalling the preview agent and for installing the release agent are available here:
+https://docs.aws.amazon.com/inspector/latest/userguide/inspector_working-with-agents.html
+
+Thank you,
+The Inspector Team"
+AWS IoT Analytics	"Re: Amazon Inspector Agent on Amazon Linux AMI 2016.03
+I don't think I was using preview version of Agent.  Agent/Inspector worked yesterday but today Inspector Management Console throws error and on the EC2 instance I get this:
+
+Failed to find an inspector agent package for this OS: amzn-4.4.10-22.54.amzn1.x86_64-x86_64"
+AWS IoT Analytics	"Re: Amazon Inspector Agent on Amazon Linux AMI 2016.03
+I am also facing the same issue on the Amazon AMI (2016)
+
+**************************************************
+          INSTALLATION PHASE-2                  
+**************************************************
+Failed to find an inspector agent package for this OS: amzn-4.4.10-22.54.amzn1.x86_64-x86_64.
+Please contact AWS support with this identifier to report this issue.
+
+Following this Doc Link: 
+http://docs.aws.amazon.com/inspector/latest/userguide/inspector_working-with-agents.html
+
+Thanks & Regards
+
+Ankush Grover"
+AWS IoT Analytics	"Re: Amazon Inspector Agent on Amazon Linux AMI 2016.03
+It seems that the Inspector agent kernel module builds lag behind the AWS AMI kernel updates.
+
+Hopefully in the future the updated module is released within a day or 2 of the new kernel. It would be very meta if an Inspector finding stated ""You need to update to the latest kernel"" and the only reason you haven't yet is the Inspector module for the updated kernel is not released 
+
+In my setup I'm putting one of my backup servers on the new kernel so I can periodically see if the new agent installs - then if it does - do the rest of my fleet."
+AWS IoT Analytics	"Re: Amazon Inspector Agent on Amazon Linux AMI 2016.03
+Hi,
+
+is there a solution to this problem? It is still ongoing if you run 
+
+curl -O https://d1wk0tztpsntt1.cloudfront.net/linux/latest/install
+sudo bash install
+ on Amazon Linux AMI 2016.03
+
+Revision of the distro is 2016.03.
+Kernel version of the machine is 3.4.48-45.46.amzn1.x86_64.
+
+
+Failed to find an inspector agent package for this OS: amzn-3.4.48-45.46.amzn1.x86_64-x86_64.
+Please contact AWS support with this identifier to report this issue."
+AWS IoT Analytics	"Re: Amazon Inspector Agent on Amazon Linux AMI 2016.03
+Actually I could do it on following server:
+
+Revision of the distro is 2016.03.
+Kernel version of the machine is 4.1.13-18.26.amzn1.x86_64.
+
+
+so it seems that my server needs a reboot to update to the newest kernel.
+
+Edited by: OskariP on Sep 7, 2016 2:02 AM"
+AWS IoT Analytics	"is the latest Amazon Linux AMI vulnerable to CVEs?
+Hi,
+
+I'm running the latest version of Amazon Linux AMI (64 bit Amazon Linux 2016.03), this is the output of the uname command:
+
+Linux ip-XXX-XX-XX-XXX 4.4.14-24.50.amzn1.x86_64 #1 SMP Fri Jun 24 19:56:04 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+
+I ran AWS Inspector on this instance with rules packages set to Common Vulnerabilities and Exposures-1.1 and got 29 findings with severity High or Medium. I checked the reported CVEs and the Amazon Linux AMI Security Center (https://alas.aws.amazon.com/) and it seems to me that all the CVEs created after 24th June 2016 (when latest Amazon AMI Linux was built) feature in the AWS Inspector findings. If I check the package version installed, e.g.:
+
+rpm -qi libxml2
+
+it says I'm running version 2.9.1-6.2.50.amzn1. 
+
+On https://alas.aws.amazon.com/ALAS-2016-719.html it prompts to update to version 2-2.9.1-6.3.49.amzn1.x86_64 to fix several CVEs but when I do it it gives me the following message:
+
+$ sudo yum update libxml2                                                                                                                  
+Loaded plugins: priorities, update-motd, upgrade-helper
+amzn-main/2016.03                         
+amzn-updates/2016.03                      
+No packages marked for update
+
+Is the latest version of Amazon Linux AMI vulnerable to these CVEs? Do I need to add additional repositories? How can I upgrade the packages and fix the findings highlighted by AWS Inspector?
+
+Thanks,
+
+Sandro"
+AWS IoT Analytics	"Re: is the latest Amazon Linux AMI vulnerable to CVEs?
+The latest versions as listed in alas.aws.amazon.com should be available in the updates repo for 2016.03, which appears to be available to you.
+
+~]$ repoquery libxml2
+libxml2-0:2.9.1-6.3.49.amzn1.i686
+libxml2-0:2.9.1-6.3.49.amzn1.x86_64
+
+First, try running ""sudo yum clean all"" and try updating again.
+
+If that doesn't work, you may have modifications to yum configs that are preventing you from seeing the updates.
+Please post your /etc/yum.conf and /etc/yum.repos.d/amzn-updates.repo we can see if anything stands out as potentially causing issues."
+AWS IoT Analytics	"Re: is the latest Amazon Linux AMI vulnerable to CVEs?
+Hi Jason,
+
+thanks for answering. I still can't receive the updates. This is what I've done:
+
+
+I cleaned the repositories:
+
+$ sudo yum clean all                                                                                                                       
+Loaded plugins: priorities, update-motd, upgrade-helper
+Cleaning repos: amzn-main amzn-updates
+Cleaning up everything
+
+
+I checked the available version of libxml2, I'm still on the old version:
+
+$ repoquery libxml2
+libxml2-0:2.9.1-6.2.50.amzn1.i686
+libxml2-0:2.9.1-6.2.50.amzn1.x86_64
+
+
+I tried to update but no updates are available (I have additional repos now):
+
+$ sudo yum update
+Loaded plugins: priorities, update-motd, upgrade-helper
+amzn-main/2016.03     
+amzn-main/2016.03/group                                                                                                                             
+amzn-main/2016.03/primary_db                                                                                                                        
+amzn-updates/2016.03
+amzn-updates/2016.03/group 
+amzn-updates/2016.03/updateinfo
+amzn-updates/2016.03/primary_db
+No packages marked for update
+
+I attach my yum.conf and amzn-updates.repo. Note that I start this instance using Elastic Beanstalk and I have managed updates enabled.
+
+Thanks,
+
+Sandro
+
+P.S.: I don't seem to be allowed to post amazn-updates (it says 'The content type of the file 'amzn-updates' is not allowed.'), I copy-paste it here:
+
+amzn-updates
+name=amzn-updates-Base
+mirrorlist=http://repo.$awsregion.$awsdomain/$releasever/updates/mirror.list-$guid
+mirrorlist_expire=300
+metadata_expire=300
+priority=10
+failovermethod=priority
+fastestmirror_enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-ga
+enabled=1
+retries=5
+timeout=10
+report_instanceid=yes
+
+amzn-updates-debuginfo
+name=amzn-updates-debuginfo
+mirrorlist=http://repo.$awsregion.$awsdomain/$releasever/updates/debuginfo/mirror.list-$guid
+mirrorlist_expire=300
+metadata_expire=300
+priority=10
+failovermethod=priority
+fastestmirror_enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-ga
+enabled=0
+retries=5
+timeout=10
+report_instanceid=yes"
+AWS IoT Analytics	"Re: is the latest Amazon Linux AMI vulnerable to CVEs?
+Thanks!
+
+Elastic Beanstalk manage their repositories differently to the standard Amazon Linux AMI. They have locked to a particular package set at the time the AMI was created, and so future package updates are not available.
+
+I would recommend checking if there is a later ELB AMI available, and migrating your instances to that one. It will have more up to date packages. This is currently the standard procedure for keeping up to date on ELB instances."
+AWS IoT Analytics	"Re: is the latest Amazon Linux AMI vulnerable to CVEs?
+Thanks for your reply. I waited few days to see if a new ELB AMI was available but this seems to be the latest one for ECS:
+
+aws-elasticbeanstalk-amzn-2016.03.2.x86_64-ecs-pv-201606260408
+
+and it is exactly the one I'm running built on 26th June 2016. 
+
+I guess I have no option than wait for an updated ELB AMI for ECS or migrate to a different AMI that it is updated more frequently and available in Elastic Beanstalk. 
+
+It'd be good though if Amazon Linux AMI were released more frequently in Elastic Beanstalk as we make use of Managed Updates in Elastic Beanstalk to update these instances automatically once a week and that is a piece of mind. 
+
+Thanks,
+
+Sandro
+
+P.S.: I also find amusing - or worrying! - that AWS Inspector is telling me that the latest Amazon Linux AMI in Elastic Beanstalk is vulnerable to several CVEs..."
+AWS IoT Analytics	"Re: is the latest Amazon Linux AMI vulnerable to CVEs?
+Hello,
+
+Thank you for your feedback. I have passed on your concerns to the appropriate team. The team understands your concerns and it working towards improving customer experience while using Beanstalk AMIs. Unfortunately, I cannot comment on any timelines or release dates associated with our future product and feature releases.
+
+Thank you"
+AWS IoT Analytics	"Inspector requires all instances in the tag group to be available?
+Hallo all,
+
+I'm looking into using Inspector for vulnerability scanning and so far it looks like a good tool.
+
+I have a problem though when starting an assessment run where some of the agents might be unavailable. Specifically, I've stopped one of the instances in my tagged group. When trying to start the run I get this error:
+
+Unable to start assessment run. The following instances are not healthy: i-XXXXXXXX
+
+
+The assessment runs fine when all of the agents in the tag group are running, but this would seem like a strange requirement in an environment where instances can be stopped and started almost at random.
+
+Is this expected behaviour?
+
+regards
+Corne
+
+Edited by: cornevandyk on Jul 29, 2016 11:39 AM"
+AWS IoT Analytics	"Re: Inspector requires all instances in the tag group to be available?
+it turns out that this was a ""bug"" from AWS and that it now works as expected, ie stopped instances/agents won't prevent the assessment from running."
+AWS IoT Analytics	"Great service - would love to see better export/reporting capabilities
+This is a very useful service... but the reporting leaves a little to be desired.   I thought I'd be able to export everything to a csv file and format it in Excel or something, but when exporting, it appears that most of the findings simply state:
+
+""Instance i-xxxxxxx is vulnerable to CVE-2016-0787""
+
+or the like.   It'd be nice if there were a way to export the results including the full descriptive text of the finding that you can get via the web interface.
+
+or am I missing something?"
+AWS IoT Analytics	"Re: Great service - would love to see better export/reporting capabilities
+Hi,
+
+Thank you for the feedback.  We are thinking about how to improve reporting; we'd love to hear any feedback or suggestions (from anyone) on this.
+
+Thank you,
+The Amazon Inspector Team"
+AWS IoT Analytics	"Re: Great service - would love to see better export/reporting capabilities
+Would probably be a good idea to have a dedicated column for the instance id, so that if one wants to use this information, they don't need to parse the Finding column to figure it out."
+AWS IoT Analytics	"Re: Great service - would love to see better export/reporting capabilities
+I would suggest the following improvements:
+
+grouping of issues: for example instead of showing the same issue 10 times, because it was found on 10 difference instances, group it together to show a single entry with all affected instances
+SNS integration to send notification for specific findings
+
+
+reg"
+AWS IoT Analytics	"Failed to find an inspector agent package for this OS: ubuntu-3.13.0-92-gen
+I got an error when I tried to install the agent:
+Failed to find an inspector agent package for this OS: ubuntu-3.13.0-92-generic-x86_64.
+
+
+How to resolve the issue?
+
+Thanks"
+AWS IoT Analytics	"Re: Failed to find an inspector agent package for this OS: ubuntu-3.13.0-92-gen
+You'll have to wait until that specific Ubuntu Kernel version is supported by the Inspector agent.  Once support is added it will be noted here
+
+Source:  Supported Operating Systems for the AWS Agent"
+AWS IoT Analytics	"Inspector not compatible with amzn-4.4.14-24.50.amzn1.x86_64-x86_64
+Hi there,
+
+I've been troubleshooting some issues with getting the inspector agent to run. On a base build of Amazon Linux 2016.03.2, the agent installs and runs properly with no issues. However, if I update the kernel to amzn-4.4.14-24.50.amzn1.x86_64-x86_64, the agent stops running, and attempts to reinstall receive the following error:
+
+Failed to find an inspector agent package for this OS: amzn-4.4.14-24.50.amzn1.x86_64-x86_64.
+Please contact AWS support with this identifier to report this issue.
+
+Do I just need to wait for an updated version of the inspector, or is there something else I can do? Thanks."
+AWS IoT Analytics	"Re: Inspector not compatible with amzn-4.4.14-24.50.amzn1.x86_64-x86_64
+Hi There,
+
+The latest version of Amazon Inspector has support for this newer kernel version.
+
+Thanks
+
+Aparna"
+AWS IoT Analytics	"Re: Inspector not compatible with amzn-4.4.14-24.50.amzn1.x86_64-x86_64
+Hey Aparna,
+
+I've been trying this on a fresh instance with a fresh copy of the installer script, and the script is still saying that it can't find an inspector package for amzn-4.4.14-24.50.amzn1.x86_64-x86_64.
+
+Is there something else that I need to be doing to ensure that I'm getting the most recent version of the inspector?
+
+Thanks!
+
+Edit: FWIW, here's the full installer script output:
+
+**************************************************
+                INIT PHASE
+**************************************************
+Distribution type of the machine is amzn.
+Distribution of the machine is Amazon Linux AMI.
+Revision of the distro is 2016.03.
+Kernel version of the machine is 4.4.14-24.50.amzn1.x86_64.
+Trying to resolve domain name for s3.amazonaws.com to check internet connectivity.....
+Domain name for s3.amazonaws.com successfully resolved with IPAddress 54.231.73.58.
+ 
+ 
+**************************************************
+              SCRIPT SETUP PHASE
+**************************************************
+ip-10-2-0-165.us-west-2.compute.internal is an EC2 instance reporting region as us-west-2.
+ 
+ 
+**************************************************
+          INSTALLATION PHASE-1
+**************************************************
+No existing version of agent in the machine.
+Validated awsagent inventory text signature with: Primary key fingerprint: DDA0 D4C5 10AE 3C20 6F46  6DC0 2474 0960 5836 0418
+Validated version file signature with: Primary key fingerprint: DDA0 D4C5 10AE 3C20 6F46  6DC0 2474 0960 5836 0418
+ 
+ 
+**************************************************
+          INSTALLATION PHASE-2
+**************************************************
+Failed to find an inspector agent package for this OS: amzn-4.4.14-24.50.amzn1.x86_64-x86_64.
+Please contact AWS support with this identifier to report this issue.
+
+
+Edited by: pkirby on Jun 28, 2016 8:05 AM"
+AWS IoT Analytics	"Inspector Agent not working with Ubuntu 14.04.4
+The agent does not work with the current release of Ubuntu 14.04.4 (needed to fix several vulnerabilities). This is using kernel version ubuntu-3.13.0-87.
+
+When do you expect to have an updated Inspector agent available that works with the current Ubuntu Version?
+
+Also, a more generic question; How do you plan to keep this agent updated to stay current with new kernel versions in the long run? It appears critical to stay on top of this so that all users that use Inspector can actually upgrade their systems in a timely manner and still be able to use Inspector. We don't want to be held back (like is happening now) just because the inspector agent isn't updated yet. Thoughts?
+
+And, where can we see the current release plans for the Inspector agent? Is there any insight into this?"
+AWS IoT Analytics	"Re: Inspector Agent not working with Ubuntu 14.04.4
+Hi Hapicap,
+
+Ubuntu patches, including kernel patches that bump the kernel version, come from Canonical.  The Inspector team doesn't become aware of them any earlier than any of our customers.
+
+We are working on automation for this process and plan to start building a new agent version on a daily basis if there is a change in a kernel.  We've chosen one day because we build agents for a very large number of kernels and  we have to test every one of those agents to ensure against regressions.  Further, we deploy the agents in a staggered fashion, starting with one region, waiting, and then deploying to other regions sequentially (not in parallel).  This helps to protect our customers as, in the unlikely case that a quality issue slips past our testing, we won't deploy a malfunctioning everywhere all at once- we have time for ourselves (via telemetry) and our customers to notice problems, and we can halt deployment and roll back such an agent before it impacts everyone.
+
+As a result, there will always be some delay between the time that a new kernel version is published, and the time that the kernel is supported by Inspector agent.
+
+We are publishing an updated agent late this afternoon (US Eastern time) that will support kernel version 3.13.0-87 on Ubuntu 14.04 LTS.
+
+I'm not sure what you mean by ""current release plans for the Inspector agent""- please clarify if I haven't answered your question.  With the exception of this message  we don't publish our change management schedule, and it's our intent that the agent stays up-to-date as transparently and effortlessly as possible.
+
+Thank you for being an Inspector customer, and please let us know if there's anything else that you need.
+
+Best regards,
+Eric & the Inspector team"
+AWS IoT Analytics	"Re: Inspector Agent not working with Ubuntu 14.04.4
+Thanks Eric! Really appreciate your answer and I am looking forward to the new update later today. You answered all my questions."
+AWS IoT Analytics	"awslogs vs stack cookies
+One of the findings on an instance that uses the latest Amazon Linux with the cloudwatch agent is:
+
+Rules package Runtime Behavior Analysis-1.0
+The following executable files on instance i-9447734c do not support stack cookies: /var/awslogs/bin/python2.7.
+It is recommended that you uninstall this software from your assessment target if you are not using it, or contact the vendor to get an updated version of this software with stack cookies enabled.
+
+
+Since the instance is using the latest Amazon Linux AMI and installs an aws package I expected it to be compliant by default. What am I missing? Are we expected to recompile it?
+
+thank you
+
+Eric"
+AWS IoT Analytics	"Re: awslogs vs stack cookies
+Hi Eric,
+
+You're correct, this finding is not actionable by you as the package comes from our repo.  We consider this a false positive.  I've created an issue to track this and we'll try to make it go away in a future release.
+
+Thanks,
+Eric@AWS"
+AWS IoT Analytics	"Re: awslogs vs stack cookies
+Thank you for the follow up
+
+Eric"
+AWS IoT Analytics	"any plans to support containers?
+Are there any plans to support containers? Either by having the agent be container aware or by supporting binary image scans (possibly within AWS ECR itself?)
+
+eric"
+AWS IoT Analytics	"Re: any plans to support containers?
+Hello Eric, 
+
+Thank you for your feedback on the Amazon Inspector tool. I've reached out to our internal Inspector team to let them know of this request. 
+
+Regards,
+Nick"
+AWS IoT Analytics	"Re: any plans to support containers?
+Support for containers is on our roadmap, but it won't happen for a while yet.  We don't have a specific ETA.
+
+Eric"
+AWS IoT Analytics	"Inspector roadmap support for other AWS services
+Hi,
+  We're just starting to use inspector functionality and it looks promising as part of our security and compliance practices.
+
+At the moment it looks to only run on / against the supported EC2 instances.
+
+Is there a plan to similarly provide inspection assessments on ElasticLoadBalancer, Security Groups, RDS instances on the roadmap?
+
+Thx"
+AWS IoT Analytics	"Re: Inspector roadmap support for other AWS services
+Hi Conor,
+
+We don't publish pre-announcements of new features.   However, I can tell you that the reason that we target via tags is so that we will have the ability to add support for other sorts of AWS resources in the future without having to redefine anything.
+
+Best regards,
+Eric"
+AWS IoT Analytics	"Plans to start updating rule packages frequently?
+Hello,
+
+Currently AWS Inspector seems to be a rather pointless exercise. The CVE rule package described here:
+https://docs.aws.amazon.com/inspector/latest/userguide/inspector_cves.html
+Contains checks for CVEs:
+https://s3-us-west-2.amazonaws.com/rules-engine/CVEList.txt
+Which means there are no checks that are for 2016 at all! And comparing the list vulnerabilities with fixes:
+https://alas.aws.amazon.com/
+...shows that there are plenty of critical vulnerabilities known to AWS since then.
+
+Also, the CIS benchmark described here:
+https://docs.aws.amazon.com/inspector/latest/userguide/inspector_cis.html
+Shows that the latest supported version of Amazon Linux is: Amazon Linux versions 2014.09-2015.03 (CIS benchmark v1.1.0))
+Considering all our servers are running 2016.03, that rule set just flat out refuses to run, even though most of the things it checks probably have not changed since.
+
+At the same time OpenVAS contains vulnerabilities from ALAS all the way up to ALAS-2016-681 which was published 2016-03-29 15:30, in addition to the all the other vulnerability databases they have!
+
+I think at the current state, depending on AWS Inspector to actually find vulnerabilities would be a travesty.
+
+Are there plans on starting to regularily update rule packages with new vulnerabilities (atleast once per month!) or are the rule packages always going to have a slower update interval (6 months - 1 year)?"
+AWS IoT Analytics	"Re: Plans to start updating rule packages frequently?
+Dear customer,
+thanks for your valuable and detailed feedback on the Inspector Service.
+I fully understand your concerns, so I have engaged our Service Team and forwarded to them your details. I will update you as soon as I receive back a feedback from them.
+
+Kind regards,
+Ale"
+AWS IoT Analytics	"Re: Plans to start updating rule packages frequently?
+Hi,
+
+The service team has acknowledged the problem and has noted that fix is in the works. 
+
+Regards,
+Arun T."
+AWS IoT Analytics	"Re: Plans to start updating rule packages frequently?
+Hello,
+
+Just to mention that I tested AWS Inspector this morning. While I do believe this tool could be very useful to us, I have the exact same concerns expressed above.
+For CIS rules check, you could at least accept to run it with some warnings as I do agree that most outputs are not dependent of the Amazon Linux version (03-2015 vs 2016).
+
+Thank you
+Eric"
+AWS IoT Analytics	"Re: Plans to start updating rule packages frequently?
+Specifically around the CIS benchmark, that benchmark comes from an external organization (the Center for Internet Security).  They haven't published a benchmark for newer Amazon Linux versions.  Once they do, we'll incorporate them in Inspector."
+AWS IoT Analytics	"Re: Plans to start updating rule packages frequently?
+Hello all, 
+
+At this point in time the AWS Inspector team has addressed these issues and AWS Inspector should now be properly scanning for the updated list of CVEs and the CVElist.txt file should be up to date. 
+
+Please let us know if you have any additional questions or concerns. 
+
+Regards,
+Nick"
+AWS IoT Analytics	"Re: Plans to start updating rule packages frequently?
+Hi, I just wanted to update everyone on status:
+
+In our Preview release, we only manually updated rules packages and only 2-3 times during the preview.
+
+Since we launched, Inspector automatically updates the CVE rules package several times per day.  We get information from several sources including CIS, NVD, and 3rd party vendors.
+
+We also are receiving updates to the CIS OS hardening baselines on a regular basis.  We are working on automation to automatically ingest and test these so that we can shorten the time between publication of a baseline and availability in a rules package.
+
+We are currently manually testing the new CIS baseline v.2.0.0 for Amazon Linux, which does not appear to be version-specific, and we will be publishing that as soon as we complete our validation.
+
+Best regards,
+Eric & the Inspector team"
+AWS IoT Analytics	"AWS Agent fails to install on AWI instances
+I am seeing the below errors when installing an AWS agent on AWI instances 
+**************************************************
+          INSTALLATION PHASE-2                  
+**************************************************
+Failed to find an inspector agent package for this OS: amzn-4.1.17-22.30.amzn1.i686-i686.
+Please contact AWS support with this identifier to report this issue.
+
+On another instance..
+**************************************************
+          INSTALLATION PHASE-2                  
+**************************************************
+Failed to find an inspector agent package for this OS: amzn-4.4.10-22.54.amzn1.i686-i686.
+Please contact AWS support with this identifier to report this issue.
+
+On another instance..
+          INSTALLATION PHASE-2                  
+**************************************************
+Failed to find an inspector agent package for this OS: amzn-3.4.57-48.42.amzn1.i686-i686.
+Please contact AWS support with this identifier to report this issue."
+AWS IoT Analytics	"Re: AWS Agent fails to install on AWI instances
+Hello,
+currently not all the operating systems or AWS regions are supported for the AWS Inspector services.
+For details you can refer to our documentation here:
+http://docs.aws.amazon.com/inspector/latest/userguide/inspector_working-with-agents.html
+http://docs.aws.amazon.com/inspector/latest/userguide/inspector_settingup.html#TagEC2Instances
+
+Hope this helps,
+kind regards
+Ale"
+AWS IoT Analytics	"Re: AWS Agent fails to install on AWI instances
+I am using the supported ones as mentioned in the link and in the US East Region.
+
+| => cat /etc/*release*
+NAME=""Amazon Linux AMI""
+VERSION=""2016.03""
+ID=""amzn""
+ID_LIKE=""rhel fedora""
+VERSION_ID=""2016.03""
+PRETTY_NAME=""Amazon Linux AMI 2016.03""
+ANSI_COLOR=""0;33""
+CPE_NAME=""cpe:/o:amazon:linux:2016.03:ga""
+HOME_URL=""http://aws.amazon.com/amazon-linux-ami/""
+Amazon Linux AMI release 2016.03
+cpe:/o:amazon:linux:2016.03:ga
+
+| => uname -a
+Linux ip-10-0-0-100 4.4.10-22.54.amzn1.i686 #1 SMP Tue May 17 22:44:27 UTC 2016 i686 i686 i386 GNU/Linux"
+AWS IoT Analytics	"Re: AWS Agent fails to install on AWI instances
+It appears you're running on a 32-bit OS (kernel version 4.4.10-22.54.amzn1.i686).  Inspector currently supports 64-bit OSes only."
+AWS IoT Analytics	"Re: AWS Agent fails to install on AWI instances
+Is there a time line when 32 bit OS'es will be supported for Inspector?"
+AWS IoT Analytics	"Re: AWS Agent fails to install on AWI instances
+We don't have any current plans to support 32-bit operating systems, and it's not in our roadmap.  It's unlikely that we will ever add support for 32-bit operating systems."
+AWS IoT Analytics	"service awsagent [start|stop] always returns a status code of 1
+We are using puppet to manage awsagent.  The return codes from awsagent appear to be incorrect?  Please see the details below.
+
+Executing
+======
+service awsagent stop
+or
+service awsagent start
+
+always returns a code of 1.
+
+My Expectation
+=========
+For stop
+       #   0 if daemon has been stopped
+       #   1 if daemon was already stopped
+       #   2 if daemon could not be stopped
+
+For start
+        #   0 if daemon has been started
+        #   1 if daemon was already running
+        #   2 if daemon could not be started
+
+OS Details
+======
+No LSB modules are available.
+Distributor ID: Ubuntu
+Description:    Ubuntu 14.04.4 LTS
+Release:        14.04
+Codename:       trusty
+
+AWS Agent Status Output(which returns code of 0)
+================
+Configuration file path : /opt/aws/awsagent/etc/agent.cfg
+Configuration status :
+Agent version : 1.0.289.0
+System release : ""Ubuntu 14.04.4 LTS"" - 3.13.0-85-generic
+Daemon : true
+Max queue size : 31457280
+Log File :
+Msgs log max size : 33554432
+CodeModules : false
+InstanceMetaData : false
+PackageInfo : false
+NetworkInterfaces : false
+Groups : false
+Users : false
+Terminals : false
+ConfigurationInfo : false
+Permissions : false
+KernelModules : false
+Oval : false
+System performance : false
+System performance update frequency : 1
+System performance send frequency : 30
+Process performance : false
+Process performance update frequency : 1
+Process performance send frequency : 30
+Kernel module path : /opt/aws/awsagent/kmods/amznmon64.ko
+Kernel module status : KernelModuleUnloaded
+Network connections : false
+Listening ports : false
+Code modules : false
+Processes : false
+Publisher type : Service
+Registered : true
+Endpoint : arsenal.us-west-2.amazonaws.com
+Instance-Id : *************
+Region : us-west-2
+IpAddress : *********
+MacAddress : ************
+IpAddress : 127.0.0.1
+MacAddress : 00:00:00:00:00:00
+Total events published : 0
+Events published in last call : 0
+AgentId : ***************
+Collecting : false
+Last registration attempt date : Wed 2016-05-25 23:21:35 UTC
+Last registration date : Wed 2016-05-25 23:21:35 UTC
+Last config retrieval attempt date : Wed 2016-05-25 23:29:36 UTC
+Last config retrieval date : Wed 2016-05-25 23:29:36 UTC"
+AWS IoT Analytics	"Re: service awsagent [start|stop] always returns a status code of 1
+Hi,
+
+This is Eric from the Inspector team.  I've created a request in our feature database for this change.  We can't provide ETAs on individual features, but I wanted to confirm to you that we are tracking this.
+
+Thanks,
+Eric"
+AWS IoT Analytics	"Agent install problems
+I've updated my instances to the latest available in the AWS yum repos and ran into 2 specific problems.
+
+any of my instances in us-west-1 can't verify the signature of the agent
+
+[root@storage1 ~]# bash install
+**************************************************
+                INIT PHASE
+**************************************************
+Distribution type of the machine is amzn.
+Distribution of the machine is Amazon Linux AMI.
+Revision of the distro is 2016.03.
+Kernel version of the machine is 4.4.8-20.46.amzn1.x86_64.
+Trying to resolve domain name for s3.amazonaws.com to check internet connectivity.....
+Domain name for s3.amazonaws.com successfully resolved with IPAddress 54.231.48.147.
+ 
+ 
+**************************************************
+              SCRIPT SETUP PHASE
+**************************************************
+storage1.mydomain.com is an EC2 instance reporting region as us-west-1.
+ 
+ 
+**************************************************
+          INSTALLATION PHASE-1
+**************************************************
+No existing version of agent in the machine.
+Error validating signature of awsagent inventory text, terminating.  Please contact AWS Support.
+[root@storage1 ~]#
+
+
+2nd problem
+Any of my instances that I've updated to the latest kernel 4.4.8 are reported as not healthy (if I've already installed the agent) or not able to install the agent 
+[root@beta ~]# bash install
+**************************************************
+                INIT PHASE
+**************************************************
+Distribution type of the machine is amzn.
+Distribution of the machine is Amazon Linux AMI.
+Revision of the distro is 2016.03.
+Kernel version of the machine is 4.4.8-20.46.amzn1.x86_64.
+Trying to resolve domain name for s3.amazonaws.com to check internet connectivity.....
+Domain name for s3.amazonaws.com successfully resolved with IPAddress 54.231.33.218.
+ 
+ 
+**************************************************
+              SCRIPT SETUP PHASE
+**************************************************
+beta.mydomain.com is an EC2 instance reporting region as us-east-1.
+ 
+ 
+**************************************************
+          INSTALLATION PHASE-1
+**************************************************
+No existing version of agent in the machine.
+Validated awsagent inventory text signature with: Primary key fingerprint: DDA0 D4C5 10AE 3C20 6F46  6DC0 2474 0960 5836 0418
+Validated version file signature with: Primary key fingerprint: DDA0 D4C5 10AE 3C20 6F46  6DC0 2474 0960 5836 0418
+ 
+ 
+**************************************************
+          INSTALLATION PHASE-2
+**************************************************
+Failed to find an inspector agent package for this OS: amzn-4.4.8-20.46.amzn1.x86_64-x86_64.
+Please contact AWS support with this identifier to report this issue.
+[root@beta ~]#
+
+
+I'm assuming that the agent/kernel module needs to be updated to the latest kernel, I would hope the agent updates don't lag too far behind the yum repos in the future"
+AWS IoT Analytics	"Re: Agent install problems
+Me too."
+AWS IoT Analytics	"Re: Agent install problems
+I was running into this same issue. I think the problem for me is that I was trying to install the agent on an EC2 instance running in us-west-1. Right now it's only available for instances in US West (Oregon), US East (N. Virginia), EU (Ireland), and Asia Pacific (Tokyo)."
+AWS IoT Analytics	"Re: Agent install problems
+Yep that looks to be the case. I had attempted to use Inspector when it was in preview in the wrong region and the install script refused to install and gave me the region error.
+
+The install script should probably be updated to check what region its running in to fail with the correct error."
+AWS IoT Analytics	"false positive?
+I am getting this finding:
+Finding Instance i-9447734c is vulnerable to CVE-2016-2109
+Severity High 
+Description 
+The asn1d2ireadbio function in crypto/asn1/ad2i_fp.c in the ASN.1 BIO implementation in OpenSSL before 1.0.1t and 1.0.2 before 1.0.2h allows remote attackers to cause a denial of service (memory consumption) via a short invalid encoding.
+ 
+Recommendation 
+Use your Operating System's update feature to update package openssl-1:1.0.1k-14.90.amzn1. For more information see https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-2109
+
+
+but the instance is not running that version at all:
+
+# openssl version
+OpenSSL 1.0.1s  1 Mar 2016
+
+
+1.0.1k was updated to 1.0.1s but the agent doesn't detect the update?"
+AWS IoT Analytics	"Re: false positive?
+Hi,
+
+Could you please install the updates as per the recommendation and try again. CVE-2016-2109 should not be reported. 
+
+
+Cheers,
+Avani"
+AWS IoT Analytics	"Re: false positive?
+Thank you for replying.
+
+I had installed openssl-1.0.1-latest.tar.gz which got me 1.0.1s
+I just installed 1.0.1t and will run another assessment
+
+Eric"
+AWS IoT Analytics	"Re: false positive?
+I am still getting the same findings:
+
+Finding Instance i-9447734c is vulnerable to CVE-2016-2109
+ 
+Severity High 
+ 
+Description 
+The asn1d2ireadbio function in crypto/asn1/ad2i_fp.c in the ASN.1 BIO implementation in OpenSSL before 1.0.1t and 1.0.2 before 1.0.2h allows remote attackers to cause a denial of service (memory consumption) via a short invalid encoding.
+ 
+Recommendation 
+Use your Operating System's update feature to update package openssl-1:1.0.1k-14.90.amzn1. For more information see https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-2109
+
+
+and the current ssl version is:
+# openssl version
+OpenSSL 1.0.1t  3 May 2016
+
+
+What more can I do?"
+AWS IoT Analytics	"[AWS Inspector] awsagent failing with - Authentication failure
+Hi Team,
+
+Atfter installing awsagent from -
+wget https://d1wk0tztpsntt1.cloudfront.net/linux/latest/install
+I see awsagent status fails with Authentication failure as mentioned below :
+
+sudo service aws agent status
+
++ Events published in last call : 0
+Last registration attempt date : Tue 2016-04-26 05:59:06 UTC
+Registration failure reason : Authentication failure: Authentication failed as the incoming request wasnot signed by AWS credentials.
+Config retrieval failure reason : Agent failed to register during config retrieval +
+
+I have also created IAM role for Inspector and tagged instance.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 14.04.4 LTS
+Instance is present in public subnet and outgoing is enabled for all ports.
+
+From console when I try to run assessment, I get a ERROR message :
+
+Unable to start assessment. The following instances do not have the agent installed: Instance-ID
+
+Please let me know if I am missing any steps.
+
+Thanks,
+Gajanan"
+AWS IoT Analytics	"Re: [AWS Inspector] awsagent failing with - Authentication failure
+Hello AWS Inspector team plz let me know if you have any input on this issue.
+
+Edited by: gaja_gen on Apr 27, 2016 9:55 AM"
+AWS IoT Analytics	"Re: [AWS Inspector] awsagent failing with - Authentication failure-RESOLVED
+I was able to resolve this issue by downgrading kernel version."
+AWS IoT Analytics	"Failed to find an inspector agent package for this OS
+Hi  I am using Amazon machine image release as  Amazon Linux AMI release 2016.03.
+During installing inspector agent  getting below error.
+**************************************************
+          INSTALLATION PHASE-2                  
+**************************************************
+Failed to find an inspector agent package for this OS: amzn-3.14.20-20.44.amzn1.x86_64-x86_64.
+Please contact AWS support with this identifier to report this issue.
+
+Please tell us where to download agent for this release.
+
+Regards,
+Sourabh"
+AWS IoT Analytics	"Re: Failed to find an inspector agent package for this OS
+Hello,
+
+Inspector is available for Amazon Linux (2015.03 or later). I just launched an instance with Amazon Linux instance in US-West and i was able to instance inspector agent following steps in the documentation. [1]
+
+[1] http://docs.aws.amazon.com/inspector/latest/userguide/inspector_working-with-agents.html
+
+Amazon Linux AMI 2016.03.0 (HVM)
+
+$ cat /etc/*release*
+NAME=""Amazon Linux AMI""
+VERSION=""2016.03""
+ID=""amzn""
+ID_LIKE=""rhel fedora""
+VERSION_ID=""2016.03""
+PRETTY_NAME=""Amazon Linux AMI 2016.03""
+ANSI_COLOR=""0;33""
+CPE_NAME=""cpe:/o:amazon:linux:2016.03:ga""
+HOME_URL=""http://aws.amazon.com/amazon-linux-ami/""
+Amazon Linux AMI release 2016.03
+cpe:/o:amazon:linux:2016.03:ga
+
+ec2-user@ip-172-31-27-22 ~$ uname -r
+4.4.5-15.26.amzn1.x86_64
+
+Your output shows older Amazon linux kernel. Please update your instance and then try installing agent again."
+AWS IoT Analytics	"Custom kernel support
+Hi
+Currently it is not possible to install the inspector agent using a custom kernel. Is it possible to add support for custom kernels by accepting input parameters in the install script, allowing users to provide the required kernel versions manually?
+
+Thanks, Adam."
+AWS IoT Analytics	"Re: Custom kernel support
+Hi Adam,
+
+Currently Inspector does not support custom kernels.  The Inspector agent includes a kernel module that has to be specifically compiled against the kernel in the host's operating system, and we currently don't have the ability to compile on demand.  We will consider this feature in the future.
+
+Sincerely,
+The Amazon Inspector Team"

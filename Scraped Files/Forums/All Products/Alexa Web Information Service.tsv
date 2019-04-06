@@ -1,0 +1,2683 @@
+label	description
+Alexa Web Information Service	"Increasing API Throttling Limit
+Is there any way to increase the throttling limit for the AWIS API?"
+Alexa Web Information Service	"Upgrading to v4 - Totally Lost
+I've been using alexa web info service on my website for some 12 years now. Which is to say, I initially set up the service 12 years ago  
+
+Today I got the mail that v2 is being shut down and I have to move to v4 apis. Super.
+
+There was a link to some sample code in that email. But it appears that the sample PHP code linked-to is still v2 code? 
+
+Also when I log in to the web services console, I can't even find Alexa Web Info Service in the list of services. The whole amazon web services system is so confusing and disorganized. I know I still use AWIS. My lookup tool still works and it shows up in my billing info. But that's all I can see. 
+
+Is it hiding in plain sight? I cant find any info on what i actually need to do to upgrade my API calls here. There's also a link to alexa.com but I'm unable to log in to that site. 
+
+And of course I can't reply to this amazon email to ask ""WTF?"""
+Alexa Web Information Service	"Re: Upgrading to v4 - Totally Lost
+Hi,
+
+  I apologize for the inconvenience, however we've been sending notifications about V4 migration since late 2017.
+
+You can find the V4 sample code here:
+https://aws.amazon.com/awis/getting-started/#awis_sample_code
+
+If you need further assistance that would require troubleshooting your code changes or other information that is not appropriate to publish in this open forum, please open a support ticket at https://alexa.zendesk.com/hc/en-us/requests/new if you have specific questions regarding your account.
+
+Note that before you can submit a request you will need an alexa.com account. If you don't have one, you can register here http://www.alexa.com/register
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: Upgrading to v4 - Totally Lost
+The sample code you just sent me appears to be v2 code, not v4 code (for PHP). Can you confirm this? 
+
+Also are you saying i need to sign up for an account on alexa.com even though I'm already up and running on an existing amazon account?"
+Alexa Web Information Service	"Re: Upgrading to v4 - Totally Lost
+Hi John,
+
+I checked the sample code, and it's SigV4. However I found out there is an un-used variable ($SigVersion = '2' which is confusing and I'll remove it. But it can't be safely ignored.
+
+Regarding the need to open an account on alexa.com, it is only if you need to create a support ticket should you need specific assistance with your code. We understand the migration can be troublesome for some customers and we can help to ease that migration if needed.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: Upgrading to v4 - Totally Lost
+You know what would be really helpful? A procedural-style PHP sample script, in addition to the object-oriented-style PHP sample script. For those of us that don't really write OOP code. It's not easy trying to make heads or tails of that example script"
+Alexa Web Information Service	"Re: Upgrading to v4 - Totally Lost
+New question. The same code uses the following two values:
+
+$ServiceEndpoint = ""awis.us-west-1.amazonaws.com""
+$ServiceRegion = ""us-west-1""
+
+I assume I'm probably supposed to change those to ""my"" server, but how do I know what values to use there?"
+Alexa Web Information Service	"Re: Upgrading to v4 - Totally Lost
+For anyone that is interested, I made a much simper, procedural, non-OOP PHP function for making these APIv4 calls:
+
+http://www.whatsmyip.org/lib/amazon-aws-apiv4/"
+Alexa Web Information Service	"Re: Upgrading to v4 - Totally Lost
+Does anyone have a very basic (c# ideally - or Python) example of V4 running in a lambda? The AWS C# libraries don't have helper functions that I could find. I was able to setup IAM and write a python script that successfully brings back traffic results from AWIS. However, I want to create a lambda to call the traffic requests instead and take advantage of the lambda concurrency ability.
+
+Also - I checked GitHub and StackOverflow already
+
+Edited by: BD357 on Feb 8, 2019 10:36 AM
+
+Edited by: BD357 on Feb 8, 2019 10:36 AM"
+Alexa Web Information Service	"Re: Upgrading to v4 - Totally Lost
+Ok - I found enough of an example in the v4 signature in c# here: https://forums.aws.amazon.com/thread.jspa?messageID=821345󈡡
+
+This code worked for me and I added my business logic around it to call AWIS successfully."
+Alexa Web Information Service	"Re: Upgrading to v4 - Totally Lost
+The link doesn't work. Could you please update the link or write the code you used.
+many thanks"
+Alexa Web Information Service	"Re: Upgrading to v4 - Totally Lost
+I cannot edit it now - but just remove the last spurious character from the link"
+Alexa Web Information Service	"Re: Upgrading to v4 - Totally Lost
+Thank you, that's great. Can you please send a sample code how you're calling this class. I think I am making a mistake but couldn't figure out.
+Many thanks"
+Alexa Web Information Service	"I want make a site like this
+I want a site like this www.alexarankcheck.com but his site down now.
+
+I want  check  
+
+yesterday rank 
+7-day avg rank
+1 month avg rank
+3 month avg rank
+
+Any guys help ?"
+Alexa Web Information Service	"Re: I want make a site like this
+Hi Tonybro,
+
+You can access that data using the UrlInfo Response group in our AWIS API. More info is available in the technical documentation here: https://docs.aws.amazon.com/AlexaWebInfoService/latest/ApiReference_UrlInfoAction.html. You can also learn more about the API in general (pricing, getting started) here: https://aws.amazon.com/awis/.
+
+Note that when using the data you must adhere to the AWS customer agreement and service terms here: 
+http://aws.amazon.com/agreement/ 
+http://aws.amazon.com/serviceterms/ (Please see section 5)
+
+Cheers,
+Debbie
+Alexa"
+Alexa Web Information Service	"Sign v4 error The request signature we calculated does not match the signat
+Hi,
+
+I'm struggling with signing v4 with C#.
+
+I'm getting following error. Anyone has an idea?
+
+    <aws:UrlInfoResult>
+      <aws:Alexa>
+        <aws:Request>
+          <aws:Errors>
+            <aws:Error>
+              <aws:ErrorCode><![CDATA[""The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. Consult the service documentation for details.
+
+The Canonical String for this request should have been
+'GET
+/api
+Action=UrlInfo&ResponseGroup=RelatedLinks%2CCategories%2CRank%2CRankByCountry%2CRankByCity%2CUsageStats%2CContactInfo%2CLinksInCount%2CAdultContent%2CSpeed%2CLanguage%2CKeywords%2COwnedDomains%2CLinksInCount%2CSiteData&Url=www.siteprice.org
+host:awis.us-west-1.amazonaws.com
+x-amz-date:20190220T233609Z
+
+host;x-amz-date
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+
+The String-to-Sign should have been
+'AWS4-HMAC-SHA256
+20190220T233609Z
+20190220/us-west-1/awis/aws4_request
+9f3983e5b073197efaaebc49c1fb9b57f9105bab2a3fc76f5c5ba99d4055ecba'
+""]]></aws:ErrorCode>
+            </aws:Error>
+          </aws:Errors>
+        </aws:Request>
+      </aws:Alexa>
+    </aws:UrlInfoResult>"
+Alexa Web Information Service	"Re: Sign v4 error The request signature we calculated does not match the signat
+This is my code by the way.
+
+   public class AmazonAWISNew
+    {
+        private static readonly string DATEFORMAT_AWS = ""yyyyMMdd\'T\'HHmmss\'Z\'"";
+        private static readonly string DATEFORMAT_CREDENTIAL = ""yyyyMMdd"";
+        public string amzDate;
+        public string dateStamp;
+
+        public string AWSAccessKeyId { get; set; }
+        public string AWSSecret { get; set; }
+
+        public AmazonAWISNew()
+        {
+            AWSAccessKeyId = ""XXX"";
+            AWSSecret = ""ZZZ"";
+            amzDate = DateTime.Now.ToUniversalTime().ToString(DATEFORMAT_AWS, CultureInfo.InvariantCulture);
+            dateStamp = DateTime.Now.ToUniversalTime().ToString(DATEFORMAT_CREDENTIAL, CultureInfo.InvariantCulture);
+        }
+
+        public static bytehttps://forums.aws.amazon.com/ key)
+        {
+            var algorithm = ""HmacSHA256"";
+            var kha = KeyedHashAlgorithm.Create(algorithm);
+            kha.Key = key;
+
+            return kha.ComputeHash(Encoding.UTF8.GetBytes(data));
+        }
+
+        public static byte[] GetSignatureKey(string key, string dateStamp, string regionName, string serviceName)
+        {
+            var kSecret = Encoding.UTF8.GetBytes((""AWS4"" + key).ToCharArray());
+            var kDate = HmacSHA256(dateStamp, kSecret);
+            var kRegion = HmacSHA256(regionName, kDate);
+            var kService = HmacSHA256(serviceName, kRegion);
+            var kSigning = HmacSHA256(""aws4_request"", kService);
+
+            return kSigning;
+        }
+
+        public static string MakeRequest(string requestUrl, string authorization, string amzDate)
+        {
+            var request = (HttpWebRequest)WebRequest.Create(requestUrl);
+            request.Method = ""GET"";
+            request.Accept = ""application/xml"";
+            request.ContentType = ""application/json"";
+            request.Headers.Add(""X-Amz-Date"", amzDate);
+            request.Headers.Add(""Authorization"", authorization);
+
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using (var dataStream = response.GetResponseStream())
+                {
+                    using (var reader = new StreamReader(dataStream))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
+            }
+        }
+
+        public string UrlInfo(string domain)
+        {
+            // calculate the signature
+            var sig2 = GetSignatureKey(AWSSecret, dateStamp, ""us-west-1"", ""awis"");
+            var signature = Convert.ToBase64String(sig2);
+
+            string url = ""https://awis.amazonaws.com/api?Action=UrlInfo&ResponseGroup=RelatedLinks%2CCategories%2CRank%2CRankByCountry%2CRankByCity%2CUsageStats%2CContactInfo%2CLinksInCount%2CAdultContent%2CSpeed%2CLanguage%2CKeywords%2COwnedDomains%2CLinksInCount%2CSiteData&Url="" + domain;
+
+            string auth = ""AWS4-HMAC-SHA256 Credential="" + AWSAccessKeyId + ""/"" + dateStamp + ""/us-west-1/awis/aws4_request, SignedHeaders=host;x-amz-date, Signature="" + signature;
+            return MakeRequest(url.ToString(), auth, amzDate);
+
+        }
+
+    }"
+Alexa Web Information Service	"Call to get UrlInfo always returns a 204
+Hi, I am trying to get a simple call to UrlInfo working, so far without success. Here is my call:
+
+http://awis.amazonaws.com?AWSAccessKeyId=XXXX&Action=UrlInfo&ResponseGroup=Rank%2CRankByCountry&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2019-02-15T10%3A31%3A09.262Z&Url=bbc.co.uk&Signature=XXXX
+
+I am using the Amazon Awis class mentioned in the last answer here: https://forums.aws.amazon.com/thread.jspa?messageID=466227
+
+My requests always return a 204 code with (obviously) no body - where am i going wrong please?"
+Alexa Web Information Service	"Re: Call to get UrlInfo always returns a 204
+Hi Rich,
+
+   Effective Feb 12, we have deprecated support for AWIS SigV2 on February 12, 2019.
+
+Our code samples[1] and documentation[2] have been updated to reflect these changes. To access the API with SIGV4 signing, follow the documentation link and make slight code changes anywhere your applications make calls to the AWIS API. We strongly recommend creating an IAM user in your AWS account for this purpose.
+
+If you have any questions or concerns about these changes, you have two options for contacting Alexa.com support:
+
+1. If you have an Alexa.com account, please login to Alexa Help website[3] and submit a help request.
+2. Post to the relevant AWIS[4] forum.
+
+We apologize for any inconvenience this may cause. Thank you for your continued use of Alexa's API and for helping us make this service more secure.
+
+[1] https://aws.amazon.com/awis/getting-started/#awis_sample_code
+[2] https://docs.aws.amazon.com/awis/index.html
+[3] https://www.alexa.com/help
+[4] https://forums.aws.amazon.com/forum.jspa?forumID=14"
+Alexa Web Information Service	"Re: Call to get UrlInfo always returns a 204
+Hi,
+
+thanks for your response.
+
+Do you have examples in c# of the whole process please? I am getting stuck with a response that says my 'String-to-Sign' is not being calculated properly. Basically it's my implementation of SHA256 hashing going wrong I think. I have been trying to convert your java code sample to c#, but I think the hashing is letting me down."
+Alexa Web Information Service	"Re: Call to get UrlInfo always returns a 204
+Hi,
+
+  Please find attached a sample C# dotnet project using SigV4 (save the following project snippet (excluding the BEGIN/END part) as dotnet-core-awis.csproj after download). Alternatively, you can also find a pure C# (no library needed) here:
+https://forums.aws.amazon.com/thread.jspa?messageID=821345󈡡
+
+Feel free to contact us again if you have any problems.
+Regards,
+Francisco
+
+---BEGIN Project
+<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>dotnet_core_awis</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include=""Aws4RequestSigner"" Version=""0.3.0"" />
+    <PackageReference Include=""AWSSDK.Core"" Version=""3.3.24.8"" />
+  </ItemGroup>
+</Project>
+---END Project"
+Alexa Web Information Service	"Re: Call to get UrlInfo always returns a 204
+Thanks very much for that.
+
+It would have been great if you'd included that solution in your first answer (I wouldn't have wasted the best part of a day) and if it was more readily (and obviously) available."
+Alexa Web Information Service	"AWIS results from API differ from public SiteInfo
+I run a site that ranks food blogs using Alexa AWIS data.  For most sites, the data returned from the AWIS API is a reasonable match to the publicly available ranking data at https://www.alexa.com/siteinfo
+
+However, there are a number of sites where the AWIS API data is wildly different (e.g. AWIS: rank is 1,511,535  and the same site at SiteInfo is 213,457)
+
+Which is correct.  And why the discrepancy?"
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+Hi,
+
+There are some differences between the data returned by the AWIS API and the data shown in the Alexa Website. For example traffic rank differences are due to period each tool is using (the API returns daily Alexa traffic ranks, whereas the Global rank shown at the top of the Site Overview page is a 3 month rank).
+
+In order to better address your question, could you provide a website and the metrics showing that pattern?
+
+Cheers,
+Francisco"
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+One example is kidgredients.com.au  https://www.alexa.com/siteinfo/kidgredients.com.au shows a global rank of 212,217 a rank in Australia of 4,577 and a links in count of 357.
+The data from AWIS for the same site, retrieved yesterday, have a global rank of 517,566 and Australian rank of 15,123. The links in count is the same at 357.
+
+Another is madcreationshub.com.  Public siteinfo: Global 269,124, Australia: 3,675 Links in: 175
+AWIS: Global 387,846 Australia 7,845 Links in: 136
+
+This is not a once off or explained by differences in ranking periods - it seems that the data for some of the sites we track are always wrong (we grab statistics from AWIS once a day and we keep a history). For other sites, the data are a reasonable match.
+
+I can send you the latest XML output from AWIS for those sites if it will help."
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+Hi,
+
+ I just retrieved the API rank for both sites using:
+Action=urlInfo&ResponseGroup=Rank&Url=madcreationshub.com
+Action=urlInfo&ResponseGroup=Rank&Url=kidgredients.com.au
+The results are:
+madcreationshub.com: 269124
+kidgredients.com.au: 212217
+
+The values from the siteingo page are:
+madcreationshub.com: 269,124
+kidgredients.com.au: 212,217
+
+I don't see any discrepancy between the 2. Could you include the AWIS API call parameters?
+
+Thanks,
+Francisco"
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+I'm calling AWIS with Action: urlInfo ResponseGroup: 'TrafficData,RankByCountry,LinksInCount'
+
+Those values you get are very different from what I'm getting."
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+Hi,
+
+Attached is the the output for the calls to the API (
+https://awis.amazonaws.com/api?Action=urlInfo&ResponseGroup=Rank%2CTrafficData%2CRankByCountry%2CLinksInCount&Url=kidgredients.com.au) and the screenshot of the siteinfo.
+
+Both are showing a global rank of 212,217 and a country rank for Australia of 4,577.
+
+<?xml version=""1.0"" ?>
+<aws:UrlInfoResponse xmlns:aws=""http://awis.amazonaws.com/doc/2005-10-05"">
+  <aws:Response xmlns:aws=""http://awis.amazonaws.com/doc/2005-07-11"">
+    <aws:OperationRequest>
+      <aws:RequestId>38798231-2aee-44e0-a526-626d0e277891</aws:RequestId>
+    </aws:OperationRequest>
+    <aws:UrlInfoResult>
+      <aws:Alexa>
+        <aws:Request>
+          <aws:Arguments>
+            <aws:Argument>
+              <aws:Name>url</aws:Name>
+              <aws:Value>kidgredients.com.au</aws:Value>
+            </aws:Argument>
+            <aws:Argument>
+              <aws:Name>responsegroup</aws:Name>
+              <aws:Value>Rank,TrafficData,RankByCountry,LinksInCount</aws:Value>
+            </aws:Argument>
+          </aws:Arguments>
+        </aws:Request>
+        <aws:ContentData>
+          <aws:DataUrl type=""canonical"">kidgredients.com.au</aws:DataUrl>
+          <aws:LinksInCount>357</aws:LinksInCount>
+        </aws:ContentData>
+        <aws:TrafficData>
+          <aws:DataUrl type=""canonical"">kidgredients.com.au</aws:DataUrl>
+          <aws:Rank>212217</aws:Rank>
+          <aws:Rank>212217</aws:Rank>
+          <aws:RankByCountry>
+          ...
+            <aws:Country Code=""AU"">
+              <aws:Rank>4577</aws:Rank>
+              <aws:Contribution>
+                <aws:PageViews>67.26%</aws:PageViews>
+                <aws:Users>63.48%</aws:Users>
+              </aws:Contribution>
+            </aws:Country>
+           ...
+          </aws:RankByCountry>
+          <aws:UsageStatistics>
+            <aws:UsageStatistic>
+              <aws:TimeRange>
+                <aws:Months>3</aws:Months>
+              </aws:TimeRange>
+              <aws:Rank>
+                <aws:Value>212217</aws:Value>
+                <aws:Delta>-3187</aws:Delta>
+              </aws:Rank>
+        ..."
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+I believe I found the problem.
+
+The AWIS API docs specify that the URL passed to the UrlInfo action may be ""Any valid URL"". ( https://docs.aws.amazon.com/AlexaWebInfoService/latest/ApiReference_UrlInfoAction.html )
+
+This appears to be incorrect.  The values returned for URL=""https://kidgredients.com.au"" are different to those returned for URL=""kidgredients.com.au"".  The second version is the one that returns values matching the public siteinfo data.
+
+It seems the documentation is incorrect and the URL parameter should actually be specified as ""Any valid domain name"""
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+Hi,
+
+  Certainly this is a bug, and we are looking into it. The documentation is correct and it should be returning the same data.
+
+We apologize for the long troubleshooting and thanks for getting back so fast.
+
+I'll update this thread when we found and fix the issue.
+
+Thanks,
+Francisco"
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+Hi Francisco,
+
+Just some further information:
+
+The URL parameter is not only a domain/url issue, it is also sensitive to sub domains.  
+
+e.g.  URL=madcreationshub.com  returns different data to URL=www.madcreationshub.com 
+
+Calling urlInfo with URL=madcreationshub.com (without the www.) returns (what I presume is) the ""correct"" data (same as the public siteinfo), even though the site itself redirects request to ""madcreationshub.com"" to ""https://www.madcreationshub.com/"""
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+One more interesting bit of info:
+
+The URL parameter is not always sensitive to URL/domain/subdomain
+
+For example, calling the API with URL=http://www.healthygfasian.com/ and URL=""healthygfasian.com"" return the same results and indeed as far as I can tell, for the majority of the sites I track, the results for a domain name are the same as the results for the site URL.
+
+I'll see if I can get a more comprehensive list of sites on my list that are affected and maybe we'll see some commonality."
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+As far as I can tell (so far), out of about 3,300 sites we track, only the following have discrepancies when the API is called differently with URL/domain/subdomain:
+
+http://divascancook.com
+http://www.thekitchenmagpie.com
+http://www.panningtheglobe.com
+http://thesaltymarshmallow.com/
+https://www.madcreationshub.com/
+https://kidgredients.com.au/
+
+HOWEVER, while trying to find discrepancies, the API started to return 
+
+    <aws:UrlInfoResult>
+      <aws:Alexa>
+        <aws:Request>
+          <aws:Errors>
+            <aws:Error>
+              <aws:ErrorCode><![CDATA></aws:ErrorCode>
+            </aws:Error>
+          </aws:Errors>
+        </aws:Request>
+      </aws:Alexa>
+    </aws:UrlInfoResult>
+
+I'm using node JS to call the API asynchronously and this error appears to begin to occur after I've initiated several hundred API calls.. is the API server getting overloaded ??"
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+Hi,
+
+   We understand what the issue is and we are working to fix it. The only workaround until we fix this issue is to remove any scheme from the URL and use the root domains.
+
+Regarding the error, when the requests are throttled we return an http error code 429.
+
+Can you tell me which error code are you receiving?"
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+Oops, I didn't realize my paste was incomplete. Here's the complete message:
+
+<?xml version=""1.0"" ?>
+<aws::UrlInfoResponse xmlns:aws=""http://awis.amazonaws.com/doc/2005-10-05"">
+  <aws:Response xmlns:aws=""http://awis.amazonaws.com/doc/2005-07-11"">
+    <aws:OperationRequest>
+      <aws:RequestId></aws:RequestId>
+    </aws:OperationRequest>
+    <aws:UrlInfoResult>
+      <aws:Alexa>
+        <aws:Request>
+          <aws:Errors>
+            <aws:Error>
+              <aws:ErrorCode><![CDATA></aws:ErrorCode>
+            </aws:Error>
+          </aws:Errors>
+        </aws:Request>
+      </aws:Alexa>
+    </aws:UrlInfoResult>
+    <aws:ResponseStatus xmlns:aws=""http://alexa.amazonaws.com/doc/2005-10-05/"">
+      <aws:StatusCode>Error</aws:StatusCode>
+    </aws:ResponseStatus>
+  </aws:Response>
+</aws:UrlInfoResponse>"
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+That error occurs if I try to process more than around 500 sites concurrently"
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+Grrr.. the forum is stripping the text after the ![CDATA[
+
+The actual error text is ""Internal server error"""
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+Can you provide me with the request parameters to try to reproduce the error?
+
+Thanks
+Francisco"
+Alexa Web Information Service	"Re: AWIS results from API differ from public SiteInfo
+I can't give you the exact request because the error occurs in the library I'm using ( https://www.npmjs.com/package/awis) and I can't easily show each actual request generated by the library.
+
+I can tell you that the action is ""UrlInfo"" and the ResponseGroup is ""TrafficData,RankByCountry,LinksInCount""
+
+I am trying to look up around 2,500 URLS, then do a lookup on the domain name only of each of those URLs and compare the results.  It begins to show errors after it's successfully processed about 4,800 of  the ~5,000 lookups.  So I know the library is generating correct request URIs.
+
+As far as I can tell, the point at which the errors start is inconsistent, which seems to indicate it's not the request parameters that are the issue (the same process already worked 4,800 times) but the rate at which the requests are made."
+Alexa Web Information Service	"Plain text books needed for Alexa project
+I'm working on a conversation app for Alexa. I'm looking for a library of plain text books I can use for this app. Is there such a library available anywhere on AWS?"
+Alexa Web Information Service	"API Usage
+Hello.
+
+Where I can find any information about my current data usage (fired API calls) and the cost I have already generated using the API.
+
+Thank you."
+Alexa Web Information Service	"Re: API Usage
+Hi,
+
+   You can see your monthly usage in the AWS Cost Explorer in your Amazon AWS Console.
+
+Once you log in to https://console.aws.amazon.com select Billing and then Monthly Spend by Service View.
+
+Please notice that it might take 24 to 48 hours for charges to show up.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Using Temporary Credentials Do Not Work
+I can use my own creds and the call works fine, but using the temporary creds from here https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#credentials-explicit, the call is not allowed using the generated accessKey and secret.
+
+Any ideas?"
+Alexa Web Information Service	"Re: Using Temporary Credentials Do Not Work
+Hi,
+
+   You can use temporary credentials (for example from an instance role), however you need to provide the token also.
+
+For example, from a bash script:
+#!/bin/bash
+
+credentials=$(curl --silent http://169.254.169.254/latest/meta-data/iam/security-credentials/YOUR_INSTANCE_ROLE)
+accesskey=$(echo $credentials  |jq --raw-output '.AccessKeyId')
+secretkey=$(echo $credentials|jq --raw-output '.SecretAccessKey')
+token=$(echo $credentials|jq --raw-output '.Token')
+
+Then, in the code you need to add the following header:
+conn.setRequestProperty(""x-amz-security-token"", token);
+
+If you need further assistance, don't hesitate to contact us again or open a support ticket at https://alexa.zendesk.com/hc/en-us/requests/new if you have specific questions regarding your account.
+
+Note that before you can submit a request you will need an alexa.com account. If you don't have one, you can register here http://www.alexa.com/register
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: Using Temporary Credentials Do Not Work
+TY!  I did try this but still fails.  I am attaching my code, which is just a slightly modified version of the sample code downloaded from your site. Can you take a look and see if I am missing something?
+
+Thanks!
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClient;
+import com.amazonaws.services.securitytoken.model.Credentials;
+import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest;
+import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
+
+import com.shopstyle.common.aws.AwsUtil;
+
+/**
+ * Makes a request to the Alexa Web Information Service UrlInfo action.
+ */
+public class AlexaAuthTest {
+
+    private static final String ACTION_NAME = ""UrlInfo"";
+    private static final String RESPONSE_GROUP_NAME = ""Rank,LinksInCount"";
+    private static final String SERVICE_HOST = ""awis.amazonaws.com"";
+    protected static final String SERVICE_ENDPOINT = ""awis.us-east-1.amazonaws.com"";
+    private static final String SERVICE_URI = ""/api"";
+    private static final String SERVICE_REGION = ""us-east-1"";
+    private static final String SERVICE_NAME = ""awis"";
+    private static final String AWS_BASE_URL = ""https://"" + SERVICE_HOST + SERVICE_URI;
+    private static final String HASH_ALGORITHM = ""HmacSHA256"";
+    private static final String DATEFORMAT_AWS = ""yyyyMMdd'T'HHmmss'Z'"";
+    private static final String DATEFORMAT_CREDENTIAL = ""yyyyMMdd"";
+
+    private String accessKeyId;
+    private String secretAccessKey;
+    private String site;
+
+    public String amzDate;
+    public String dateStamp;
+
+    public AlexaAuthTest(String accessKeyId, String secretAccessKey, String site) {
+        this.accessKeyId = accessKeyId;
+        this.secretAccessKey = secretAccessKey;
+        this.site = site;
+
+        Date now = new Date();
+        SimpleDateFormat formatAWS = new SimpleDateFormat(DATEFORMAT_AWS);
+        formatAWS.setTimeZone(TimeZone.getTimeZone(""GMT""));
+        amzDate = formatAWS.format(now);
+
+        SimpleDateFormat formatCredential = new SimpleDateFormat(DATEFORMAT_CREDENTIAL);
+        formatCredential.setTimeZone(TimeZone.getTimeZone(""GMT""));
+        dateStamp = formatCredential.format(now);
+    }
+
+    String sha256(String textToHash) throws Exception {
+        MessageDigest digest = MessageDigest.getInstance(""SHA-256"");
+        byte[] byteOfTextToHash = textToHash.getBytes(""UTF-8"");
+        byte[] hashedByteArray = digest.digest(byteOfTextToHash);
+        return bytesToHex(hashedByteArray);
+    }
+
+    static bytehttps://forums.aws.amazon.com/ key) throws Exception {
+        Mac mac = Mac.getInstance(HASH_ALGORITHM);
+        mac.init(new SecretKeySpec(key, HASH_ALGORITHM));
+        return mac.doFinal(data.getBytes(""UTF8""));
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        StringBuffer result = new StringBuffer();
+        for (byte byt : bytes) {
+            result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
+        }
+        return result.toString();
+    }
+
+    /**
+     * Generates a V4 Signature key for the service/region
+     *
+     * @param key Initial secret key
+     * @param dateStamp Date in YYYYMMDD format
+     * @param regionName AWS region for the signature
+     * @param serviceName AWS service name
+     * @return byte[] signature
+     * @throws Exception
+     */
+    static byte[] getSignatureKey(String key, String dateStamp, String regionName,
+            String serviceName) throws Exception {
+        byte[] kSecret = (""AWS4"" + key).getBytes(""UTF8"");
+        byte[] kDate = HmacSHA256(dateStamp, kSecret);
+        byte[] kRegion = HmacSHA256(regionName, kDate);
+        byte[] kService = HmacSHA256(serviceName, kRegion);
+        byte[] kSigning = HmacSHA256(""aws4_request"", kService);
+        return kSigning;
+    }
+
+    /**
+     * Makes a request to the specified Url and return the results as a String
+     *
+     * @param requestUrl url to make request to
+     * @return the XML document as a String
+     * @throws IOException
+     */
+    public static String makeRequest(String requestUrl, String authorization, String amzDate,
+            String token) throws IOException {
+        URL url = new URL(requestUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestProperty(""Accept"", ""application/xml"");
+        conn.setRequestProperty(""Content-Type"", ""application/json"");
+        conn.setRequestProperty(""X-Amz-Date"", amzDate);
+        conn.setRequestProperty(""Authorization"", authorization);
+        System.out.println(authorization);
+        conn.setRequestProperty(""x-amz-security-token"", token);
+        System.out.println(token);
+
+        InputStream in =
+                (conn.getResponseCode() / 100 == 2 ? conn.getInputStream() : conn.getErrorStream());
+
+        // Read the response
+        BufferedReader replyReader =
+                new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String line;
+        String replyString = """";
+        while ((line = replyReader.readLine()) != null) {
+            replyString = replyString.concat(line + ""\n"");
+        }
+
+        replyReader.close();
+
+        return replyString;
+
+    }
+
+    /**
+     * Makes a request to the Alexa Web Information Service UrlInfo action
+     */
+    public static void main(String[] args) throws Exception {
+        AWSSecurityTokenServiceClient tokenServiceClient =
+                new AWSSecurityTokenServiceClient(AwsUtil.getCredentialsProvider());
+        GetSessionTokenRequest session_token_request = new GetSessionTokenRequest();
+
+        GetSessionTokenResult session_token_result =
+                tokenServiceClient.getSessionToken(session_token_request);
+
+        Credentials session_creds = session_token_result.getCredentials();
+
+        System.out.println(session_creds.getAccessKeyId());
+        System.out.println(session_creds.getSecretAccessKey());
+        System.out.println(session_creds.getSessionToken());
+
+        String accessKey = session_creds.getAccessKeyId();
+        String secretKey = session_creds.getSecretAccessKey();
+        String token = session_creds.getSessionToken();
+        String site = ""http://google.com"";
+
+        AlexaAuthTest urlInfo = new AlexaAuthTest(accessKey, secretKey, site);
+
+        String canonicalQuery = ""Action="" + ""urlInfo"" + ""&ResponseGroup="" + URLEncoder.encode(RESPONSE_GROUP_NAME, ""UTF-8"") + ""&Url="" + URLEncoder.encode(site, ""UTF-8"");
+        String canonicalHeaders = ""host:"" + SERVICE_ENDPOINT + ""\n"" + ""x-amz-date:"" + urlInfo.amzDate + ""\n"";
+        String signedHeaders = ""host;x-amz-date"";
+
+        String payloadHash = urlInfo.sha256("""");
+
+        String canonicalRequest = ""GET"" + ""\n"" + SERVICE_URI + ""\n"" + canonicalQuery + ""\n"" + canonicalHeaders + ""\n"" + signedHeaders + ""\n"" + payloadHash;
+
+        // ************* TASK 2: CREATE THE STRING TO SIGN*************
+        // Match the algorithm to the hashing algorithm you use, either SHA-1 or
+        // SHA-256 (recommended)
+        String algorithm = ""AWS4-HMAC-SHA256"";
+        String credentialScope = urlInfo.dateStamp + ""/"" + SERVICE_REGION + ""/"" + SERVICE_NAME + ""/"" + ""aws4_request"";
+        String stringToSign = algorithm + '\n' +  urlInfo.amzDate + '\n' +  credentialScope + '\n' +  urlInfo.sha256(canonicalRequest);
+
+        System.out.println(stringToSign);
+
+        // ************* TASK 3: CALCULATE THE SIGNATURE *************
+        // Create the signing key
+        byte[] signingKey = AlexaAuthTest.getSignatureKey(secretKey, urlInfo.dateStamp, SERVICE_REGION, SERVICE_NAME);
+
+        // Sign the string_to_sign using the signing_key
+        String signature = bytesToHex(HmacSHA256(stringToSign, signingKey));
+
+        String uri = AWS_BASE_URL + ""?"" + canonicalQuery;
+
+        System.out.println(""Making request to:\n"");
+        System.out.println(uri + ""\n"");
+
+        // Make the Request
+
+        String authorization = algorithm + "" "" + ""Credential="" + accessKey + ""/"" + credentialScope + "", "" +  ""SignedHeaders="" + signedHeaders + "", "" + ""Signature="" + signature;
+
+        String xmlResponse = makeRequest(uri, authorization, urlInfo.amzDate, token);
+
+        // Print out the XML Response
+
+        System.out.println(""Response:\n"");
+        System.out.println(xmlResponse);
+    }
+}
+
+Edited by: birchsport on Dec 11, 2018 3:48 PM"
+Alexa Web Information Service	"Re: Using Temporary Credentials Do Not Work
+I did get this working by use us-west-1 as the region.  I had changed to us-east-1.
+
+Thanks for the help!"
+Alexa Web Information Service	"AWIS UrlInfo List of All Response Group
+Hi, based on the official api page - https://docs.aws.amazon.com/AlexaWebInfoService/latest/ApiReference_UrlInfoAction.html
+
+Does this list covers all the response group? I saw some other threads discussing about Alexa keywords, but it didn't shown in the docs (alexa website has this info). Was wondering whether keywords is removed or still available in the api as response group, as well as other possible response groups.
+
+List of response group available in the docs included:
+Categories, Rank, RankByCountry, UsageStats, AdultContent, Speed, Language, OwnedDomains, LinksInCount, SiteData
+
+Let me know if other responses not listed like keywords is available, thanks a lot.
+
+Edited by: jyjyweb on Oct 24, 2018 12:36 PM
+Addon: Ah also, for the RankByCountry, is it possible to get all other the countries instead of ""O"" which represents others (some popular website with O has almost 10% of total visitors)? Thanks."
+Alexa Web Information Service	"Re: AWIS UrlInfo List of All Response Group
+Hi,
+
+  The list covered in the documentation is the currently supported options for the ResponseGroup parameter.
+
+Regarding the Others category, we roll out results with a percentage of visitors below a threshold and it's not possible to retrieve them via the API.
+
+Let us know if you have any additional questions.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: AWIS UrlInfo List of All Response Group
+Hi, really thanks for the reply. Regarding the supported response groups, I've tried ""keywords"" response group just now and it did show (this response group is not listed in the api documentation list), and there seems to more fields available like popups, etc. I tried on ""godaddy.com"" and keyword ""Domain Names"" returned.
+
+1. Is it possible for Alexa support to list all the available response groups? I'm interested in others as well like search engine keywords, etc if available to be fetched together.
+
+2. Secondly, since the response group I'm interested in the most is RankByCountry, is there any other ways I can request from Alexa support to get the ""O"" country as full list of countries (or at least lower percentage threshold under O)? I'm willing to pay extra or on custom price quotation solely for this RankByCountry full list response group if it is possible.
+
+Otherwise I might have to fetch all sites under specific country and update the country alexa on specific website, which is neither efficient nor cost effective as a lot extra queries are required.
+
+Thanks again for the time and help.
+
+(addon: getting all alexa RankByCountry for all countries means a lot to us as i.e. godaddy.com has very high traffic, but the little 0.1% would means top 1000 ranking in country such as Malaysia, and the data is not shown in RankByCountry but just has the O for all other countries. Greatly appreciate if all countries ranks can be obtained with AWIS, thanks!)
+
+Edited by: jyjyweb on Oct 30, 2018 10:02 AM"
+Alexa Web Information Service	"Re: AWIS UrlInfo List of All Response Group
+Hi,
+
+  The keywords response group might work right now, but it's a deprecated one and could be removed in future versions.
+
+The supported options for the Response Group are all published in the AWIS API documentation.
+
+Regarding your question about expanding the Other category under RankByCountry, we currently don't support it. I'll pass your request to our product team to consider this as a feature enhancement.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: AWIS UrlInfo List of All Response Group
+Thanks a lot for the help in sending enhancement request. We'll be waiting and looking forward to having this additional all ranks for RankByCountry feature before proceed with our large amount of awis queries. Cheers.
+
+(addon: kindly have us informed by email or reply when this feature for requesting all RankByCountry with or without additional charges is available, thanks a lot)
+
+Edited by: jyjyweb on Nov 4, 2018 8:43 AM"
+Alexa Web Information Service	"TrafficHistory batch requests with multiple start dates
+Hi,
+
+The batch API for traffic history seems to have some problems since we switched to using an IAM user instead of the root account. This request returns an empty TrafficHistoryResponse element:
+
+https://awis.amazonaws.com/api?Action=TrafficHistory&Shared.Range=31&Shared.ResponseGroup=History&Shared.Url=amazon.com&TrafficHistory.1.Start=20170322
+
+If I move the URL into the batch group then this gives me a response but for the wrong start date:
+
+https://awis.amazonaws.com/api?Action=TrafficHistory&Shared.Range=31&Shared.ResponseGroup=History&TrafficHistory.1.Start=20170322&TrafficHistory.1.Url=amazon.com
+
+The response start date is actually 2018-03-25 (ie. 31 days ago)
+
+If I move the start date into a shared parameter then this gives me the expected response with the correct start date:
+
+https://awis.amazonaws.com/api?Action=TrafficHistory&Shared.Range=31&Shared.ResponseGroup=History&Shared.Start=20170322&TrafficHistory.1.Url=amazon.com
+
+However I was trying to use this to batch 5 requests for the same URL with different start dates. This looks like a bug in the batch API, or maybe an undocumented restriction?"
+Alexa Web Information Service	"Re: TrafficHistory batch requests with multiple start dates
+Hi Dave,
+
+   Thanks for contacting us. This certainly looks like a bug, and we are looking into it.
+
+We'll update this thread when we have new information.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: TrafficHistory batch requests with multiple start dates
+Is there any update on this? This is still an issue for us, we have worked around it by not batching the requests, but the documentation still suggests batching should work."
+Alexa Web Information Service	"Re: TrafficHistory batch requests with multiple start dates
+Hi Dave,
+
+   I apologize for not updating the post, but we did release the fix.
+
+If it is an issue for you, let me know if you are still seeing the same results with the parameters you posted.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"AWIS Pricing Enquiry
+Hi,
+
+Regarding alexa AWIS pricing:
+Up to 1,000 requests/ month - Free
+1,001 to 1,000,000 requests/ month - $0.00045 per request
+Over 1,000,000 requests/ month - $0.00030 per request
+
+What does it means for per request, does it means per url request, or per response request? i.e. if I get a website info of abcd.com and fetch all the possible response groups, vs get abcd.com with only alexa ranking as response group, are both charged the same and considered as 1 request?
+
+Also, regarding alexa ATS pricing:
+$0.0025 per URL returned
+Why is the ATS pricing much more expensive than AWIS where 100 url returned for ATS is $0.25 where as AWIS is $0.045 (AWIS returned much more info than ATS).
+
+Thanks a lot for the help."
+Alexa Web Information Service	"Re: AWIS Pricing Enquiry
+Hi,
+
+  Regarding AWIS pricing, the ""per request"" refers to each individual API call. A single API call can include all the response groups and will be considered as one request for billing purposes.
+
+ATS pricing is per site returned, so a single API call can include multiple sites and each one of them will be considered as a URL returned.
+
+You are correct about the pricing differences. The main difference is that each AWIS request always returns information about a single site while a single ATS request can return information for multiple sites.
+
+Don't hesitate to contact us again or open a support ticket at https://alexa.zendesk.com/hc/en-us/requests/new if you have specific questions regarding your account.
+
+Note that before you can submit a request you will need an alexa.com account. If you don't have one, you can register here http://www.alexa.com/register
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: AWIS Pricing Enquiry
+Thanks a lot for the reply. Actually I've tried 10 url request to ATS each return 100 sites = 1000 sites, and i got charged over $2.50, which means each site costs $0.0025 but not 1 url request fetching 100 sites costs $0.0025 (charges is regardless of how many url request, but on how many sites returned). The price for ATS is much more expensive for per site returned compared to AWIS."
+Alexa Web Information Service	"Restrictions on showing data from Alexa Web Information Service?
+Hello,
+i would like to know if there are restrictions regarding the public use of data gathered from Alexa Web Information Service.
+
+For example, can i use Alexa Rank (or other Alexa related data) in a website directory?
+
+Thank you,
+Nicos Nicolaou
+
+Edited by: nkleopas on Oct 3, 2018 5:44 AM"
+Alexa Web Information Service	"Re: Restrictions on showing data from Alexa Web Information Service?
+Hi,
+
+When using the AWIS data, you must adhere to the AWS customer agreement and service terms here: 
+http://aws.amazon.com/agreement/ 
+http://aws.amazon.com/serviceterms/ (Please see section 5)
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"Web Service
+Hi all,I am new to this, so please bear with me.  I am trying to find out if there are non-.Net examples.  I use VB 6 and and I am hoping that the Amazon services (more specifically the searches) could be used and if there are examples available.Thank you,George"
+Alexa Web Information Service	"Re: Web Service
+Hi George,Our current samples are in the c#, ruby, python, php and java languages. If you are a VB developer we would recommend downloading a few of samples and trying to develop your own basic query around the structure the samples use. We always welcome more samples in different languages!Best,-Ryan"
+Alexa Web Information Service	"Re: Web Service
+Hey
+Can you give me your simple code in Python for AWIS (Alexa Web Information Service)
+I can find just in Java, PHP, Ruby & Perl !
+But I want in Python 
+Thanks!"
+Alexa Web Information Service	"Re: Web Service
+Hi,
+  You can check this post another user submitted working code in C#:
+https://forums.aws.amazon.com/thread.jspa?messageID=821345&#821345
+
+Regarding Visual Basic, I did a quick search on sample code for SigV4 and for example:
+https://www.example-code.com/vb6/aws_pre_signed_url_v4.asp
+
+Gives you a starting point to call awis.
+
+Let me know if you need further assistance.
+Regards,
+Francisco"
+Alexa Web Information Service	"Using .Net/C# to generate signature
+I am trying to use .Net / C# to generate the signature. A signature is being generated but AWS returns ""AWS.NotAuthorized"".If I use the timestamp/sig as generated by the 'signature tester tool' (http://forums.prospero.com/n/mb/message.asp?webtag=am-assocdevxml&msg=10470.1&ctx=0) then AWS returns the information as expected.It seems unlikely that the HMACSHA1 algorithm in .Net differs somehow from the one in the signature tester (and AWS) so I assume I am probably doing something wrong.The code that follows is posted in various places on the web, so I am surprised it does not work.Has anyone gotten this to work?        public static string CreateAlexaRequestURL(string url)        {            string service = ""AlexaWebInfoService"";            string operation = ""UrlInfo"";            string accesskeyid = ""**AKI**"";            string secretkey = ""**SK**"";            string timestamp = DateTime.Now.ToUniversalTime().ToString(""yyyy-MM-ddTHH:mm:ss.fffZ"");            StringBuilder alexaurl = new StringBuilder(""http://awis.amazonaws.com/onca/xml"");            alexaurl.Append(""?Service="" + service);            alexaurl.Append(""&Operation="" + operation);            alexaurl.Append(""&Signature="" + GetSignature(service + operation + timestamp, secretkey));            alexaurl.Append(""&Timestamp="" + timestamp);            alexaurl.Append(""&AWSAccessKeyId="" + accesskeyid);            alexaurl.Append(""&ResponseGroup=Categories,Keywords,SiteData"");             alexaurl.Append(""&Url="" + url);            return (alexaurl.ToString());        }        private static string GetSignature(string data, string key)        {            byte[] bData = Encoding.UTF8.GetBytes(data);            byte[] bKey = Encoding.UTF8.GetBytes(key);            HMACSHA1 hmac = new HMACSHA1(bKey);            using(CryptoStream cryptoStream = new CryptoStream(Stream.Null, hmac, CryptoStreamMode.Write))            {                cryptoStream.Write(bData, 0, bData.Length);                cryptoStream.Close();            }            return Convert.ToBase64String(hmac.Hash);        }    }"
+Alexa Web Information Service	"Re: Using .Net/C# to generate signature
+Here is some code that works. Not sure if what I had previously was truly broken, I did a re-write and looked for more info online, found some examples which I stole, and now it works. No time to analyze what went wrong, I do know this works...<font size=""2"">{HMACSHA1 hasher = hasher.Clear();}</font><font color=""#0000ff"" size=""2"">private</font><font size=""2""> </font><font color=""#0000ff"" size=""2"">static</font><font size=""2""> </font><font color=""#0000ff"" size=""2"">string</font><font size=""2""> GetSignature2(</font><font color=""#0000ff"" size=""2"">string</font><font size=""2""> data, </font><font color=""#0000ff"" size=""2"">string</font><font size=""2""> key) </font><font color=""#0000ff"" size=""2"">byte</font><font size=""2"">[] keyBytes = Encoding.ASCII.GetBytes(key);</font><font color=""#0000ff"" size=""2"">new</font><font size=""2""> HMACSHA1(keyBytes); </font><font color=""#0000ff"" size=""2"">byte</font><font size=""2""> output = hasher.ComputeHash(inputBytes); </font><font color=""#0000ff"" size=""2"">return</font><font size=""2""> Convert.ToBase64String(output); </font>"
+Alexa Web Information Service	"Re: Using .Net/C# to generate signature
+Hmm, last post screwed up my code... let's try again:        private static string GetSignature2(string data, string key)         {            byte[] keyBytes = Encoding.ASCII.GetBytes(key);            HMACSHA1 hasher = new HMACSHA1(keyBytes);             bytehttp://] inputBytes = Encoding.ASCII.GetBytes(data);            byte[ output = hasher.ComputeHash(inputBytes);             hasher.Clear();            return Convert.ToBase64String(output);         }"
+Alexa Web Information Service	"Re: Using .Net/C# to generate signature
+FWIW, my first solution may well have been working the whole time but since AWIS is returning AWS_NotAuthorized for well over 50% of my queries, it may well have been an AWIS issue, not a code issue."
+Alexa Web Information Service	"Re: Using .Net/C# to generate signature
+Actually, I compared the signatures created with the above code with the sigs from the scratch pad, and they were not always the same. I changed to the code at the link below, and it works perfectly now.http://devintelligence.com/cs/blogs/netadventures/archive/2005/12/11/1130.aspx"
+Alexa Web Information Service	"Re: Using .Net/C# to generate signature
+Forgot some important informtion: I was getting the 11456 not authorized error and it fixed when I changed to the code at the link above."
+Alexa Web Information Service	"Re: Using .Net/C# to generate signature
+Can you please post your updated C# function to generate the signature?  I still get the not authorized message."
+Alexa Web Information Service	"Re: Using .Net/C# to generate signature
+Ditto... I've not been able to get this to work  in either VB.NET or C#.  If you've got something that works, please please repost.Thanks,Greg"
+Alexa Web Information Service	"Re: Using .Net/C# to generate signature
+I think the key is to do your URL encoding as follows:
+
+    private static string URLEncode(string str) {
+        //return System.Web.HttpUtility.UrlEncode(str).Replace(""+"", ""%20"");
+        return HttpUtility.UrlEncode(HttpUtility.UrlPathEncode(str)); 
+    }
+
+Either of the lines will work.    If you just use HttpUtility.UrlEncode there can be plus signs remaining in the URL after encoding.      This is why so many people are reporting ""Not Authorized"" errors, I believe.    The error appears intermittently when plus signs are present in the URL.
+
+- Greg
+Alexa"
+Alexa Web Information Service	"Re: Using .Net/C# to generate signature
+Attached is the code that I used for testing AWIS with C#"
+Alexa Web Information Service	"Re: Using .Net/C# to generate signature
+public static string Post(string readTextFile)
+        {
+            var method = ""POST"";
+            var service = ConfigurationManager.AppSettings;
+            var host = ConfigurationManager.AppSettings;
+            var region = ConfigurationManager.AppSettings;
+            var endpoint = ConfigurationManager.AppSettings;
+            var content_type = ConfigurationManager.AppSettings;
+            var amz_target = ConfigurationManager.AppSettings;
+            var datas = ""{   \""MLModelId\"": \""ml-OuAtnihixZl\"",    \""Record\"": {       \""clean ocr\"" : \""{0}\""    }}\n"";
+            var request_parameters = datas.Replace(""{0}"", readTextFile);
+
+            var access_key = ConfigurationManager.AppSettings;
+            var secret_key = ConfigurationManager.AppSettings;
+
+            var t = DateTime.UtcNow;
+            var amz_date = t.ToString(""yyyyMMddTHHmmss"") + ""Z"";
+            var date_stamp = t.ToString(""yyyyMMdd"");
+
+            var canonical_uri = ""/"";
+            var canonical_querystring = """";
+
+            var canonical_headers = ""cache-control:"" + ""no-cache"" + '\n' + ""content-length:"" + request_parameters.Length + '\n' + ""content-type:"" + content_type + '\n' + ""host:"" + host + '\n' + ""x-amz-date:"" +
+                                    amz_date + '\n' + ""x-amz-target:"" + amz_target + '\n';
+            var signed_headers = ""cache-control;content-length;content-type;host;x-amz-date;x-amz-target"";
+
+            var payload_hash = HexEncode(Hash(ToBytes(request_parameters)));
+            var canonical_request = method + '\n' + canonical_uri + '\n' + canonical_querystring + '\n' +
+                                    canonical_headers + '\n' + signed_headers + '\n' + payload_hash;
+
+            var algorithm = ConfigurationManager.AppSettings;
+            var credential_scope = date_stamp + '/' + region + '/' + service + '/' + ""aws4_request"";
+
+            var string_to_sign = algorithm + '\n' + amz_date + '\n' + credential_scope + '\n' +
+                                 HexEncode(Hash(ToBytes(canonical_request)));
+            var signing_key = GetSignatureKey(secret_key, date_stamp, region, service);
+
+            var signature = HexEncode(HmacSHA256(string_to_sign, signing_key));
+
+            var authorization_header = algorithm + ' ' + ""Credential="" + access_key + '/' + credential_scope + "", "" +
+                                       ""SignedHeaders="" + signed_headers + "", "" + ""Signature="" + signature;
+
+            var webRequest = WebRequest.Create(endpoint) as HttpWebRequest;
+            webRequest.Host = host;
+            webRequest.ServicePoint.Expect100Continue = false;
+            webRequest.KeepAlive = false;
+            webRequest.Accept = ""/"";
+
+            webRequest.Timeout = 20000;
+            webRequest.Method = method;
+            webRequest.Headers.Add(""cache-control"", ""no-cache"");
+            webRequest.ContentLength = request_parameters.Length;
+            webRequest.ContentType = content_type;
+            webRequest.Headers.Add(""X-Amz-Date"", amz_date);
+            webRequest.Headers.Add(""X-Amz-Target"", amz_target);
+            webRequest.Headers.Add(""accept-encoding"", ""gzip, deflate"");
+            webRequest.Headers.Add(""Authorization"", authorization_header);
+
+            var encoding = new ASCIIEncoding();
+            var data = encoding.GetBytes(request_parameters);
+            ServicePointManager.ServerCertificateValidationCallback = delegate
+            {
+                return true;
+            };
+            var newStream = webRequest.GetRequestStream();
+            newStream.Write(data, 0, data.Length);
+            var response = (HttpWebResponse)webRequest.GetResponse();
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var receiveStream = response.GetResponseStream();
+
+                // Pipes the stream to a higher level stream reader with the required encoding format. 
+                var readStream = new StreamReader(receiveStream, Encoding.UTF8);
+
+                // Console.WriteLine(""Response stream received."");
+                var res = readStream.ReadToEnd();
+                return res;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        private static bytehttps://forums.aws.amazon.com/ key)
+        {
+            const string algorithm = ""HmacSHA256"";
+            var kha = KeyedHashAlgorithm.Create(algorithm);
+            kha.Key = key;
+
+            return kha.ComputeHash(Encoding.UTF8.GetBytes(data));
+        }
+
+        static byte[] GetSignatureKey(string key, string dateStamp, string regionName, string serviceName)
+        {
+            var kSecret = Encoding.UTF8.GetBytes((""AWS4"" + key).ToCharArray());
+            var kDate = HmacSHA256(dateStamp, kSecret);
+            var kRegion = HmacSHA256(regionName, kDate);
+            var kService = HmacSHA256(serviceName, kRegion);
+            var kSigning = HmacSHA256(""aws4_request"", kService);
+
+            return kSigning;
+        }
+
+        private static byte[] ToBytes(string str)
+        {
+            return Encoding.UTF8.GetBytes(str.ToCharArray());
+        }
+
+        private static string HexEncode(byte[] bytes)
+        {
+            return BitConverter.ToString(bytes).Replace(""-"", string.Empty).ToLowerInvariant();
+        }
+
+        private static bytehttps://forums.aws.amazon.com/ bytes)
+        {
+            return SHA256.Create().ComputeHash(bytes);
+        }
+
+readTextFile => Is my requirement."
+Alexa Web Information Service	"Problem with getting full text from Alexa
+Hello everyone!
+
+I've created an Alexa skill with AMAZON.Searchquery that tells me what the user said.
+The thing is, I always need one or more keywords before the text, like ""search for {query}"".
+
+Is it possible to drop the words ""search for""?
+
+Edited by: manuel328 on Jul 20, 2018 2:17 AM"
+Alexa Web Information Service	"Re: Problem with getting full text from Alexa
+Hi,
+
+This is the forum for the Alexa Web Information Service. The Amazon Alexa Skills Kit forum is here: https://forums.developer.amazon.com/spaces/23/index.html.
+
+Please re-post your original question there.
+
+Cheers,
+Debbie
+Alexa"
+Alexa Web Information Service	"CategoryListings omitting results?
+I noticed something strange when sending a CategoryListings query for the top 100 websites. It looks like large amounts them are being omitted. For example 5 out of the top 10 aren't returned.
+
+Here's the query string I'm sending:
+
+Action=CategoryListings&Count=100&Path=Top&Recursive=True&ResponseGroup=Listings&Start=1
+
+Can anyone offer any insight? I attached query results as an XML file. Thanks.
+
+Edited by: Brian Agovino on Jul 18, 2018 9:54 AM
+
+Edited by: Brian Agovino on Jul 18, 2018 9:55 AM"
+Alexa Web Information Service	"Re: CategoryListings omitting results?
+Hi Brian,
+
+The ""Top"" category is actually ""Top/World/English"" which is why you see the gaps.  
+And, a category such as ""Top/Home/Gardening""  is  really ""Top/World/English/Home/Gardening"".
+
+You can get top sites in any particular language using the other languages categories under ""Top/World"".
+
+If you want a global, or by-country top sites list, those are available from the Alexa Top Sites service.
+
+We will update the documentation to make this more clear.
+
+Let us know if you have any additional questions.
+
+Francisco"
+Alexa Web Information Service	"Where to enter keys in Java sample
+Heads up: It´s the first time for me to have to do with codes. 
+
+I downloaded the Java sample code for ""Alexa Web Information Service UrlInfo action.""
+
+I use Netbeans 8.2 to Java (tested Hello World, runs perfect).
+
+Now I try to figure out how I get the sample Java code running. 
+1) Where do I need to enter the accessKeyId and secretAccessKey.
+2) Also there is a 3rd variable ""site"". I suppose I need to enter the page I want the Url info on, for example ""yahoo.com""
+
+3) The read me doc says, I need to sign up with ""http://aws.amazon.com/awis"". But when I try to open it and click on ""Get started with AWIS"", I am already signed in with my AWS credentials. Did both platforms migrate or do I miss out on something.
+
+I appreciate all your help."
+Alexa Web Information Service	"Re: Where to enter keys in Java sample
+Hi,
+   If you check the file UrlInfo.java in the sample code, the Access Key and secret are passed as  parameters to the command.
+
+So once compiled, you'll execute it like this:
+java UrlInfo ACCESS_KEY SECRET_KEY SITE
+
+Where:
+ACCESS_KEY/SECRET_KEY are the key/secret for the IAM user in your account configured to run AWIS 
+SITE is a host name (like cnn.com) for which you want to get data from
+
+The sample only has a simple usage of the API. For a complete list of all actions and parameters check the API Reference:
+https://docs.aws.amazon.com/AlexaWebInfoService/latest/Actions.html
+
+Regarding the third question, there is no need to signup for the service. You do need an AWS account and then you need to create an IAM user with a policy to allow use of the service.
+
+You can find more information about that on the following links:
+https://aws.amazon.com/awis/getting-started/#awis_sample_code
+https://docs.aws.amazon.com/AlexaWebInfoService/latest/MakingRequestsChapter.html
+
+Don't hesitate to contact us again or open a support ticket at https://alexa.zendesk.com/hc/en-us/requests/new if you have specific questions regarding your account.
+
+Note that before you can submit a request you will need an alexa.com account. If you don't have one, you can register here http://www.alexa.com/register
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Monthly Unique Visitor Metrics
+Hi,
+
+  I'm looking for the Monthly Unique Visitor Metrics that is available on Alexa website. Any tips on where can I find that on the AWIS?
+
+Thanks in advance."
+Alexa Web Information Service	"Re: Monthly Unique Visitor Metrics
+Hi intellifeed,
+
+Unfortunately our monthly unique visitor metrics are not available via API at this time. The metrics are only available on alexa.com.
+
+Cheers,
+Debbie
+Alexa"
+Alexa Web Information Service	"Re: Monthly Unique Visitor Metrics
+Hi Debbie,
+
+I'm looking for a way  to get this info via API,
+
+Is it still not available to get the monthly unique visitor metrics via API?
+
+Thank,
+Yarin"
+Alexa Web Information Service	"Re: Monthly Unique Visitor Metrics
+Hi Yarin,
+
+Correct, that data is still not available via API.
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"Extract Visits and Ranking number from Alexa and put them in Excel ?
+hey All , 
+I am new to AWIS, my mini project is: extract the number of monthly visits from a list of websites from the USA and the world ranking of these websites and put them automatically in an excel file. So I will have a list of websites in a column in an excel sheet and in front of each website I will like the number of visits from the USA and the world ranking of this website. can someone give me an idea of how to do this?
+Thanks"
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+Hi,
+
+   Using the RankByCountry and PageViews response groups, you can get the information you asked.
+
+Since the service return a XML document you will need to parse the result in order to get the values to put besides each website.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+thank you Sir very much for your answer, you reassure me already that I am on the right way. 
+Can you explain me a little more? for me, for example, I would like to launch a script or something on about fifty websites and have the number of visits from the US and the world rank for each website and put this information in an excel sheet automatically"
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+Hi,
+
+  I can't give you specific code to do the task you want to do, but in general terms you should call the api, parse the xml for the fields you are interested in and then save it in a csv file. Excel can then open the file and show each field in a separate column.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+Thanks a lot Sir  
+I'll try to do it and I will try to use the PHP code in the documentation . 
+One more question please : do you think that i can call the api for multiple website with one call ? 
+Thanks in advance"
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+Hi,
+
+   We have support for batch requests:
+https://docs.aws.amazon.com/AlexaWebInfoService/latest/QueryBatchRequestFormat.html
+
+Currently it's limited to 5, so due to requirement of 50 sites might not be well suited.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+Achi wrote:
+hey All , 
+I am new to AWIS, my mini project is: extract the number of monthly visits from a list of websites from the USA and the world ranking of these websites and put them automatically in an excel file. So I will have a list of websites in a column in an excel sheet and in front of each website I will like the number of visits from the USA and the world ranking of this website. can someone give me an idea of how to do this?
+Thanks
+Achi wrote:
+hey All , 
+I am new to AWIS, my mini project is: extract the number of monthly visits from a list of websites from the USA and the world ranking of these websites and put them automatically in an excel file. So I will have a list of websites in a column in an excel sheet and in front of each website I will like the number of visits from the USA and the world ranking of this website. can someone give me an idea of how to do this?
+Thanks
+Hey Sir , 
+I could have results with the php code and the python code, my question now: how to recover the total number of visits from the USA. I can not find this information from the result .
+Can you tell me how can i get it please ? Thanks 
+
+</Country>
+<Country Code=""US"">
+<Rank>5216</Rank>
+<Contribution>
+<PageViews>7.79%</PageViews>
+<Users>5.96%</Users>
+</Contribution>
+</Country>"
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+Hey Sir , 
+I could have results with the php code and the python code, my question now: how to recover the total number of visits from the USA. I can not find this information from the result .
+Can you tell me how can i get it please ? Thanks 
+
+</Country>
+<Country Code=""US"">
+<Rank>5216</Rank>
+<Contribution>
+<PageViews>7.79%</PageViews>
+<Users>5.96%</Users>
+</Contribution>
+</Country>"
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+Hi Achi,
+
+Unfortunately that data is not available via API at this time, although I have let our product team know that you are interested in pulling US visit data via API.
+
+Note that we do offer this data on alexa.com with our Insight, Essentials, and Advanced plans: https://support.alexa.com/hc/en-us/articles/204210994.
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+Hey Debbie  
+Thank you for your reply . 
+Do I have to wait for the solution (  with API ) because I'm already using AWS with Amazon ."
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+Hi Achi,
+
+If we have an update concerning availability via the API we'll let you know, in the meantime the only option is to get the data on alexa.com with a subscription.
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+Hey  
+Okay, one last question: Can I use Alexa.com to extract the information ( # visits from US )  and automatically put it in an excel file with a script ? 
+Because that's my goal from the beginning"
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+Okay , I was able to extract the % from US country . 
+Can I extract the global visits (Y) for a website and then I will be able to get the visits number from US by doing X*Y . 
+Can you tell me please how can i get the global visits for a specific website ? 
+Thanks"
+Alexa Web Information Service	"Re: Extract Visits and Ranking number from Alexa and put them in Excel ?
+Hi Achi,
+
+Unfortunately that data is not available via API at this time.
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"Reconciling UI estimated pageviews with API responses
+Hi,
+We've been trying to figure out how to reconcile the API data with the one provided with the UI. The estimated pageviews metric from the UI is the one giving us headaches. We've trying to match the UI numbers with the UrlInfo->UsageStatistics Action->ResponseGroup or with calls to the TrafficHistory->History service with no luck. 
+
+Can you folks share any insight on how to calculate the API data to match the Estimated Pageviews number on the AI?
+
+Regards,
+
+Roberto"
+Alexa Web Information Service	"Re: Reconciling UI estimated pageviews with API responses
+Hi Roberto,
+
+Unfortunately it is not possible to calculate Estimated Pageviews numbers via the API that match the data in the UI. We do not offer Estimated pageviews data via API at this time, only pageviews per million data.
+
+Cheers,
+Debbie
+Alexa"
+Alexa Web Information Service	"Download source code in Windows
+Not finding the location of Dynamic Web Pages"
+Alexa Web Information Service	"AWIS TrafficHistory Missing
+Hi, 
+
+I need to fetch historical Rank data (Alexa Global Rank) of sites on the 1st day of each month for the last 5 months. I used TrafficHistory endpoint with the following optional parameters: 
+
+Start value was the 1st day of the month
+Range was 1
+
+
+What I discovered is, global rank data for missing most of the time. Example scenario:
+
+Site had a global rank in the middle of April (from UrlInfo endpoint) but TrafficHistory returned no Rank for the May 1st. The site also has a rank in the alexa.com/siteinfo endpoint now. 
+Morevoer, sometimes XML data returned by the API is blank. 
+
+
+In the TrafficHistory endpoint it's stated that ""The TrafficHistory action returns the daily Alexa Traffic Rank, Reach per Million Users, and Unique Page Views per Million Users for each day going back 4 years. Sites with a rank in excess of 1,000,000 are not included."" My understanding is that traffic data isn't captured if the Rank is over 1M. However, there are cases where the historical Alexa Rank is over 1M.
+
+It'd be great to know whether the data is missing from the API or it's not captured. Is it the correct use of API for what I'm trying to achieve? Happy to elaborate more on this. 
+
+Thanks"
+Alexa Web Information Service	"Re: AWIS TrafficHistory Missing
+Hi,
+
+I'd recommend opening a support ticket at https://alexa.zendesk.com/hc/en-us/requests/new so we can better troubleshoot this issue. Please include the requests for which you are getting no rank in may and also the ones you get empty responses.
+
+Note that before you can submit a request you will need an alexa.com account. If you don't have one, you can register here http://www.alexa.com/register
+
+Regards,
+Francisco"
+Alexa Web Information Service	"response result is empty
+Hello,
+
+I download the PHP Code Sample for AWIS from https://aws.amazon.com/cn/awis/getting-started/#awis_sample_code, use my root key or IAM user key, but the response always is empty,
+the code is :
+
+class UrlInfo {
+
+    protected static $ActionName        = 'UrlInfo';
+    protected static $ResponseGroupName = 'Rank,LinksInCount';
+    protected static $ServiceHost      = 'awis.amazonaws.com';
+    protected static $ServiceEndpoint  = 'awis.us-west-1.amazonaws.com';
+    protected static $NumReturn         = 10;
+    protected static $StartNum          = 1;
+    protected static $SigVersion        = '2';
+    protected static $HashAlgorithm     = 'HmacSHA256';
+    protected static $ServiceURI = ""/api"";
+    protected static $ServiceRegion = ""us-west-1"";
+    protected static $ServiceName = ""awis"";
+
+    public function UrlInfo($accessKeyId, $secretAccessKey, $site) {
+        $this->accessKeyId = $accessKeyId;
+        $this->secretAccessKey = $secretAccessKey;
+        $this->site = $site;
+        $now = time();
+        $this->amzDate = gmdate(""Ymd\THis\Z"", $now);
+        $this->dateStamp = gmdate(""Ymd"", $now);
+
+    }
+
+    /**
+     * Get site info from AWIS.
+     */
+    public function getUrlInfo() {
+        $canonicalQuery = $this->buildQueryParams();
+        $canonicalHeaders =  $this->buildHeaders(true);
+        $signedHeaders = $this->buildHeaders(false);
+        $payloadHash = hash('sha256', """");
+        $canonicalRequest = ""GET"" . ""\n"" . self::$ServiceURI . ""\n"" . $canonicalQuery . ""\n"" . $canonicalHeaders . ""\n"" . $signedHeaders . ""\n"" . $payloadHash;
+        $algorithm = ""AWS4-HMAC-SHA256"";
+        $credentialScope = $this->dateStamp . ""/"" . self::$ServiceRegion . ""/"" . self::$ServiceName . ""/"" . ""aws4_request"";
+        $stringToSign = $algorithm . ""\n"" .  $this->amzDate . ""\n"" .  $credentialScope . ""\n"" .  hash('sha256', $canonicalRequest);
+        $signingKey = $this->getSignatureKey();
+        $signature = hash_hmac('sha256', $stringToSign, $signingKey);
+        $authorizationHeader = $algorithm . ' ' . 'Credential=' . $this->accessKeyId . '/' . $credentialScope . ', ' .  'SignedHeaders=' . $signedHeaders . ', ' . 'Signature=' . $signature;
+
+        $url = 'https://' . self::$ServiceHost . self::$ServiceURI . '?' . $canonicalQuery;
+        $ret = self::makeRequest($url, $authorizationHeader);
+        echo ""\nResults for "" . $this->site ."":\n\n"";
+        echo $ret;
+        self::parseResponse($ret);
+    }
+
+    protected function sign($key, $msg) {
+        return hash_hmac('sha256', $msg, $key, true);
+    }
+
+    protected function getSignatureKey() {
+        $kSecret = 'AWS4' . $this->secretAccessKey;
+        $kDate = $this->sign($kSecret, $this->dateStamp);
+        $kRegion = $this->sign($kDate, self::$ServiceRegion);
+        $kService = $this->sign($kRegion, self::$ServiceName);
+        $kSigning = $this->sign($kService, 'aws4_request');
+        return $kSigning;
+    }
+
+    /**
+     * Builds headers for the request to AWIS.
+     * @return String headers for the request
+     */
+    protected function buildHeaders($list) {
+        $params = array(
+            'host'            => self::$ServiceEndpoint,
+            'x-amz-date'      => $this->amzDate
+        );
+        ksort($params);
+        $keyvalue = array();
+        foreach($params as $k => $v) {
+            if ($list)
+              $keyvalue[] = $k . ':' . $v;
+            else {
+              $keyvalue[] = $k;
+            }
+        }
+        return ($list) ? implode(""\n"",$keyvalue) . ""\n"" : implode(';',$keyvalue) ;
+    }
+
+    /**
+     * Builds query parameters for the request to AWIS.
+     * Parameter names will be in alphabetical order and
+     * parameter values will be urlencoded per RFC 3986.
+     * @return String query parameters for the request
+     */
+    protected function buildQueryParams() {
+        $params = array(
+            'Action'            => self::$ActionName,
+            'Count'             => self::$NumReturn,
+            'ResponseGroup'     => self::$ResponseGroupName,
+            'Start'             => self::$StartNum,
+            'Url'               => $this->site
+        );
+        ksort($params);
+        $keyvalue = array();
+        foreach($params as $k => $v) {
+            $keyvalue[] = $k . '=' . rawurlencode($v);
+        }
+        return implode('&',$keyvalue);
+    }
+
+    /**
+     * Makes request to AWIS
+     * @param String $url   URL to make request to
+     * @param String authorizationHeader  Authorization string
+     * @return String       Result of request
+     */
+    protected function makeRequest($url, $authorizationHeader) {
+        echo ""\nMaking request to:\n$url\n"";
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 4);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+          'Accept: application/xml',
+          'Content-Type: application/xml',
+          'X-Amz-Date: ' . $this->amzDate,
+          'Authorization: ' . $authorizationHeader
+        ));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
+
+    /**
+     * Parses XML response from AWIS and displays selected data
+     * @param String $response    xml response from AWIS
+     */
+    public static function parseResponse($response) {
+	echo $response;
+    return $response;
+    }
+
+}
+//
+$accessKeyId = ""xxxxxxx"";
+$secretAccessKey = ""yyyyyyy"";
+$site = ""yahoo.com"";
+$urlInfo = new UrlInfo($accessKeyId, $secretAccessKey, $site);
+$urlInfo->getUrlInfo();
+
+Edited by: feiyuwuji on Mar 20, 2018 3:20 AM"
+Alexa Web Information Service	"Re: response result is empty
+I'm having the same issue."
+Alexa Web Information Service	"Re: response result is empty
+Hi,
+
+I just tested your same code with my keys and worked fine. (Had to add <% and %> to your code)
+
+I'm using php 5.6.30.
+
+Even if your keys were incorrect you should be receiving an xml back with the error.
+
+Could you send me the command line you are executing?
+
+Thanks,
+Francisco"
+Alexa Web Information Service	"Re: response result is empty
+I'm running it in Eclipse as is.  So I suppose 'php urlinfo.php' is the command line.  I'm using 5.6 as well.
+
+It returns with an exception when I try to feed the xml into SimpleXMLElement.  The var_dump of the response is false.
+
+I has a similar response when i tried the top sites api.
+
+It felt like a security issue, but if it's supposed to return an xml in either case, I guess it's something else."
+Alexa Web Information Service	"Re: response result is empty
+Would it be possible for you to run from a shell?
+
+The xml returned contains namespaces, so that could be causing problems.
+
+Here is an example of the XML returned with an invalid key:
+<?xml version=""1.0"" ?>
+<aws:UrlInfoResponse xmlns:aws=""http://awis.amazonaws.com/doc/2005-10-05"">
+  <aws:Response xmlns:aws=""http://awis.amazonaws.com/doc/2005-07-11"">
+    <aws:OperationRequest>
+      <aws:RequestId></aws:RequestId>
+    </aws:OperationRequest>
+    <aws:UrlInfoResult>
+      <aws:Alexa>
+        <aws:Request>
+          <aws:Errors>
+            <aws:Error>
+              <aws:ErrorCode><![CDATA></aws:ErrorCode>
+            </aws:Error>
+          </aws:Errors>
+        </aws:Request>
+      </aws:Alexa>
+    </aws:UrlInfoResult>
+    <aws:ResponseStatus xmlns:aws=""http://alexa.amazonaws.com/doc/2005-10-05/"">
+      <aws:StatusCode>Error</aws:StatusCode>
+    </aws:ResponseStatus>
+  </aws:Response>
+</aws:UrlInfoResponse><?xml version=""1.0"" ?>"
+Alexa Web Information Service	"Re: response result is empty
+It looks like it's an issue with php.  I was getting weird errors when i tried to run it in a shell.
+
+When I run it in perl and java I get back a correct response.  Which is fine for me because I'm writing the new code in python 27.  I was just using php because I had that set up already and thought it worked ok.
+
+I'm not sure how to fix the php error or even what it is.  I probably just need to remove and reinstall the whole thing."
+Alexa Web Information Service	"Re: response result is empty
+Glad to hear that.
+
+Let me know if you need support for the python script. It's not in the sample code, but I've some V4 code that could help.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: response result is empty
+Hi,
+
+I upgraded  php version to 5.6.31, and the problem still exist.
+
+My server systerm is windows, when I test the code on a linux server, It works fine.
+
+Edited by: feiyuwuji on Mar 21, 2018 6:41 AM"
+Alexa Web Information Service	"Re: response result is empty
+Hi,
+
+ Since this seems to be a client side issue I'd recommend opening a support ticket at https://alexa.zendesk.com/hc/en-us/requests/new so we can better troubleshoot this issue.
+
+Note that before you can submit a request you will need an alexa.com account. If you don't have one, you can register here http://www.alexa.com/register
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: response result is empty
+Solution fo windows:
+
+Because the serverhost ""awis.us-west-1.amazonaws.com"" using SSL, 
+
+so we should just add the code ""curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); "" before the code ""$result = curl_exec($ch);"", then it works !"
+Alexa Web Information Service	"Re: response result is empty
+Hi,
+
+   I'd suggest checking your windows machine to make sure all root CA of the certificate are in the trusted root list.
+
+I don't recommend setting the SSL certificate validation off, since it's more secure to let SSL certificates be verified to assert you are connecting to the right service.
+
+You can get the list of root certificates from:
+https://aws.amazon.com/blogs/security/how-to-prepare-for-aws-move-to-its-own-certificate-authority/
+
+The certificate serials you should have installed are:
+Amazon: 06 7F 94 57 85 87 E8 AC 77 DE B2 53 32 5B BC 99 8B 56 0D
+Amazon Root CA1: 06 7F 94 4A 2A 27 CD F3 FA C2 AE 2B 01 F9 08 EE B9 C4 C6
+Starfield Services Root Certificate Authority - G2
+
+If the certificates are properly installed, you can open the following URL:
+https://awis.amazonaws.com/api?Action=UrlInfo&ResponseGroup=Rank&Url=cnn.com
+
+The page will return an XML saying the credentials are missing, however the SSL lock icon should be green in the browser.
+
+If it's not, then something was not properly installed.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Internal Server Error
+Hello,
+
+I am trying to send a stream of single traffic history requests to the AWIS API. 
+
+However, after a seemingly random number of successful requests, I keep receiving the same internal server error message as the one shown in a post on this forum from February (https://forums.aws.amazon.com/thread.jspa?threadID=272860&tstart=0).
+
+Is there anything I can do to resolve that issue?
+
+Thank you very much in advance!
+
+Best regards,
+Armin"
+Alexa Web Information Service	"Re: Internal Server Error
+Hi Armin,
+
+    Could you post the urls you are hitting (please remove any keys from the url if present) when you get the error?
+
+The link you reference was of a different kind and affected all requests, not just single ones.
+
+Thanks,
+Francisco"
+Alexa Web Information Service	"SSL upgrade failed error
+hi, when I was using AWIS api to query data in a corporate setting where a proxy server is used, I was having below error:
+
+Error connecting to https://awis.amazonaws.com/api?Action=UrlInfo&ResponseGroup=Rank&Url=cnn.com. HTTP Status code: 500
+Response:
+SSL upgrade failed: SSL connect attempt failed error:1416F086:SSL routines:tls_process_server_certificate:certificate verify failed at C:/Strawberry/perl/vendor/lib/LWP/Protocol/http.pm line 209
+
+I used another similar perl script to query data in an different environment where no proxy is needed and was able to get the correct response (so Access ID and key are working). The only difference between those two perl scripts (tested in two environment) is a line:
+$user_agent->proxy('https','http://proxy.xyz.com:3128/')
+
+can you tell me how can i get UrlInfo query work in an environment where proxy server exisits ?
+thanks."
+Alexa Web Information Service	"Re: SSL upgrade failed error
+Hi,
+
+   From the error and without knowing more about your proxy environment it seems that the proxy server doesn't have our certificate root CA installed as a trusted root authority.
+
+As a test, I'd suggest modifying your script to use the -k option (to allow insecure SSL connections). If that works, then remove that change and contact the team managing the proxy environment and ask them to add our root CA to their trusted CA list.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"how can i get the overall traffic count of a site using AWIS?
+Hey there ,
+I want to retrieve the overall number of traffic for a website. I do not speak of ranking. I want the total number of visits! 
+Cheers ,"
+Alexa Web Information Service	"Re: how can i get the overall traffic count of a site using AWIS?
+Hi Achi,
+
+Unfortunately that information is not available.
+
+Cheers,
+Debbie
+Alexa"
+Alexa Web Information Service	"Non-Latin TLDs causing errors
+When querying for UrlInfo when the TLD of the url is non-latin (IDNA, so encoded as punycode), I get the error:
+Bad Request Invalid Url parameter value
+That's for querying for the domain кто.рф
+API url:
+https://awis.amazonaws.com/api?Action=UrlInfo&ResponseGroup=Rank&Url=xn--j1ail.xn--p1ai
+
+It works fine when the TLD isn't IDNA, modepånätet.se works without error, example API url:
+https://awis.amazonaws.com/api?Action=UrlInfo&ResponseGroup=Rank&Url=xn--modepntet-02aj.se
+
+Any idea what's wrong here?"
+Alexa Web Information Service	"Re: Non-Latin TLDs causing errors
+Hi,
+
+   We are looking into it an update this thread when the fix is live.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: Non-Latin TLDs causing errors
+Hi,
+
+    Thanks for letting us know about the error. We pushed today a fix for this problem.
+
+Let us know if you have any additional questions.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: Non-Latin TLDs causing errors
+Great, Thank you!"
+Alexa Web Information Service	"Signature Issue with CategoryBrowse and CategoryListing
+Hi,
+
+I'm having a bit trouble when testing the CategoryBrowse and CategoryListing with JavaAPI. With the same credentials, I have no problem getting Traffic History and UrlInfo data. However, I'm getting the following feedback when trying to fetch a category data: 
+
+
+Making request to:
+ 
+https://awis.amazonaws.com/api?Action=CategoryBrowse&ResponseGroup=Categories&Path=Top%2FArts
+ 
+Response:
+ 
+<?xml version=""1.0"" ?>
+<aws:CategoryBrowseResponse xmlns:aws=""http://awis.amazonaws.com/doc/2005-10-05"">
+  <aws:Response xmlns:aws=""http://awis.amazonaws.com/doc/2005-07-11"">
+    <aws:OperationRequest>
+      <aws:RequestId>
+</aws:RequestId>
+    </aws:OperationRequest>
+    <aws:CategoryBrowseResult>
+      <aws:Alexa>
+        <aws:Request>
+          <aws:Errors>
+            <aws:Error>
+              <aws:ErrorCode>
+<![CDATA[""The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. Consult the service documentation for details.""]]>
+</aws:ErrorCode>
+            </aws:Error>
+          </aws:Errors>
+        </aws:Request>
+      </aws:Alexa>
+    </aws:CategoryBrowseResult>
+    <aws:ResponseStatus xmlns:aws=""http://alexa.amazonaws.com/doc/2005-10-05/"">
+      <aws:StatusCode>Error</aws:StatusCode>
+    </aws:ResponseStatus>
+  </aws:Response>
+</aws:CategoryBrowseResponse>
+
+
+I wonder if CategoryBrowse and CategoryListing need another set of credentials? Thanks"
+Alexa Web Information Service	"Re: Signature Issue with CategoryBrowse and CategoryListing
+I've figured out, the sequence of parameters in canonicalQuery has to be in certain order. When I moved ResponseGroup to the end of the canonicalQuery string, everything seemed to work out just fine."
+Alexa Web Information Service	"Difficulty getting basic AWIS query working
+I followed the instructions on https://aws.amazon.com/awis/getting-started/ . My policy seems correct: https://www.dropbox.com/s/om03bbopoqykn1t/Screenshot%202018-03-29%2000.23.22.png?dl=0 . I've downloaded the PHP test code. However, I cannot make it return data. Even attaching Admin access policies to my IAM won't do it. I know my keys are correct, because if I alter them, I can a cannot verify key error. What's going on here?
+
+/usr/bin/php urlinfo.php [REDACTED] [REDACTED] google.com
+ 
+Making request to:
+https://awis.amazonaws.com/api?Action=UrlInfo&Count=10&ResponseGroup=Rank%2CLinksInCount&Start=1&Url=google.com
+ 
+Results for google.com:
+ 
+<?xml version=""1.0"" ?>
+<aws:UrlInfoResponse xmlns:aws=""http://awis.amazonaws.com/doc/2005-10-05"">
+  <aws:Response xmlns:aws=""http://awis.amazonaws.com/doc/2005-07-11"">
+    <aws:OperationRequest>
+      <aws:RequestId></aws:RequestId>
+    </aws:OperationRequest>
+    <aws:UrlInfoResult>
+      <aws:Alexa>
+        <aws:Request>
+          <aws:Errors>
+            <aws:Error>
+              <aws:ErrorCode><![CDATA[""The AWS Access Key Id needs a subscription for the service""]]></aws:ErrorCode>
+            </aws:Error>
+          </aws:Errors>
+        </aws:Request>
+      </aws:Alexa>
+    </aws:UrlInfoResult>
+    <aws:ResponseStatus xmlns:aws=""http://alexa.amazonaws.com/doc/2005-10-05/"">
+      <aws:StatusCode>Error</aws:StatusCode>
+    </aws:ResponseStatus>
+  </aws:Response>
+</aws:UrlInfoResponse>Links In Count:
+Rank:"
+Alexa Web Information Service	"Re: Difficulty getting basic AWIS query working
+Hi,
+
+  The policy seems correct, and the message would indicate some problem with the account.
+
+Is this a brand new account?
+
+We don't require subscription to the service, so the reason for my question is if there could be some type of credit card verification still ongoing with the account.
+
+Regards.
+Francisco"
+Alexa Web Information Service	"Re: Difficulty getting basic AWIS query working
+It is a new account. Billing set up has been resolved, and no further alerts are showing in the billing dashboard. Testing today indicates nothing has changed w.r.t. the response. Anything further to check?"
+Alexa Web Information Service	"Re: Difficulty getting basic AWIS query working
+Hi,
+
+  If it's still the same error message I'd try again after some hours in case there is some replication that has to be done, and if the error persists contact us again to further troubleshoot it.
+
+If it's not the same error message, can you post the error message returned in the xml response?
+
+Thanks,
+Francisco"
+Alexa Web Information Service	"Re: Difficulty getting basic AWIS query working
+Same error message 24 hours later:
+
+Making request to:
+https://awis.amazonaws.com/api?Action=UrlInfo&Count=10&ResponseGroup=Rank%2CLinksInCount&Start=1&Url=google.com
+ 
+Results for google.com:
+ 
+<?xml version=""1.0"" ?>
+<aws:UrlInfoResponse xmlns:aws=""http://awis.amazonaws.com/doc/2005-10-05"">
+  <aws:Response xmlns:aws=""http://awis.amazonaws.com/doc/2005-07-11"">
+    <aws:OperationRequest>
+      <aws:RequestId></aws:RequestId>
+    </aws:OperationRequest>
+    <aws:UrlInfoResult>
+      <aws:Alexa>
+        <aws:Request>
+          <aws:Errors>
+            <aws:Error>
+              <aws:ErrorCode><![CDATA[""The AWS Access Key Id needs a subscription for the service""]]></aws:ErrorCode>
+            </aws:Error>
+          </aws:Errors>
+        </aws:Request>
+      </aws:Alexa>
+    </aws:UrlInfoResult>
+    <aws:ResponseStatus xmlns:aws=""http://alexa.amazonaws.com/doc/2005-10-05/"">
+      <aws:StatusCode>Error</aws:StatusCode>
+    </aws:ResponseStatus>
+  </aws:Response>
+</aws:UrlInfoResponse>Links In Count:
+Rank:"
+Alexa Web Information Service	"Re: Difficulty getting basic AWIS query working
+Hi Jacob,
+
+   I'd recommend opening a support ticket at https://alexa.zendesk.com/hc/en-us/requests/new so we can better troubleshoot this issue.
+
+Note that before you can submit a request you will need an alexa.com account. If you don't have one, you can register here http://www.alexa.com/register
+
+Regards,
+Francisco"
+Alexa Web Information Service	"AWS UrlInfo IAM C# Sample
+Hi,
+
+Is there any C# or VB.Net sample code for AWS UrlInfo IAM ?
+
+Many Thanks"
+Alexa Web Information Service	"Re: AWS UrlInfo IAM C# Sample
+Hi,
+
+   You can check this post another user submitted with his working code:
+https://forums.aws.amazon.com/thread.jspa?messageID=821345&#821345
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Getting error response 404 while deploying skill
+Hi,
+
+I am new to ask , i am trying a create a custom list and for that i am using ask cli.
+When i edit the skill.json file and run ask deploy --target skill --debug i get following error:
+
+PUT https://api.amazonalexa.com/v1/skills/amzn1.ask.skill.c3b2a613-5e1e-4230-8541-82fcfce42f07/stages/development/manifest
+status code: 404 Not Found
+
+Following is the complete debug info:
+2018-03-18T13:02:28.566Z - DEBUG - UPDATE-SKILL
+request-id: 9c88c326-2aac-11e8-a4ce-9fedcbb81238
+PUT https://api.amazonalexa.com/v1/skills/amzn1.ask.skill.c3b2a613-5e1e-4230-8541-82fcfce42f07/stages/development/manifest
+status code: 404 Not Found
+
+Request headers: {""User-Agent"":""ask-cli/1.1.2 Node/v4.2.6"",""Authorization"":""Atza|IwEBIMmWcRou3tw_XHEjEA1GOJofLbsYpKdZhEDsvvRygBlXh5OWfnjFlpWbQjhOzeeItRTs0vk7sH35zHZlIMFc0JU915D5AHHuDCRYE2cY4IPGuJ6yBwYrepkLm_K4Z-jY04smmvU5u9Jv356iaJPffXxnirQbU2vuyFnOOy8AlSA11Gi06pOtefwUA-D_PlRrHcUZIUXrbx39fViZiNtqE9FXveAkXffzb94Om_rZnmpOGdDHVMw2gZujjgryDFpsgCb_Te2BKd8b-tTxqu0WZxQ8PwzwqOyaKjRMWV6UIgytY3n7kDEuGU-I8Veh7XG-FIPUeRt1m98JoVML2F0Nv_6xorzxPzT-variW7B58sDnFsnLYzbMBZShdXzPIQkq1BjzhHwo0_MOI6le-zcSSNJCK-MqU2yySFVVNF919uXtEJbwY8dQu-th0pgde9Dx0SjNfxP-dcrf0UBWvv73LGdxMdJxfroPbKQgWs3a_-gUl-khVrGIT_ApaVccmkYEesmLs1cEdaakBBpy0Mp9MZBCPO9_6cRr8jJlok4VDkqyB6cechBW343Qw2abCwvBrXYEOc7hjJxrYG4D4dI8YRMUG2fxLWL-dD0VcHepj2o5fjA2pcDyg2BtUbWamCqJong"",""accept"":""application/json"",""content-type"":""application/json"",""content-length"":1143}
+
+Request body: {""manifest"":{""publishingInformation"":{""locales"":{""en-US"":{""summary"":""Sample Short Description"",""examplePhrases"":},""apis"":{""householdList"":{},""custom"":{}},""manifestVersion"":""1.0"",""permissions"":,""events"":{""endpoint"":{""uri"":""arn:aws:lambda:us-east-1:xxxxxxxxxxxx""},""subscriptions"":,""regions"":{""NA"":{""endpoint"":{""uri"":""arn:aws:lambda:us-east-1:xxxxxxx:xxx:xxxxx""}}}}}}
+
+Response headers: {""server"":""Server"",""date"":""Sun, 18 Mar 2018 13:02:28 GMT"",""content-type"":""application/json"",""content-length"":""33"",""connection"":""close"",""x-amzn-requestid"":""9c88c326-2aac-11e8-a4ce-9fedcbb81238"",""x-amz-date"":""Sun, 18 Mar 2018 13:02:28 GMT"",""x-amzn-errortype"":""NotFoundException:http://internal.amazon.com/coral/com.amazon.alexa.skillmanagement/"",""vary"":""Accept-Encoding,User-Agent""}
+
+Response body: {""message"":""Resource not found.""}
+
+Below is the skill.json file:
+{
+  ""manifest"": {
+    ""publishingInformation"": {
+      ""locales"": {
+        ""en-US"": {
+          ""summary"": ""Sample Short Description"",
+          ""examplePhrases"": [
+            ""Alexa open hello world"",
+            ""Alexa tell hello world I am Jeff"",
+            ""Alexa tell hello world my name is Peter""
+          ],
+          ""name"": ""customlistskill"",
+          ""description"": ""Sample Full Description""
+        }
+      },
+      ""isAvailableWorldwide"": false,
+      ""testingInstructions"": ""Sample Testing Instructions."",
+      ""category"": ""EDUCATION_AND_REFERENCE"",
+      ""distributionCountries"": []
+    },
+    ""apis"": {
+	""householdList"":{},
+      ""custom"": {
+        ""endpoint"": {
+          ""sourceDir"": ""lambda/custom""
+        }
+      }
+    },
+    ""manifestVersion"": ""1.0"",
+    ""permissions"": [
+      {
+        ""name"": ""alexa::devices:all:address:full:read""
+      },
+
+      {
+        ""name"": ""alexa::household:lists:read""
+      },
+      {
+        ""name"": ""alexa::household:lists:write""
+      }
+    ],
+""events"": {
+      ""endpoint"": {
+        ""uri"": ""arn:aws:lambda:us-east-1:xxx:xxxx:xxxx""
+      },
+      ""subscriptions"": [
+        {
+          ""eventName"": ""SKILL_ENABLED""
+        },
+        {
+          ""eventName"": ""SKILL_DISABLED""
+        },
+        {
+          ""eventName"": ""SKILL_PERMISSION_ACCEPTED""
+        },
+        {
+          ""eventName"": ""SKILL_PERMISSION_CHANGED""
+        },
+        {
+          ""eventName"": ""SKILL_ACCOUNT_LINKED""
+        },
+        {
+          ""eventName"": ""ITEMS_CREATED""
+        },
+        {
+          ""eventName"": ""ITEMS_UPDATED""
+        },
+        {
+          ""eventName"": ""ITEMS_DELETED""
+        }
+      ],
+""regions"": {
+        ""NA"": {
+          ""endpoint"": {
+            ""uri"": ""arn:aws:lambda:us-east-1:xxxx:xxxxx:xxxxx""
+          }
+        }
+      }
+  }
+
+}
+}
+
+Edited by: shivamseth on Mar 18, 2018 9:04 PM"
+Alexa Web Information Service	"Re: Getting error response 404 while deploying skill
+Hi shivamseth,
+
+This is the forum for the Alexa Web Information Service. The Amazon Alexa Skills forum is here: https://forums.developer.amazon.com/spaces/165/index.html.
+
+Please re-post your original question there.
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"Non-latin characters in path causes an error
+Hi,
+I am unable to get request for a path containing non-Latin characters, for example, Russian ones: Top/World/Russian/Компьютеры/Графика
+
+It is url-encoded and the final url is https://awis.amazonaws.com/api?Action=CategoryListings&Count=20&Descriptions=True&Path=Top%2FWorld%2FRussian%2F%D0%9A%D0%BE%D0%BC%D0%BF%D1%8C%D1%8E%D1%82%D0%B5%D1%80%D1%8B%2F%D0%93%D1%80%D0%B0%D1%84%D0%B8%D0%BA%D0%B0&Recursive=True&ResponseGroup=Listings&Start=1
+
+I am getting: Bad Request Invalid Path parameter value
+
+Everything works if path contains only Latin characters.
+Any idea about how to fix this?"
+Alexa Web Information Service	"Re: Non-latin characters in path causes an error
+Hi Stanis,
+
+We'll look into it and follow up with you on this thread.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: Non-latin characters in path causes an error
+Hi Stanis,
+
+   We identified the problem and working on a fix for it. Apologies for the problems it might have caused.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: Non-latin characters in path causes an error
+Hi Stanis,
+
+   We pushed a new version of the API to address the problem you reported.
+
+Thanks for raising it and again we apologize for any problems it might have caused.
+
+Let us know if you still see issues with it.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: Non-latin characters in path causes an error
+Thanks."
+Alexa Web Information Service	"How to get a URL by requesting specific aws:Rank?
+Hello,
+
+the API works great if I try to get data for specific URL:
+https://awis.amazonaws.com/api?Action=TrafficHistory&Url=amazon.com
+
+and the response will include this part (which is current Global Alexa Rank for given URL):
+<aws:Rank>10</aws:Rank>
+
+However, I need to do the opposite. I want to get a URL by requesting specific aws:Rank.
+
+So, for example, request aws:Rank=10 and API will return ""amazon.com"", or request aws:Rank=2, and response will tell me it's ""youtube.com"".
+
+Is it possible to do with API, and if yes, how? I have browsed through documentation and couldn't find the answer.
+
+Thanks!"
+Alexa Web Information Service	"Re: How to get a URL by requesting specific aws:Rank?
+Hi,
+
+You can use Alexa Top Sites (the Start parameter would be the Rank you want and Count=1):
+https://docs.aws.amazon.com/AlexaTopSites/latest/ApiReference_TopSitesAction.html
+
+Then you can use Alexa Web Information Service API to get more information about the URL returned.
+
+Let me know if you have any other questions.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"trouble with AWIS subscription
+I'm new to the AWIS service and was having trouble with running the sample API code.
+I encountered the error code:
+<![CDATA>
+when I was trying to run UrlInfo. I closely followed the steps on the ""getting started"" page but on https://aws.amazon.com/awis/, there is no where to sign up for the service. There is a direct login to AWS but when I logged in to AWS, there is no where to subscribe to AWIS. 
+
+Thanks,
+Joe"
+Alexa Web Information Service	"Re: trouble with AWIS subscription
+Hi Joe,
+
+We updated the signature process last December to AWS Auth V4, and there is no need to subscribe anymore.
+
+To use the service you just need an AWS account and in that account an IAM user with a policy allowing calling of AWIS.
+
+You can find detailed documentation about how to make requests here:
+https://docs.aws.amazon.com/AlexaWebInfoService/latest/MakingRequestsChapter.html
+
+And also sample code in php/perl/java/ruby here:
+https://aws.amazon.com/code/?tag=code%23keywords%23awis
+
+Please feel free to contact us if you need additional help.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: trouble with AWIS subscription
+Hi Francisco,
+Thanks for the clarification, I'm running into error code: 
+The AWS Access Key Id needs a subscription for the service
+I wonder if this is due to me not creating IAM user correctly?
+
+Thanks,
+Joe"
+Alexa Web Information Service	"Re: trouble with AWIS subscription
+Hi Joe,
+
+   Based on your error, what you are missing is the managed policy attached to the user you created.
+
+The whole process is described in detail here:
+https://docs.aws.amazon.com/AlexaWebInfoService/latest/MakingRequestsChapter.html
+
+Let me know if you find any other problem.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: trouble with AWIS subscription
+Hi Francisco,
+I did closely follow the instructions, but I'm still having the same error while running the sample code. I also browsed through the forum and saw someone mentioning that only root users can use AWIS service. I wonder if this restriction applies in this case, or could it be problem with AWS account in general? 
+
+Thanks,
+Joe"
+Alexa Web Information Service	"Re: trouble with AWIS subscription
+Hi Joe,
+
+   Root users were a requirement on the previous version. In AWS AuthV4 any IAM user can sign the request.
+
+If you already follow the instructions on the link I sent, I'd recommend opening a support ticket at https://alexa.zendesk.com/hc/en-us/requests/new so we can better troubleshoot this issue.
+
+Note that before you can submit a request you will need an alexa.com account. If you don't have one, you can register here http://www.alexa.com/register
+
+Regards,
+Francisco"
+Alexa Web Information Service	"awis http get request is taking way longer than before
+Recently, we switched our awis http request in our code base to use IAM credential based on Amazon's requirement.
+Everything works well except for the response time. 
+i.e. GET on https://awis.amazonaws.com/api?Action=TrafficHistory&Range=31&ResponseGroup=History&Start=20171210&Url=facebook.com 
+used to take about 150ms to finish.
+After we switch to IAM credential. The same request take 1300ms which is slightly more than 1 second to process.
+This is really annoy that the request taking way longer and our cost of running pipelines is increasing.
+
+In aws document, I didn't see anything related to the request duration, response time, or latency time. The only useful information aws provided is batch request: https://docs.aws.amazon.com/AlexaWebInfoService/latest/QueryBatchRequestFormat.html
+I tested it as well, at a max we can support 5 sites in one request and the process time is 5500ms at average. 
+
+Please let me know if you have seen this issue after switching to IAM. And how you solve it?"
+Alexa Web Information Service	"Re: awis http get request is taking way longer than before
+Hi Dean,
+
+Thanks for reaching out. Our engineers are looking into the increase in response time for individual requests that you reported. We'll let you know here once we have an update. In the meantime we recommend using batch requests, as we have verified that batch requests are faster than 5 individual requests.
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"Re: awis http get request is taking way longer than before
+Thank you, we will explore the batch request solution.
+However, we are still looking forward to using the single request approach because of the simplicity of logging and etc.
+And look forward to hearing some updates from your team.
+
+Best,
+Heqing"
+Alexa Web Information Service	"Re: awis http get request is taking way longer than before
+Hi Dean,
+
+ We've pushed a new version that has several performance improvements.
+
+Could you check again and let us know if you notice any improvement ?
+
+Thanks,
+Francisco"
+Alexa Web Information Service	"Re: awis http get request is taking way longer than before
+Hi Francisco,
+
+We noticed significant improvement on the request.
+
+Thank you!
+heqing"
+Alexa Web Information Service	"Re: awis http get request is taking way longer than before
+Very nice support team and fixed the issue!"
+Alexa Web Information Service	"Meaning of page view and reach
+Hello,
+I'm currently getting APIs by query below...
+
+'Action=UrlInfo&ResponseGroup=TrafficData&Url=(some_url)'
+
+and I'm wondering what exactly 'aws:Reach', 'aws:PageViews' means in TrafficData>UsageStatistics.
+I first thought as 'Reach' is the number of accessed record, and 'PageView' is number of request, and looks like 'Reach' should be smaller than 'PageView' but all of record shows 'Reach' is much more bigger.
+
+Could you explain exact meaning of this?
+
+Thanks.
+
+Edited by: dennisjung on Feb 5, 2018 12:25 AM
+
+Edited by: dennisjung on Feb 5, 2018 12:25 AM"
+Alexa Web Information Service	"Re: Meaning of page view and reach
+Hello dennisjung,
+
+Reach is the estimated percentage of daily global internet users who visited a particular site over the specified time period.
+
+Pageviews is the estimated percentage of daily global pageviews on a particular site over the specified time period.
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"Unique visitors per month/Average monthly traffic from Alexa API
+Hi I want to determine Unique visitors per month/Average monthly traffic for a domain.I making API call using URLInfo Action and usage stats as Response Group but only getting Reach and Page views per million but not the actual average monthly viisitors.Can someone tell me how can I get Unique visitors per month/Average monthly traffic
+
+https://awis.amazonaws.com/api?Action=urlInfo&ResponseGroup=UsageStats&Url=vwo.com
+
+Response:
+
+<?xml version=""1.0"" ?>
+<aws:UrlInfoResponse xmlns:aws=""http://awis.amazonaws.com/doc/2005-10-05"">
+  <aws:Response xmlns:aws=""http://awis.amazonaws.com/doc/2005-07-11"">
+    <aws:OperationRequest>
+      <aws:RequestId>84551612-ff98-11e7-ae04-99e122118d65</aws:RequestId>
+    </aws:OperationRequest>
+    <aws:UrlInfoResult>
+      <aws:Alexa>
+        <aws:Request>
+          <aws:Arguments>
+            <aws:Argument>
+              <aws:Name>url</aws:Name>
+              <aws:Value>vwo.com</aws:Value>
+            </aws:Argument>
+            <aws:Argument>
+              <aws:Name>responsegroup</aws:Name>
+              <aws:Value>UsageStats</aws:Value>
+            </aws:Argument>
+          </aws:Arguments>
+        </aws:Request>
+        <aws:TrafficData>
+          <aws:DataUrl type=""canonical"">vwo.com</aws:DataUrl>
+          <aws:UsageStatistics>
+<aws:UsageStatistic>
+<aws:TimeRange>
+<aws:Months>3</aws:Months>
+</aws:TimeRange>
+<aws:Rank>
+<aws:Value>54033</aws:Value>
+<aws:Delta>+10337</aws:Delta>
+</aws:Rank>
+<aws:Reach>
+<aws:Rank>
+<aws:Value>53341</aws:Value>
+                  +<aws:Delta>10506</aws:Delta>
+</aws:Rank>
+<aws:PerMillion>
+<aws:Value>15.1</aws:Value>
+<aws:Delta>-23.62%</aws:Delta>
+</aws:PerMillion>
+</aws:Reach>
+<aws:PageViews>
+<aws:PerMillion>
+<aws:Value>0.93</aws:Value>
+<aws:Delta>-22.28%</aws:Delta>
+</aws:PerMillion>
+<aws:Rank>
+<aws:Value>63231</aws:Value>
+<aws:Delta>10495</aws:Delta>
+</aws:Rank>
+<aws:PerUser>
+<aws:Value>2.49</aws:Value>
+                  +<aws:Delta>2%</aws:Delta>
+</aws:PerUser>
+</aws:PageViews>
+</aws:UsageStatistic>
+            <aws:UsageStatistic>
+              <aws:TimeRange>
+                <aws:Months>1</aws:Months>
+              </aws:TimeRange>
+              <aws:Rank>
+                <aws:Value>63046</aws:Value>
+                <aws:Delta>+7723</aws:Delta>
+              </aws:Rank>
+              <aws:Reach>
+                <aws:Rank>
+                  <aws:Value>61349</aws:Value>
+                  <aws:Delta>+7454</aws:Delta>
+                </aws:Rank>
+                <aws:PerMillion>
+                  <aws:Value>13</aws:Value>
+                  <aws:Delta>-16.66%</aws:Delta>
+                </aws:PerMillion>
+              </aws:Reach>
+              <aws:PageViews>
+                <aws:PerMillion>
+                  <aws:Value>0.74</aws:Value>
+                  <aws:Delta>-19.38%</aws:Delta>
+                </aws:PerMillion>
+                <aws:Rank>
+                  <aws:Value>77246</aws:Value>
+                  <aws:Delta>9683</aws:Delta>
+                </aws:Rank>
+                <aws:PerUser>
+                  <aws:Value>2.3</aws:Value>
+                  <aws:Delta>-3.39%</aws:Delta>
+                </aws:PerUser>
+              </aws:PageViews>
+            </aws:UsageStatistic>
+            <aws:UsageStatistic>
+              <aws:TimeRange>
+                <aws:Days>7</aws:Days>
+              </aws:TimeRange>
+              <aws:Rank>
+                <aws:Value>58548</aws:Value>
+                <aws:Delta>+10967</aws:Delta>
+              </aws:Rank>
+              <aws:Reach>
+                <aws:Rank>
+                  <aws:Value>57580</aws:Value>
+                  <aws:Delta>+11854</aws:Delta>
+                </aws:Rank>
+                <aws:PerMillion>
+                  <aws:Value>14</aws:Value>
+                  <aws:Delta>-23.54%</aws:Delta>
+                </aws:PerMillion>
+              </aws:Reach>
+              <aws:PageViews>
+                <aws:PerMillion>
+                  <aws:Value>0.83</aws:Value>
+                  <aws:Delta>-18.88%</aws:Delta>
+                </aws:PerMillion>
+                <aws:Rank>
+                  <aws:Value>71524</aws:Value>
+                  <aws:Delta>11473</aws:Delta>
+                </aws:Rank>
+                <aws:PerUser>
+                  <aws:Value>2.4</aws:Value>
+                  <aws:Delta>+6%</aws:Delta>
+                </aws:PerUser>
+              </aws:PageViews>
+            </aws:UsageStatistic>
+            <aws:UsageStatistic>
+              <aws:TimeRange>
+                <aws:Days>1</aws:Days>
+              </aws:TimeRange>
+              <aws:Rank>
+                <aws:Value>158388</aws:Value>
+                <aws:Delta>+98713</aws:Delta>
+              </aws:Rank>
+              <aws:Reach>
+                <aws:Rank>
+                  <aws:Value>149883</aws:Value>
+                  <aws:Delta>+89326</aws:Delta>
+                </aws:Rank>
+                <aws:PerMillion>
+                  <aws:Value>5</aws:Value>
+                  <aws:Delta>-60.776%</aws:Delta>
+                </aws:PerMillion>
+              </aws:Reach>
+              <aws:PageViews>
+                <aws:PerMillion>
+                  <aws:Value>0.22</aws:Value>
+                  <aws:Delta>-72.223%</aws:Delta>
+                </aws:PerMillion>
+                <aws:Rank>
+                  <aws:Value>207754</aws:Value>
+                  <aws:Delta>131996</aws:Delta>
+                </aws:Rank>
+                <aws:PerUser>
+                  <aws:Value>2</aws:Value>
+                  <aws:Delta>-29.49%</aws:Delta>
+                </aws:PerUser>
+              </aws:PageViews>
+            </aws:UsageStatistic>
+          </aws:UsageStatistics>
+          <aws:ContributingSubdomains>
+            <aws:ContributingSubdomain>
+              <aws:DataUrl>vwo.com</aws:DataUrl>
+              <aws:TimeRange>
+                <aws:Months>1</aws:Months>
+              </aws:TimeRange>
+              <aws:Reach>
+                <aws:Percentage>82.34%</aws:Percentage>
+              </aws:Reach>
+              <aws:PageViews>
+                <aws:Percentage>55.82%</aws:Percentage>
+                <aws:PerUser>1.5</aws:PerUser>
+              </aws:PageViews>
+            </aws:ContributingSubdomain>
+            <aws:ContributingSubdomain>
+              <aws:DataUrl>app.vwo.com</aws:DataUrl>
+              <aws:TimeRange>
+                <aws:Months>1</aws:Months>
+              </aws:TimeRange>
+              <aws:Reach>
+                <aws:Percentage>31.65%</aws:Percentage>
+              </aws:Reach>
+              <aws:PageViews>
+                <aws:Percentage>43.88%</aws:Percentage>
+                <aws:PerUser>3.2</aws:PerUser>
+              </aws:PageViews>
+            </aws:ContributingSubdomain>
+            <aws:ContributingSubdomain>
+              <aws:DataUrl>resources.vwo.com</aws:DataUrl>
+              <aws:TimeRange>
+                <aws:Months>1</aws:Months>
+              </aws:TimeRange>
+              <aws:Reach>
+                <aws:Percentage>0.69%</aws:Percentage>
+              </aws:Reach>
+              <aws:PageViews>
+                <aws:Percentage>0.30%</aws:Percentage>
+                <aws:PerUser>1</aws:PerUser>
+              </aws:PageViews>
+            </aws:ContributingSubdomain>
+          </aws:ContributingSubdomains>
+        </aws:TrafficData>
+      </aws:Alexa>
+    </aws:UrlInfoResult>
+    <aws:ResponseStatus xmlns:aws=""http://alexa.amazonaws.com/doc/2005-10-05/"">
+      <aws:StatusCode>Success</aws:StatusCode>
+    </aws:ResponseStatus>
+  </aws:Response>
+</aws:UrlInfoResponse>"
+Alexa Web Information Service	"Re: Unique visitors per month/Average monthly traffic from Alexa API
+Hi Karan,
+
+Unfortunately our unique visitor metrics are not available via API at this time. Currently those metrics are only available on alexa.com: https://support.alexa.com/hc/en-us/articles/204210994-Does-Alexa-offer-unique-visitor-visit-or-pageview-numbers-.
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"Re: Unique visitors per month/Average monthly traffic from Alexa API
+Hi Debbie,
+Thanks for the reply.Is there any way to do this as of now.?Can this be computed using Reach and PageViews?"
+Alexa Web Information Service	"Re: Unique visitors per month/Average monthly traffic from Alexa API
+Hi Karan,
+
+There is not. It is not possible to compute the unique visitor numbers we offer on alexa.com with the data currently available via the AWIS API.
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"Re: Unique visitors per month/Average monthly traffic from Alexa API
+Hi Debbie,
+
+Thanks for the reply.I have another question.
+We are making API call from Salesforce to AWIS.Everything seems to be working fine except onething.Salesforce doesn't support TLS 1.0 and when I make API call to AWIS it gives me the below response.
+""Server chose TLSv1, but that protocol version is not enabled or not supported by the client.""
+Client is Salesforce and server is AWIS in this case.Can you please let me know how can I specify TLS 1.1 or higher in my request to AWIS
+
+Edited by: Karan on Jan 31, 2018 4:34 AM"
+Alexa Web Information Service	"Re: Unique visitors per month/Average monthly traffic from Alexa API
+Hi Karan,
+
+We are working to enable TLS 1.1 and 1.2, but they're not supported in AWIS currently. We'll let you know here once we have an update.
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"Re: Unique visitors per month/Average monthly traffic from Alexa API
+Thanks Debbie."
+Alexa Web Information Service	"Internal Server Error
+I am getting an Internal Server Error response from the AWIS service right now. I have created an IAM user and am using its credentials to access the API. I'm not sure what the issue is. If it helps, I'm using the NodeJS awis library.
+
+<?xml version=""1.0"" ?>
+<aws::UrlInfoResponse xmlns:aws=""http://awis.amazonaws.com/doc/2005-10-05"">
+  <aws:Response xmlns:aws=""http://awis.amazonaws.com/doc/2005-07-11"">
+    <aws:OperationRequest>
+      <aws:RequestId></aws:RequestId>
+    </aws:OperationRequest>
+    <aws:UrlInfoResult>
+      <aws:Alexa>
+        <aws:Request>
+          <aws:Errors>
+            <aws:Error>
+              <aws:ErrorCode><![CDATA[ ""Internal server error""]]></aws:ErrorCode>
+            </aws:Error>
+          </aws:Errors>
+        </aws:Request>
+      </aws:Alexa>
+    </aws:UrlInfoResult>
+    <aws:ResponseStatus xmlns:aws=""http://alexa.amazonaws.com/doc/2005-10-05/"">
+      <aws:StatusCode>Error</aws:StatusCode>
+    </aws:ResponseStatus>
+  </aws:Response>
+</aws:UrlInfoResponse>
+
+
+Edited by: amarnus on Feb 4, 2018 10:17 PM
+
+Edited by: amarnus on Feb 4, 2018 10:18 PM"
+Alexa Web Information Service	"Re: Internal Server Error
+I'm getting ton of errors too....Whats going on Alexa???:("
+Alexa Web Information Service	"Re: Internal Server Error
+I am also getting these errors from yesterday.Earlier it was working fine."
+Alexa Web Information Service	"Re: Internal Server Error
+Also getting an internal server error. It was working at around 21.00 GMT on 4/2/18. Stopped working around 22.00 GMT on 4/2/18/."
+Alexa Web Information Service	"Re: Internal Server Error
+AWIS doesn't work today. I am getting an Internal Server Error response or empty response."
+Alexa Web Information Service	"Re: Internal Server Error
+We apologize for the inconvenience, we are working to resolve it.
+
+Francisco"
+Alexa Web Information Service	"Re: Internal Server Error
+It works now. Thank you Francisco."
+Alexa Web Information Service	"Re: Internal Server Error
+Started working, thanks!"
+Alexa Web Information Service	"TLS Protocol Error
+We are making API call from Salesforce to AWIS.Everything seems to be working fine except onething.Salesforce doesn't support TLS 1.0 and when I make API call to AWIS it gives me the below response.
+""Server chose TLSv1, but that protocol version is not enabled or not supported by the client.""
+Client is Salesforce and server is AWIS in this case.Can you please let me know how can I specify TLS 1.1 or higher in my request to AWIS"
+Alexa Web Information Service	"Re: TLS Protocol Error
+Hi Karan,
+
+  We are working to enable TLS 1.1 and 1.2. In the meantime, is there any way to configure TLS 1.0 on your client ?
+
+Thanks,
+Francisco"
+Alexa Web Information Service	"Matching signature error
+I've used the sample Java code from 
+https://aws.amazon.com/code/alexa-web-information-service-query-example-in-java/?tag=code%23keywords%23awis
+I have no issue when running this code.
+
+I have created a copy of the code, with the UrlInfo query changed to the other possible queries (TrafficHistory, CategoryBrowse etc), however when running the code, I get the error
+""The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. Consult the service documentation for details.""
+
+I have not made any changes to the code that handles the signatures from the sample code. I have also checked 
+https://docs.aws.amazon.com/AlexaWebInfoService/latest/CalculatingSignatures.html 
+to ensure the signature handling code is compliant.
+
+Are they any suggestions as to why I have this error?"
+Alexa Web Information Service	"Re: Matching signature error
+Hi,
+ The error you mention points to a problem with the signature or the request itself.
+
+There could be a lot of possible causes and without looking at the code it's not possible to narrow it down.
+
+Could you open a support ticket at https://alexa.zendesk.com/hc/en-us/requests/new to troubleshoot your code ?
+
+Please attach the code you have problems with (Don't include your access or secret keys with it)
+
+Note that before you can submit a request you will need an alexa.com account. If you don't have one, you can register here http://www.alexa.com/register
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Does new auth works with temporary security credentials (IAM roles)?
+After I created a new policy and assigned to an IAM USER, it worked no problem.
+However, when assigned to an IAM Role, it did not work.
+It seems the new AUTH header can not use temporary credentials of IAM roles? Should I have to use an IAM USER credential when calling Alexa API?"
+Alexa Web Information Service	"Re: Does new auth works with temporary security credentials (IAM roles)?
+Hi,
+   You can use temporary credentials, however you need to add this header:
+x-amz-security-token
+
+With the temporary token obtained along with the temporary key/secret
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Not possible to access API
+Hi,
+
+we tried to access the API using both the official PHP Code (downloaded from your website) and using a R-plugin. We set up the IAM according to the manual. Credit card works. We were logged into AWS and AWIS during the try. Using the PHP Code we get Error 404, not found and using the R-code (with the same access and secret access keys) we are getting Error 401. 
+
+Anybody has an idea what the problem or the solution could be? Help is highly appreciated. Thanks in advance
+Adrian"
+Alexa Web Information Service	"Re: Not possible to access API
+Hi Adrian,
+  Could you post the urls and the return text you are hitting with each sample ? (you don't need to post headers or keys)
+
+For example:
+https://awis.amazonaws.com/api?Action=urlInfo&ResponseGroup=Rank%2CLinksInCount%2CRelated&Url=cnn.com
+
+Thanks,
+Francisco"
+Alexa Web Information Service	"IAM CategoryBrowse Doesn't Work for Path=Top
+No longer able to pull a list of Top categories using the CategoryBrowse call under IAM. Sample URL:
+
+https://awis.us-west-1.amazonaws.com/api?Action=CategoryBrowse&ResponseGroup=Categories&Path=Top&Descriptions=True
+
+Response: 400 Bad Request"
+Alexa Web Information Service	"Re: IAM CategoryBrowse Doesn't Work for Path=Top
+Hi,
+  Thanks for bringing up this issue and we apologize for the inconvenience.
+
+We identified and fixed the cause. Please let us know if you have any additional questions.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"AWIS results inconsistent with Alexa site comparison
+If you go to:
+
+http://www.alexa.com/comparison#?sites=intercom.com
+
+The site on March 9th 2017 had a rank of 15,334.
+
+However the API returns 9,195 - the exact xml as follows:
+
+<Data>
+<Date>2017-03-09</Date>
+<PageViews>
+<PerMillion>5.2</PerMillion>
+<PerUser>1.70</PerUser>
+</PageViews>
+<Rank>9195</Rank>
+<Reach>
+<PerMillion>130</PerMillion>
+</Reach>
+</Data>
+
+At no point in March does the Alexa website show the ranking going anywhere near 9195, can you explain this discrepancy?"
+Alexa Web Information Service	"Re: AWIS results inconsistent with Alexa site comparison
+Hi,
+   The TrafficHistory action of the AWIS API returns daily Alexa traffic ranks, whereas the Global rank shown at the top of the Site Overview page and on the Site Comparisons graph is a 3 month rank.
+
+Let me know if you have any additional questions.
+Regards,
+Francisco"
+Alexa Web Information Service	"Invalid token error in UrlInfo API
+Hello,
+I'm working on accessing web information service API, but it keeps returning error.
+This is the API I'm sending...
+https://awis.amazonaws.com/api?Action=UrlInfo&Url=yahoo.com&ResponseGroup=Country
+
+with header...
+Authorization: AWS4-HMAC-SHA256 Credential=<IAM_ACCESS_KEY>/20171114/us-west-1/awis/aws4_request, SignedHeaders=host;x-amz-date, Signature=<GENERATED_AUTH_V4_SIGNATURE>
+Content-Type: application/xml
+X-Amz-Date: amz_date
+Accept: application/xml
+
+and this is the error code in returned XML.
+<aws:ErrorCode>The security token included in the request is invalid.</aws:ErrorCode>
+
+I'm generating signature and amz date every time when running API, but it keep saying token is invalid. I thought that I need to make it valid in aws console, but web information service is even not in console menu.
+
+Does anybody knows about this?
+
+Thanks.
+
+Edited by: dennisjung on Jan 11, 2018 4:18 AM"
+Alexa Web Information Service	"Re: Invalid token error in UrlInfo API
+Hello,
+  Looking at the headers it seems the host header is missing.
+
+Could you add the following header and try again ?
+host:awis.us-west-1.amazonaws.com
+
+For more information about the signing process, please refer to our signing process docs:
+https://docs.aws.amazon.com/AlexaWebInfoService/latest/CalculatingSignatures.html
+
+Another good place is to look at the code samples:
+https://aws.amazon.com/code/?tag=code%23keywords%23awis
+
+Let us know if you still experience problems signing the requests after making the changes.
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Re: Invalid token error in UrlInfo API
+Hello Francisco, thanks for your help.
+I fixed as you mentioned, but still causing same error.
+
+This is the header part.
+AWS4-HMAC-SHA256 Credential=<MY_KEY>/20180112/us-west-1/awis/aws4_request, SignedHeaders=host;x-amz-date, Signature=<MY_SIGNATURE>
+
+
+For the signature, this is canonical request
+GET
+/api
+Action=UrlInfo&Url=yahoo.com&ResponseGroup=Country
+host:awis.us-west-1.amazonaws.com
+x-amz-date:20180112T013808Z
+ 
+host;x-amz-date
+<PAYLOAD_HASH>
+
+
+and this is string to sign
+AWS4-HMAC-SHA256
+20180112T013808Z
+20180112/us-west-1/awis/aws4_request
+<HASHED_REQUEST>
+
+
+Is there something I'm missing?
+Thanks."
+Alexa Web Information Service	"Re: Invalid token error in UrlInfo API
+The headers look fine, however without looking at the hash method used and how the signature is calculated I can't see what might be wrong.
+
+If you are using one of the languages supported in the code samples (perl/java/ruby/php), could you compare your code with those code samples ?
+
+However if you are using a different language, could you open a support ticket at https://alexa.zendesk.com/hc/en-us/requests/new to troubleshoot your code ?
+
+Note that before you can submit a request you will need an alexa.com account. If you don't have one, you can register here http://www.alexa.com/register
+
+Regards,
+Francisco"
+Alexa Web Information Service	"Alexa Web Information Service (AWIS) high usage
+After migration to new request format my AWIS usage is 10x higher than usual.
+Usually i have 6000-8000 requests daily. But from december 20 when migration is done there are 60000-100000 requests per day.
+Here  is http://alxm.in/report.xml december report. Can someone please check what happens?"
+Alexa Web Information Service	"Re: Alexa Web Information Service (AWIS) high usage
+In order to further investigate it and follow up for additional information, could you open a support ticket at  https://alexa.zendesk.com/hc/en-us/requests/new ?
+
+Note that before you can submit a request you will need an alexa.com account. If you don't have one, you can register here  http://www.alexa.com/register"
+Alexa Web Information Service	"UrlInfo Batch Processing Only Allows 3 items
+Batch processing used to allow 5 items but now it's only allowing 3.  Personally, I think it should be more like 10 but I'll take 5 over 3 any day."
+Alexa Web Information Service	"Re: UrlInfo Batch Processing Only Allows 3 items
+Hi myrmica,
+
+Thanks for bringing this to our attention. We've just released a fix that will allow you to batch 5 requests again.
+
+I've also passed on your interest in batching 10 requests to our product team.
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"Re: UrlInfo Batch Processing Only Allows 3 items
+Thank you!"
+Alexa Web Information Service	"please correct documentation - TopSites API for global list
+Hello,
+
+Current description of documentation for TopSites is incorrect. In order to retrieve global list of top sites which is not bound to any country, one should not omit CountryCode and it shouldn't be an empty string as well. In order to make it work one could pass 'Global' as value of CountryCode, then there will be a list of top sites provided. 
+
+Please correct the reference documentation, because now it is misleading. First of all, CountryCode is not optional parameter, it should be always present, otherwise there will be empty response. Also, with regards to global list this is how it is described now:
+Valid country code (a list of country codes is available from ListCountries ResponseGroup). A global list of top sites is returned by default.
+And it would be better to write 'Valid country code (a list of country codes is available from ListCountries ResponseGroup) or non-empty string literal to retrieve global list of top sites.'"
+Alexa Web Information Service	"Re: please correct documentation - TopSites API for global list
+Hi sngsnd,
+
+Thanks for reaching out. We just pushed out a fix for this problem, which means the documentation does not need to be updated. CountryCode is now an optional field.
+
+Cheers,
+Debbie"
+Alexa Web Information Service	"No Results for SitesLinkingIn
+Hi,
+
+I am trying to send request with SitesLinkedIn Action and Group. But, It's showing no values in aws:SitesLinkingIn XML field. All actions of UrlInfo and TrafficHistory are working perfectly. 
+
+Here is the URL - https://awis.amazonaws.com/api?Action=SitesLinkingIn&ResponseGroup=SitesLinkingIn&Url=www.example.com
+
+The Headers are Content-Type, Accept, X-Amz-Date and Authorization. Same as request of UrlInfo and TrafficHistory. And idea what can be the reason of no output ?"
+Alexa Web Information Service	"Re: No Results for SitesLinkingIn
+Hi,
+  I tried to replicate your problem with an existing website (cnn.com) and is working fine. I can see the Sites linking in the payload. For example:
+Action=sitesLinkingIn&ResponseGroup=SitesLinkingIn&Url=cnn.com
+...
+                <aws:SitesLinkingIn>
+                    <aws:Site>
+                        <aws:Title>baidu.com</aws:Title>
+                        <aws:Url>anquan.baidu.com:80/bbs/thread-183940-1-1.html</aws:Url>
+                    </aws:Site>
+...
+
+Since the SitesLinkingIn action returns a list of web sites linking to a given web site, I would try with a real website (instead of example.com). If you still see the same behavior, don't hesitate to contact us with the request url used."

@@ -1,0 +1,806 @@
+label	description
+Web Services Feature Requests	"Power Search doesnt work with or
+Hi,
+I have a Power Search to get all book by salesrank. if i enter power=publisher: little brown or time warner i always get only book s for the last (her time warner) if i turn around power=publisher: time warner or little brown in only get little brown
+here ar my testurls
+http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&AWSAccessKeyId=KEY&Operation=ItemSearch&SearchIndex=Books&Power=publisher:Time+warner+or+Little+brown&sort=salesrank&ResponseGroup=Largehttp://webservices.amazon.com/onca/xml?Service=AWSECommerceService&AWSAccessKeyId=KEY&Operation=ItemSearch&SearchIndex=Books&Power=publisher:Little+brown+or+Time+warner&sort=salesrank&ResponseGroup=Large
+ 
+Please check.
+Thanks
+Tobias"
+Web Services Feature Requests	"Power Search doesnt work with or
+You're searching for a publisher named ""Time Warner or Little Brown.""   Try changing Power to something like ""(publisher:Time+warner)+or+(publisher:Little+Brown)"".
+Also, please use a valid AWSAccessKeyId in example queries.  It's really annoying to try to help someone only to discover they've made it harder than it should be.
+-- Roger"
+Web Services Feature Requests	"Power Search doesnt work with or
+Hi,lots of thanks this works perfectly.
+I'm sorry if you got confused because of the missing AWSAccesKeyID. Next time I will state more clear that I took it out of test requests.<FONT face=""Times New Roman"" size=""2"">
+But I have followed the guideline from Amazon Documents:Note: Please take care not to post Your Access Key ID Here to the Discussion Board.Lots of thanks
+Tobias</FONT>"
+Web Services Feature Requests	"Power Search doesnt work with or
+Please include your AWS Access key in example queries.  It's not secret (look at the URLs returned by AWS) and leaving it out just makes it harder for others to help you.
+I don't recall anyone from Amazon suggesting that you shouldn't use your key in this forum.  In fact, representatives from Amazon have used their own keys in posts.
+There may be some confusion because AWS recently introduced a ""secret key"" that you really should keep secret since it gives you access to paid services.  But the secret key never appears in URLs.
+-- Roger"
+Web Services Feature Requests	"Power Search doesnt work with or
+The question of whether it is secure or not aside... the question of whether to post it or not was specifically asked in one of the chats because of the constant back-and-forth and it was the recommendation of the Web Services people that one ""not"" post their subscription id.   I agree it is easier to help people when they do but that is not Amazon's recommendation.Jim"
+Web Services Feature Requests	"Missing Merchant Name for OffersFull
+Hi,
+I'm using ECS's OffersFull response group.
+I've noticed that for some merchants, their Name do not appear in the XML markup. As a result, I'm unable to show my customers who they are buying from, which isn't good for trust.
+For example, try this Asin: B000CFK07Q
+please assist.
+Thanks"
+Web Services Feature Requests	"Error al recibir XML
+Hola, he tenido buen tiempo usando el webservice de alexa, y todo ha estado funcionado ok, pero ahora me sale esto:
+No se puede mostrar la p��gina XML 
+No se puede ver la entrada XML con la hoja de estilo XSL. Corrija el error y haga clic en el bot��n <FONT color=""#800080"">Actualizar</FONT>, o int��ntelo de nuevo m��s tarde. 
+<HR />
+
+S��lo se admite un elemento de nivel superior en un documento XML. Error al procesar el recurso http://......<PRE style=""FONT-WEIGHT: normal; FONT-SIZE: 10pt; LINE-HEIGHT: 12pt; FONT-STYLE: normal; FONT-VARIANT: normal""><FONT color=""blue""><?xml version=""1.0"" encoding=""UTF-8""?><UrlInfoResponse xmlns=""http://webservices.amazon.com/AWSAlexa/2005-07-11"">...</FONT></PRE>"
+Web Services Feature Requests	"TimeoutError
+I'm receiving the following error message,
+<BLOCKQUOTE dir=""ltr"" style=""MARGIN-RIGHT: 0px"">
+AWS.AlexaWebInfoService.TimeoutError
+Timeout waiting for data.</BLOCKQUOTE>
+for most of my AWIS requests today. My website can be found at http://www.citcat.com . This is the first time i'm experiencing the problem since raising a similar bug report over a week ago.
+
+<TABLE cellSpacing=""0"" cellPadding=""0"" width=""100%"" align=""center"" border=""0"">
+<TBODY>
+<TR>
+<TD colSpan=""2"" height=""15"">
+One more thing, when it does seem to retrieve search results, they appear like this, with a 'number' replacing the accompanying description:
+ </TD></TR>
+<TR>
+<TD colSpan=""2"">
+<BLOCKQUOTE dir=""ltr"" style=""MARGIN-RIGHT: 0px"">
+<FONT color=""#0000ff"">watch Importers, buyers, buyer, distributors, importer, Wholesalers, agents</FONT>  [<FONT color=""#0000ff"">View Original</FONT>]</BLOCKQUOTE></TD></TR>
+<TR>
+<TD class=""context"" colSpan=""2"">
+<BLOCKQUOTE dir=""ltr"" style=""MARGIN-RIGHT: 0px"">
+1650603</BLOCKQUOTE></TD></TR>
+<TR>
+<TD class=""url"" colSpan=""2"">
+<BLOCKQUOTE dir=""ltr"" style=""MARGIN-RIGHT: 0px"">
+http://www.alibaba.com/hot_buys/10c6p8888h/nocountry/watch.html</BLOCKQUOTE></TD></TR></TBODY></TABLE>
+Can anyone help with this? Thank you.
+
+<hr size='1' /><span class='wintiny'>Edited 1/31/2006 5:38 am ET by <i>matix-</i> <!-- A33TTITAWAKO --></span>"
+Web Services Feature Requests	"TimeoutError
+I've been getting the exact same error.  I noticed it yesterday occurring about 2/3 of the time.  Today it seems to be happening about 1/3 of the time.  The message says ""Timeout waiting for data"", but it happens instantaneously, so I'm not sure why they call it a timeout.  I hope they get this fixed.  Here it is in its entirety: <UrlInfoResponse>- <OperationRequest><RequestId>&ltAccess Key Removed></RequestId></OperationRequest>- <UrlInfoResult>- <Request><IsValid>True</IsValid></Request>- <Errors>- <Error><Code>AWS.AlexaWebInfoService.TimeoutError</Code><Message>Timeout waiting for data.</Message></Error></Errors></UrlInfoResult></UrlInfoResponse>"
+Web Services Feature Requests	"TimeoutError
+I can confirm that I've been getting the AWS.AlexaWebInfoService.TimeoutError in the last 2-3 days. It appears to be a global issue, and I hope the group moderators will post a comment soon.
+Anatoly"
+Web Services Feature Requests	"TimeoutError
+Me sumo al problema chicos, este error ha estado apareciendo desde hace unos d��as atr��s.
+A ver si alguien de alexa soluciona el problema, ya que nos est�� perjudicando."
+Web Services Feature Requests	"TimeoutError
+Hi,
+I've been getting the same error. I just noticed it happening last night.
+In my reports, it looks like I've been getting charged for this as well.
+In the downloadable reports, it still shows my normal UsageValue's over each hour throughout the past couple of days, but i'm not getting any results.
+It's pretty hard to write applications that depend on this information if it's not reliable!
+Is there anything we can do to fix it?
+Matt"
+Web Services Feature Requests	"WishListRequest Bug?
+A couple of days ago wishlist search requests started generating the wishlist items in reverse order. therefore I'm getting the last page when I ask for page 1.Bug or feature? Is there a new parameter for ordering and the default order is descending?"
+Web Services Feature Requests	"WishListRequest Bug?
+anyone???"
+Web Services Feature Requests	"WishListRequest Bug?
+Same ""problem"" here.
+Seems as if DateAdded does not work by now, nor the other sort-Parameters."
+Web Services Feature Requests	"WishListRequest Bug?
+Should one just give up using AWS altogether, then?I've missed count on how many times I've seen this bug popping up and staying that way for a long time before it's corrected.I think I would find less trouble parsing the whole thing via http."
+Web Services Feature Requests	"New Account Problem
+Hi There,
+I just received my AWS email saying that I need to obtain an access key ID and to go to this link: <FONT size=""2"">
+</FONT><U><FONT color=""#0000ff"" size=""2"">http://aws-portal.amazon.com/gp/aws/developer/account/index.html?action=access-key</FONT></U> 
+However, once I get there and enter my password I always get a page cannot be displayed error. My account name is jeff.daniels@danielstechnologies.com - I have amazon.com in my trusted list. Is there anything else I need to do? I've tried both the secure and unsecure sites without any luck. 
+Thanks,
+Jeff"
+Web Services Feature Requests	"New Account Problem
+I have the same problem. my account is: pascal.meyer@dplanet.ch . Can anybody help please?"
+Web Services Feature Requests	"New Account Problem
+We are researching this issue right now. Thanks for report!
+-elena"
+Web Services Feature Requests	"Data issue: ASIN 0312321074
+The book with ASIN 0312321074 seems to be returning the description of another book. Obviously this is just a minor data issue and not a major bug, but couldn't think of anywhere  else to report it."
+Web Services Feature Requests	"MTurk: Problems with Selections
+My selection-based question forms validate successfully, but I can't make them work correctly for Qualifications OR HITs. At best, selecting nothing allows them to be submitted, even when MinSelectionCount is set to 1. As a rule, the Qualifications go into infinite loops and the HITs say ""Your selection does not match the choices provided.""I've tried this with QuestionForms built by hand as well as those built at the ScratchPad. None of them work.I have no trouble at all with free text."
+Web Services Feature Requests	"MTurk: Problems with Selections
+Can you post a bit more details? Perhaps example of the form you built?
+-elena"
+Web Services Feature Requests	"MTurk: Problems with Selections
+Here's the form.<q:QuestionForm xmlns:q=""<a href='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd' target='_blank'>http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd</a>"" xmlns:xsi=""<a href='http://www.w3.org/2001/XMLSchema-instance' target='_blank'>http://www.w3.org/2001/XMLSchema-instance</a>"" xsi:schemaLocation=""<a href='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd' target='_blank'>http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd</a> <a href='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd' target='_blank'>http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd</a>""><q:Overview>  <q:Title>GeekHappy Test</q:Title>  <q:Text>This is just a test, not a real qualification. Sorry for the inconvenience.</q:Text></q:Overview><q:Question>  <q:QuestionIdentifier>qid1</q:QuestionIdentifier>  <q:IsRequired>true</q:IsRequired><q:QuestionContent>  <q:Title>Multiple Selection</q:Title>  <q:Text>Please select any of the following options</q:Text></q:QuestionContent><q:AnswerSpecification><q:SelectionAnswer><q:MinSelectionCount>1</q:MinSelectionCount><q:MaxSelectionCount>1</q:MaxSelectionCount><q:StyleSuggestion>checkbox</q:StyleSuggestion><q:Selections><q:Selection><q:SelectionIdentifier>qans1</q:SelectionIdentifier>  <q:Text>Option 1</q:Text></q:Selection><q:Selection><q:SelectionIdentifier>qans2</q:SelectionIdentifier>  <q:Text>Option 2</q:Text></q:Selection><q:Selection><q:SelectionIdentifier>qans3</q:SelectionIdentifier>  <q:Text>Option 3</q:Text></q:Selection></q:Selections></q:SelectionAnswer></q:AnswerSpecification></q:Question></q:QuestionForm>"
+Web Services Feature Requests	"MTurk: Problems with Selections
+See if this works:
+<QuestionForm xmlns=""http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd"">  <Overview>  <Title>GeekHappy Test</Title>  <Text>This is just a test, not a real qualification. Sorry for the inconvenience.</Text>  </Overview>  <Question>    <QuestionIdentifier>qid1</QuestionIdentifier>    <IsRequired>true</IsRequired>    <QuestionContent>      <Title>Multiple Selection</Title>      <Text>Please select any of the following options</Text>    </QuestionContent>    <AnswerSpecification>      <SelectionAnswer>        <MinSelectionCount>1</MinSelectionCount>        <MaxSelectionCount>1</MaxSelectionCount>        <StyleSuggestion>checkbox</StyleSuggestion>        <Selections>          <Selection>            <SelectionIdentifier>qans1</SelectionIdentifier>            <Text>Option 1</Text>          </Selection>          <Selection>            <SelectionIdentifier>qans2</SelectionIdentifier>            <Text>Option 2</Text>          </Selection>             <Selection>            <SelectionIdentifier>qans3</SelectionIdentifier>            <Text>Option 3</Text>          </Selection>                </Selections>      </SelectionAnswer>    </AnswerSpecification>  </Question></QuestionForm>
+-elena"
+Web Services Feature Requests	"MTurk: Problems with Selections
+Thank you. Worked a treat.Using the following answer form with that question, if I set max selection count to 1 it works perfectly and if I set max selection count to 3, I always qualify with a score of 0.<AnswerKey xmlns=""<a href='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/AnswerKey.xsd' target='_blank'>http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/AnswerKey.xsd</a>"">  <Question>    <QuestionIdentifier>qid1</QuestionIdentifier>    <AnswerOption>      <SelectionIdentifier>qans1</SelectionIdentifier>      <AnswerScore>10</AnswerScore>    </AnswerOption>    <AnswerOption>      <SelectionIdentifier>qans2</SelectionIdentifier>      <AnswerScore>20</AnswerScore>    </AnswerOption>    <AnswerOption>      <SelectionIdentifier>qans3</SelectionIdentifier>      <AnswerScore>30</AnswerScore>    </AnswerOption>  </Question>  <QualificationValueMapping>    <PercentageMapping>      <MaximumSummedScore>30</MaximumSummedScore>    </PercentageMapping>  </QualificationValueMapping></AnswerKey>"
+Web Services Feature Requests	"MTurk: Problems with Selections
+Forgot to mention, I get the same behavior whether I set the Max summed score to 30 *or* 60."
+Web Services Feature Requests	"MTurk: Problems with Selections
+Can you try removing:
+        <MinSelectionCount>1</MinSelectionCount>        <MaxSelectionCount>1</MaxSelectionCount>
+And see what happens? I think with checkboxes (multiselection), you may not need those.
+-elena"
+Web Services Feature Requests	"MTurk: Problems with Selections
+As I said, the problem isn't really with the min/1 max/1, it's with the min/1 max/3 scenario. Anyway, I removed the min/max and here are the results:1 selected: math works fine2 or 3 selected: math always goes to zero."
+Web Services Feature Requests	"MTurk: Problems with Selections
+Let me do some more research.. Will update you when I know more..
+-elena"
+Web Services Feature Requests	"MTurk: Problems with Selections
+Would you like me to reactivate the test qualification so you can play with it?"
+Web Services Feature Requests	"AWS 3 Similar Items
+I am getting 30 to 40 items in the similar items node. Not joking!http://www.celtic-one-design.com/php/1590594614.htmI really do appreciate the ""extra"" but it really muffs up my result pages.Make a deal with ya - bring this back down to 5 items and give me back the actors in the dvd catalog. Deal?"
+Web Services Feature Requests	"AWS 3 Similar Items
+There doesn't seem to be any limit to the similar items. I lost count on this one:http://www.celtic-one-design.com/php/B00094ASC2.htmHey - my result pages are now just as slow as Amazon's! I hope your image servers are in good working order."
+Web Services Feature Requests	"AWS 3 Similar Items
+Let me know when the similar items node is working again. I had to disable future requests with this node. I see no limit to the number of items returned and I don't want clients to download the entire Amazon database in a single call. I can't afford the bandwidth."
+Web Services Feature Requests	"AWS 3 Similar Items
+Thank you for bringing this to our attention.  A bug report has been filed internally.  We'll let you know just as soon as we hear something.
+Regards,
+John"
+Web Services Feature Requests	"AWS 3 Similar Items
+Also AWS 4.0 in US and CA sites. I noticed it in Sci-Fi DVD (about 40 similar products), but it may be everywhere, who knows?
+
+<hr size='1' /><span class='wintiny'>Edited 1/24/2006 3:46 am ET by <i>Carole Sue Danforth</i> <!-- A2VIDM71YO3L --></span>"
+Web Services Feature Requests	"since a few minutes ""not a valid itemid""
+hi,
+i have this lookup:http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&Version=2005-03-23&SubscriptionId=&ltAccess Key Removed>&Operation=ItemLookup&MerchantId=All&ResponseGroup=Offers,ItemAttributes,SalesRank&ItemId=0380789795&Condition=Used
+ 
+it worked fine a few hours ago, but now i only get ""0380789795 is not a valid value for ItemId. Please change this value and retry your request.""
+ 
+whats wrong here, has amazon changed something !?
+ 
+bye, fabian"
+Web Services Feature Requests	"AWS 3 pricing data not being returned
+I'm using AWS3 to retrieve pricing information with lite calls, and am getting a significant amount of returns with no data."
+Web Services Feature Requests	"Time Out Error
+For the past 2 weeks, I've been receiving the following error message ""AWS.AlexaWebInfoService.TimeoutError"" for most of the web search queries.Anyone can help with this? Thank you."
+Web Services Feature Requests	"Time Out Error
+I've been getting the same error.
+Are you still getting charged for these requests that are resulting in errors?
+I think I am.
+Matt"
+Web Services Feature Requests	"Time Out Error
+hi Matt, actually, this is my 2nd month on AWS so I have yet to hit the 10k mark. i notice from my own counter that it differs from Alexa's when this problem arises... i'm now down to about 1 in 8 searches conducted via my site are being 'clocked-up' on Alexa. I'm assuming that this would mean requests resulting in the timeout error do not seem to be picked-up by their system. Hope this helps.
+From my side, this bug is quite inconvenient... i went to press this week and my site is getting good interest.
+Adlan, Linguamatix"
+Web Services Feature Requests	"No product dimensions for PetSupplies
+I need to calculate the shipping cost. But neither item dimensions nor package dimensions are returned with items from searchIndex=PetSupplies. Other categories are okay. Bug?"
+Web Services Feature Requests	"ECS shopping cart - duplicate tags
+Hello, 
+When i add an item to the ECS shopping cart, and this item already exists in it (but different seller), the XML  markup sometimes returns 2 <title> tags and 2 <ProductGroup> tags for one item and missing in the other duplicate item.
+pls see the example below. 
+<DIV class=""e"">
+<DIV class=""c"" style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><FONT face=""Courier New"" color=""#ff0000"">-</FONT> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CartItem</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV>
+<DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CartItemId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">ULLFQQT68O5AS</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CartItemId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ASIN</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">0743228383</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ASIN</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ExchangeId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">Y05Y1061974Y1906867</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ExchangeId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">MerchantId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">ASYDZOX0HKBSE</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">MerchantId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">SellerId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">ASYDZOX0HKBSE</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">SellerId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">SellerNickname</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">any_book</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">SellerNickname</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Quantity</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">1</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Quantity</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Title</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">Unconventional Success : A Fundamental Approach to Personal Investment</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Title</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Title</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">Unconventional Success : A Fundamental Approach to Personal Investment</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Title</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ProductGroup</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">Book</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ProductGroup</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ProductGroup</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">Book</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ProductGroup</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV class=""c"" style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><FONT face=""Courier New"" color=""#ff0000"">-</FONT> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Price</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV>
+<DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Amount</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">1811</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Amount</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CurrencyCode</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">USD</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CurrencyCode</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">FormattedPrice</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">$18.11</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">FormattedPrice</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Price</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV></DIV></DIV>
+<DIV class=""e"">
+<DIV class=""c"" style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><FONT face=""Courier New"" color=""#ff0000"">-</FONT> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ItemTotal</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV>
+<DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Amount</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">1811</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Amount</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CurrencyCode</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">USD</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CurrencyCode</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">FormattedPrice</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">$18.11</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">FormattedPrice</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ItemTotal</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV></DIV></DIV>
+<DIV><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CartItem</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV></DIV></DIV>
+<DIV class=""e"">
+<DIV class=""c"" style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><FONT face=""Courier New"" color=""#ff0000"">-</FONT> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CartItem</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV>
+<DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CartItemId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">U1YYXNSSKIRTY3</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CartItemId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ASIN</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">0743228383</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ASIN</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">MerchantId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">ATVPDKIKX0DER</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">MerchantId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">SellerId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">A2R2RITDJNW1Q6</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">SellerId</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">SellerNickname</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">Amazon.com, LLC</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">SellerNickname</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Quantity</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">1</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Quantity</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV class=""c"" style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><FONT face=""Courier New"" color=""#ff0000"">-</FONT> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Price</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV>
+<DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Amount</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">1815</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Amount</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CurrencyCode</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">USD</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CurrencyCode</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">FormattedPrice</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">$18.15</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">FormattedPrice</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Price</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV></DIV></DIV>
+<DIV class=""e"">
+<DIV class=""c"" style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><FONT face=""Courier New"" color=""#ff0000"">-</FONT> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ItemTotal</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV>
+<DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Amount</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">1815</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">Amount</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CurrencyCode</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">USD</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CurrencyCode</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">FormattedPrice</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN><SPAN class=""tx"">$18.15</SPAN><SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">FormattedPrice</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN> </DIV></DIV>
+<DIV><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">ItemTotal</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV></DIV></DIV>
+<DIV><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CartItem</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV></DIV></DIV>
+<DIV><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">CartItems</FONT></SPAN></DIV>
+<DIV><SPAN class=""t""><FONT color=""#990000""></FONT></SPAN> </DIV>
+<DIV><SPAN class=""t""><FONT color=""#990000"">regards,</FONT></SPAN></DIV>
+<DIV><SPAN class=""t""><FONT color=""#990000"">alex</FONT></SPAN></DIV>"
+Web Services Feature Requests	"No ImageSets Problem
+Please check following RequestIds. ECS4.0/JP.
+
+&ltAccess Key Removed>
+&ltAccess Key Removed>"
+Web Services Feature Requests	"AudienceRating is missing in locale .de
+Hi,just look for <AudienceRating>:DE:http://webservices.amazon.de/onca/xml?Service=AWSECommerceService&SubscriptionId=&ltAccess Key Removed>&AssociateTag=amapsys-21&Operation=ItemLookup&ItemId=B0002D579E&ResponseGroup=LargeUS:http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&SubscriptionId=&ltAccess Key Removed>&AssociateTag=amapsys-21&Operation=ItemLookup&ItemId=B00005JMAH&ResponseGroup=LargeGreetsMike (amapsys.de)"
+Web Services Feature Requests	"AudienceRating is missing in locale .de
+Hallo?What do I have to do, to get a satisfying answer?I'm looking for <AudienceRating> for DVDs in locale DEThank you!Amapsys.de"
+Web Services Feature Requests	"NumberFormatException
+Hello..
+when I try the following request through SOAP
+SearchIndex: Electronics
+ResponseGroup:ItemAttributes
+Brand: Sony
+I get the following exception
+------------------------------------------------------------------------------
+AxisFault
+ faultCode: {http://schemas.xmlsoap.org/soap/envelope/}Server.userException
+ faultSubcode: 
+ faultString: java.lang.NumberFormatException: For input string: &quot;1.73&quot;
+ faultActor: 
+ faultNode: 
+ faultDetail: 
+ {http://xml.apache.org/axis/}stackTrace: java.lang.NumberFormatException: For input string: &quot;1.73&quot;
+ at org.apache.axis.encoding.ser.SimpleDeserializer.onEndElement(SimpleDeserializer.java:222)
+ at org.apache.axis.encoding.DeserializerImpl.endElement(DeserializerImpl.java:534)
+ at org.apache.axis.encoding.DeserializationContextImpl.endElement(DeserializationContextImpl.java:1015)
+ at org.apache.axis.message.SAX2EventRecorder.replay(SAX2EventRecorder.java:204)
+ at org.apache.axis.message.MessageElement.publishToHandler(MessageElement.java:722)
+ at org.apache.axis.message.RPCElement.deserialize(RPCElement.java:233)
+ at org.apache.axis.message.RPCElement.getParams(RPCElement.java:347)
+ at org.apache.axis.client.Call.invoke(Call.java:2272)
+ at org.apache.axis.client.Call.invoke(Call.java:2171)
+ at org.apache.axis.client.Call.invoke(Call.java:1691)
+ at com.amazon.xml.AWSECommerceService.AWSECommerceServiceBindingStub.itemSearch(AWSECommerceServiceBindingStub.java:1447)
+ at awsec.ItemSearchSoap.issueRequest(ItemSearchSoap.java:139)
+ at awsec.AmazonProductLoader.queryAmazon(AmazonProductLoader.java:66)
+ at awsec.AmazonProductLoader.loadAmazonProducts(AmazonProductLoader.java:39)
+ at awsec.AmazonProductLoader.main(AmazonProductLoader.java:383)
+ 
+ 
+java.lang.NumberFormatException: For input string: ""1.73""
+ at org.apache.axis.AxisFault.makeFault(AxisFault.java:129)
+ at org.apache.axis.client.Call.invoke(Call.java:2275)
+ at org.apache.axis.client.Call.invoke(Call.java:2171)
+ at org.apache.axis.client.Call.invoke(Call.java:1691)
+ at com.amazon.xml.AWSECommerceService.AWSECommerceServiceBindingStub.itemSearch(AWSECommerceServiceBindingStub.java:1447)
+ at awsec.ItemSearchSoap.issueRequest(ItemSearchSoap.java:139)
+ at awsec.AmazonProductLoader.queryAmazon(AmazonProductLoader.java:66)
+ at awsec.AmazonProductLoader.loadAmazonProducts(AmazonProductLoader.java:39)
+ at awsec.AmazonProductLoader.main(AmazonProductLoader.java:383)
+Caused by: java.lang.NumberFormatException: For input string: ""1.73""
+ at org.apache.axis.encoding.ser.SimpleDeserializer.onEndElement(SimpleDeserializer.java:222)
+ at org.apache.axis.encoding.DeserializerImpl.endElement(DeserializerImpl.java:534)
+ at org.apache.axis.encoding.DeserializationContextImpl.endElement(DeserializationContextImpl.java:1015)
+ at org.apache.axis.message.SAX2EventRecorder.replay(SAX2EventRecorder.java:204)
+ at org.apache.axis.message.MessageElement.publishToHandler(MessageElement.java:722)
+ at org.apache.axis.message.RPCElement.deserialize(RPCElement.java:233)
+ at org.apache.axis.message.RPCElement.getParams(RPCElement.java:347)
+ at org.apache.axis.client.Call.invoke(Call.java:2272)
+ ... 7 more
+java.lang.NullPointerException
+ at awsec.AmazonProductLoader.loadAmazonProducts(AmazonProductLoader.java:41)
+ at awsec.AmazonProductLoader.main(AmazonProductLoader.java:383)
+Exception in thread ""main"" 
+----------------------------------------------------------------------------------
+Can it be caused by a bug.. ??"
+Web Services Feature Requests	"Confused about nuance of 'keyword' srch
+I'm baffled. When I go to the Amazon Power Search and search for     keywords:""ACT Exam"" I get about 120 matches. When I do the same thing in a programmatic query, however, I get two. Here's the URL I'm sending: http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&AWSAccessKeyId=OMITTED&Operation=ItemSearch&SearchIndex=Books&Power=keywords:%22ACT+Exam%22&ResponseGroup=ItemIds&ItemPage=1(yes, I've pulled out my access key for privacy.   The real query I'm sending includes it, of course)What am I doing wrong here?"
+Web Services Feature Requests	"Confused about nuance of 'keyword' srch
+<FONT color=""blue"">(yes, I've pulled out my access key for privacy. :-)</FONT> 
+Please don't do that.  You're asking for help, but making harder for us to help you.  There's no reason to remove your Access Key ID from examples you post here.
+When I do a power search at Amazon.com using keywords:""ACT Exam"", I get the same two responses you're getting from ECS.
+-- Roger"
+Web Services Feature Requests	"Confused about nuance of 'keyword' srch
+I'm still a bit baffled. I go to the Amazon Power Search page athttp://www.amazon.com/exec/obidos/subst/search/books-power.html/103-3889308-9903034and enter   keywords:""ACT exam""and get:   All 178 results for keywords:""ACT+exam""Not two, 178.   ???"
+Web Services Feature Requests	"Confused about nuance of 'keyword' srch
+Very Strange .....
+I was using the power search form at:
+http://www.amazon.com/exec/obidos/tg/stores/static/-/books/search/102-3388150-4393764
+This one returns the same two items as your query.  I found it by clicking on ""Books"" then ""Books Search"" at Amazon.com.
+-- Roger"
+Web Services Feature Requests	"Confused about nuance of 'keyword' srch
+Then perhaps I can ask you a different question?  How would you do an API search for all books about the SAT test, or the ACT test?  Thanks!DT"
+Web Services Feature Requests	"Confused about nuance of 'keyword' srch
+Try power searches for 
+keywords:""American College Tests""
+keywords:""Scholastic Assessment Test""
+I found these keywords by looking at the product page for Amazon.com for a book on the subject.  Near the bottom of the page you'll see the book's keywords under ""Look for Similar Items by Subject.""
+-- Roger
+ 
+
+<hr size='1' /><span class='wintiny'>Edited 1/4/2006 3:47 pm ET by <i>jadebox</i> <!-- A2L2TQZ63I9L --></span>"
+Web Services Feature Requests	"Confused about nuance of 'keyword' srch
+Another way is to list the products in the following browse nodes:
+<FONT color=""#800080"">ACT (American College Tests)</FONT>  (11670)
+<FONT color=""#800080"">SAT & PSAT</FONT> (11682)
+-- Roger"
+Web Services Feature Requests	"Confused about nuance of 'keyword' srch
+Great. Thank you for your suggestions!"
+Web Services Feature Requests	"Listmania typo errors
+Hi, I've noticed that the Listname node of the ListmaniaList response group contains a typo error.
+for example, the phrase ""My Friend's Gifts"" is spelt ""My Friend""s gifts"".  
+Note that a double quote is used when a single quote should be used.  I've also noticed instances when the single quote is used when a double should be used."
+Web Services Feature Requests	"Access key id and access key not working
+I've tried several time to copy and past my Alexa Access Key ID and Alexa Secret Access Key into the boxes.  Each time I do, I get an error message ""<FONT color=""#ff0000"">Sorry, this Alexa Subscription ID does not seem to be valid. Please carefully copy-and-paste into the box below and try again.""</FONT>
+<FONT color=""black"">Any idean on why this might be happening?</FONT>
+<FONT color=""#ff0000""></FONT>"
+Web Services Feature Requests	"Either Actor or Director, but never both
+Hi,
+I've got possibly a bug to report. Lately I find that Amazon ECS is returning either Actors or Directors for DVD entries. Please take a look at the following search request on Amazon U.S., with response group set to large, only Director: Ron Howard is returned for keyword ""Cinderella Man"".
+http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&Version=2005-03-23&Operation=ItemSearch&SubscriptionId=&ltAccess Key Removed>&AssociateTag=mediaman-20&SearchIndex=DVD&Keywords=Cinderella%20Man&ResponseGroup=Large
+However, the following same search query on Amazon U.K., returned Actor Russell Crowe and Renee Zellweger, but no Directors:
+http://webservices.amazon.co.uk/onca/xml?Service=AWSECommerceService&Version=2005-03-23&Operation=ItemSearch&SubscriptionId=&ltAccess Key Removed>&AssociateTag=mediaman-20&SearchIndex=DVD&Keywords=Cinderella%20Man&ResponseGroup=Large
+Now I'm sure that for these new entries in the catalog, both of the fields should already be in the ECS system. But why didn't ECS return these fields?
+I think the bug appeared recently because several months ago, I'm sure I can get both fields.
+Any suggestions?"
+Web Services Feature Requests	"Either Actor or Director, but never both
+http://forums.prospero.com/n/mb/message.asp?webtag=am-assocdevxml&msg=10226.2&ctx=0I wouldn't expect a response from Amazon concerning this on going issue. What they want you to do is combine both the US and UK feeds in order to get both the actor and director. You will have to check Spain in order to get the price and of course check Amazon India for the availability."
+Web Services Feature Requests	"Prices in ECS results not matching site?
+Hello,Seems like the <LowestNewPrice> value in my results sometime don't match the prices on the site. Specifically, I just noticed a discrepency in the XML below.The list price matches, ($14), but the LowestNewPrice below is $2.99. Amazon.com is selling the book for $10.50.Any ideas? Is LowestNewPrice not what I should be looking at? I can't seem to find the actual selling price anywhere.Thanks!Doug <Item><ASIN>006091646X</ASIN>− <DetailPageURL>http://www.amazon.com/exec/obidos/redirect?tag=activecellmed-20%26link_code=xm2%26camp=2025%26creative=165953%26path=http://www.amazon.com/gp/redirect.html%253fASIN=006091646X%2526tag=activecellmed-20%2526lcode=xm2%2526cID=2025%2526ccmID=165953%2526location=/o/ASIN/006091646X%25253FSubscriptionId=&ltAccess Key Removed></DetailPageURL><SalesRank>5463</SalesRank>− <SmallImage>− <URL>http://images.amazon.com/images/P/006091646X.01._SCTHUMBZZZ_.jpg</URL><Height Units=""pixels"">60</Height><Width Units=""pixels"">40</Width></SmallImage>− <MediumImage>− <URL>http://images.amazon.com/images/P/006091646X.01._SCMZZZZZZZ_.jpg</URL><Height Units=""pixels"">140</Height><Width Units=""pixels"">92</Width></MediumImage>− <LargeImage>− <URL>http://images.amazon.com/images/P/006091646X.01._SCLZZZZZZZ_.jpg</URL><Height Units=""pixels"">475</Height><Width Units=""pixels"">313</Width></LargeImage>− <ImageSets>− <ImageSet Category=""primary"">− <SmallImage>− <URL>http://images.amazon.com/images/P/006091646X.01._SCTHUMBZZZ_.jpg</URL><Height Units=""pixels"">60</Height><Width Units=""pixels"">40</Width></SmallImage>− <MediumImage>− <URL>http://images.amazon.com/images/P/006091646X.01._SCMZZZZZZZ_.jpg</URL><Height Units=""pixels"">140</Height><Width Units=""pixels"">92</Width></MediumImage>− <LargeImage>− <URL>http://images.amazon.com/images/P/006091646X.01._SCLZZZZZZZ_.jpg</URL><Height Units=""pixels"">475</Height><Width Units=""pixels"">313</Width></LargeImage></ImageSet></ImageSets>− <ItemAttributes><Author>Harriet Lerner</Author><Binding>Paperback</Binding><EAN>9780060916466</EAN><Edition>Reprint</Edition><ISBN>006091646X</ISBN>− <ListPrice><Amount>1400</Amount><CurrencyCode>USD</CurrencyCode><FormattedPrice>$14.00</FormattedPrice></ListPrice><NumberOfItems>1</NumberOfItems><NumberOfPages>272</NumberOfPages>− <PackageDimensions><Height Units=""hundredths-inches"">82</Height><Length Units=""hundredths-inches"">804</Length><Weight Units=""hundredths-pounds"">46</Weight><Width Units=""hundredths-inches"">539</Width></PackageDimensions><ProductGroup>Book</ProductGroup><PublicationDate>1990-04-25</PublicationDate><Publisher>Harper Paperbacks</Publisher>− <Title>The Dance of Intimacy: A Woman's Guide to Courageous Acts of Change in Key Relationships</Title></ItemAttributes>− <OfferSummary>− <LowestNewPrice><Amount>299</Amount><CurrencyCode>USD</CurrencyCode><FormattedPrice>$2.99</FormattedPrice></LowestNewPrice>− <LowestUsedPrice><Amount>53</Amount><CurrencyCode>USD</CurrencyCode><FormattedPrice>$0.53</FormattedPrice></LowestUsedPrice>− <LowestCollectiblePrice><Amount>375</Amount><CurrencyCode>USD</CurrencyCode><FormattedPrice>$3.75</FormattedPrice></LowestCollectiblePrice><TotalNew>50</TotalNew><TotalUsed>315</TotalUsed><TotalCollectible>26</TotalCollectible><TotalRefurbished>0</TotalRefurbished></OfferSummary>− <EditorialReviews>− <EditorialReview><Source>Book Description</Source>− <Content>In <I>The Dance of Intimacy,</I> the bestselling author of <I>The Dance of Anger</I> outlines the steps to take so that good relationships can be strengthened and difficult ones can be healed. Taking a careful look at those relationships where intimacy is most challenged--by distance, intensity, or pain--she teaches us about the specific changes we can make to achieve a more solid sense of self and a more intimate connectedness with others. Combining clear advice with vivid case examples, Dr. Lerner offers us the most solid, helpful book on intimate relationships that both women and men may ever encounter.</Content></EditorialReview></EditorialReviews></Item>"
+Web Services Feature Requests	"Prices in ECS results not matching site?
+Hi.
+The LowestNewPrice is the lowest price among all the sellers selling that item as new. If you use the OfferFull response group, you should find a seller selling it at that price.
+alex"
+Web Services Feature Requests	"Returned data type mismatch
+Some records from PCHardware SearchIndex return string in MemorySlotsAvailable Item Attribute, whereas WSDL specifically states that it 's supposed to be an non-negative integer."
+Web Services Feature Requests	"No price info from Blended Search
+Hi [Hope someone from Amazon Web Service team reads this],I'm not able to obtain the price info of items offered by merchants other than Amazon using Blended search. This could be due to the fact that I'm not able to specify MerchantId = All for Blended Search.So its very wierd for my customers to do a blended search and not see the price for items that are returned. Is this a limitation of the API, or is it a lack of my understanding?"
+Web Services Feature Requests	"Invalid character references
+<FONT face=""Courier,Monospace"">Hi.</FONT>
+<FONT face=""Courier,Monospace"">Some editorial reviews contain the HTML character reference: </FONT><FONT face=""Courier New"" size=""2""><FONT face=""Courier,Monospace"">&#146; to represent an apostrophe, but this is not a valid HTML character reference -- it refers to the apostrophe character in the windows character set, but HTML character references must refer to the unicode character set. See </FONT><FONT face=""Courier,Monospace"">http://www.w3.org/TR/REC-html40/sgml/entities.html</FONT><FONT face=""Courier,Monospace"">.</FONT> </FONT>
+<FONT face=""Courier New"" size=""2"">Neil.</FONT>"
+Web Services Feature Requests	"Invalid character references
+Same problem exists for Track titles in the <TRACKS> node."
+Web Services Feature Requests	"books lost in Bermuda Triangle
+I have run into trouble recently because I cannot track my books (only a fraction of which ever arrived).  My E-mail adress is apparently not recognized when I try to log in to track the order.  If anyone thinks they can crack this mystery, please let me know.  ThanksRyanryn_ptrsn@yahoo.com"
+Web Services Feature Requests	"EAN on Amazon.co.uk and AWS
+I've just read and re-read the AWS documentation. Apparently the AWS doesn't support searching EAN's in the uk. Does anyone know the reason for this? As a past Amazon seller, I used to be able to look up EAN numbers to enter my products, and yet now using the AWS I can't?Can support for UK EAN searching be added ASAP?"
+Web Services Feature Requests	"EAN on Amazon.co.uk and AWS
+Do you have code for doing the conversion?  Not ideal but it isn't hard and is a very viable work-around.  Below are a couple of functions I created.  Maybe you can convert them to whatever language you use.  If you use this and do your own conversion please post your version to the ""Web Services Code Samples"" forum for others.Jim#DefineFunction EAN2ISBN(ean)  ean = StrSub(ean,4,9)  If !IsNumber(ean) Then Return('BadISBN')  wv = 0  y  = 0  For x = 1 to 9    wv = wv+((10-y)*StrSub(ean,x,1))    y = y + 1  Next   cd = 11-(wv mod 11)  If cd == 11 Then cd = ""0""  If cd == 10 Then cd = ""X""  isbn = StrCat(ean,cd)   Return(isbn)#EndFunction #DefineFunction ISBN2EAN(isbn)  If isbn == """" Then Return(isbn)  isbn = StrCat(""978"",StrSub(isbn,1,9))  If !IsNumber(isbn) Then Return('BadISBN')  wv = 0  For x = 1 to 12 by 2    wv = wv+(1*StrSub(isbn,x,1))  Next   For x = 2 to 12 by 2    wv = wv+(3*StrSub(isbn,x,1))  Next   cd = 10-(wv mod 10)  If cd == 10 Then cd = 0  ean  = StrCat(isbn,cd)   Return(ean)#EndFunction 
+
+<hr size='1' /><span class='wintiny'>Edited 1/9/2006 9:21 pm ET by <i>JimTaylor</i> <!-- A2LJ6OOF19RV --></span>"
+Web Services Feature Requests	"EAN on Amazon.co.uk and AWS
+Thanks for the suggestion Jim - what I'm really after, however, is to be able to search non-book products via their EAN, and hence converting to an ISBN isn't much use for this."
+Web Services Feature Requests	"EAN on Amazon.co.uk and AWS
+Tis' true...Sorry Jim"
+Web Services Feature Requests	"EAN on Amazon.co.uk and AWS
+I'm working on the same problem, it doesn't look promising but i'll be sure to post here if i crack it. Would really appreciate a solution if you sole it."
+Web Services Feature Requests	"EAN on Amazon.co.uk and AWS
+I'm working on the same problem, it doesn't look promising but i'll be sure to post here if i crack it. Would really appreciate a solution if you sole it."
+Web Services Feature Requests	"Unable to get the ShipComments Infos
+Hello,I'm unable to get the ShipComments from the OfferFull or any other request. Is it a normal behavior since this information could be important ?It seems there is a way to get this information using this type of request : http://xml.amazon.com/onca/xml2?t=amazonspecial-20&dev-t=D1KQJBNTALRLQH&AsinSearch=0345303059&type=heavy&offer=ThirdPartyNew&offerpage=1&f=xml&sort=+salesrank%20���FBut this this is NOT a documented feature and forced us to make 2 queries to get all the offers informations we need.Thanks for help"
+Web Services Feature Requests	"Unable to get the ShipComments Infos
+Try This
+
+<hr size='1' /><span class='wintiny'>Edited 12/30/2005 12:31 pm ET by <i>-cod-zilla-</i> <!-- A2A90AZV8K9G --></span>"
+Web Services Feature Requests	"Unable to get the ShipComments Infos
+Thanks a lot !Is there a documentation available about this webservice ?It should really helps me since i can only use this one."
+Web Services Feature Requests	"Unable to get the ShipComments Infos
+http://www.amazon.com/gp/browse.html/ref=smm_sn_aws/103-5577511-2822225?%5Fencoding=UTF8&node=3435361"
+Web Services Feature Requests	"AWS 3: XSLT Caching
+Not sure how AWS caches XSLT files. Always assumed that a <FONT size=""3"">HTTP_IF_MODIFIED_SINCE was sent. Obviously not because all the dates are set to Thu, 01 Jan 1970 00:00:00 GMT in the request. No ETAG data is being sent as well.</FONT>
+<FONT size=""3"">Could we get this fixed asap?</FONT>
+<FONT size=""3"">While this is being fixed - please accept gzip encoded XSLT files.</FONT>
+<FONT size=""3"">While you are fixing both of those - gzip encoded XSLT/XML output would also be a nice addition. Yahoo Search API really flies because they gzip the data.</FONT>
+<FONT size=""3""></FONT> 
+<FONT size=""3"">Just a thought for us AJAXslt Web 2.0 developers.</FONT>"
+Web Services Feature Requests	"Accessing Apparels & Accessories data
+Hi,
+Could anyone tell me if Amazon's Apparel and Accessories data is accessible?
+I am trying to build a site with Amazon's fashion data.
+Anita"
+Web Services Feature Requests	"Accessing Apparels & Accessories data
+Yes it is.  Do keep in mind that you will often be working with Parent/Child data/ASIN's.  The parent contains the main description and the children are the variations, such as different colors of the same item.Jim"
+Web Services Feature Requests	"Alexa Access Keys
+I have signed up as a user of Alexa Web Info Services. On the Sign-up page there was a comment that I would receive an email about the Alexa Services. I have not received an email. 
+This is important for me because I am working with another company in building a website that told me I would receive from Amazon after registering for Alexa, two Alexa Access Keys. I do NOT have these keys.
+I need help with this. 
+Thanks so much
+DrWah"
+Web Services Feature Requests	"Alexa Access Keys
+I got my api ids here: http://www.amazon.com/gp/browse.html/104-3258048-0167934?%5Fencoding=UTF8&node=3435361Select the button in the top right corner ""Your Web Services Account"".Click ""View Access Key Identifiers""."
+Web Services Feature Requests	"Alexa Access Keys
+This does not work in Safari and stumped me for a while. Can't you use a standards based approach or at least mention it prominently in the FAQ?"
+Web Services Feature Requests	"Alexa Access Keys
+�������? �������������� ���?������ ���������� �?�� ���������� ������������ ���� ������������ �������?�������� ������������ �������� �������������?�� ���������� ���� ������������
+�������� �����? ������ ���������� �������? �����������?�� 
+�����?�� �������� ���������?������ �������� 
+www.shuaaa.net"
+Web Services Feature Requests	"Avg Current Price & Std Dev.
+Seems like a popular pricing mechanism is to simply beat the lowest current price.  This is fine for some of the time but often times you see someone go outrageously low which could potentially change the pricing structure for that item forever.  If we could easily get the average asking price for each condition and the standard deviation we could more intelligently set our prices.  This would not only help sellers but would help Amazon preserve its commission.
+In order to produce this today I have to grab the offerdetails and post at least one query for new and one for used.  If an item has more than 10 current offers I have to make additional queries as I'm only getting back 10 offers per inquiry."
+Web Services Feature Requests	"Ability to exclude items with no images
+<SPAN style=""FONT-SIZE: 9pt; COLOR: black; FONT-FAMILY: Verdana"">We want to provide our customers with the ability to display products with images only. We can obviously just ignore blank image URLs, but this poses a problem when computing page numbers, because you have to subtract the blank image products from the results. It also slows down requests, especially if there are a large number of items in the result set with no images.</SPAN>
+<SPAN style=""FONT-SIZE: 9pt; COLOR: black; FONT-FAMILY: Verdana"">This will really be helpful.</SPAN>
+<SPAN style=""FONT-SIZE: 9pt; COLOR: black; FONT-FAMILY: Verdana"">Thanks,</SPAN>
+<SPAN style=""FONT-SIZE: 9pt; COLOR: black; FONT-FAMILY: Verdana; mso-fareast-font-family: 'Times New Roman'; mso-bidi-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: EN-US; mso-bidi-language: AR-SA"">Jay</SPAN>"
+Web Services Feature Requests	"Ability to exclude items with no images
+I posted this request on December 2 and still no replies!
+Can someone please respond to whether this is something useful and/or doable?
+Any others out there that would like this as a feature?
+Some kind of response would be nice.
+Thanks,
+Jay"
+Web Services Feature Requests	"Ability to exclude items with no images
+Unfortunately, this functionality is not currently available. Sounds like it could be very useful -- will add this to the feature requests list. Thanks for a suggestion!
+-elena"
+Web Services Feature Requests	"Review From the Manufacturer
+I would like to suggest that ""Review From the Manufacturer"" be added in AWS.
+This usually displays below the ""Editorial Review"" on Amazon.com. Some products have no product descriptions or editorial reviews, so we'd like to use the ""Review From the Manufacturer"" as our product description.
+Thanks.
+Jay"
+Web Services Feature Requests	"SIPS and SearchInside
+I'm interested in obtaining the list of SIPs available for a particular book.  I believe SIPs are only available for those books which are part of the Search Inside! program.  I notice in the latest ECS Developer guide (Oct 10/2005) there is reference (only one) to the SearchInside response group, but using it returns an ""invalid response group"" message, so i'm assuming this isn't working yet.Anyone know how to get SIPs using the api ?  If not, anyone know of future plans to support retreival of this data ?  Thanks in advance,dhttp://ayre.ca"
+Web Services Feature Requests	"How To receive link to Listen of track
+That is necessary ResponseGroup???"
+Web Services Feature Requests	"If-Modified-Since http header support
+Hi,I've been reading Google's webmaster guidelines and it mentions the support of the If-Modified-Since http header.  Upon learning of its benefits (reduced bandwidth and overhead), I feel that Amazon ECS could stand to benefit from its use as well.Take, for instance, browsing for product by browsenode.  This is something that nearly every Amazon associate site employs. It may be possible for developers to pass the If-Modified-Since http header to ECS.  ECS would cache all calls it receives.  For each call, ECS would check to see if any of the data has been changed based on the value of the header.  If no change, ECS could simply return the appropriate status code and the site making the call could use its cached version of the data.  If there is a change, the new data is retrieved from ECS and it can be cached on the associate sites and on Amazon's servers.I don't have all of the details of how all this could work, but I believe that we all stand to benefit from it if it is employed.Thanks for considering."
+Web Services Feature Requests	"WishList - Shipping Address is Specified
+When I look up a person's wish list I want to make sure they have a shipping address specified.  I don't want to know the details of the address, I just want to make sure they have a shipping address.Thanks!"
+Web Services Feature Requests	"Purchasing against a single account
+Hello to all. I am working on a proof of concept for a program that will consist mainly of a website, where some users will receive a number of points, which could be redeemed to purchase through Amazon. All these purchases will have to be made against a single account (a corporate account or something like that), because the company that gives out the points will actually pay for these purchases, and there will be an administrator user that will be able to ultimately authorize the operations.
+I've seen some useful applications that allow you to use WebServices  to display Amazon products on your website, and keep them in a shopping cart until the moment of real purchase, which is done through Amazon. But at this point, each purchase is made against each user's account.My question is: do you know of any existing applications or web services that would allow the purchase to be made by all users against a single account?At this point I'm thinking it would probably be a good idea to keep all the purchases on my DB, pending approval, then create a batch and commit all the (approved) purchases of the last XX days against a single account.Thanks in advance for any replies/comments/suggestions,
+Hernan P. Chiosso"
+Web Services Feature Requests	"Purchasing against a single account
+Actually, as an update, I've decided that processing all the transactions as a weekly batch would be the best option. But my problem now is how to make each of the products in the transaction batch go to different shipping addresses, because I'd be processing the orders for multiple users.Any thoughts?Thanks in advance,
+Hernan Chiosso"
+Web Services Feature Requests	"Purchasing against a single account
+Hi. I have a question for you. How are you going to know for sure, that the user indeed place your order at Amazon.com and it was accepted by them, before granting points?"
+Web Services Feature Requests	"Purchasing against a single account
+<FONT color=""blue"">How are you going to know for sure, that the user indeed place your order at Amazon.com and it was accepted by them, before granting points?</FONT>
+<FONT color=""black"">And how long will he work on the idea before reading Amazon's Operating Agreement? :-)</FONT>
+<FONT color=""black"">-- Roger</FONT>
+<FONT color=""#0000ff""></FONT> 
+
+<hr size='1' /><span class='wintiny'>Edited 1/29/2006 9:41 am ET by <i>jadebox</i> <!-- A2L2TQZ63I9L --></span>"
+Web Services Feature Requests	"SalesRank And BrowseNodes
+Hello, I'm trying to get all the top ranked products in an Amazon ""ProductGroup"" ie ""CE"" or ""Pet Products"" .I've been using the following parameters to get the information:Operation=ItemSearchBrowseNode=<each browsenode>SearchIndex=<each searchindex>Sort=salesrankResponseGroup=Request,Medium,SalesRankI merge the results from the various queries, but I seem to be getting an incomplete result set -- like, I will only wind up with ranks 17,21,30,121,4020. More ranks than that, but an incomplete list.Got any suggestions on how to get the entire set of top-ranked products for some ""ProductGroup""?Thanks a lot!!!Michael Collins"
+Web Services Feature Requests	"Classical CDs: Tracks vs Works
+Can anyone tell me if it's possible (or will be in the future) to cull ""works""  information from classical CDs instead of ""tracks""? I'm talking about the information listed on Amazon's product pages under ""On this CD"" instead of under the ""Samples"" section, which shows tracks?  Tracks not particularly helpful in the world of classical music, and Amazon's ""works"" info seems much more complete (includes opus numbers, etc.) than the track info. However, I can only figure out how to return the tracks using XML, not the ""works"".  Also, anyone know who Amazon is getting the ""works"" info from?  Are they compiling it themselves, getting it from the manufacturers, getting it from a listing service of some kind?In other words, I want to show the following. All of it's on the page, so I know Amazon has it...just not sure if they are giving the info away, or whether I can anticipate it in the future.============THIS:============1. Violin Concerto (""La Primavera"", The Four Seasons) for violin, strings & continuo in E (""Il cimento"" No. 1), Op.8/1, RV 269Composed by Antonio VivaldiPerformed by Israel Philharmonic Orchestra with Isaac Stern Conducted by Zubin Mehta 2. Violin Concerto (""L'estate"", The Four Seasons) for violin, strings & continuo in G minor, Op. 8/2, RV 315Composed by Antonio VivaldiPerformed by Israel Philharmonic Orchestra with Pinchas Zukerman Conducted by Zubin Mehta 3. Violin Concerto (""L'autunno"", The Four Seasons), for violin, strings & continuo in F major (""Il cimento"" No. 3), Op.8/3, RV 293Composed by Antonio VivaldiPerformed by Israel Philharmonic Orchestra with Shlomo Mintz Conducted by Zubin Mehta 4. Violin Concerto (""L'inverno"", The Four Seasons), for violin, strings & continuo in F minor (""Il cimento"" No. 4) Op. 8/4, RV 297Composed by Antonio VivaldiPerformed by Israel Philharmonic Orchestra with Itzhak Perlman Conducted by Zubin Mehta =================NOT this:=================1. Concerto In E Major - Spring: Allegro2. Concerto In E Major - Spring: Largo3. Concerto In E Major - Spring: Allegro4. Concerto In G Minor - Summer: Allegro Non Molto - Allegro5. Concerto In G Minor - Summer: Adagio6. Concerto In G Minor - Summer: Presto7. Concerto In F Major - Autumn: Allegro8. Concerto In F Major - Autumn: Adagio Molto9. Concerto In F Major - Autumn: Allegro10. Concerto In F Minor - Winter: Allegro Non Molto11. Concerto In F Minor - Winter: Largo12. Concerto In F Minor - Winter: Allegro"
+Web Services Feature Requests	"Got problem in calculating signature
+When I submitted a AWIS request, it returned a ""AWS.NotAuthorized"" error and  a message of ""The identity contained in the request is not authorized to use this subscription id.""I have signed up for web information service and entered my payment information so I think maybe I calculated request signatures wrong.The problem is I don't know how to test my code.So, can anybody help me by calculating a correct signature for me? use this string: testkey: 2N+e82UaDbyePYY3mYYq+jK+F6fZOO77nPYiT4qtMy program return 5143d2e5b7bc575dada24f318c18d5b9. 
+
+<hr size='1' /><span class='wintiny'>Edited 11/15/2005 9:58 pm ET by <i>tahiti131</i> <!-- A39M6RH2NRGP --></span>"
+Web Services Feature Requests	"Got problem in calculating signature
+Correct signature is kyZeHL4B6mBuIPlAAW0oKVN7Q5Y=  (in Base64)Here is C# code sample:<FONT color=""#0000ff"" size=""2"">private</FONT><FONT size=""2""> </FONT><FONT color=""#0000ff"" size=""2"">static</FONT><FONT size=""2""> </FONT><FONT color=""#0000ff"" size=""2"">string</FONT><FONT size=""2""> GenSignature(</FONT><FONT color=""#0000ff"" size=""2"">string</FONT><FONT size=""2""> data, </FONT><FONT color=""#0000ff"" size=""2"">string</FONT><FONT size=""2""> key) {    HMACSHA1 hmac = </FONT><FONT color=""#0000ff"" size=""2"">new</FONT><FONT size=""2""> HMACSHA1(Encoding.UTF8.GetBytes(key));</FONT><FONT color=""#0000ff"" size=""2"">    byte</FONT><FONT size=""2""> [] rawData = Encoding.UTF8.GetBytes(data);</FONT><FONT color=""#0000ff"" size=""2"">    byte</FONT><FONT size=""2""> [] rawHmac = hmac.ComputeHash(rawData);</FONT><FONT color=""#0000ff"" size=""2"">    return</FONT><FONT size=""2""> Convert.ToBase64String(rawHmac);</FONT><FONT size=""2"">}</FONT>"
+Web Services Feature Requests	"Got problem in calculating signature
+the value of timstamp in your result is ...?"
+Web Services Feature Requests	"Got problem in calculating signature
+There is no timestamp there. I just signed ""test"" string with a key. In real world app I use <FONT size=""2"">
+DateTime.UtcNow.ToString(""yyyy-MM-dd'T'HH:mm:ss'Z'"");</FONT>"
+Web Services Feature Requests	"Got problem in calculating signature
+> can't test code
+<SPAN>Agreed.</SPAN>  <SPAN>A</SPAN> <SPAN>useful</SPAN> <SPAN>addition</SPAN> <SPAN>to</SPAN> <SPAN>AWSNotAuthorized</SPAN> <SPAN>would</SPAN> <SPAN>be</SPAN> <SPAN>a</SPAN> <SPAN>response</SPAN> <SPAN>containing</SPAN>  <SPAN>the</SPAN> <SPAN>string</SPAN>  <SPAN>the</SPAN> <SPAN>server</SPAN>  <SPAN>fed</SPAN> <SPAN>into</SPAN>  <SPAN>the</SPAN> <SPAN>signature</SPAN> <SPAN>hash.</SPAN>"
+Web Services Feature Requests	"Got problem in calculating signature
+A really useful addition would be a sample signature in their manuals! This issue pops up regularly in this forum."
+Web Services Feature Requests	"Got problem in calculating signature
+You can test your signatures here:
+http://awszone.techies.net (see READ ME on front page)
+-elena"
+Web Services Feature Requests	"WishList Priority field
+Greetings -
+I spoke with Jeff Barr et al at the PDC 05 and they shared my surprise that the ListItem has no priority field. Just to confirm, I copied the relavant schema from the WSDL. Any word on this?
+thanks!
+-rory
+<DIV class=""e"">
+<DIV class=""c"" style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><FONT face=""Courier New"" color=""#ff0000"">-</FONT> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><FONT color=""#990000""><SPAN class=""t"">xs:element</SPAN><SPAN class=""t""> name</SPAN></FONT><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>ListItem<FONT color=""#0000ff""><SPAN class=""m"">""</SPAN><SPAN class=""m"">></SPAN></FONT></DIV>
+<DIV>
+<DIV class=""e"">
+<DIV class=""c"" style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><FONT face=""Courier New"" color=""#ff0000"">-</FONT> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">xs:complexType</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV>
+<DIV>
+<DIV class=""e"">
+<DIV class=""c"" style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><FONT face=""Courier New"" color=""#ff0000"">-</FONT> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">xs:sequence</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV>
+<DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">xs:element</FONT></SPAN> <SPAN class=""t""><FONT color=""#990000"">name</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>ListItemId<SPAN class=""m""><FONT color=""#0000ff"">""</FONT></SPAN><SPAN class=""t""><FONT color=""#990000""> type</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>xs:string<SPAN class=""m""><FONT color=""#0000ff"">""</FONT></SPAN><SPAN class=""t""><FONT color=""#990000""> minOccurs</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>0<FONT color=""#0000ff""><SPAN class=""m"">""</SPAN><SPAN class=""m""> /></SPAN></FONT> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">xs:element</FONT></SPAN> <SPAN class=""t""><FONT color=""#990000"">name</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>DateAdded<SPAN class=""m""><FONT color=""#0000ff"">""</FONT></SPAN><SPAN class=""t""><FONT color=""#990000""> type</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>xs:string<SPAN class=""m""><FONT color=""#0000ff"">""</FONT></SPAN><SPAN class=""t""><FONT color=""#990000""> minOccurs</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>0<FONT color=""#0000ff""><SPAN class=""m"">""</SPAN><SPAN class=""m""> /></SPAN></FONT> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">xs:element</FONT></SPAN> <SPAN class=""t""><FONT color=""#990000"">name</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>Comment<SPAN class=""m""><FONT color=""#0000ff"">""</FONT></SPAN><SPAN class=""t""><FONT color=""#990000""> type</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>xs:string<SPAN class=""m""><FONT color=""#0000ff"">""</FONT></SPAN><SPAN class=""t""><FONT color=""#990000""> minOccurs</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>0<FONT color=""#0000ff""><SPAN class=""m"">""</SPAN><SPAN class=""m""> /></SPAN></FONT> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">xs:element</FONT></SPAN> <SPAN class=""t""><FONT color=""#990000"">name</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>QuantityDesired<SPAN class=""m""><FONT color=""#0000ff"">""</FONT></SPAN><SPAN class=""t""><FONT color=""#990000""> type</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>xs:string<SPAN class=""m""><FONT color=""#0000ff"">""</FONT></SPAN><SPAN class=""t""><FONT color=""#990000""> minOccurs</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>0<FONT color=""#0000ff""><SPAN class=""m"">""</SPAN><SPAN class=""m""> /></SPAN></FONT> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">xs:element</FONT></SPAN> <SPAN class=""t""><FONT color=""#990000"">name</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>QuantityReceived<SPAN class=""m""><FONT color=""#0000ff"">""</FONT></SPAN><SPAN class=""t""><FONT color=""#990000""> type</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>xs:string<SPAN class=""m""><FONT color=""#0000ff"">""</FONT></SPAN><SPAN class=""t""><FONT color=""#990000""> minOccurs</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>0<FONT color=""#0000ff""><SPAN class=""m"">""</SPAN><SPAN class=""m""> /></SPAN></FONT> </DIV></DIV>
+<DIV class=""e"">
+<DIV style=""MARGIN-LEFT: 1em; TEXT-INDENT: -2em""><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""><</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">xs:element</FONT></SPAN> <SPAN class=""t""><FONT color=""#990000"">ref</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>tns:Item<SPAN class=""m""><FONT color=""#0000ff"">""</FONT></SPAN><SPAN class=""t""><FONT color=""#990000""> minOccurs</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">=""</FONT></SPAN>0<FONT color=""#0000ff""><SPAN class=""m"">""</SPAN><SPAN class=""m""> /></SPAN></FONT> </DIV></DIV>
+<DIV><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">xs:sequence</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV></DIV></DIV>
+<DIV><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">xs:complexType</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV></DIV></DIV>
+<DIV><SPAN class=""b""><FONT face=""Courier New"" color=""#ff0000""> </FONT></SPAN> <SPAN class=""m""><FONT color=""#0000ff""></</FONT></SPAN><SPAN class=""t""><FONT color=""#990000"">xs:element</FONT></SPAN><SPAN class=""m""><FONT color=""#0000ff"">></FONT></SPAN></DIV></DIV></DIV>"
+Web Services Feature Requests	"Music Samples
+A Node indicating if music samples are available at Amazon.
+ 
+With it - I can correctly implement a ""Listen"" button such as this: http://www.celtic-one-design.com/php/B000B7HZXM.htm
+Right now - I am taking an educated guess if samples are available. The feature is being used at my site by surfers so I guess it is worth it."
+Web Services Feature Requests	"Music Samples
+seconded
+Amazon,Would this violate any licensing if a box displaying an Amazon web page containing the samples was displayed in a pop-up?"
+Web Services Feature Requests	"Music Samples
+<FONT color=""red"">displaying an Amazon web page containing the samples was displayed in a pop-up?</FONT>
+I hope not - using the same JS code (well almost - but still a popup) that Amazon is using at their site.
+Maybe if someone can list the labels they have a contract with to use samples - we might be able to figure out which songs have samples.
+Right now - I am just searching for ""24"" in the availability node to trigger the button. Hit and miss."
+Web Services Feature Requests	"Music Samples
+How I can receive Link to Listen Track.I use:http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&AWSAccessKeyId=[key]&AssociateTag=[tag]&Operation=ItemLookup&ItemId=B00007E8V4&ResponseGroup=TracksBut this query not response this.
+
+<hr size='1' /><span class='wintiny'>Edited 11/28/2005 1:06 pm ET by <i>Alexander Yagovdik</i> <!-- A1PED8NWLNO6 --></span>"
+Web Services Feature Requests	"Music Samples
+I do it via Javascript.
+ECS does not return the url for the samples. I want it in the future."
+Web Services Feature Requests	"Music Samples
+:-\ Thank you...How do it via JavaScript for separate Track?I want build link for each Tracks of album."
+Web Services Feature Requests	"Music Samples
+I haven't tried that yet.
+ 
+I still haven't received word for Amazon if this is legal."
+Web Services Feature Requests	"Music Samples
+OkThank you for help."
+Web Services Feature Requests	"Music Samples
+http://www.amazon.com/exec/obidos/tg/stores/recs/radio/krex/-/album/B0002OERI0/does this thing exists for the german amazon too? that would be great to link for listen to the music!"
+Web Services Feature Requests	"Retriving amazon logo in our site
+How to retrive amazons logo through web service"
+Web Services Feature Requests	"Editions
+Is it possible to find other editions of books using AWS? Please let me know thanks."
+Web Services Feature Requests	"price range soap
+Why Amazon does not support price ranges and image-URLs via SOAP?"
+Web Services Feature Requests	"Best Fitted Web Service Application
+Basically, my website is serving the college students to the books they will need. They will the book they need , and look it up on my database. The web site will also list the price of the books. Can anybody help me to find out what Web Service application that is best fitted for my web site if I want to list the Amazon.com's price for the same books that my viewers search ? Let's say my viewers search book with ISBN xxx-xxx-1234, then my website will list the price of the book AND the Amazon.com's price for the SAME book. So, it's kind of comparison price. What is the best fitted Amazon Web Service application for my web site?Thanks a bunch in advanced for your help !!"
+Web Services Feature Requests	"Verification that order was completed?
+Is there a way to determine whether a customer completed the purchase of a specific item?  If I'm reading the documentation correctly, there is not currently a way to do this.  Is there a way to do this?  If not, could such functionality be added?"
+Web Services Feature Requests	"Can I access Amazon Auctions with AWS?
+I am getting the regular Amazon shop stuff through AWS, but is it possible to access the auctions through AWS?
+Thanks"
+Web Services Feature Requests	"SearchInside Response Group
+Has the SearchInside response group been implemented?  Its in the documentation, but nothing about it.
+Also, it would be nice to be able to do a ""Blended"" or sitewide search using UPC."
+Web Services Feature Requests	"Customizing Amazon Products Feed
+We are looking to have dynamic content relevant to our products fed dynamically to our website using Amazon products feed ( http://www.mrrat.com/aws/index.html ) if there is a developer who can insert this into our current format in a seemless fashion we are interested. 
+ 
+Our link to our site is http://www.artletics.com/index.htm
+ 
+Regards."
+Web Services Feature Requests	"Retrieve order history?
+Is there a feature in AWS for a customer to extract his own ""complete Order History""?  That is, a list of purchases that have been completed?"
+Web Services Feature Requests	"Former list price
+<DIV>I can't get the (former) list price for non-current products in AWS4.</DIV>
+<DIV>In AWS3 the list price is shown even if the product is not available from Amazon anymore. In AWS4 it's missing in ResponseGroup ItemAttributes. Any solution?</DIV>
+<DIV> </DIV>
+<DIV>The former list price is quite handy for determining a price for a secondhand book.</DIV>"
+Web Services Feature Requests	"Former list price
+UP"
+Web Services Feature Requests	"Payment Handling
+Is there any service currently or planned to allow affiliates to handle payments and or login's to amazon accounts?"
+Web Services Feature Requests	"Payment Handling
+It cannot currently be done and I doubt it ever will be.  I would never allow such a thing if I were Amazon.  The implications are nightmarish in the extreme.  They would immediately make themselves responsible for how all developers handled ""Amazon customers"" creditcard  and account information.  Not to mention the logistics/security of how the money gets from the developer to Amazon.Jim"
+Web Services Feature Requests	"Find Newer Editions
+Is there an easy way to find if there's a newer edition for a book? The listings include info on editions so there must be some internal connection. It's not very accurate anyway. Maybe there's another site for this."
+Web Services Feature Requests	"ListSearch by CustomerId
+ListSearch allows search by Email and Name, etc. but (strangely) not by CustomerId.   I would like to see the ability to do a list search by CustomerId."
+Web Services Feature Requests	"TopSellers and NewReleases for CA & UK
+This is a fine BrowseNodeLookup feature for the US pages. Gives a current sales perspective. I see the Top Sellers on the UK website, but for the main Music node, it returns an error. It would be great to have these features implemented for CA - UK."
+Web Services Feature Requests	"Old fashioned point A to B wanted
+I would like to know how to take a simple web form and submit an isbn or aisn and retrieve specific fields. That's it. simple display.
+ASP, CF, PHP display code would be fine. I don't need much more than that and I can't seem to figure out where to send a query form to.
+Any help appreciated."
+Web Services Feature Requests	"Old fashioned point A to B wanted
+This site has links to sample code and also the documentation.Jim"
+Web Services Feature Requests	"UK BrowseNodeInfo
+When will BrowseNodeInfo return results for the UK? Wouldn't've thought it that difficult to adapt the code from the US, surely?"
+Web Services Feature Requests	"UK BrowseNodeInfo
+They turned it off without any reason as it was working fine since months.
+ 
+TURN it on again, please!"
+Web Services Feature Requests	"UK BrowseNodeInfo
+<FONT color=""blue"">When will BrowseNodeInfo return results for the UK?</FONT>
+It currently works ... sometimes.  I haven't seen anything from Amazon saying when they expect it to be working correctly for the UK.  Elena?<FONT color=""blue"">Wouldn't've thought it that difficult to adapt the code from the US, surely</FONT>?
+The code seems to already be there.  I suspect the problem is the data. I don't think the database at Amazon.co.uk has all the information needed to support the BrowseNodeInfo operation yet and it may be a huge endeavour for them to update it.
+-- Roger"
+Web Services Feature Requests	"Sort Blended Search Results by Relevance
+I would like to see the blended search results sorted based on the <RelevanceRank> returned in the XML (more like the results returned at the Amazon.com ""All Products"" search).  I know I could sort them myself on the client-side, but it seems to make more sence that they would be pre-sorted based on the RelevanceRank since that information is already calculated in the response.
+EXAMPLE:
+Doing a blended ItemSearch for the keywords ""Miracle at Midway"" returns results from 5 <SearchIndex>'s and returns 12 specific <Item>'s.
+The first <Item> is an HP iPAQ which is from the Electronics <SearchIndex> which has a <RelevanceRank> of 2.
+The Books <SearchIndex> which has a <RelevanceRank> of 1, includes a book which exactly matches the search keywords, but it is listed 6th in the <Item>'s list.  IMHO, it should be listed first - just like it is when you do an ""All Products"" search for the same keywords on the Amazon web site.
+Interestingly, even if I do an Electronics search on the web site for these keywords, *NO* electronics results are returned, and I still get the book listed first.  In fact, no other stores (i.e., SearchIndexes) are returned on the web site regardless of how I search.  Why does the blended search return such unusual results?
+In my opinion, the blended search is basically just a generic search of Amazon's products.  Even though it is ""blended"" I see no reason to return 5 SearchIndexes if there is only 1 obvious and appropriate result."
+Web Services Feature Requests	"products caching approach
+Hello, mates,I have started to develop aws based website.I'm searching for high-speed caching approach for amazon product's storage. Maybe is it possible to avoid any caching at all? Is it possible to build ""live"" aws based website without caching I mean?? I hate a little this restriction of amazon ""In order to fairly allocate access to all users, Amazon currently restricts ECS use to one call per secondper client IP address."" I have downloaded all needed categories and now I downloading to my DB all products by this categories. I have optimized this downloader as much as I can, but each category have a lot of  identical products from other categoryes and It seems not the best approach...Maybe somebody knows what principle of caching would be better for amazon goods?I think this is an Interesting question to discuss. But excuse me if it is already descussed somewhere, but I didn't find them.Will be very appreciated for any helful information.
+
+<hr size='1' /><span class='wintiny'>Edited 8/22/2005 2:59 pm ET by <i>Sadchenko Dmitry</i> <!-- AE9ZJS2Q06OG --></span>"
+Web Services Feature Requests	"Customize results per page
+I would like to see an option in AWS to let me customize how many results per page are displayed. Additionally, an option for displaying all results would be useful."
+Web Services Feature Requests	"Add AverageRating to ResponseGroups pls!
+Hello AWS Gang,If at all possible, can we get AverageRating added as a valid ResponseGroups request?I don't understand why we can Sort=reviewrank when we Operation=ItemSearch but not be able to efficiently display AverageRating with our website's search results.The only way I see how to do it is to add Reviews to our ResponseGroups or ResponseGroup=Large, which has a *huge* response when doing Operation=ItemSearch.The above is hard on both you guys (high RequestProcessingTime) and us since we gotta grab and parse a larger response and then not use all of the other data in the CustomerReviews node.As always, thanks  !!Justin =)"
+Web Services Feature Requests	"Merchant Web Services
+I would like to see some more information posted about the Web Services available for Merchants."
+Web Services Feature Requests	"Merchant Web Services
+Hi Brandon,
+The merchant services are on a part of the Amazon.com site that is available only to merchants. If you have the appropriate account information, you can log in at http://sellercentral.amazon.com and take a look around.
+You can learn a lot more about these APIs from Jason Levitt's AWS book (http://awsbook.com).
+Jeff at Amazon.com"
+Web Services Feature Requests	"BrowseNodeLookup
+If a BrowseNodeLookup doesn't return any children, what does that node denote? Is it an item? If so how can I relate that node id to the itemid?
+How do I get the mode given a BrowseNodeId?
+How do I get the parent of a node?"
+Web Services Feature Requests	"BrowseNodeLookup
+<FONT color=""blue"">If a BrowseNodeLookup doesn't return any children, what does that node denote? Is it an item? If so how can I relate that node id to the itemid?</FONT>
+<FONT color=""black"">It doesn't mean that the browse node is a product (browse nodes are not generally used to represent product pages).  It just means the browse node has no children.</FONT>
+<FONT color=""blue"">How do I get the mode given a BrowseNodeId?</FONT>
+There is no specific mode or search index for a given node since a browse node may contain products indexed by zero, one, or several modes/indexes.  But you can find a good mode/search index for a given node at http://www.browsenodes.com/ or by using the web services offered at BrowseNodes.com.
+<FONT color=""blue"">How do I get the parent of a node?</FONT>
+There's a round-about way in ECS 4  - get the BrowseNodes response group for a product in the node and you'll find a full path to the node in the response group.
+A quicker way is to use the data or web services from http://www.browsenodes.com/.
+-- Roger"
+Web Services Feature Requests	"BrowseNodeLookup
+My requirement is to show the full path for a given browsenodeid.
+I want to show something like A->B->C->D at any node and A,B,C,D need to be links. 
+How can I do it? Is it implemented somewhere so that I can take a look?"
+Web Services Feature Requests	"BrowseNodeLookup
+<FONT color=""blue"">I want to show something like A->B->C->D at any node and A,B,C,D need to be links. </FONT>
+<FONT color=""blue"">How can I do it? Is it implemented somewhere so that I can take a look?</FONT>
+I do that at BrowseNodes.com (http://www.browsenodes.com/).  The site's PHP code reads the information from a database and does something like the following to build the path:
+$text = """";$Parent = $Node;while ($Parent != 0 && $Parent != -1000)  {    $node = $Parent;    // Get $Title and $Parent for $node from database    $text = "" / <a href=\""node-$node.html\"">$Title</a>"" . $text;     } $text = substr($text, 2); // Path is now in $text
+You can do something similar with the information returned from the BrowseNodes.com web services.  As an example, for the node <U><FONT color=""#996633"">1086598</FONT></U>:
+http://www.browsenodes.com/xml.php?action=BrowseNodeInfo&node=1086598
+The web service results include the ""Path"" and ""PathList"" to the node:
+ <Path>Office Products &gt; Brands &gt; Avery</Path> <PathList>1064954/1086182/1086598</PathList> 
+The Path is textural and the PathList is numeric.  The trick is to combine the two using something like the following (in PHP):
+// First parse results into $Path and $PathList$titles = explode(' &gt; ', $Path);$IDs = explode('/', $PathList);
+// Build the string$text = '';$i = 0;while ($i < count($titles)) {  $Title = $titles[$i];  $node = $IDs[$i];  $text = "" / <a href=\""node-$node.html\"">$Title</a>"" . $text;   } $text = substr($text, 2); // Path is now in $text
+The above examples are in PHP (and untested), but should be adaptable to other languages.  I assume you could do something similar in XSLT, but I'm not very familar with XSLT so I can't give an example.
+-- Roger"
+Web Services Feature Requests	"URL (asmx) for the Amazon Webservices
+Hi
+   I am developing some CSF application samples, for which I need some web services. I thought of using Amazon web services, and get the WSDL for some of the webservices. But i require the URL (.asmx) to use with my CSF application. 
+Could you please help me out getting the asmx URL for the web services published by Amazon?
+Thanks and regards
+Unnikrishan"
+Web Services Feature Requests	"AWS 3 vs. 4
+One of the big reasons I still use AWS 3 is that it is easier to update my database with current prices and availability.  A single call will retrieve 30 ASINs with price and availability, eating up very little bandwidth.The OfferSummary Response Group would work for this except that it doesn't include availability.  And I can only get 10 prices per second."
+Web Services Feature Requests	"Hardware, electronics,... for FR locale
+Hi,Actually, PCHardware, Electronics, Photo,... is not available for French locale.Is it planned to make it available in the future ?It would be great !Thanks in advance,Nicolas"
+Web Services Feature Requests	"order confirmation
+I've had a request to have orders of my client's book(s) confirmed in order to facilitate the client's marketing promotion plans. Has AWS exposed such a feature to us developers? If so, where is this documented?If not, I'll submit this as a request for new AWS features.~~~~~~~~~~~~~~Basically, I would expect to send a date, some order identification (order#, confirmation#) and product identification (bookID) and retrieve a true/false response from AWS.========================================This message also posted in the general section:http://forums.prospero.com/am-assocdevxml/messages?msg=9185.1"
+Web Services Feature Requests	"Require Version Parameter
+Please make the Version Parameter a required field in all requests.You may want to e-mail everyone before implementing it and post a notice on the forum every week until you do Jim"
+Web Services Feature Requests	"Variations and remote cart
+Can you folks implement the cart so that the parent asin can be added to the cart and then the size and color can be selected at the amazon site? 
+Short of that, anybody who wants to use those products with the cart has to collect all of the variations on a local db and that undermines the whole point of webservices.
+Phil"
+Web Services Feature Requests	"Book Information wanted in Bulk
+<FONT color=""red""><FONT face=""Arial"" size=""2""><SPAN style=""FONT-SIZE: 10pt; FONT-FAMILY: Arial"">As I am working with a publisher I need a collection of book information like Title/Author/Publisher/Pages etc of the List of ISBN���S I have</SPAN></FONT><FONT face=""Arial"" size=""2""><SPAN style=""FONT-SIZE: 10pt; FONT-FAMILY: Arial"">Is it possible for me <SPAN class=""GramE"">get</SPAN> the following data or <SPAN class=""SpellE"">retrive</SPAN> the following data from Amazon���s <SPAN class=""SpellE"">webserver</SPAN>? If I provide the <SPAN class=""SpellE"">ISBNs  ... CAn anyone please help me with it?...Githin hereor mail me please at githin.jose@gmail.com</SPAN></SPAN></FONT></FONT>"
+Web Services Feature Requests	"number of pages?
+I wanted to know if there is a way to pull more information on the book, such as the number of pages. I know the info is always available at amazon.com, but I haven't figured out how to grab the number of pages"
+Web Services Feature Requests	"number of pages?
+You can find it in Items/Item/ItemAttributes/NumberOfPages...at least in ECS4Jim
+
+<hr size='1' /><span class='wintiny'>Edited 7/27/2005 2:51 pm ET by <i>Jim L Taylor</i> <!-- A1FLE355GZAK --></span>"
+Web Services Feature Requests	"Product Hierarchy
+Is it possible to get the entire Amazon product hierarchy using ECS?
+I have seen the browse funtionality in Amazon Light. Please let me know how it is implemented.
+~Indu"
+Web Services Feature Requests	"Product Hierarchy
+Amazon's products are organized into browse nodes. ECS 4 returns some browse node information (see the BrowseNodeLookup operaton and BrowseNodes response group), but for more complete information on US browse nodes, visit http://www.browsenodes.com.
+-- Roger"
+Web Services Feature Requests	"Product Hierarchy
+I understand that if a browsenodeid is specified, its's parent node can be found out. But given a nodeid how do I get the list of nodes under it?
+~Indu"
+Web Services Feature Requests	"Product Hierarchy
+<FONT color=""blue"">I understand that if a browsenodeid is specified, its's parent node can be found out. But given a nodeid how do I get the list of nodes under it?</FONT>
+Given a specified Browse Node ID, the ECS BrowseNodeLookup operation will return the children of the specified node.  It currently doesn't return the parent node.  You can find the parent by looking in the BrowseNodes response group returned for a product within the node but that's not very practical in most cases.
+Browsenodes.com (http://www.browsenodes.com) offers a web service which returns both the parent and child nodes for a specified browse node.  It also returns other information such as a good SearchIndex or mode to use for the node and a flag telling you whether the node is appropriate for use in a store.
+-- Roger"
+Web Services Feature Requests	"SearchInside Response Group
+We've been waiting for this for nearly 2 years.  SearchInside shows up in some of the documentation as a valid Response Group, but it doesn't actually work.  It would be nice to be able to reproduce some elements of A9's ""Book Results"".When it is implemented, I would like to see some of the new features like readability statistics, concordance, and Statistically Improbable Phrases available as well.  Some of those can go a long way to pre-selling a book, or just get people browsing."
+Web Services Feature Requests	"Will Alexa be able to help my research?
+Dear Alexa Team,
+Actually I am a final year Computer Engineering student doing a research project. My intention is to develop a ""Geo-specific"" Search Engine that delivers ""Geo-specific"" results.
+For instance, if someone searches for a ""Cobbler"" from Frankfurt, it is more meaningful to offer him results of Cobblers from Frankfurt. It is NOT so meaningful to ""Sort by relevance"".
+So I will be getting partial assistance from Geobytes (www.geobytes.com) which is capable of finding where the visitor is from and where a particular site is hosted....It is capable to go down to the level of cities and NOT just at country level...(Tokyo, London, Brisbane etc)...But what happens if a businessman from London hosts his site with a NewYork based hosting service provider...The result collapses...
+I felt Alexa could assist me using its Traffic Rank tool...Is there a way Alexa can help in this regard? I would like to take this project to a big level for the mankind...
+Will wait for your feedback
+Thanks & Regards
+Manoj Kumar
+findmanu@gmail.com
+0091-9382815912"
+Web Services Feature Requests	"ItemSearch logic request
+When doing an item search, it always appears to do a 'fuzzy' search, where items that are deemed 'close' to the search request are returned.  It would be nice if this was optional, so that I could turn it off for searches.  Something on the order of +, - logic like most sites use would be nice.
+For example +camera -digital:
+Would search for all cameras, that are not digital.  This would be an extremely nice addition to the search.  Right now, the searches are so broad as to be often unusable."
+Web Services Feature Requests	"Add CD catalog number to the API
+With many CD's existing with identical titles, especially within classical music, the catalog number is one of the only pieces of information on a CD that can ensure it is identical to one listed on the Amazon site.  It also makes hunting down a listing much easier.  The amazon web site allows searching classical music by catalog number, but this isn't carried over to the webservices API.
+It would be very helpful to be able to search CD's (both classical and popular music) based on record label and catalog number programatically.  This also implies that the catalog number would need to be added to the results displayed in an ItemLookup.  With the data existing in the amazon database, it's a shame it's not available.
+Thanks,
+Jonathan"
+Web Services Feature Requests	"Add a WishListName property to wishlists
+Customers are allowed to give Wishlists user-friendly names, but this information is not returned when looking up a wishlist, only the ListId is given.  This means that only a generic ""[CustomerName]'s Wish List"" name can be displayed to the customer, or worse, a name containing the ListId.If the customer has multiple wishlists, the only distinguishing characteristics available to display are the TotalItems and the CreatedDate, which is still rather cryptic.It would be far nicer to be able to show, for example, ""Books"", ""Music"", etc."
+Web Services Feature Requests	"Add a LastUpdateTime property
+I would like to see a ""LastUpdateTime"" property added to the response (and request) data.  This would be especially useful for Wishlists.   It would allow for performance enhancements as data could be cached locally. A request for data could be made using the LastUpdateTime.  If no changes have occured, a response to that effect would be returned by Amazon services.This is equivalent to a 301 Not Changed response in HTTP.  The Last Update Time is equivalent to an HTTP E-Tag."
+Web Services Feature Requests	"Wireless Accessory Price Lookup?
+Hello.  I'm looking to find something that will grab the lowest price of the wireless accessory category, as well as the cell phone category.  Can anyone help me here?  I pay for a programmer. 
+Denny"
+Web Services Feature Requests	"SOAP request
+Could you please tell me how to generate SOAP request for searching. Thank you."
+Web Services Feature Requests	"How to generate SOAP Request
+Could you tell me please how to generate SOAP request. Thank you."
+Web Services Feature Requests	"Adding new response group
+I need response group includes QoS attributes such as availability, processing time, cost, reputation (which is related to service rating)... These attributes need to be associated with the offered services. I need this reponse group in order to select products or services based on its quality. I need your help to add this group. Thank you."
+Web Services Feature Requests	"Include Customer Image in SmallImage Tag
+I notice that products having only a ""customer image"" don't get any of the SmallImage/LargeImage XML tags in AWS.  Why not?  Detail pages on the production site display them by default, so I'd say AWS should refer to them too.  While we're at it, how about including customer images in search result pages on the production site too?  Example...Detail page at Amazon, shows customer image:http://www.amazon.com/exec/obidos/tg/detail/-/8845225712/AWS ItemLookup for same item, no ref to images:http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&SubscriptionId=[yourID]&Operation=ItemLookup&ItemId=8845225712&ResponseGroup=Medium,VariationSummary&Condition=All&MerchantId=AllSearch result page at Amazon including this item (5th one down), no picture:http://www.amazon.com/exec/obidos/search-handle-url/ref=dp_srsubj_entry/?%5Fencoding=UTF8&index=books&field-keywords=Longhi%2C%20Pietro"
+Web Services Feature Requests	"Remote cart
+I have a number of UK Amazon sites using the remote shopping cart functionality. However, my conversion rate is average due to the fact that once visitors check out, they are then directed to the Amazon shopping basket (MergeCart=TRUE for UK shops). This can't help their perception as they have checked out of my shopping cart only to then be directed to the Amazon one.
+When will UK associates be given the same service as the US where MergeCart=FALSE allowing visitors to check out of the affiliate site and go straight to Amaon's register or log in pages hence avoiding the Amazon shopping cart?
+Jon"
+Web Services Feature Requests	"looking to hire some help
+Hello, 
+I operate an online shopping website; I am looking to enlist the services of an expert developer to create a custom amazon web services solution that can be integrated into my site. If you are interested please send me an email that includes at least a few links to live projects using your development. I will reply with a full explanation of the project.
+Thanks for your time,
+lsmalls@upnorthservices.com"
+Web Services Feature Requests	"looking to hire some help
+you might get some good response here...http://www.sitepoint.com/forums/forumdisplay.php?f=220"
+Web Services Feature Requests	"automated node inventory downloading
+Is there a way to ping multiple nodes and take their invenotry listings through XML, and have this entire process automated. Ex. automated ping to 10 nodes with 2500 items each, and get 25000 items returned through XML. send email to Ketur@gpshopper.com if you have any info or ideas on how to make this happen, or if it is already done."
+Web Services Feature Requests	"Multiple SearchIndex for ItemLookup
+It'd be great if you could incorporate the use of multiple SearchIndexes when using a BrowseNode in ItemLookup and merge the results. This would help give complete item results for some areas.Example:ASIN B0007U9E14 (Pampers Cruisers Size 4 Economy Pack) is the #1 item in SearchIndex=HealthPersonalCare associated with BrowseNode=13106231. An ItemLookup with this BrowseNode and SearchIndex combo results in hundreds of ASINs. If I use the same BrowseNode with SearchIndex=Baby I don't get the ASIN listed above and only one ASIN is returned (B000669FDQ) instead of hundreds.Thanks,John"
+Web Services Feature Requests	"Multiple SearchIndex for ItemLookup
+You can use batch request:
+http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&Version=2005-03-23&Operation=ItemSearch&SubscriptionId=&ltAccess Key Removed>&AssociateTag=webservices-20&ItemSearch.1.SearchIndex=HealthPersonalCare&BrowseNode=13106231&ItemSearch.2.SearchIndex=Baby&MerchantId=All
+Above call will return results from two search indexes - <FONT color=""black"">HealthPersonalCare and Baby. Note, results will appear under two separate ""Items"" nodes. </FONT>
+More on batch requests:
+http://www.amazon.com/gp/aws/sdk/main.html?s=AWSEcommerceService&v=2005-03-23&p=PgCombiningOperations
+-elena"
+Web Services Feature Requests	"Multiple SearchIndex for ItemLookup
+Hi Elena,Thanks for the quick response.This works, but gives me 2 different <Items> nodes to deal with. My initial reaction is this could result in some major overhaul work, and we'd have to show up to 20 items on a page instead of just 10; otherwise, how do you handle going to page 2 for each search index individually? And it'll be confusing for the user as well, since there won't always be 10 results per page from each index. This is a can of worms.And if I sort on salesrank its sorted by each search so in the  case you gave, I'd have salesrank 1-10 from HealthPersonalCare coupled with salesrank 1634. Not a great solution from my perspective when you apply any of the sort algorithms. It really needs to be solved on the server side - merge the results and then sort, but I know its not that simple because you'll run into the same problem I outlined above without some additional engineering.Again, this gives us something to work with, but its not an optimal solution with many issues."
+Web Services Feature Requests	"Multiple SearchIndex for ItemLookup
+this works, when calling via URL, searching for books and music, eg:ItemSearch.1.SearchIndex=Books&ItemSearch.2.SearchIndex=Music&but how do i create a soap-request for that? best would be in perl. the perl-example only creates a ""single"" request. i tried different style but was not successfull...thanxsmarkus"
+Web Services Feature Requests	"Website hosts
+Before I go out and buy anything, I'd like to know that I have a good plan to set up an Amazon Associates website.
+My PC is on Windows 2000.  I'm open to upgrading if needed.  I have a router.  The PC is a Dell Pentium 3, 1.1 GgH. 256K RAM.
+I'm considering webhosting.com for the website host of 3 websites.  About a hundred a year.  They can work with XML & PERL.
+I'll use FrontPage to build the pages.  (I'm very comfortable with this step, but do warn me if there's something I need to be aware of.)
+I'll need Associate Engine to ""connect"" w/Amazon.com and show my referrals.  This appears to be easy to follow.
+Is there something I'm not thinking of?  Can I reasonably pull this off without having to pay someone to help?"

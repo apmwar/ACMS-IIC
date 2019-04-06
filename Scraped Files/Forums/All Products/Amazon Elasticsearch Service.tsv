@@ -1,0 +1,2069 @@
+label	description
+Amazon Elasticsearch Service	"Pass query string parameters to Elasticsearch AWS VPC
+Good day,
+
+I'm having problems with passing query string parameters in the URI to Elasticsearch Service hosted in a VPC. 
+I've got no problems when the URI contains API function (such as /_search) but when I include: 
+/_search*?search_type=dfs_query_then_fetch*
+
+I've got this kind of error.
+Unsuccessful low level call on POST:******
+
+Audit trail of this API call:
+
+ - [1] PingFailure: Node: https:<domain>/<_index1>%2C<_index2>/<_document>/_search?search_type=dfs_query_then_fetch/ Exception: PipelineException Took: 00:00:00.3528982
+
+OriginalException: Elasticsearch.Net.ElasticsearchClientException: One or more errors occurred. ---> System.AggregateException: One or more errors occurred. ---> Elasticsearch.Net.PipelineException: Failed to ping the specified node. ---> Elasticsearch.Net.PipelineException: An error occurred trying to read the response from the specified node.
+
+   at Elasticsearch.Net.RequestPipeline.Ping(Node node)
+   --- End of inner exception stack trace ---
+   at Elasticsearch.Net.RequestPipeline.Ping(Node node)
+   at Elasticsearch.Net.Transport`1.Ping(IRequestPipeline pipeline, Node node)
+   at Elasticsearch.Net.Transport`1.Requesthttps://forums.aws.amazon.com/(HttpMethod method, String path, PostData data, IRequestParameters requestParameters)
+   --- End of inner exception stack trace ---
+   --- End of inner exception stack trace ---
+
+Audit exception in step 1 PingFailure:
+
+Elasticsearch.Net.PipelineException: An error occurred trying to read the response from the specified node.
+   at Elasticsearch.Net.RequestPipeline.Ping(Node node)
+
+Request:
+
+<Request stream not captured or already read to completion by serializer. Set DisableDirectStreaming() on ConnectionSettings to force it to be set on the response.>
+
+Edited by: MartinSarte on Feb 27, 2019 1:19 AM"
+Amazon Elasticsearch Service	"Cluster Upgrade from 6.0 to 6.4 stuck at 77.03% for hours
+I started a cluster upgrade from 6.0 to 6.4 about 36 hours ago.
+For the last 8 hours or so the upgrade has been stuck at 77.03%
+Is there a way to know what is going on?"
+Amazon Elasticsearch Service	"Re: Cluster Upgrade from 6.0 to 6.4 stuck at 77.03% for hours
+The cluster finally upgraded sometime during the second night.
+I had to delete and recreate the Kibana patterns, other than that no data loss and the cluster was otherwise responsive during the upgrade."
+Amazon Elasticsearch Service	"How to make a search by both category and query?
+Here is query that gets composed inside Elasticpress WP plugin. Need to additionally specify the category in some way. Please advice
+
+var query = {
+post_filter: {
+bool: {
+must: [
+{
+terms: {
+post_status: 
+}
+},
+{
+terms: {
+'post_type.raw': 
+}
+}
+]
+}
+},
+query: {
+query_string: {
+fields: ,
+query: ""test""
+}
+},
+sort: [
+{
+_score: {
+order: 'desc'
+}
+}
+]
+}
+
+Edited by: ofesak on Feb 26, 2019 2:08 AM"
+Amazon Elasticsearch Service	"Two domains stuck in ""being deleted"" state in US-East-1
+I have two Elasticsearch domains that I have chosen to delete half a day ago in the North Virginia region, but they remain in the ""Being deleted"" state, racking up fees unnecessarily.
+
+If anyone from support could look into this, I'd be most appreciative."
+Amazon Elasticsearch Service	"Stuck at processing for more than 48 hours
+My domain is stuck at Processing state for more than 48 hours. When I check the domain configurations under the storage configs I can see ""Storage configuration is Processing"".
+Is there anything that can be done to speed up the process right now (i know reducing shards can make this faster, but I cannot do this right now) or to see how much more time will it take? I need to deploy new features in our application but the ppipeline will always fail because I cannot update my Cloudformation Stack due to the fact that my domain is stucked (I can try some workarounds in my deployment pipeline but I really need the domain to be working normally again).
+
+Thank you
+
+EDIT: Added some outputs made for debugging
+
+Edited by: Esbrito on Feb 25, 2019 5:01 AM
+
+Edited by: Esbrito on Feb 25, 2019 6:55 AM"
+Amazon Elasticsearch Service	"7.0.0 Beta 1 - sharing blog updates
+The Elastic Stack 7.0.0-beta1 is here, with many new features and improvements like faster search with block-max WAND, custom result scoring with script_score query, the new Maps app for ad-hoc visual geospatial analysis, new design and navigation in Kibana (including dark mode), and much more.
+
+Link to the official blog post: https://www.elastic.co/blog/elastic-stack-7-0-0-beta1-released
+
+Full disclosure, I work for Elastic (makers of Elasticsearch / ELK Stack)."
+Amazon Elasticsearch Service	"Does elasticsearch encryption at rest ensures manual snapshots be encrypted
+I am taking snapshots of my indexes into my s3 bucket. I am not sure if these snapshots are encrypted or not. 
+
+Can someone clarify if snapshot encryption is part of Encryption provided by aws. Also provide the links which talks about the same.
+
+If they are encrypted how can I verify this.
+
+thanks"
+Amazon Elasticsearch Service	"Can we ""push back"" Kinesis failed records from S3 backup to ElasticSearch?
+Hi, here's my setup:
+ - I have a Simple Email Service's configuration set that sends all events to a Firehose stream.
+ - This Kinesis Firehose delivery stream is configured with a S3 backup that receives failed records only.
+ - This stream delivers events into an ElasticSearch
+
+I recently discovered while troubleshooting an email issue using Kibana that my ES had not received any events since for a month. After some investigation, i found out that my ES was out of disk space. Added a CloudWatch alarm now to prevent this issue back and scaled-up my storage.
+
+I see that my S3 bucket has a ""folder"" named elasticsearch-failed with subfolders structured like years/month/days/hours.
+
+If i click onto those items named ses-events-stream-1-YYYY-MM-DD-HH-MM-SS-GUID i dont see the json i thought i would see (the event) but more like a json containing raw data.
+
+I dont know how to ""use/exploit"" those items. Is is possible to just push them back into the elasticsearch somehow and just flush the S3 bucket content just like if i have not had this storage issue?
+
+Edited by: perreaultd on Feb 20, 2019 4:31 AM"
+Amazon Elasticsearch Service	"unable to access Elastic Search/Kibana  from my browser
+Hello All,
+
+I created a new Elastic Search Domain and added the below-given policy
+
+{
+
+""Version"": ""2012-10-17"",
+
+""Statement"": [
+
+{
+
+""Effect"": ""Allow"",
+
+""Principal"": {
+
+""AWS"": ""arn:aws:iam::xxxxxxxxxxxx:user/elastic-user""
+
+},
+
+""Action"": ""es:*"",
+
+""Resource"": ""arn:aws:es:us-east-1:xxxxxxxxxxxx:domain/xxxxdomain/*""
+
+}
+
+]
+
+}
+
+Here are the policy and group attached to the user
+
+{ ""Version"": ""2012-10-17"", ""Statement"":  }
+
+Now when I try to access Elastic Search or Kibana, I get the following error
+
+{""Message"":""User: anonymous is not authorized to perform: es:ESHttpGet""}
+How do I access Elastic Search or Kibana dashboard with the user I created for this domain"
+Amazon Elasticsearch Service	"Re: unable to access Elastic Search/Kibana  from my browser
+Experiencing the same issue.
+
+Have tried following this: https://aws.amazon.com/blogs/security/how-to-control-access-to-your-amazon-elasticsearch-service-domain/ but still getting the same error.
+
+
+UPDATE:
+
+I have managed to access the endpoint and kibana by setting a rule in the access policy, specifying the user and the IP, and by configuring my aws cli as well.
+
+For the policy part, see https://stackoverflow.com/a/34055389
+
+Edited by: dimisjim on Feb 18, 2019 5:35 AM"
+Amazon Elasticsearch Service	"Elasticsearch in VPC, Nginx proxy and Cognito with Google Authentication
+Context: 
+We have a private Elasticsearch cluster that runs in a VPC. 
+We have an Nginx proxy behind an ALB to proxy the requests to the Kibana private endpoint. 
+We have Cognito enabled for Kibana's authentication. 
+Authentication using the Cognito User Pool as an Identity Provider works fine. 
+Authentication using a third party identity provider (Google in our case) fails. 
+
+When we load our app login page we can choose Google to authenticate. We are successfully redirected to the Google page to choose the account. We are also successfully redirected by Google to the /oauth2/idpresponse endpoint on our Nginx proxy instance. We proxy the request to the Cognito domain. 
+But then the Cognito domain's response is a redirection to _plugin/kibana/app/kibana with the following GET parameters: 
+
+error_description: Bad token response: HTTP/1.1 400 Bad Request, entity: {
+  ""error"": ""redirect_uri_mismatch"",
+  ""error_description"": ""Bad Request""
+}
+state: 9b82e943-8550-46e9-8639-b0ec886a2017
+error: invalid_request
+
+
+Even though the final step fails we can see the user being created in the Cognito User pool which leads us to think that everything is correctly set up on the Google's side. We believe that something is missing in our Nginx configuration. 
+
+events {
+    worker_connections 1024;
+}
+ 
+http {
+    server {
+        listen 443 ssl;
+        server_name ${ANALYTICS_SERVER_NAME};
+        rewrite ^/$ https://$host/_plugin/kibana redirect;
+ 
+        ssl_certificate ""/etc/nginx/server.crt"";
+        ssl_certificate_key ""/etc/nginx/server.key"";
+        ssl_session_cache  builtin:1000  shared:SSL:10m;
+        ssl_protocols  TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
+        ssl_prefer_server_ciphers on;
+ 
+        client_max_body_size 10M;
+ 
+        location /_plugin/kibana {
+            # Forward requests to Kibana
+            proxy_pass https://${ANALYTICS_DOMAIN}:443;
+ 
+            # Handle redirects to Cognito
+            proxy_redirect ~*https://our-domain.auth.us-east-1.amazoncognito.com(.*)${ANALYTICS_DOMAIN}(.*) https://$host$1$host$2;
+            proxy_redirect https://our-domain.auth.us-east-1.amazoncognito.com https://$host;
+ 
+            # Update cookie domain and path
+            proxy_cookie_domain ${ANALYTICS_DOMAIN} $host;
+            proxy_cookie_path / /_plugin/kibana/;
+            #proxy_cookie_path /_plugin/kibana/ /;
+ 
+            # Response buffer settings
+            proxy_buffer_size 128k;
+            proxy_buffers 4 256k;
+            proxy_busy_buffers_size 256k;
+ 
+            proxy_pass_request_headers on;
+            proxy_pass_request_body on;
+        }
+ 
+        location ~ \/(changePassword|sign|login|forgot|saml) {
+            # Forward requests to Cognito
+            proxy_pass https://our-domain.auth.us-east-1.amazoncognito.com;
+ 
+            # Handle redirects to Kibana and Cognito
+            proxy_redirect ${ANALYTICS_DOMAIN} $host;
+            proxy_redirect our-domain.auth.us-east-1.amazoncognito.com $host;
+            # proxy_redirect ~*(.*)our-domain.auth.us-east-1.amazoncognito.com(.*) $1$host$2;
+ 
+            # Update cookie domain
+            proxy_cookie_domain our-domain.auth.us-east-1.amazoncognito.com $host;
+ 
+            proxy_pass_request_headers on;
+            proxy_pass_request_body on;
+        }
+ 
+        location /oauth2 {
+            proxy_pass https://our-domain.auth.us-east-1.amazoncognito.com;
+ 
+            proxy_redirect ~*(.*)our-domain.auth.us-east-1.amazoncognito.com(.*) $1$host$2;
+            proxy_redirect ${ANALYTICS_DOMAIN} $host;
+ 
+            # Update cookie domain
+            proxy_cookie_domain our-domain.auth.us-east-1.amazoncognito.com $host;
+ 
+            proxy_pass_request_headers on;
+            proxy_pass_request_body on;
+        }
+ 
+        location /logout {
+            proxy_pass https://our-domain.auth.us-east-1.amazoncognito.com;
+            proxy_redirect https://our-domain.auth.us-east-1.amazoncognito.com https://$host;
+            # Update cookie domain
+            proxy_cookie_domain our-domain.auth.us-east-1.amazoncognito.com $host;
+        }
+ 
+        location /elb {
+            root /usr/share/nginx/html/;
+        }
+    }
+}
+
+
+Edited by: RomainBraems on Feb 15, 2019 4:33 PM
+
+Edited by: RomainBraems on Feb 15, 2019 4:34 PM
+
+Edited by: RomainBraems on Feb 15, 2019 4:37 PM"
+Amazon Elasticsearch Service	"Elasticsearch VPC endpoint does not expose port 443
+I have created an Elasticsearch cluster with an open policy but restricted within my VPC.
+
+The configuration shows that the ""VPC endpoint"" to be something like:
+https://vpc-***********************.us-east-1.es.amazonaws.com
+
+When I ssh into an EC2 instance within my VPC and which has the appropriate security group, I can only connect to elasticsearch using port 80, http.  Using nmap also confirms that only port 80 is exposed.
+
+My cluster has both encryption at rest as well as node to node encryption.  Wondering why I can't have my client's communication encrypted?
+
+Since I can connect via http I'm assuming this is NOT a security group issue."
+Amazon Elasticsearch Service	"Re: Elasticsearch VPC endpoint does not expose port 443
+Turns out it was an issue with the Security Groups on the elasticsearch.
+
+I had specified the security groups A, B, C to be used, and had thought that all instances using these security groups would be allowed access to ElasticSearch - similar to how it usually works.  Instead you need to make sure that 443 is exposed as an inbound rule.  Or maybe I was doing something wrong."
+Amazon Elasticsearch Service	"Re: Elasticsearch VPC endpoint does not expose port 443
+I guess the real question is:
+
+Is it possible to secure the elasticsearch cluster without resorting to IAM request signing when I want only the instances within an autoscale cluster to communicate?  
+
+I can't use IP addresses to restrict since those always change.  I was hoping that I could have the Elasticsearch cluster's security group point to the instance of another security group as can be done in other situations.  If this isn't possible I guess the cluster will just be open to anything within the VPC."
+Amazon Elasticsearch Service	"Re: Elasticsearch VPC endpoint does not expose port 443
+marking as unanswered
+
+Edited by: emoney on Feb 15, 2019 12:17 AM"
+Amazon Elasticsearch Service	"AWS elasticsearch usage on dedicated master and awareness zone
+Hi,
+
+I am new to AWS elasticsearch service, and care about the robustness and data availability of the cloud search system in my application. Therefore, I hold a strong interest in awareness zone and dedicated master settings.
+
+My question is,
+
+1. When I activate these two features, would the dedicated master nodes constantly stay in one of the awareness zones? In this case, if one of my awareness zones loses connection or fails down, does that mean the dedicated master nodes would possibly fail along with the failed awareness zone?
+
+2. Or the dedicated master nodes are in a completely different physical place from the awareness zones?
+
+Thanks"
+Amazon Elasticsearch Service	"Re: AWS elasticsearch usage on dedicated master and awareness zone
+As far as I understand from the documentation there's a 1/2 split (or 2/3 in case of 5 dedicated masters) of the masters over the 2 availability zones. This sadly gives you a 50/50 chance to lose quorum in case one of the AZ's fails. 
+See documentation here  https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains.html#es-managedomains-zoneawareness 
+
+Why it is currently impossible to spread the masters over three availability zones is beyond be to be honest.
+
+Edited by: kiwivogel on Jan 11, 2019 7:26 AM"
+Amazon Elasticsearch Service	"Re: AWS elasticsearch usage on dedicated master and awareness zone
+Elastic Cloud product manager here, creators of Elasticsearch, Kibana, Logstash and Beats, AKA the Elastic Stack.
+
+Unfortunately in the example described here, there's a 50% chance of a cluster outage depending on if the availability zone with the two master eligible nodes (in the case of three dedicated masters) is lost.
+
+Resilience is achieved in Elastic Cloud [1] where you can deploy dedicated master eligible nodes across three availability zones (in regions that support three or more zones such as N.Virginia). In the case where a zone is lost (along with the master node), two master eligible nodes remain across the two zones and a quorum is reached to elect a new master without an outage.
+
+[1] -  https://www.elastic.co/cloud/elasticsearch-service"
+Amazon Elasticsearch Service	"Re: AWS elasticsearch usage on dedicated master and awareness zone
+Please read the documentation again.
+
+https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains.html
+
+If your have a region with a least 3 zones, your problem with the master nodes is gone since last week. AWS spreads the 3 master nodes to 3 AZs, even if you choose 2 AZs for your data nodes."
+Amazon Elasticsearch Service	"two-step verification is not working
+Hi,
+
+I am not sure if this is the correct Category but I could not found the right one.  I am having issues with the Amazon two-step verification because is not validating any code generated by the Google Authenticator app. I resynced the codes and also re-created a new MFA, but I always get the same response when I login ""Invalid code entered"".
+
+How can I solve this?
+
+Regards,
+Fernando"
+Amazon Elasticsearch Service	"No clarity regarding signed headers for ElasticSearch requests
+I spent over a day trying to figure out why I was getting a 
+
+The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. Consult the service documentation for details.
+
+
+Usually when you send a service a malformed signed request the service lets you know what Canonical String should have been generated and what string should have been signed to help users troubleshoot their signing procedure. 
+
+ElasticSearch makes this very difficult because it provides nothing.
+
+I spent over a day trying to figure out why my signature was incorrect. I was able to finally figure it out by comparing the authorization header generated by the aws-sdk vs the authorization header generated by my signing procedure. The only difference: I signed both content-type and content-length headers (both which are present in the both http request), but the aws-sdk chooses not to sign those two headers. Why? There is no explanation in the ES docs on what headers the service accepts.
+
+This seems buggy to me, but Content-Type/Content-Length are relevant headers that describe the request. Those headers should either be allowed to be signed, or the docs should specify what headers can be signed and what ones cannot."
+Amazon Elasticsearch Service	"6.6 Release - sharing blog updates
+Hi there - I’m Belyn from Elastic (we make Elasticsearch/ELK Stack). 
+
+Heads up that 6.6 is out and includes features like index lifecycle management, frozen indices, Bkd-backed geoshapes, and enhancements in Elasticsearch SQL, machine learning, and more.
+
+Link to official blog post: https://www.elastic.co/blog/elastic-stack-6-6-0-released
+
+For those who are interested, you can try it for free here: https://www.elastic.co/cloud/elasticsearch-service/signup
+
+Edited by: vidamon on Jan 30, 2019 12:26 PM to include link for those who expressed interest in trying it out."
+Amazon Elasticsearch Service	"AWS elastic search domain endpoint not accessible from browser
+The error in browser is This site can't be reached.
+
+I am deploying through default terraform script
+
+resource ""aws_elasticsearch_domain"" ""master"" {
+  domain_name           = ""master""
+  elasticsearch_version = ""6.4""
+ 
+  cluster_config {
+    instance_type = ""m4.large.elasticsearch""
+  }
+ 
+  ebs_options {
+    ebs_enabled = true
+    volume_size = 10
+  }
+ 
+  snapshot_options {
+    automated_snapshot_start_hour = 23
+  }
+ 
+  tags = {
+    Domain = ""TestDomain""
+  }
+} 
+
+
+Has anyone faced the same problems?
+
+Thanks"
+Amazon Elasticsearch Service	"URL signing does not work in AWS ElasticSearch 5.x
+We recently upgraded from aws Elasticsearch service 2.3 to 5.5 and in the 5.5 version the pre-signed urls are not working (working for 2.3). 
+
+URL:
+https://xyxxxxx-wersbre36om7cjtjqc3ddo7dty.us-east-1.es.amazonaws.com/index/_search?filter_path=hits.total%2Chits.%2A%2A._source&from=0&size=100&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Expires=3600&X-Amz-Credential=AK3AJCLE2IF2NP37H4RP%2F20190129%2Fus-east-1%2Fes%2Faws4_request&X-Amz-SignedHeaders=host&X-Amz-Date=20190129T085628Z&X-Amz-Signature=985c99fccf1cdc83e4a8b56b873451bfb4244794ac2566d9c409241677623fa4
+
+Error:
+{
+  ""error"": {
+      ""root_cause"": [
+          {
+              ""type"": ""illegal_argument_exception"",
+              ""reason"": ""request [/index/_search] contains unrecognized parameters: [X-Amz-Algorithm], [X-Amz-Credential], [X-Amz-Date], [X-Amz-Expires], [X-Amz-Signature], [X-Amz-SignedHeaders]""
+          }
+      ],
+      ""type"": ""illegal_argument_exception"",
+      ""reason"": ""request [/index/_search] contains unrecognized parameters: [X-Amz-Algorithm], [X-Amz-Credential], [X-Amz-Date], [X-Amz-Expires], [X-Amz-Signature], [X-Amz-SignedHeaders]""
+  },
+  ""status"": 400
+}"
+Amazon Elasticsearch Service	"Cannot visualise data from Amazon Connect
+Hi All,
+
+I've followed the guide here: https://aws.amazon.com/blogs/contact-center/use-amazon-connect-data-in-real-time-with-elasticsearch-and-kibana/
+
+But I am unable to visualise any data.
+I can create the index logs, but when I attempt to visualise the data I get no results.
+If I remove the EventTimeStamp filter then data shows but it's not accurate or up-to-date.
+
+EDIT: Watched a user go from 'available' to a non-production custom state.
+The dashboard did update the new status they assumed, but didn't remove the count from the old status."
+Amazon Elasticsearch Service	"Elastic Search Policy Update Fails
+We're getting the following error when trying to save an existing policy.  Only a minor change (date) was made in this policy (IDs/IPs removed) that is causing an error.  We were originally trying to update the IP set. 
+
+Any thoughts? Any insight would be appreciated.
+
+UpdateElasticsearchDomainConfig: {""message"":""Error setting policy: [{\""Version\"":\""2012-10-18\"",\""Statement\"":[{\""Sid\"":\""AllowKubernetes\"",\""Effect\"":\""Allow\"",\""Principal\"":{\""AWS\"":\""arn:aws:iam::REMOVED:role/REMOVED\""},\""Action\"":\""es:*\"",\""Resource\"":\""arn:aws:es:us-east-1:REMOVED:domain/REMOVED/*\""},{\""Sid\"":\""\"",\""Effect\"":\""Allow\"",\""Principal\"":{\""AWS\"":\""*\""},\""Action\"":\""es:*\"",\""Resource\"":\""arn:aws:es:us-east-1:REMOVED:domain/REMOVED/*\"",\""Condition\"":{\""IpAddress\"":{\""aws:SourceIp\"":https://forums.aws.amazon.com/""}
+
+Edited by: bd3 on Jan 25, 2019 3:56 PM"
+Amazon Elasticsearch Service	"Re: Elastic Search Policy Update Fails
+Ended up rebuilding the policy and it worked. So..."
+Amazon Elasticsearch Service	"ElasticSearch with Java
+Hello,
+
+As per as AWS ElasticSearch service is concern we are facing ton of issues one after another and there is no such documents available to explore the AWS-Elastic Search Service for the Java application.
+
+Is anyone from AWS side help us to explore the AWS Elastic Search Service with Java Program.
+
+Issues what we are facing mention below and for full info kindly find the attachment,
+
+org.elasticsearch.client.ResponseException: method https://forums.aws.amazon.com/, host https://search-productionelastic-sbisvtxqimvxeyxkh4jyghe6qq.us-west-2.es.amazonaws.com, URI [/ifix/_doc/ADOC0000400], status line http://HTTP/1.1 406 Not Acceptable
+
+{""error"":""Content-Type header text/plain; charset=ISO-8859-1 is not supported"",""status"":406}
+
+Thanks & Regards,
+Alam"
+Amazon Elasticsearch Service	"Re: ElasticSearch with Java
+Hello,
+
+for what I can see the error reported in your message is returned by the Java package ""org.elasticsearch.client"" that is part of the GitHiub project (third-party software):
+
+https://github.com/elastic/elasticsearch
+
+Our Java SDK includes instead a completely different Java package for interacting with Elastisearch service:
+
+https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/elasticsearch/package-summary.html
+
+Please clarify me this aspect describing exactly the issue that you are experiencing."
+Amazon Elasticsearch Service	"Re: ElasticSearch with Java
+Hello Alam,
+
+randomly I found your post while looking through this forum. I had the same struggle with Java and AWS Elasticsearch Service.
+My (POC but working) example can be found here on how to interact with AWS ES Service:
+
+https://github.com/n-schilling/ceca/blob/master/3a_CECA_core_Lambda/src/main/java/de/nschilling/ceca/ElasticsearchServices.java
+
+Regards,
+Nico"
+Amazon Elasticsearch Service	"How to give lambda function access to Elasticsearch
+I have a lambda function that I would like to call elasticsearch from but I've yet to figure out the IAM policy that will work.
+
+I've added the lambda role to the es domain and given access.
+
+I've also changed my role used for the lambda to give access to es.
+
+What am I doing wrong?"
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Action"": [
+                ""es:*""
+            ],
+            ""Effect"": ""Allow"",
+            ""Resource"": ""*""
+        }
+    ]
+}"
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+You can also restrict this policy to your own aws account, so not every aws customer can read and write to Amazon ES."
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+We also have few samples on github to help with the setup - https://github.com/awslabs/amazon-elasticsearch-lambda-samples"
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+Are you suggesting putting that on the role or the es service?
+
+I have those permissions on my lambda role and it's not working."
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+Hello,
+
+And sorry if I'm hijacking this thread but I saw the example code popping up here.
+
+How big log files are you imagining importing the the sample? I followed it and made my own modifications to import JSON directly to ES.
+
+At 1000 rows per file I have to use a 1minute timeout on Lambda. And it seems to miss some files when I upload about 470 files.
+
+What I'm trying to do is import around 470.000 rows into ES. And trying to find the golden ratio between number of rows per file, Lambda memory, Lambda timeout and invocation throttling. 
+
+Is there perhaps another approach you would recommend that isn't clear in the sample example?
+
+Thanks for any input.
+
+With best regards,
+Stefan Lindberg"
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+Yesterday I spent a few hours struggling with this.  I'm using Python with AWS Lambda, and although I was signing my elasticsearch requests using requests_aws4auth, I was getting these types of errors when using the access/secret scoped into the Lambda environment:
+
+403 The security token included in the request is invalid
+
+I could repro this locally by using the same access key/secret that AWS Lambda set, but it was unclear why that error occurred - my IAM policy granted access to the ES domain.
+
+Next I tried creating a new IAM user, and attached the same policies to that user.  I hardcoded the IAM creds for that user into my lambda code.  That worked fine.  I realize that it's not recommended to upload IAM access/secrets with code, but the policy I crafted was fairly narrow in scope, so I'm not sweating it.
+
+I don't know why the creds scoped in automatically by lambda weren't working.  Maybe someone from AWS can provide some tips on how to debug that.
+
+
+
+
+James"
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+Anyone could solve this mystery? We are fighting the same issue and arrived to just to this conclusion - allowing the lambda's assigned IAM role to the ES ends up with 
+
+403 The security token included in the request is invalid
+.
+
+Anyone could configure this properly? @AWSTeam maybe you can help with this? Thanks!"
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+Having the same issue in production now. I see the post is quite old. Did Anyone manage to solve this?
+
+@AWSTeam"
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+had this problem accessing elasticsearch from anything running as a role (as opposed to a user).  code is in python and using requests_aws4auth for authentication.  lambda, batch, ec2, whatever same issue.
+
+the error went away when i passed the access key, secret key and token.  without passing in a token explicitly i always get the invalid token error when running as a role.  it's fine when running as a user.
+
+if anyone from aws is reading this: is this correct behavior?  something feels off.  requests_aws4auth isn't boto3...but then you don't seem to provide much in the way of elasticsearch drivers.  generate_presigned_url doesn't do the trick and there aren't any other obvious candidates to try.  and this is the only instance i've found where users and roles are so different (maybe that's lack of experience?)."
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+We also have few samples on github to help with the setup - https://github.com/awslabs/amazon-elasticsearch-lambda-samples
+
+None of these include any information on how to set up the ES policy. As the web console for ES only allows setup by IAM user (account and secret ids) and Lambda only deals with roles, how is it meant to work ?!?"
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+I face exactly the same problem:
+Can not get aws Lambda function connect with aws Elasticsearch domain.
+
+Any help please?
+
+thanks for your help."
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+So we have a ES policy that says (in part)
+""Principal"": {
+        ""AWS"": ""arn:aws:iam::772088832033:user/lambda-sme-coms-elasticsearch""
+      },
+      ""Action"": [
+        ""es:ESHttpPut"",
+        ""es:ESHttpGet"",
+        ""es:ESHttpPost""
+      ],
+
+
+The Lambda function itself then has access to the API access key and secret for that user, and signs requests :
+
+var request = new AWS.HttpRequest(endpoint, region);
+request.path += collection + '/_search';
+request.body = JSON.stringify(doc);
+return sendRequest(request);	
+....
+function sendRequest( request ){
+	request.headers['host'] = domain;
+	request.headers['Content-Type'] = 'application/json';
+ 
+	var client = new AWS.HttpClient();
+ 
+	var signer = new AWS.Signers.V4(request, 'es');
+	signer.addAuthorization(credentials, new Date());
+ 
+	return new Promise((resolve, reject) => {  
+	  client.handleRequest(request, null, function(response) {
+	    var responseBody = '';
+	    response.on('data', function (chunk) {
+	      responseBody += chunk;
+	    });
+	    response.on('end', function (chunk) {
+		    if( response.statusCode !== 200 && response.statusCode !== 201 ){
+		    	reject('error '+response.statusCode+' '+responseBody)
+		    }
+	      resolve(responseBody);
+	    });
+	  }, function(error) {
+	    reject(error);
+	  });
+	});
+}
+
+
+You can't do it through the normal Lambda roles as far as I can tell :9"
+Amazon Elasticsearch Service	"Re: How to give lambda function access to Elasticsearch
+Came up against this error today when migrating our Elasticsearch instance to AWS.
+
+Almightily annoying, and none of the documentation gives any hint as to what the problem is. 
+
+I found this issue thread;
+
+https://github.com/sam-washington/requests-aws4auth/issues/11
+
+Which suggests adding session_token to the AWS4Auth constructor. 
+
+I tried this and now the Lambda role can access Elasticsearch as desired."
+Amazon Elasticsearch Service	"Upgrade ES 6.3 to 6.4 seems stuck
+We're testing the upgrade from ES version 6.3 to 6.4 on the ElasticSearch domain of our testing environment.
+
+This upgrade seems stuck however. Right now it's been over 15 hours since the process was started, and the ""Upgrade History"" tab still shows ""Upgrade - 53.79% completed"" (It has been this percentage for the last few hours). The Kibana plugin seems to be upgraded, but the ES itself doesn't. When opening kibana, it indicates that 'one of the nodes' is on a lower version of ES. When I go to the /_nodes endpoint (or the data instances list under 'instance health') it shows two nodes: one on the correct 6.4 version and one on the 6.3 version. The domain should however only consist of one t2.small instance...
+
+Recently we've upgraded the same domain from 6.2 to 6.3, which took less than an hour. Since that time, there was no big change in the data volume on the domain.
+
+Some Information about the domain:
+
+1 t2.small instance
+10GB EBS SSD
+Service Software Release R20181023
+2,450,076 indexed documents
+
+
+Does anyone else have the same problem, or is it normal that a minor version upgrade of ES takes this much time on a small domain?"
+Amazon Elasticsearch Service	"Re: Upgrade ES 6.3 to 6.4 seems stuck
+UPDATE: The instance remained stuck for a longer period, and eventually I got the message 'Upgrade failed'
+
+Afterwards, Amazon support staff had sent me an email, inidicating that the failure was due to a parse exception, more specifcally:
+
++""The validation of the geo_shape field has been made robust in 6.4 version by elasticsearch commit :-
+https://github.com/elastic/elasticsearch/issues/31428 , causing the documents to have failed only after upgrade. To resolve this issue, you will need to fix the existing documents for the value of location.loc before initiating upgrade again.""+
+
+So for me, this is solved"
+Amazon Elasticsearch Service	"Kibana Machine Learning, scaled down version of Kibana
+Hi guys,
+
+I have an instance of ES, I stream data with Firehose to ES and analyze data with Kibana. Recently I came across Kibana that is hosted by Elastic.co . There I noticed that in the Elastic Kibana version, there are more features such as Machine Learning and monitoring. I can't find these features in the aws Kibana version, and I really want them.
+Do you know if there is some setting I have to toggle to get ML and monitoring for Kibana @ aws? Could it depend on my account type?
+
+In the attached png ML is activated.
+
+Please help."
+Amazon Elasticsearch Service	"Re: Kibana Machine Learning, scaled down version of Kibana
+Hi Alex, 
+
+Uri here, product lead for Elastic Cloud, the only Elasticsearch service offering provided by Elastic, the creators and sole maintainers of Elasticsearch, Kibana and the Elastic Stack. 
+The ML feature is a premium feature which is licensed under the Elastic License [1]. As such, it is only available on Elastic Cloud or to Elasticsearch users that are managing their cluster on their own and have licensed it from Elastic. 
+
+We don’t have plans to make it available on the Amazon Elasticsearch Service. 
+
+If you are looking for a hosted Elasticsearch service that also runs on AWS, features support from the people who wrote the code as well as many other exclusive free and paid features (index rollups, anomaly detection, stack wide monitoring, Elastic APM, document and field level security, the Elastic Maps service to name a few), you're welcome to sign up to Elastic's official Elasticsearch Service here: https://www.elastic.co/cloud/elasticsearch-service. 
+
+Uri 
+
+[1] https://github.com/elastic/elasticsearch/blob/master/licenses/ELASTIC-LICENSE.txt"
+Amazon Elasticsearch Service	"Restore snapshot
+I'm trying to migrate my data, so I created a snapshot in S3. But now when I try to register the snapshot in AWS ElasticSearch I get the error:
+
+{""Message"":""settings.role_arn is needed for snapshot registration.""}
+
+If I provide the ""role_arn"" like this: ""role_arn"": ""arn:aws:iam::123123123123:role/role-name"", now I get this other error message instead:
+
+{""Message"":""Cross-account pass role is not allowed.""}
+
+How I'm supposed to use snapshots within AWS ElasticSearch? I cannot find any documentation about this.
+
+Best regards,
+
+Juan"
+Amazon Elasticsearch Service	"Re: Restore snapshot
+Hi Juan,
+
+I'm getting the same message when trying to create the snapshot,
+How did you succeed to create yours? can you share your PUT command that created you S3 configuration?
+
+Thanks"
+Amazon Elasticsearch Service	"Re: Restore snapshot
+Hi, Did you figure this one out? We have got an identical problem."
+Amazon Elasticsearch Service	"Re: Restore snapshot
+Hello, 
+
+The registration process for snapshots S3 repositories requires a role and a signed request. 
+
+To create the signed request to register the S3 endpoint you can use a python script. See below example.
+
+All this process is described here:
+http://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains.html
+But, to summarize, you can follow these steps:
+
+
+1) Create an IAM policy and add attach it to a role:
+
+An example Role looks like the following:
+{
+  ""Version"": ""2012-10-17"",
+  ""Statement"": [
+    {
+      ""Sid"": """",
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""Service"": ""es.amazonaws.com""
+      },
+      ""Action"": ""sts:AssumeRole""
+    }
+  ]
+} 
+
+
+An example policy like this one should be attached to previous role:
+ {
+    ""Version"":""2012-10-17"",
+    ""Statement"":[
+        {
+            ""Action"":[
+                ""s3:ListBucket""
+            ],
+            ""Effect"":""Allow"",
+            ""Resource"":[
+                ""arn:aws:s3:::es-index-backups""
+            ]
+        },
+        {
+            ""Action"":[
+                ""s3:GetObject"",
+                ""s3:PutObject"",
+                ""s3:DeleteObject"",
+                ""iam:PassRole""
+            ],
+            ""Effect"":""Allow"",
+            ""Resource"":[
+                ""arn:aws:s3:::es-index-backups/*""
+            ]
+        }
+    ]
+} 
+
+
+2) Registering a Snapshot Directory
+
+As an IAM user with access to the new role, you must register the snapshot directory with Amazon Elasticsearch Service before you take manual index snapshots. This one-time operation requires that you sign your AWS request with the IAM role that grants permissions to Amazon ES.
+
+Save the following sample Python code and modify the following values:
+region: The AWS region where you created the snapshot repository
+endpoint: The endpoint for your Amazon ES domain
+aws_access_key_id: IAM credential
+aws_secret_access_key: IAM credential
+path: The location of the snapshot repository
+
+
+Note: The Python client requires the boto package be installed on the computer where you will register your snapshot repository.
+from boto.connection import AWSAuthConnection
+ 
+class ESConnection(AWSAuthConnection):
+ 
+    def __init__(self, region, **kwargs):
+        super(ESConnection, self).__init__(**kwargs)
+        self._set_auth_region_name(region)
+        self._set_auth_service_name(""es"")
+ 
+    def _required_auth_capability(self):
+        return ['hmac-v4']
+ 
+if __name__ == ""__main__"":
+ 
+    client = ESConnection(
+            region='us-east-1',
+            host='search-weblogs-etrt4mbbu254nsfupy6oiytuz4.us-east-1.es.a9.com',
+            aws_access_key_id='my-access-key-id',
+            aws_secret_access_key='my-access-key', is_secure=False)
+ 
+    print 'Registering Snapshot Repository'
+    resp = client.make_request(method='PUT',
+            path='/_snapshot/weblogs-index-backups',
+            data='{""type"": ""s3"",""settings"": { ""bucket"": ""es-index-backups"",""region"": ""us-east-1"",""role_arn"": ""arn:aws:iam::123456789012:role/MyElasticsearchRole""}}')
+    body = resp.read()
+    print body
+ 
+
+Once the S3 repository is registered, you will be able to manually take and restore snapshots using curl. As example:
+
+To manually take a snapshot:
+curl -XPUT 'http://<Elasticsearch_domain_endpoint>/_snapshot/snapshot_repository/snapshot_name'
+
+To manually restore a snapshot:
+curl -XPOST 'http://search-weblogs-abcdefghijklmnojiu.us-east-1.a9.com/_snapshot/weblogs-index-backups/snapshot_1/_restore'
+
+Note: You cannot restore a snapshot of your indices to an Amazon ES cluster that already contains indices with the same names. Currently, Amazon ES does not support the Elasticsearch _close API, so you must use one of the following alternatives:
+    Delete the indices on the same Amazon ES domain, then restore the snapshot
+    Restore the snapshot to a different Amazon ES domain"
+Amazon Elasticsearch Service	"Re: Restore snapshot
+I have followed instructions provideD by amazon precisely, and the repository was created successfully. Although I keep getting:
+{
+""Message"": ""Cross-account pass role is not allowed.""
+}
+
+when trying to create a snapshot.
+
+Here is my request:
+
+curl -XPUT 'MY_ES_DOMAIN/_snapshot/MY_REPOSITORY_NAME/MY_SNAPSHOT_NAME' 
+-d 
+'{
+""settings"": 
+{
+""role_arn"": ""MY_ROLE_USED WHEN CREATING_REPOSITORY""
+          +	}+
+}'
+
+Did anybody figure out what's missing?"
+Amazon Elasticsearch Service	"Re: Restore snapshot
+Hernan,
+       How does this change if we already followed the above process and successfully registered an S3 repository, but now we're trying to restore the snapshot on a clean version of Elasticsearch?
+
+Do we still go through your whole list of steps? It doesn't seem like we would."
+Amazon Elasticsearch Service	"Re: Restore snapshot
+Hi, I did follow the procedure but the python script returns this error no matter what I do:
+
+Traceback (most recent call last):
+  File ""snapshot.py"", line 24, in <module>
+    data='{""type"": ""s3"",""settings"": { ""bucket"": ""respaldostm"",""region"": ""us-east-1"",""role_arn"": ""arn:aws:iam::689655051753:role/es-snap""}}')
+  File ""/usr/local/lib/python2.7/dist-packages/boto/connection.py"", line 1071, in make_request
+    retry_handler=retry_handler)
+  File ""/usr/local/lib/python2.7/dist-packages/boto/connection.py"", line 1030, in _mexe
+    raise ex
+socket.gaierror: [Errno -2] Name or service not known"
+Amazon Elasticsearch Service	"Re: Restore snapshot
+The current AWS AES documentation states that the 'POST' verb should be used in the Python script.
+Using the Python script with the 'PUT' verb gives me:
+
+{""error"":{""root_cause"":,""type"":""parse_exception"",""reason"":""request body is required""},""status"":400}"
+Amazon Elasticsearch Service	"Re: Restore snapshot
+How to register AWS elasticsearch snapshot repository to filesystem (type:fs)?"
+Amazon Elasticsearch Service	"Error message: statusCode 200
+Hi,
+
+I have an elasticsearch domain setup in account A. 
+From account B I want to send cloudtrail logs to ES in account A.
+I create a stream to ES in another account, enter arn and endpoint, create a new role with the necessary policies(auto-created by AWS) and allow the role to access ES in account A.
+No cloudtrail logs are recieved by ES. In cloudwatch logs for this lambda function I can see the following:
+""statusCode"": 200
+
+""errorMessage"": ""{\""statusCode\"":200,\""responseBody\"":{\""took\"":77,\""errors\"":true}}""
+
+What can I make of this? I am a bit confused as I'm getting 200 but I can see it's an error. What could be wrong and how can I get this to work?
+Thanks.
+
+Edited by: DavidBien89 on Nov 20, 2018 4:11 AM"
+Amazon Elasticsearch Service	"Re: Error message: statusCode 200
+Hi there, 
+
+It looks like you're using the Lambda that is auto-created when you choose for a loggroup to be streamed into Elasticsearch. The first thing you can do is go into the code enabled logging of your failed items, switching it from false to true.  
+
+var logFailedResponses = true;
+
+
+As I have encountered this problem as have others, the common problem is that the pre-built lambda does not support multiple mapping types to the same index. For example streaming multiple log groups using the same lambda into ES, even if they have the same filter pattern being applied. 
+
+To get around this problem you can change 
+
+action.index._type = payload.logGroup;
+
+to 
+action.index._type = 'cwl';
+
+
+This will avoid a specific log group dictating the indexes type."
+Amazon Elasticsearch Service	"ELB AppCookieStickinessPolicy is not working with valid cookies
+ELB: internal-rasa-staging-lb-1453385967.us-west-1.elb.amazonaws.com
+
+We need to use application cookies for the stickiness, and we configured it for sticking the endpoint based on the project cookie, which is sent by our app.
+
+We test it using curl, but all the request are balancing to each endpoint without taking care of the cookie.
+
+curl --request GET --cookie ""project=foo"" http://internal-rasa-staging-lb-1453385967.us-west-1.elb.amazonaws.com/
+
+
+The previous command does a regular round-robin instead of sticking requests to the same endpoint.
+
+This is the relevant ELB configuration:
+
+$ aws elb describe-load-balancers --load-balancer-name rasa-staging-lb
+{
+    ""LoadBalancerDescriptions"": [
+        {
+            ...
+            ""DNSName"": ""internal-rasa-staging-lb-1453385967.us-west-1.elb.amazonaws.com"",
+            ""BackendServerDescriptions"": [],
+            ""Instances"": [
+                {
+                    ""InstanceId"": ""i-033683e24679262e4""
+                },
+                {
+                    ""InstanceId"": ""i-064aaff984a53e32f""
+                }
+            ],
+            ""Subnets"": [
+                ""subnet-13962c76"",
+                ""subnet-e9ae55b0""
+            ],
+            ""Policies"": {
+                ""AppCookieStickinessPolicies"": [
+                    {
+                        ""PolicyName"": ""AWSConsole-AppCookieStickinessPolicy-rasa-staging-lb-1547426729243"",
+                        ""CookieName"": ""project""
+                    }
+                ],
+                ""OtherPolicies"": [],
+                ""LBCookieStickinessPolicies"": []
+            },
+            ""Scheme"": ""internal"",
+            ...
+            ""ListenerDescriptions"": [
+                {
+                    ""PolicyNames"": [
+                        ""AWSConsole-AppCookieStickinessPolicy-rasa-staging-lb-1547426729243""
+                    ],
+                    ""Listener"": {
+                      ...
+                    }
+                }
+            ]
+        }
+    ]
+}"
+Amazon Elasticsearch Service	"Enable ES Request and Response compression
+I are running up against the 10 mb HTTP limit where I get a 413 HTTP status code when I try to submit documents that are larger than 10 mb.  We would very much like to enable gzip compression to requests (and also responses) so we can get larger documents into ES.
+
+Unfortunately, it appears that the setting we need to change to turn this on is in the elasticsearch.yml file which we cannot change.
+
+Is there any other way to turn on compression or modify the yml file?
+
+Edited by: bkrchristopher on Jan 20, 2016 11:31 AM"
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+I am also eager to know if this is possible within AWS Elasticsearch Service."
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+Hi bkrchristopher,
+
+Unfortunately currently there is no way to do this. However we've considered it a feature request and the Elastisearch team has added this functionality to their worklog. I apologize for the inconvenience as we don't have a roadmap for when it may be rolled out, but if you watch the  page, you can keep up-to-date on all the new features we launch.
+
+Best Regards,
+Omar S.
+
+Edited by: OmarS@AWS on Feb 3, 2016 11:39 AM"
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+Any update?  Hoping that you now support compression"
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+We're also interested in this feature."
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+I'm also very keen to see this being implemented. Not sure what's the hold-up here though, it's actually built-in into elasticsearch: in a 'regular' installation, one just has to add http.compression=true to the yaml config and that's all that takes to get compression working. Maybe this is more to do with aws internal policies - this uses more CPU and less bandwidth, and hence probably doesn't make commercial sense. However, it would make a huge difference to my application in terms of response times."
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+Thank you for your feedback. We do have this feature in our backlog and you should see good news shortly."
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+Did anything change with this in the last few days?  My elasticsearch searches have started failing, and the response that is coming back from ES are gzipped... since my client ( https://github.com/elastic/elasticsearch-ruby/releases/tag/v5.0.4 ) doesn't expect  this, it tries to deserialize it as JSON and fails."
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+It seems that the ruby client by default sends requests with header ""Accept-Encoding"": ""gzip"", but doesn't support decompression. There is an example how to disable compression by setting empty value """" for ""Accept-Encoding"" header on this page: https://github.com/elastic/elasticsearch-ruby/issues/457 .
+I hope this helps."
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+So, are you/all saying this is now indeed supported by ES service through AWS?  Based on the other post above, it would seem nothing should be coming back compressed ever (unless something changed)."
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+Just my personal experience -
+Without any client changes, one day the ES responses stopped working.  When I inspected the response, it was gzipped.  The client library I was using requested gzip.  Since I didn't make any changes to my client code, I am guessing that the following things are true, but none of them are really proven:
+
+a) the client library had always been requesting gzipped responses ( evidence: https://github.com/elastic/elasticsearch-ruby/issues/457#issuecomment-326204925 )
+b) the client library was not equipped to receive gzipped responses ( evidence: my code doesn't work )
+c) the AWS ES service used to ignore the request for gzipped response, and now it honors it. ( evidence: my code used to work )
+
+I was not able to figure out how to get my client library to stop requesting gzipped responses (seems it would require modifying the faraday library), but by changing my code to look like https://github.com/elastic/elasticsearch-ruby/issues/457#issuecomment-326020618 , I was able to get my client library to understand the gzipped response.
+
+Hope those data points help."
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+Hi, we're interested in this as well. Is this currently available? It was unclear if this was released or not. Thanks!"
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+Any update here?  There was a teaser comment earlier in the thread that we may see it soon.  We are very much looking forward to it."
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+Any update on this? I am running AWS Elasticsearch with 6.3, setting my client to use http compression and the results do not seem to be gzip'd. Will this ever be added?"
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+I've been unable to replicate any behaviour which would indicate an ES instance will receive/respond with compressed data so I've been unable to replicate the behaviour that mikehvi was seeing.
+ES responses and requests with large amounts of data are very compressible as there is a lot of repeating JSON so I find it really surprising that this hasn't been implemented.
+
+Is this still in the ES team's backlog or if it's been abandoned? It would seem it's been abandoned if it's been in the backlog for over a year."
+Amazon Elasticsearch Service	"Re: Enable ES Request and Response compression
+2 years and counting, this basic feature is still lacking..."
+Amazon Elasticsearch Service	"Service returning 403 with .NET HttpClient - Bad casing in http headers
+Anyone ever had issues with casing in headers and AWS elasticsearch service? Trying to call _cat/health, but the service returns 403. Connection: Close doesn't work, Connection: close works. This is annoying in .NET Framework where the casing is forced.
+
+We're using elasticsearch 5.6 in AWS elasticsearch service.
+
+Example of a call that doesn't work (in postman):
+Accept: application/json
+Connection: Close
+cache-control: no-cache
+Postman-Token: xxxxxxxxxxxxxxx
+Host: xxxxxxxxxxxxxxx
+X-Amz-Date: 20181130T075307Z
+Authorization: AWS4-HMAC-SHA256 Credential=xxxxxxxxxxxxxxx, SignedHeaders=accept;cache-control;connection;host;postman-token;x-amz-date, Signature=xxxxxxxxxxxxxxx
+User-Agent: PostmanRuntime/7.4.0
+accept-encoding: gzip, deflate
+
+
+Example of a call that works:
+Accept: application/json
+Connection: close
+cache-control: no-cache
+Postman-Token: xxxxxxxxxxxxxxx
+Host: xxxxxxxxxxxxxxx
+X-Amz-Date: 20181130T075307Z
+Authorization: AWS4-HMAC-SHA256 Credential=xxxxxxxxxxxxxxx, SignedHeaders=accept;cache-control;connection;host;postman-token;x-amz-date, Signature=xxxxxxxxxxxxxxx
+User-Agent: PostmanRuntime/7.4.0
+accept-encoding: gzip, deflate
+
+
+Is AWS really that strict when it comes to headers? Has anyone had any experience with this?"
+Amazon Elasticsearch Service	"AWS ElasticSearch storage type: EBS vs instance store
+There is some documentation around choosing the storage type, but it only cites the benefit increased storage capacity (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html)
+
+The other benefits over instance store of durability, snapshots, etc. are not called out.
+Do we get any other advantage for using EBS over instance-storage in aws ElasticSearch? 
+(For instance, in case of recovering from failures, reattaching volumes etc. )"
+Amazon Elasticsearch Service	"Elastisearch with Cognito service
+Hello,
+I'd like use Amazon Cognito to offer user name and password protection for Kibana. Using Aws Cli
+it seems easy when both services are on the same account. However I would like to share my Cognito user pool between several elastisearch  on different aws accounts. I don't know if it's possible .. 
+Any suggestions?
+Thanks"
+Amazon Elasticsearch Service	"Unable to stream CloudWatch logs to Amazon Elasticsearch Service
+I just setup an AWS ElasticSearch Service using the free tier t2 small option for evaluation. The creation process works fine and I can access kibana. However, I have not been able to stream any CloudWatch log to the ES service using the 'Stream to Amazon Elasticsearch Service'. I can get to the final step to create the 'LogsToElasticsearch_elasticsearch' lambda function, but I keep getting the following error:
+
+There was a problem
+There was an error creating your Lambda Function. Please try again.
+
+What am I doing wrong? No matter how many times I retry, I cannot continue."
+Amazon Elasticsearch Service	"Re: Unable to stream CloudWatch logs to Amazon Elasticsearch Service
+I've enabled CloudTrail logs and have obtained a little more information about this particular error:
+
+    ""errorCode"": ""InvalidParameterValueException"",
+    ""errorMessage"": ""The runtime parameter of nodejs4.3 is no longer supported for creating or updating AWS Lambda functions. We recommend you use the new runtime (nodejs8.10) while creating or updating functions."",
+    ""requestParameters"": {
+        ""functionName"": ""LogsToElasticsearch_elasticsearch"",
+        ""role"": ""arn:aws:iam::----:role/lambda_elasticsearch_execution"",
+        ""code"": {},
+        ""timeout"": 60,
+        ""environment"": {},
+        ""publish"": false,
+        ""description"": ""CloudWatch Logs to Amazon ES streaming"",
+        ""handler"": ""index.handler"",
+        ""runtime"": ""nodejs4.3""
+    },
+
+I'm assuming at this point that it is a bug with AWS. It seems that the UI is attempting to create a lambda function using a nodejs version that is no longer supported by AWS Lambda.
+
+Edited by: zandt on Dec 19, 2018 7:16 PM"
+Amazon Elasticsearch Service	"Re: Unable to stream CloudWatch logs to Amazon Elasticsearch Service
+I think I am also facing the same issue, already wasted one day.
+
+Message in CloudTrail:
+    ""errorMessage"": ""The runtime parameter of nodejs4.3 is no longer supported for creating or updating AWS Lambda functions. We recommend you use the new runtime (nodejs8.10) while creating or updating functions."",
+
+Message in AWS Web UI:
+There was a problem
+When using a non-public Elasticsearch cluster, the Lambda IAM Execution Role needs to have the following permissions policy: AWSLambdaVPCAccessExecutionRole."
+Amazon Elasticsearch Service	"Re: Unable to stream CloudWatch logs to Amazon Elasticsearch Service
+I have spent some time looking for API to get this done, but I couldn't find any API to stream the logs to elasticsearch from cloudwatch.
+
+Is there any workaround to accomplish this?"
+Amazon Elasticsearch Service	"Re: Unable to stream CloudWatch logs to Amazon Elasticsearch Service
+You can also do it by hand. Create a lambda function using the code below (tested with nodejs 6.10, probably works for new versions as well, code by AWS but slightly modified)
+
+Make sure you setup you lambda function to run in a vpc if needed. Make sure the SecurityGroup protecting you ES domain allows access for the lambda function.  You also need a IAM policy to allow access for lambda to ElasticSearch:
+
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Sid"": ""Stmt1480452973134"",
+            ""Action"": [
+                ""ec2:CreateNetworkInterface"",
+                ""ec2:DeleteNetworkInterface"",
+                ""ec2:DescribeNetworkInterfaces"",
+                ""ec2:ModifyNetworkInterfaceAttribute"",
+                ""ec2:DescribeSecurityGroups"",
+                ""ec2:DescribeSubnets""
+            ],
+            ""Effect"": ""Allow"",
+            ""Resource"": ""*""
+        },
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": [
+                ""logs:CreateLogGroup"",
+                ""logs:CreateLogStream"",
+                ""logs:PutLogEvents""
+            ],
+            ""Resource"": [
+                ""arn:aws:logs:*:*:*""
+            ]
+        },
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": ""es:ESHttpPost"",
+            ""Resource"": ""arn:aws:es:*:*:*""
+        }
+    ]
+}
+
+
+The NodeJS code for the lambda function:
+
+// ===========================================================
+// LAMBDA Function code. Pushes logs to a certain index name 
+// change line 63/64 to change the index name.
+// ===========================================================
+//
+// v1.1.2
+var https = require('https');
+var zlib = require('zlib');
+var crypto = require('crypto');
+ 
+var endpoint = 'search-xxx-yyyy.eu-west-1.es.amazonaws.com';
+ 
+exports.handler = function(input, context) {
+    // decode input from base64
+    var zippedInput = new Buffer(input.awslogs.data, 'base64');
+ 
+    // decompress the input
+    zlib.gunzip(zippedInput, function(error, buffer) {
+        if (error) { context.fail(error); return; }
+ 
+        // parse the input from JSON
+        var awslogsData = JSON.parse(buffer.toString('utf8'));
+ 
+        // transform the input to Elasticsearch documents
+        var elasticsearchBulkData = transform(awslogsData);
+ 
+        // skip control messages
+        if (!elasticsearchBulkData) {
+            console.log('Received a control message');
+            context.succeed('Control message handled successfully');
+            return;
+        }
+ 
+        // post documents to the Amazon Elasticsearch Service
+        post(elasticsearchBulkData, function(error, success, statusCode, failedItems) {
+            console.log('Response: ' + JSON.stringify({ 
+                ""statusCode"": statusCode 
+            }));
+ 
+            if (error) { 
+                console.log('Error: ' + JSON.stringify(error, null, 2));
+ 
+                if (failedItems && failedItems.length > 0) {
+                    console.log(""Failed Items: "" +
+                        JSON.stringify(failedItems, null, 2));
+                }
+ 
+                context.fail(JSON.stringify(error));
+            } else {
+                console.log('Success: ' + JSON.stringify(success));
+                context.succeed('Success');
+            }
+        });
+    });
+};
+ 
+function transform(payload) {
+    if (payload.messageType === 'CONTROL_MESSAGE') {
+        return null;
+    }
+ 
+    var bulkRequestBody = '';
+ 
+    payload.logEvents.forEach(function(logEvent) {
+        var timestamp = new Date(1 * logEvent.timestamp);
+ 
+        // index name format: docker-YYYY.MM.DD
+        var indexName = [
+            'docker-' + timestamp.getUTCFullYear(),              // year
+            ('0' + (timestamp.getUTCMonth() + 1)).slice(-2),  // month
+            ('0' + timestamp.getUTCDate()).slice(-2)          // day
+        ].join('.');
+ 
+        var source = buildSource(logEvent.message, logEvent.extractedFields);
+        source['@id'] = logEvent.id;
+        source['@timestamp'] = new Date(1 * logEvent.timestamp).toISOString();
+        source['@message'] = logEvent.message;
+        source['@owner'] = payload.owner;
+        source['@log_group'] = payload.logGroup;
+        source['@log_stream'] = payload.logStream;
+ 
+        var action = { ""index"": {} };
+        action.index._index = indexName;
+        action.index._type = payload.logGroup;
+        action.index._id = logEvent.id;
+        
+        bulkRequestBody += [ 
+            JSON.stringify(action), 
+            JSON.stringify(source),
+        ].join('\n') + '\n';
+    });
+    return bulkRequestBody;
+}
+ 
+function buildSource(message, extractedFields) {
+    if (extractedFields) {
+        var source = {};
+ 
+        for (var key in extractedFields) {
+            if (extractedFields.hasOwnProperty(key) && extractedFields[key]) {
+                var value = extractedFields[key];
+ 
+                if (isNumeric(value)) {
+                    source[key] = 1 * value;
+                    continue;
+                }
+ 
+                jsonSubString = extractJson(value);
+                if (jsonSubString !== null) {
+                    source['$' + key] = JSON.parse(jsonSubString);
+                }
+ 
+                source[key] = value;
+            }
+        }
+        return source;
+    }
+ 
+    jsonSubString = extractJson(message);
+    if (jsonSubString !== null) { 
+        return JSON.parse(jsonSubString); 
+    }
+ 
+    return {};
+}
+ 
+function extractJson(message) {
+    var jsonStart = message.indexOf('{');
+    if (jsonStart < 0) return null;
+    var jsonSubString = message.substring(jsonStart);
+    return isValidJson(jsonSubString) ? jsonSubString : null;
+}
+ 
+function isValidJson(message) {
+    try {
+        JSON.parse(message);
+    } catch (e) { return false; }
+    return true;
+}
+ 
+function isNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+ 
+function post(body, callback) {
+    var requestParams = buildRequest(endpoint, body);
+ 
+    var request = https.request(requestParams, function(response) {
+        var responseBody = '';
+        response.on('data', function(chunk) {
+            responseBody += chunk;
+        });
+        response.on('end', function() {
+            var info = JSON.parse(responseBody);
+            var failedItems;
+            var success;
+            
+            if (response.statusCode >= 200 && response.statusCode < 299) {
+                failedItems = info.items.filter(function(x) {
+                    return x.index.status >= 300;
+                });
+ 
+                success = { 
+                    ""attemptedItems"": info.items.length,
+                    ""successfulItems"": info.items.length - failedItems.length,
+                    ""failedItems"": failedItems.length
+                };
+            }
+ 
+            var error = response.statusCode !== 200 || info.errors === true ? {
+                ""statusCode"": response.statusCode,
+                ""responseBody"": responseBody
+            } : null;
+ 
+            callback(error, success, response.statusCode, failedItems);
+        });
+    }).on('error', function(e) {
+        callback(e);
+    });
+    request.end(requestParams.body);
+}
+ 
+function buildRequest(endpoint, body) {
+    var endpointParts = endpoint.match(/^([^\.]+)\.?([^\.]*)\.?([^\.]*)\.amazonaws\.com$/);
+    var region = endpointParts[2];
+    var service = endpointParts[3];
+    var datetime = (new Date()).toISOString().replace(/[:\-]|\.\d{3}/g, '');
+    var date = datetime.substr(0, 8);
+    var kDate = hmac('AWS4' + process.env.AWS_SECRET_ACCESS_KEY, date);
+    var kRegion = hmac(kDate, region);
+    var kService = hmac(kRegion, service);
+    var kSigning = hmac(kService, 'aws4_request');
+    
+    var request = {
+        host: endpoint,
+        method: 'POST',
+        path: '/_bulk',
+        body: body,
+        headers: { 
+            'Content-Type': 'application/json',
+            'Host': endpoint,
+            'Content-Length': Buffer.byteLength(body),
+            'X-Amz-Security-Token': process.env.AWS_SESSION_TOKEN,
+            'X-Amz-Date': datetime
+        }
+    };
+ 
+    var canonicalHeaders = Object.keys(request.headers)
+        .sort(function(a, b) { return a.toLowerCase() < b.toLowerCase() ? -1 : 1; })
+        .map(function(k) { return k.toLowerCase() + ':' + request.headers[k]; })
+        .join('\n');
+ 
+    var signedHeaders = Object.keys(request.headers)
+        .map(function(k) { return k.toLowerCase(); })
+        .sort()
+        .join(';');
+ 
+    var canonicalString = [
+        request.method,
+        request.path, '',
+        canonicalHeaders, '',
+        signedHeaders,
+        hash(request.body, 'hex'),
+    ].join('\n');
+ 
+    var credentialString = [ date, region, service, 'aws4_request' ].join('/');
+ 
+    var stringToSign = [
+        'AWS4-HMAC-SHA256',
+        datetime,
+        credentialString,
+        hash(canonicalString, 'hex')
+    ] .join('\n');
+ 
+    request.headers.Authorization = [
+        'AWS4-HMAC-SHA256 Credential=' + process.env.AWS_ACCESS_KEY_ID + '/' + credentialString,
+        'SignedHeaders=' + signedHeaders,
+        'Signature=' + hmac(kSigning, stringToSign, 'hex')
+    ].join(', ');
+ 
+    return request;
+}
+ 
+function hmac(key, str, encoding) {
+    return crypto.createHmac('sha256', key).update(str, 'utf8').digest(encoding);
+}
+ 
+function hash(str, encoding) {
+    return crypto.createHash('sha256').update(str, 'utf8').digest(encoding);
+}
+
+
+Add permissions for CW logs to execute Lambda functions
+aws --region eu-west-1 --profile MYPROFILE lambda add-permission \
+        --function-name ""LAMBDAFUNCTIONNAME"" \
+	--statement-id ""1"" \
+        --principal ""logs.eu-west-1.amazonaws.com"" \
+        --action ""lambda:InvokeFunction"" \
+        --source-arn ""arn:aws:logs:eu-west-1:123412341234:log-group:LOGGROUPNAME:*"" \
+        --source-account ""123412341234""
+
+
+Add a subscription to the cloudwatch group:
+aws --profile MYPROFILE --region eu-west-1 logs put-subscription-filter \
+    --log-group-name LOGGROUPNAME \
+    --filter-name ""FILTER NAME"" \
+    --filter-pattern ""[datetime, level, erromessage]"" \
+    --destination-arn arn:aws:lambda:eu-west-1:123412341234:function:LAMBDAFUNCTIONNAME
+
+
+Hope this helps. 
+
+Leon"
+Amazon Elasticsearch Service	"Re: Unable to stream CloudWatch logs to Amazon Elasticsearch Service
+yes, absolutely this helps. thank you so much.
+
+I can now see the logs in Kibana. However just an fyi, the last command of your gave me the below exception, however I can create the subscription filter in the UI without any issues.
+
+""An error occurred (InvalidParameterException) when calling the PutSubscriptionFilter operation: Could not execute the lambda function. Make sure you have given CloudWatch Logs permission to execute your function.""
+
+Also, is there any place to let the AWS developers know about this bug?"
+Amazon Elasticsearch Service	"Re: Unable to stream CloudWatch logs to Amazon Elasticsearch Service
+If you search this error message you will see that many have been complaining about this issue since 2016!
+It is so strange that AWS has not done anything to fix this issue ever since. I spent a whole day to code my application to send logs to CW, and created the whole stack and at the last click I get an error!
+At least I wish AWS would provide an ETA!"
+Amazon Elasticsearch Service	"Re: Unable to stream CloudWatch logs to Amazon Elasticsearch Service
+This is still a real issue. Confirmed in multiple accounts.
+
+Step 10 in the docs fails in all cases: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL_ES_Stream.html"
+Amazon Elasticsearch Service	"Not able to insert a document into elastic search using spark emr
+We have configured elastic search cluster with 3 master nodes and 15 data nodes and it's endpoint in internet(not in vpc), we are able to insert using kibana but when we run through spark emr we are getting following error 
+
+py4j.protocol.Py4JJavaError: An error occurred while calling o2549.save.
+: org.elasticsearch.hadoop.EsHadoopIllegalArgumentException: Cannot detect ES version - typically this happens if the network/Elasticsearch cluster is not accessible or when targeting a WAN/Cloud instance without the proper setting 'es.nodes.wan.only' at org.elasticsearch.hadoop.rest.InitializationUtils.discoverEsVersion(InitializationUtils.java:327)
+
+Below is the code we have used to insert a document
+
+df.write.format(""org.elasticsearch.spark.sql"") \
+    .option(""es.nodes"", ""<endpoint>"") \
+    .option(""es.nodes.wan.only"", ""true"") \
+    .option(""es.nodes.discovery"", ""false"") \
+    .option(""es.mapping.id"", ""ID"") \
+    .mode(""append"") \
+    .save(""abc/def"")"
+Amazon Elasticsearch Service	"Re-index from remote source
+In ES 5.* the _reindex API has been enabled, however the ""reindex.remote.whitelist"" is not available in order to be able to pull documents from previous version of ES.
+
+Do you plan to provide a way to set the ""reindex.remote.whitelist"" property?"
+Amazon Elasticsearch Service	"Re: Re-index from remote source
+Is it now supported?"
+Amazon Elasticsearch Service	"Re: Re-index from remote source
+No, still not supported."
+Amazon Elasticsearch Service	"Re: Re-index from remote source
+Reindex from remote is supported in Elastic Cloud [1], where you can reindex from a remote cluster hosted on AWS Elasticsearch domain, on-prem, or another Elastic Clod hosted cluster.
+More information can be found here [2] about different means to move existing indices from one cluster to another. 
+Disclaimer -- I work at Elastic  the creators of Elasticsearch, Kibana, Logstash and Beats, AKA the Elastic Stack. 
+
+[1] - https://www.elastic.co/cloud/elasticsearch-service
+[2] - https://www.elastic.co/blog/migrating-to-elastic-cloud"
+Amazon Elasticsearch Service	"Thread pool configuration for Bulk Indexing
+Hi there,
+
+Just starting using your excellent service.
+
+When I get node info from the endpoint, I see the current threadpool configuration of the domain I just created, as expected.  For example, I see this:
+
+            ""percolate"":{""type"":""fixed"",""min"":4,""max"":4,""queue_size"":""1k""},
+            ""listener"":{""type"":""fixed"",""min"":2,""max"":2,""queue_size"":-1},
+            ""index"":{""type"":""fixed"",""min"":4,""max"":4,""queue_size"":""200""},
+            ""refresh"":{""type"":""scaling"",""min"":1,""max"":2,""keep_alive"":""5m"",""queue_size"":-1},
+            ""suggest"":{""type"":""fixed"",""min"":4,""max"":4,""queue_size"":""1k""},
+            ""generic"":{""type"":""cached"",""keep_alive"":""30s"",""queue_size"":-1},
+            ""warmer"":{""type"":""scaling"",""min"":1,""max"":2,""keep_alive"":""5m"",""queue_size"":-1},
+            ""search"":{""type"":""fixed"",""min"":12,""max"":12,""queue_size"":""1k""},
+            ""flush"":{""type"":""scaling"",""min"":1,""max"":2,""keep_alive"":""5m"",""queue_size"":-1},
+            ""optimize"":{""type"":""fixed"",""min"":1,""max"":1,""queue_size"":-1},
+            ""management"":{""type"":""scaling"",""min"":1,""max"":5,""keep_alive"":""5m"",""queue_size"":-1},
+            ""get"":{""type"":""fixed"",""min"":4,""max"":4,""queue_size"":""1k""},
+            ""merge"":{""type"":""scaling"",""min"":1,""max"":2,""keep_alive"":""5m"",""queue_size"":-1},
+            ""bulk"":{""type"":""fixed"",""min"":4,""max"":4,""queue_size"":""50""},
+            ""snapshot"":{""type"":""scaling"",""min"":1,""max"":2,""keep_alive"":""5m"",""queue_size"":-1}
+
+However, there seems to be no way to use the normal Elastic API endpoints to change the bulk thread pool, which we normally config in elasticsearch.yml on a local install. 
+
+Some of the threadpool settings you select are very generous on the search/suggest for example. However, I see your bulk pool is only 50.  Our local measurements on our indexing process, which is highly concurrent, shows we need at least 100.   We are willing, for now, to reduce the thread pools for other purposes, like percolation which we're not yet working with.  
+
+So, how to change these settings?  We tried with the REST calls to our local Elastic, and they work. However for yours, we get ""payload not allowed"" errors. 
+
+Thanks in advance.
+
+PS- Specifically, I'm asking about the ThreadPool section of the Cluster settings, as seen here:
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-update-settings.html
+
+Edited by: flowfaction on Oct 5, 2015 3:08 PM"
+Amazon Elasticsearch Service	"Re: Thread pool configuration for Bulk Indexing
+Wow, going on 10 days and no answer from AWS support staff.
+I guess we will not be recommending this service to our Fortune 500 client."
+Amazon Elasticsearch Service	"Re: Thread pool configuration for Bulk Indexing
+Thank you for your feedback, and sorry for the delay getting back to you.
+
+At this time, we have not exposed a way for customers to change the thread pool allocation. We are listening however and take all feedback into consideration for future feature releases.
+
+Jon"
+Amazon Elasticsearch Service	"Re: Thread pool configuration for Bulk Indexing
+We have the same issue/need:
+
+We are getting this error: Rejected Execution of org.elasticsearch.transport.TransportService Error
+
+This happens when Timelion hits ES AWS with a number of bulk queries substantial enough to exhaust the default thread_pool.bulk.queue_size.
+
+Here is the solution: http://stackoverflow.com/questions/37855803/rejected-execution-of-org-elasticsearch-transport-transportservice-error
+
+This is happening with ES AWS (5.1).  Since we are unable to configure these settings ourselves, how are we to proceed?
+
+Thanks,
+Joel
+
+Edited by: JClosure on Mar 20, 2017 2:48 PM"
+Amazon Elasticsearch Service	"Re: Thread pool configuration for Bulk Indexing
+Same issue. It would be great to have a way to increase the configuration for Bulk indexing."
+Amazon Elasticsearch Service	"Re: Thread pool configuration for Bulk Indexing
+Because we cannot change this setting, our cluster cannot handle bursts in traffic. We would instead have to over-provision our instances, either bigger EC2 instances with more vCPU, or more nodes. This can be overkill, and not cost-effective. +1 to allowing configuration of bulk thread pool.
+
+Additionally, when bulk indexing fails, the AWS-provided cloudwatchlogs lambda function retries the entire batch, duplicating successful docs in elasticsearch, further impacting our cluster. But I guess we can re-write the lambda function... just not confident in my abilities there."
+Amazon Elasticsearch Service	"Re: Thread pool configuration for Bulk Indexing
++1 We want to increase the search thread pool to 2K"
+Amazon Elasticsearch Service	"Minor version numbers - specifically 5.6.8 vs 5.6.11
+For various reasons I need to use the 5.6 stream of Elasticsearch. However the AWS ES service only supports 5.6.8, not any of the newer versions (the latest version in that stream is 5.6.14)
+
+This is an issue for me as I want to restore a snapshot created outside of AWS, on ES version 5.6.11 and ES resolutely refuses to restore a snapshot from a newer (5.6.11) to an older (5.6.8) ES version.
+
+Unfortunately upgrading to 6.x is not an option at the moment.
+
+Any suggestions? Is there a possibility that AWS will support the latest minor version, i.e. 5.6.14?
+
+Glenn."
+Amazon Elasticsearch Service	"Re: Minor version numbers - specifically 5.6.8 vs 5.6.11
+Hi Glenn
+
+Uri here, product lead for the Elasticsearch Service on Elastic Cloud, the only Elasticsearch service offering provided by Elastic, the creators and sole maintainers of Elasticsearch, Kibana and the Elastic Stack. 
+
+Elastic guarantees same day availability of all patch, minor and major releases of the Elastic Stack on Elastic Cloud. Therefore, you can find version 5.6.14 available for users of our service. 
+This also has very important security consequences, since all critical security patches are made available on Elastic Cloud as soon as they're announced, and in many cases users are automatically upgraded to the latest patch version. Here's a recent example for an issue that still exists in Kibana 5.6.13 and lower and has been automatically patched in Elastic Cloud: https://www.elastic.co/blog/kibana-local-file-inclusion-flaw-cve-2018-17246. 
+
+Note that Elastic Cloud also runs on AWS infrastructure and sports various other benefits like support from the people who wrote the code and many other exclusive features such as data rollups, index life cycle management, Kibana Canvas, Kibana Spaces, SQL support, anomaly detection, stack wide monitoring, Elastic APM, document and field level security, the Elastic Maps service and more. 
+For more details you can visit https://www.elastic.co/cloud/elasticsearch-service. 
+
+Uri
+
+Edited by: uric on Dec 30, 2018 6:16 AM"
+Amazon Elasticsearch Service	"Issue migrating existing elk logs to AWS Elasticsearch domain
+Hello AWS
+I have few technical queries regarding AWS Elasticsearch domain configuration. 
+What I'm trying to achieve - I have an elk cluster with 2 nodes running on 2 separate EC2 instances. I'm now wanting to use AWS Elasticsearch domain and I'm trying to migrate existing elk cluster logs to new AWS ES domain. With this I have below mentioned queries. Can someone please hlep -
+
+1. If we do not use dedicated master nodes, does the data node by default act as master node?
+2. Also, if the above holds true and we do not opt for dedicated master nodes, does the split brain scenario apply for data node as well?
+3. Lets say - i do not want to use dedicated master node and want to make use of zone awareness. Now in this case, i'm allowed to chose only even number of data nodes, say 2. Does this result in split brain scenario again? If this result in split brain scenario I may have to use 3 data nodes in which case I cannot use zone awareness as the node count will be odd number. How do we workaround this scenario ?
+
+Also when trying to migrate existing elk cluster logs to new AWS ES domain. As per the procedure 
+a. I need to register a repository, 
+b. take a snapshot of old ELK clsuter and store it in s3, 
+c. register a repository on new AWS domain
+d. then restore the snapshot to new AWS ES domain.  
+
+I'm done with step 1 and step2. However i'm failing at step c with below error:
+
+{""Message"":""User: anonymous is not authorized to perform: iam:PassRole on resource: arn:aws:iam::<accountID>:role/<role>""
+
+Below is the command I used:
+
+curl -X PUT ""<aws_ES_endpoint_domain>/_snapshot/my_s3_repository"" -H 'Content-Type: application/json' -d'
+{
+  ""type"": ""s3"",
+  ""settings"": {
+  ""bucket"": ""XXXXX"",
+  ""region"": ""XXXXX"",
+  ""access_key"": ""AXXXXX"",
+  ""secret_key"": ""XXXXX"",
+  ""role_arn"": ""XXXXX""
+  }
+}
+'
+
+Thanks"
+Amazon Elasticsearch Service	"Re: Issue migrating existing elk logs to AWS Elasticsearch domain
+Can someone please look into the request and help me on this.
+Thanks!"
+Amazon Elasticsearch Service	"Allowing Lambda on a VPC to access an Elasticsearch domain on the same VPC
+I am learning to get around with Amazon services, and in particular I currently want to create a simple setup with a Cloud Formation script: a VPC with a single lambda written in JS that has an access to an Elasticsearch service within the same VPC.
+
+Somehow I can't get it to work. All requests from the lambda to the Elasticsearch domain always time out. However, the same requests made from both the same JS code or curl (even without any additional authorizations, just curling the ES domain endpoint) from a EC2 instance running Amazon Linux 2 in the same VPC work fine and I can communicate with Elasticsearch just fine from that EC2 instance (being SSHed into it).
+
+Please tell me what am I doing wrong in my Cloud Formation description of the setup? Below is the relevant extract from my Cloud Formation template and the example of the JS code that is able to access the ES service from the EC2 instance, but can't do the same thing for the lambda:
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: The AWS CloudFormation tutorial
+ 
+Resources:
+ 
+  SomeDeploymentBucket:
+    Type: 'AWS::S3::Bucket'
+ 
+  AppLogGroup:
+    Type: 'AWS::Logs::LogGroup'
+    Properties:
+      LogGroupName: /aws/lambda/some-lambda
+ 
+  IamRoleLambdaExecution:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: !Join 
+            - '-'
+            - - dev
+              - some-app
+              - lambda
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogStream'
+                Resource:
+                  - !Sub >-
+                    arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/some-lambda:*
+              - Effect: Allow
+                Action:
+                  - 'logs:PutLogEvents'
+                Resource:
+                  - !Sub >-
+                    arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/some-lambda:*:*
+              - Effect: Allow
+                Action:
+                  - 's3:*'
+                  - 'rds-db:connect'
+                  - 'rds:*'
+                  - 'es:*'
+                Resource: '*'
+      Path: / 
+      RoleName: !Join 
+        - '-'
+        - - some-app
+          - dev
+          - eu-west-1
+          - lambdaRole
+      ManagedPolicyArns:
+        - !Join 
+          - ''
+          - - 'arn:'
+            - !Ref 'AWS::Partition'
+            - ':iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+ 
+  AppLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        S3Bucket: !Ref SomeDeploymentBucket
+        S3Key: >-
+          tutorial/some-app/dev/1545610972669-2018-12-24T00:22:52.669Z/some-app.zip
+      FunctionName: some-lambda
+      Handler: app.server
+      MemorySize: 1024
+      Role: !GetAtt 
+        - IamRoleLambdaExecution
+        - Arn
+      Runtime: nodejs8.10
+      Timeout: 6
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref xxxVPCSecurityGroup
+        SubnetIds:
+          - !Ref xxxLambdaSubnet1
+    DependsOn:
+      - AppLogGroup
+      - IamRoleLambdaExecution
+ 
+    # ========= VPC =========
+ 
+  xxxVPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: 172.31.0.0/16
+      InstanceTenancy: default
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+ 
+  xxxVPCSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupName: VPC SG
+      GroupDescription: VPC Security Group
+      VpcId: !Ref xxxVPC
+ 
+  xxxLambdaSubnet1:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref xxxVPC
+      CidrBlock: 172.31.32.0/20
+ 
+  xxxLambdaSubnet2:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref xxxVPC
+      CidrBlock: 172.31.48.0/20
+  
+    # ========= Elasticsearch =========
+ 
+  xxxESSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupName: ES SG
+      GroupDescription: ES Security group
+      VpcId: !Ref xxxVPC
+      SecurityGroupIngress:
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 65535
+          SourceSecurityGroupId: !Ref xxxVPCSecurityGroup
+ 
+  xxxElasticSearch:
+    Type: 'AWS::Elasticsearch::Domain'
+    Properties:
+      AccessPolicies:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 'es:*'
+              - 'ec2:*'
+              - 's3:*'
+            Principal:
+              AWS:
+                - '*'
+            Resource: '*'
+            Effect: Allow
+      DomainName: es-xxx-domain
+      AdvancedOptions:
+        rest.action.multi.allow_explicit_index: 'true'
+      ElasticsearchVersion: 6.3
+      ElasticsearchClusterConfig:
+        InstanceCount: 2
+        InstanceType: m3.medium.elasticsearch
+        DedicatedMasterEnabled: 'false'
+      VPCOptions:
+        SecurityGroupIds:
+          - !Ref xxxESSecurityGroup
+        SubnetIds:
+          - !Ref xxxLambdaSubnet1
+
+
+The JS code (the version without the signing with creds, but it does not work when signing it either):
+
+var es = require('elasticsearch');
+var client = new es.Client({
+	host: 'vpc-es-domain-AMAZON.eu-west-1.es.amazonaws.com:80',
+	log: 'trace'
+});
+ 
+client.ping({
+	requestTimeout: 1000
+}, function(error, res, status){
+	if(error) {
+		console.trace('es cluster error!');
+		console.trace(error);
+	} else {
+		console.log('All is well');
+		var response = {
+			error: error,
+			res: res,
+			status: status
+		}
+		console.log(JSON.stringify(response));
+	}
+});
+
+
+Doing this in curl from the EC2 instance also gets response from the ES domain:
+curl vpc-es-domain-AMAZON.eu-west-1.es.amazonaws.com:80
+
+I would really appreciate help since I'm already stuck with this.
+
+Edited by: sinaari on Dec 23, 2018 6:06 PM
+improve code readability
+
+Edited by: sinaari on Dec 23, 2018 6:07 PM"
+Amazon Elasticsearch Service	"Cannot connect to elastic after self service update
+Hello,
+I've triggered yesterday update of AWS elastic service from version  R20180817-P1 to version R20180914-P2 .
+Cluster switched to processing state and after 12 hours of processing stopped responding to any connections `Failed to connect to vpc-kbc-syrup-elasticsearch-qgygd4ifwifv33afuj4pmbraam.us-east-1.es.amazonaws.com port 443: Connection timed out`
+And the cluster is still in the same state and we are not able to connect to it.
+All settings are same as previously and all metrics of cluster also doesn't show any problems.
+
+Domain ARN arn:aws:es:us-east-1:147946154733:domain/kbc-syrup-elasticsearch
+Elastic version: 2.3
+2x m4.2xlarge.elasticsearch data nodes nad 3x t2.small.elasticsearch master nodes.
+There is only cca 15 milions documents and less than 100GB of data with replicas included.
+
+thanks
+Martin"
+Amazon Elasticsearch Service	"Analytics with kibana and connect
+Hello,
+
+I´m using kibana to do analytics with data from a service connect. I want to visualize the contact flow or the data of clients who calls, the duration of the call, which is the flow with less interactions or what is the flow that have a lot of minutes of duration. I wonder if usign Kibana i can measure those things.
+
+Also i want to know if i mix connect with lex, kibana were the best option to do analytics or you recommend to me to use another service from amazon or maybe another software.
+
+i´m using this template: https://aws.amazon.com/es/blogs/contact-center/use-amazon-connect-data-in-real-time-with-elasticsearch-and-kibana/
+
+Thank you.
+
+Edited by: JimmyAwsR on Dec 11, 2018 7:52 AM"
+Amazon Elasticsearch Service	"Elasticsearch doman with ClusterIndexWritesBlocked
+Hello.
+
+Our elasticsearch domain's cluster writer status is ""ClusterIndexWritesBlocked"". However the domain status is active, doesn't have JVM Memory Pressure, high CPU usage or low free space.
+
+But, since last night (10/dec - about 22:00hs), the number of nodes was increased to 2 almost at the same time when the ClusterIndexWriteBlocked was initiated.
+
+Then I see this on the Cluster Overview:
+Service software release: R20180914-P2
+Update to release is in progress...
+
+
+So, i'm assuming that the ClusterIndexWriteBlocked is because of this...
+How long this update will take?
+Is it possible that after 12 hours (since yesterday) in updating, something went wrong?
+
+Any advice is welcome.
+Thanks"
+Amazon Elasticsearch Service	"Change setting script.painless.regex.enabled
+I want to make a specific query (described here: https://stackoverflow.com/a/51758889/1469465) in ElasticSearch, for which I need to change the following setting in elasticsearch.yml:
+
+script.painless.regex.enabled: true
+
+How can I change this setting, or any setting in the elasticsearch.yml file, for that matter?"
+Amazon Elasticsearch Service	"Re: Change setting script.painless.regex.enabled
+We cannot do that since the back-end servers of the Elasticsearch are maintained by AWS only. This can be achieved maybe if there is a feature request to enable it from the AWS console itself"
+Amazon Elasticsearch Service	"Elasticsearch Convertible RI's
+I know that Elasticsearch offers a Reserved Instance billing model. Can this work with convertible RI's, or am I locked in to the sizes that I choose?
+
+Thanks."
+Amazon Elasticsearch Service	"Amazon Elastic Serivce Exception Error
+Hello,
+
+We are trying to use ElasticSearch Service from the AWS side, 
+
+1. We already created a ElasticSearch Instance and the instance is running fine, but once we are trying to connect to our application through Java code we are getting exception error
+
+Below is the exception I am getting
+
+com.amazonaws.SdkClientException: Unable to load AWS credentials from environment variables (AWS_ACCESS_KEY_ID (or AWS_ACCESS_KEY) and AWS_SECRET_KEY (or AWS_SECRET_ACCESS_KEY))
+
+Note - Already follow the below steps but not able to resolve the issues:-
+
+1. https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html
+2. https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html
+
+Kindly help us to resolve the issues"
+Amazon Elasticsearch Service	"Enable slow logs via CloudFormation
+I couldn't find a way to enable Elasticsearch slow logs via CloudFormation. 
+Is such feature missing? Any plan to add it in the near future?"
+Amazon Elasticsearch Service	"Socket hang up
+Hello ,
+
+I have two aws instances behind load balancer , 
+both instances are connected to one AWS Elasticsearch service, Every day these two instances receive 15 million requests and 60% of these requests are geo-searches , so we are using Elasticsearch for this purpose , so the Elasticsearch domain receives around 9 millions request per day.
+
+We don't have many stored info in Elasticsearch , just 160K document. 
+
+The problem is that I found that Error: Request error, retrying
+ randomly , up to ten times every day.
+
+For Example , the following error occurred at the same exact moment on my both instances and that means it is not the instance problem , It is AWS Elasticsearch service problem  : 
+
+Elasticsearch ERROR: 2018-12-04T03:28:02Z
+  Error: Request error, retrying
+  POST https://XXXXX.eu-west-1.es.amazonaws.com/XXXXX/_search => socket hang up
+      at Log.error (XXXXXX/node_modules/elasticsearch/src/lib/log.js:225:56)
+      at checkRespForFailure (XXXXXX/node_modules/elasticsearch/src/lib/transport.js:258:18)
+      at HttpConnector.<anonymous> (XXXXXX/node_modules/elasticsearch/src/lib/connectors/http.js:157:7)
+      at ClientRequest.bound (XXXXXX/node_modules/lodash/dist/lodash.js:729:21)
+      at emitOne (events.js:116:13)
+      at ClientRequest.emit (events.js:211:7)
+      at TLSSocket.socketOnEnd (_http_client.js:423:9)
+      at emitNone (events.js:111:20)
+      at TLSSocket.emit (events.js:208:7)
+      at endReadableNT (_stream_readable.js:1064:12)
+      at _combinedTickCallback (internal/process/next_tick.js:138:11)
+      at process._tickDomainCallback (internal/process/next_tick.js:218:9)
+
+
+When I go to Elasticsearch console and review slow logs and error , I see no errors and CPU usage is always below 50% .
+
+I am using Node.js 8 and Elasticsearch 6.0"
+Amazon Elasticsearch Service	"AWS ES on VPC - How to access Kibana endpoint from a static IP range (Ofc)?
+Hello,
+
+I have set up an Elasticsearch cluster (v6.2) within a VPC using CloudFormation. I added the necessary security group to allow our office IP range (for port 443) to the subnet attached to the VPC. Unfortunately, I couldn't access the Kibana URL at all; it just times out. As a further attempt, I added Internet Gateway to the VPC configuration, but no luck, it's still the same.
+Can anyone help me with a possible solution? I don't want to go with the ugly idea of setting up a reverse proxy (like https://github.com/abutaha/aws-es-proxy).
+On a contrary to this, we have our services in a similar setup under a VPC (using Load Balancer), there we could allow connections to port 443  and it works fine without any problem.
+
+Thanks in advance for your help.
+
+Best,
+Prasad"
+Amazon Elasticsearch Service	"Re: AWS ES on VPC - How to access Kibana endpoint from a static IP range (Ofc)?
+Hi Prasad,
+
+I seem to be experiencing the same problem. Did you ever manage to figure out a solution to this?  Thanks!
+
+Best,
+
+George"
+Amazon Elasticsearch Service	"Re: AWS ES on VPC - How to access Kibana endpoint from a static IP range (Ofc)?
+I'm trying to do the same, so far what is my understanding is that kibana in VPC can't be accessed locally. It can be accessed only inside VPC itself .
+From DOCs
+To access the default installation of Kibana for a domain that resides within a VPC, users must first connect to the VPC. This process varies by network configuration, but likely involves connecting to a VPN or corporate network.
+
+Here is a possible solution described
+https://www.jeremydaly.com/access-aws-vpc-based-elasticsearch-cluster-locally/"
+Amazon Elasticsearch Service	"Re: AWS ES on VPC - How to access Kibana endpoint from a static IP range (Ofc)?
+Hello Prasad, 
+
+I am Almas from the AWS team. 
+
+I regret to inform you that if an Elasticseach cluster is configured to be in a VPC, it cannot be accessed over the internet. The endpoints can only be accessed from the resources in the same VPC as the cluster communicates on the private IP addresses from the VPC. Due to the managed nature of the service, this behavior cannot be changed. 
+A workaround here cab be to implement a reverse proxy, which I am afraid that you would not consider as mentioned by you. 
+
+Another workaround can be SSH tunnel with Port Forwarding as mentioned here https://www.jeremydaly.com/access-aws-vpc-based-elasticsearch-cluster-locally/ which you have been implementing.
+
+You can also have a VPN or Direct Connect connection to the VPC which can enable you to communicate with the cluster over Private IP addresses. These Private IP addresses should be whitelisted in the Security Group associated with the cluster. 
+
+Alternatively, an Elasticsearch cluster with public access as the Endpoints are accessible over the internet. Setting an IP-based access policy for this cluster will enable you to access the Endpoints from you Office. 
+
+I hope the above information proves to be helpful.
+
+Regards, 
+Almas"
+Amazon Elasticsearch Service	"Re: AWS ES on VPC - How to access Kibana endpoint from a static IP range (Ofc)?
+This article worked for me using ES behind a VPN. I had an ec2 instance running NGINX as a reverse proxy.
+
+https://sysadmins.co.za/aws-access-kibana-5-behind-elb-via-nginx-reverse-proxy-on-custom-dns/
+
+In my case I am access via a subdirectory `https://domain.com/kibana`
+
+````
+      location /kibana {
+        proxy_set_header Host vpc-foo.us-east-1.es.amazonaws.com;
+
+        proxy_http_version 1.1;
+        proxy_set_header Connection ""Keep-Alive"";
+        proxy_set_header Proxy-Connection ""Keep-Alive"";
+        proxy_set_header Authorization """";
+
+        proxy_pass https://vpc-foo.us-east-1.es.amazonaws.com/_plugin/kibana/;
+        proxy_redirect https://vpc-foo.us-east-1.es.amazonaws.com/_plugin/kibana/ https://domain.com/kibana/;
+      }
+
+      location ~ (/app/kibana|/app/timelion|/bundles|/es_admin|/plugins|/api|/ui|/elasticsearch) {
+         proxy_pass              https://vpc-foo.us-east-1.es.amazonaws.com;
+         proxy_set_header        Host $host;
+         proxy_set_header        X-Real-IP $remote_addr;
+         proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+         proxy_set_header        X-Forwarded-Proto $scheme;
+         proxy_set_header        X-Forwarded-Host $http_host;
+    }
+````"
+Amazon Elasticsearch Service	"Add authentication for filebeat using AWS IAM user
+Hi all,
+
+I have created an AWS ElasticSearch service with public access and used Access policies to restrict the access to my IAM user. I am trying to use filebeat to publish logs to ElasticSearch. However, i cannot find the configurations which are required to be added to filebeat to grant access to my  ElasticSearch service. 
+Appreciate if someone could let me know how to configure filebeat with an AWS IAM role or user."
+Amazon Elasticsearch Service	"Re: Add authentication for filebeat using AWS IAM user
+Hi,
+
+Disclaimer: I'm the Filebeat Tech Lead and work for Elastic.
+
+Filebeat doesn't support IAM authentication so using it with this AWS Elasticsearch service typically doesn't work. You can probably bypass the IAM authentication by using VPC, but I have never tried that. Instead, I recommend using the hosted Elasticsearch service from Elastic (https://www.elastic.co/cloud/elasticsearch-service), which also runs on top of AWS and supports authenticated Filebeat out of the box. It's also on the AWS marketplace here: https://aws.amazon.com/marketplace/pp/B01N6YCISK
+
+Tudor"
+Amazon Elasticsearch Service	"Elasticsearch's domain status stuck at processing
+Hi AWS ES support team,
+
+It has been more than 24 hours our ES domain status stuck at processing. It seems like nothing is happening in the background as well. And the node count is not the same as what we defined in configuration settings. Can you please help us take a look?
+
+Regards,
+SoeThet"
+Amazon Elasticsearch Service	"Re: Elasticsearch's domain status stuck at processing
+Hello SoeThet,
+I could not find any search domains in your listed account ID. can you please provide the domain name and the region where you can see the issues so that we can investigate. Any configuration change we spin up another set of instance and copy the data across to new search domain before we terminate previous set of instances. This is done to ensure operation can continue as the change proceeds. This may explain the different number of node counts while the cluster state is in processing. 
+
+Cheers
+Najah"
+Amazon Elasticsearch Service	"Re: Elasticsearch's domain status stuck at processing
+Hello Najah,
+I have 2 domains of elasticsearch service (5.5) whose states are permanently ""being deleted"" and ""processing"" for more than 12 hours.
+
+Can you tell me how to solve it?
+Thank you.
+
+Regards,
+JAG."
+Amazon Elasticsearch Service	"Re: Elasticsearch's domain status stuck at processing
+Hello JAG,
+I see all the clusters are active now. Do let us know if you see issues.
+
+Najah"
+Amazon Elasticsearch Service	"Re: Elasticsearch's domain status stuck at processing
+Our domain has been stuck in PROCESSING for days.
+
+Because of the lack of support we have been forced to create a new domain and reload all of our data from scratch, which of course we are now being double charged for. 
+
+How do we fix this?"
+Amazon Elasticsearch Service	"Re: Elasticsearch's domain status stuck at processing
+Hi Najah,
+
+I was facing ES EBS space issue (Prod Env) since last few days. Further i have  increased ES EBS volume 10 to 20 GB using ""Configure cluster"", keep all configration same as, only increased EBS size up to 20 GB., and submitted. now 24 hours has been gone, still i can see Domain Status ""Processing"" . Could please help me how to fix it? or why is it taking too much time.
+
+Domain status:  Processing
+Elasticsearch version5.5
+VPC endpointhttps://vpc-xxx-xxxxx-xxxx-xxxxxx.us-east-1.es.amazonaws.com
+Domain ARNarn:aws:es:us-east-1:111111111:domain/xxx-xxxxx-xxxx
+Kibana https://vpc-xxx-xxxxx-xxxx-xxxxxx.us-east-1.es.amazonaws.com/_plugin/kibana/
+Availability zones1
+Instance typet2.small.elasticsearch
+Number of instances1
+Storage typeEBS
+EBS volume typeGeneral Purpose (SSD)
+EBS volume size20 GB
+Encryption at restDisabled
+Node-to-node encryptionDisabled
+Upgrade status-
+Start hour for the daily automated snapshot00:00 UTC (default)
+Amazon Cognito for authenticationDisabled
+Service software release
+R20180914-P2Update
+Advanced optionsElasticsearch parameters
+Allow APIs that can span multiple indices and bypass index-specific access policies: true
+Fielddata cache allocation: unbounded (default)
+Max clause count: 1024 (default
+
+Thanks
+Narendra"
+Amazon Elasticsearch Service	"Elasticsearch domain is not being deleted
+Hi,
+
+Ik have an Elasticsearch domain (arn:aws:es:eu-west-1:923382989825:domain/production) that is being delted for over a day .. is there any AWS engineer that can help me out?
+
+regards,
+
+Robert"
+Amazon Elasticsearch Service	"Re: Elasticsearch domain is not being deleted
+AWS support took care of it"
+Amazon Elasticsearch Service	"Re: Elasticsearch domain is not being deleted
+Hello we have same issue on one of our account
+can you contact me directly to solve this issue pls
+thank you"
+Amazon Elasticsearch Service	"Amazon Elasticsearch Service domain stuck in ""Being deleted"" state
+After testing AWS ES Service I've deleted two clusters and they stuck in ""Being deleted"" state for a week or so. I cannot do anything with them. Please delete them.
+
+Their ARNs
+arn:aws:es:eu-central-1:816622746015:domain/logstash
+arn:aws:es:eu-central-1:816622746015:domain/logs"
+Amazon Elasticsearch Service	"Re: Amazon Elasticsearch Service domain stuck in ""Being deleted"" state
+One more ARN stuck in ""Being deleted"" state arn:aws:es:eu-central-1:816622746015:domain/logger"
+Amazon Elasticsearch Service	"Re: Amazon Elasticsearch Service domain stuck in ""Being deleted"" state
+Two months later still no response.
+All three domains still have 'Being deleted' status."

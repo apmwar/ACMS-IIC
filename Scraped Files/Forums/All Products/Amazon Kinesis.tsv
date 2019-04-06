@@ -1,0 +1,1166 @@
+label	description
+Amazon Kinesis	"Kinesis Agent with A1 EC2 instance type?
+Hello,
+
+We have been using the Kinesis Agent on both Cx and Mx type EC2 servers for some time. We recently configured an A1 instance for evaluation - while all services are working properly, only the Kinesis Agent is failing.
+
+Upon starting the Kinesis Agent the following error is appearing the Kinesis log:
+
+java.lang.RuntimeException: Failed to create or connect to the checkpoint database.
+       at com.amazon.kinesis.streaming.agent.tailing.checkpoints.SQLiteFileCheckpointStore.connect(SQLiteFileCheckpointStore.java:108)
+       at com.amazon.kinesis.streaming.agent.tailing.checkpoints.SQLiteFileCheckpointStore.<init>(SQLiteFileCheckpointStore.java:69)
+       at com.amazon.kinesis.streaming.agent.Agent.<init>(Agent.java:190)
+       at com.amazon.kinesis.streaming.agent.Agent.main(Agent.java:96)
+Caused by: java.sql.SQLException: Error opening connection
+       at org.sqlite.core.CoreConnection.open(CoreConnection.java:215)
+       at org.sqlite.core.CoreConnection.<init>(CoreConnection.java:76)
+       at org.sqlite.jdbc3.JDBC3Connection.<init>(JDBC3Connection.java:24)
+       at org.sqlite.jdbc4.JDBC4Connection.<init>(JDBC4Connection.java:23)
+       at org.sqlite.SQLiteConnection.<init>(SQLiteConnection.java:45)
+       at org.sqlite.JDBC.createConnection(JDBC.java:114)
+       at org.sqlite.JDBC.connect(JDBC.java:88)
+       at java.sql.DriverManager.getConnection(DriverManager.java:664)
+       at java.sql.DriverManager.getConnection(DriverManager.java:270)
+       at com.amazon.kinesis.streaming.agent.tailing.checkpoints.SQLiteFileCheckpointStore.connect(SQLiteFileCheckpointStore.java:105)
+       ... 3 more
+Caused by: java.lang.Exception: No native library is found for os.name=Linux and os.arch=aarch64
+       at org.sqlite.SQLiteJDBCLoader.loadSQLiteNativeLibrary(SQLiteJDBCLoader.java:284)
+       at org.sqlite.SQLiteJDBCLoader.initialize(SQLiteJDBCLoader.java:65)
+       at org.sqlite.core.NativeDB.load(NativeDB.java:53)
+       at org.sqlite.core.CoreConnection.open(CoreConnection.java:211)
+
+Has anyone else seen this error and/or configured Kinesis Agent to run successfully on an A1 instance?
+
+thanks"
+Amazon Kinesis	"Analytics: Is there a virtual column that represents the entire (JSON) msg?
+I have a source stream with JSON for messages. Say some of those messages contain a ""responseCode"" (INTEGER) property.
+
+Is there a way for me to do something like
+
+CREATE OR REPLACE STREAM ""DESTINATION_SQL_STREAM"" (js VARCHAR(1024));
+CREATE OR REPLACE PUMP ""STREAM_PUMP"" AS INSERT INTO ""DESTINATION_SQL_STREAM""
+SELECT STREAM ""theWholeJSONMessage""
+FROM ""SOURCE_SQL_STREAM_001""
+WHERE ""responseStatus"" > 200; -- Where the JSON includes ""responseStatus"": 429, etc.
+
+Thanks in advance for guidance.
+
+--Jamie"
+Amazon Kinesis	"Re: Analytics: Is there a virtual column that represents the entire (JSON) msg?
+Yes I believe you could do that. In order for you to do this, you need to define the schema for SOURCE_SQL_STREAM_001 with two columns, one column is the entire JSON string, which I believe you can get using the JSON path ""$."". Then the second column can be the responseStatus. Now you can write the query you have. Hope this helps.
+
+Thanks"
+Amazon Kinesis	"Re: Analytics: Is there a virtual column that represents the entire (JSON) msg?
+I get a coercion error: ""InvalidPathException: Path must not end with a '.' or '..'"".
+
+Also, when I wrote in in-bound messages wrapped like '{""msg"":...""}' and then used ""$.msg"" to refer to the whole message, I got another coercion error: ""Value does not convert to binary/varchar"".
+
+What column type should I use for a column that's suppose to represent the whole message? I don't see anything that looks like it'd work, and I'd rather not have a stringify copy of the message inside of itself.
+
+Edited by: Jamie Stephens on Feb 25, 2019 9:52 AM
+
+Edited by: Jamie Stephens on Feb 25, 2019 10:04 AM"
+Amazon Kinesis	"Cross-account Firehose denied access to destination bucket
+So I'm trying to implement a cross account Firehose delivery stream.  Account#1 published to Firehose which should deliver to a S3 bucket in Account#2.  I've enabled both Cloudwatch logging on the delivery stream and service access logging in S3 in an attempt to try and workout just want is going on.
+
+My firehose stream is as follows:
+aws firehose describe-delivery-stream --delivery-stream-name datalake-firehose-dev
+{
+    ""DeliveryStreamDescription"": {
+        ""DeliveryStreamName"": ""datalake-firehose-dev"",
+        ""DeliveryStreamARN"": ""arn:aws:firehose:eu-west-1:Account#1:deliverystream/datalake-firehose-dev"",
+        ""DeliveryStreamStatus"": ""ACTIVE"",
+        ""DeliveryStreamType"": ""DirectPut"",
+        ""VersionId"": ""1"",
+        ""CreateTimestamp"": 1550678502.733,
+        ""Destinations"": [
+            {
+                ""DestinationId"": ""destinationId-000000000001"",
+                ""S3DestinationDescription"": {
+                    ""RoleARN"": ""arn:aws:iam::Account#1:role/FirehoseRole"",
+                    ""BucketARN"": ""arn:aws:s3:::adrian-data-lake-bucket-dev"",
+                    ""Prefix"": ""firehose/"",
+                    ""BufferingHints"": {
+                        ""SizeInMBs"": 5,
+                        ""IntervalInSeconds"": 60
+                    },
+                    ""CompressionFormat"": ""UNCOMPRESSED"",
+                    ""EncryptionConfiguration"": {
+                        ""NoEncryptionConfig"": ""NoEncryption""
+                    },
+                    ""CloudWatchLoggingOptions"": {
+                        ""Enabled"": true,
+                        ""LogGroupName"": ""/aws/kinesisfirehose/FirehosePoC"",
+                        ""LogStreamName"": ""S3Delivery""
+                    }
+                },
+                ""ExtendedS3DestinationDescription"": {
+                    ""RoleARN"": ""arn:aws:iam::Account#1:role/FirehoseRole"",
+                    ""BucketARN"": ""arn:aws:s3:::adrian-data-lake-bucket-dev"",
+                    ""Prefix"": ""firehose/"",
+                    ""BufferingHints"": {
+                        ""SizeInMBs"": 5,
+                        ""IntervalInSeconds"": 60
+                    },
+                    ""CompressionFormat"": ""UNCOMPRESSED"",
+                    ""EncryptionConfiguration"": {
+                        ""NoEncryptionConfig"": ""NoEncryption""
+                    },
+                    ""CloudWatchLoggingOptions"": {
+                        ""Enabled"": true,
+                        ""LogGroupName"": ""/aws/kinesisfirehose/FirehosePoC"",
+                        ""LogStreamName"": ""S3Delivery""
+                    },
+                    ""S3BackupMode"": ""Disabled""
+                }
+            }
+        ],
+        ""HasMoreDestinations"": false
+    }
+}
+
+
+The bucket policy on my Account#2 S3 bucket is:
+{
+    ""Version"": ""2012-10-17"",
+    ""Id"": ""PolicyID"",
+    ""Statement"": [
+        {
+            ""Sid"": ""StmtID"",
+            ""Effect"": ""Allow"",
+            ""Principal"": {
+                ""AWS"": ""arn:aws:sts::Account#1:assumed-role/FirehoseRole/AWSFirehoseToS3""
+            },
+            ""Action"": [
+                ""s3:AbortMultipartUpload"",
+                ""s3:GetBucketLocation"",
+                ""s3:GetObject"",
+                ""s3:ListBucket"",
+                ""s3:ListBucketMultipartUploads"",
+                ""s3:PutObject"",
+                ""s3:PutObjectAcl""
+            ],
+            ""Resource"": [
+                ""arn:aws:s3:::adrian-data-lake-bucket-dev"",
+                ""arn:aws:s3:::adrian-data-lake-bucket-dev/*""
+            ]
+        }
+    ]
+}
+
+
+The error I get in Cloudwatch is:
+{
+    ""deliveryStreamARN"": ""arn:aws:firehose:eu-west-1:Account#1:deliverystream/datalake-firehose-dev"",
+    ""destination"": ""arn:aws:s3:::adrian-data-lake-bucket-dev"",
+    ""deliveryStreamVersionId"": 1,
+    ""message"": ""Access was denied. Ensure that the trust policy for the provided IAM role allows Firehose to assume the role, and the access policy allows access to the S3 bucket."",
+    ""errorCode"": ""S3.AccessDenied""
+}
+
+
+I get a more detailed report from the S3 Access Log:
+d647ebb88cea5ab557611fecdbe7fbf5c9cb824c22d0b7ced5912b574e26653b adrian-data-lake-bucket-dev [21/Feb/2019:12:14:44 +0000] 34.254.98.39 arn:aws:sts::Account#1:assumed-role/FirehoseRole/AWSFirehoseToS3 3DF39930802DB366 REST.PUT.OBJECT firehose/2019/02/20/16/datalake-firehose-dev-1-2019-02-20-16-07-41-bd081523-b39d-45f7-9d90-1705c23137aa ""PUT /adrian-data-lake-bucket-dev/firehose/2019/02/20/16/datalake-firehose-dev-1-2019-02-20-16-07-41-bd081523-b39d-45f7-9d90-1705c23137aa HTTP/1.1"" 403 AccessDenied 243 6 16 - ""-"" ""aws-internal/3 aws-sdk-java/1.11.488 Linux/4.14.77-70.59.amzn1.x86_64 OpenJDK_64-Bit_Server_VM/25.202-b08 java/1.8.0_202 scala/2.12.7"" -
+
+
+From the evidence of the S3 Activity Logs I can see that Firehose is successful assuming the correct role however I don't understand why S3 is rejecting the request from a resource with the ARN for which I've approved access.
+
+Edited by: adinic101 on Feb 21, 2019 6:55 AM"
+Amazon Kinesis	"How to put records into a kinesis stream in another AWS account?
+Is it possible to put records into a kinesis stream located in another AWS account?
+
+I configured my kinesis producer with an STS assumed role, but I can't see how to specify a stream name in another account (it doesn't accept an ARN, only a stream name).
+
+Init logic:
+            AWSCredentialsProviderChain credentialsProvider = new AWSCredentialsProviderChain(
+                    DefaultAWSCredentialsProviderChain.getInstance(),
+                    new STSAssumeRoleSessionCredentialsProvider.Builder(
+                            config.getKinesisStreamRoleArn(),
+                            roleSessionName)
+                                    .withExternalId(config.getKinesisStreamRoleExternalId())
+                                    .build());
+ 
+            Properties props = new Properties();
+            props.load(getClass().getClassLoader().getResourceAsStream(""kinesis_producer_config.properties""));
+            KinesisProducerConfiguration producerConfig = KinesisProducerConfiguration.fromProperties(props)
+                    .setCredentialsProvider(credentialsProvider);
+ 
+            if (!Strings.isNullOrEmpty(config.getKinesisStreamRegion())) {
+                producerConfig.setRegion(config.getKinesisStreamRegion());
+            }
+ 
+            return new KinesisProducer(producerConfig);
+
+
+and the error:
+
+Encountered AWSError
+ResourceNotFoundException
+Stream my-stream under account 111111111111 not found.:
+
+
+(where 111111111111 is the other aws account)"
+Amazon Kinesis	"Re: How to put records into a kinesis stream in another AWS account?
+Figured it out; I was creating a AWSCredentialsProviderChain, and including the DefaultAWSCredentialsProviderChain first in the constructor. When I changed the order to include the STSAssumeRoleSessionCredentialsProvider first, it was then able to find the stream in the other AWS account successfully."
+Amazon Kinesis	"Phantom kinesis firehose file - error accessing it
+I have a stream of data going into kinesis firehose and every 15 min a file is created and a lambda triggered. Every once in a while I get an error from my lambda accessing the s3 file. I use the ""smart_open"" library, and the error is:
+
+botocore.exceptions.ClientError: An error occurred (403) when calling the HeadObject operation: Forbidden
+
+On an error, I attempt to move the file to a failure folder, and I get an error from s3Client.copy_object as well:
+botocore.exceptions.ClientError: An error occurred (AccessDenied) when calling the CopyObject operation: Access Denied
+
+This isn't a permissions problem. This runs all day and night without problems, except for this happening on rare occasion.
+
+The thing is that I have the pathname of the file and it doesn't exist. This error occurs earlier than the 15 minute point (and my data rate is slow, so I am not hitting the size limit). The previous good file and subsequent good file are 15 minutes apart, and there are no sequence number gaps between the data records in them.
+
+It seems like kinesis is triggering a lambda for a phantom file. I don't think I'm losing data, but it takes time for me to investigate this each time it happens to ensure I am not. Any ideas?"
+Amazon Kinesis	"enable Parquet format and destination Redshift
+Currently if the stream's data format is set to Parquet, it is not possible to upload the data to Redshift directly. I wonder if we could add this feature to firehose soon. Thanks!"
+Amazon Kinesis	"How to use Kinesis Stream with AppSync for a Real-Time Dashboard?
+Hello!
+I am trying to build a near real-time dashboard like provided in the Real-Time IoT Device Monitoring with Kinesis Data Analytics solution.
+
+The difference in my approach is that I want to use AppSync instead of a polling mechanism.
+
+What I now need is a way to prevent the client from getting flooded with hundreds of messages from the server.
+For instance, when 100 devices send data to the Kinesis Stream, the same data would be pushed to the client as well and would crash the browser.
+
+I already asked the question at StackOverflow and thought, it may be a good idea to ask here for help as well.
+Here's the link:
+https://stackoverflow.com/questions/54689010/how-to-prevent-a-client-from-an-huge-amount-of-messages-from-aws-appsync-in-an-i
+
+Has anyone had the same use case and managed to avoid this problem?
+Would elastic search help here because I am also able to attach AppSync to an elastic search cluster?
+
+Thank you in advance.
+
+Edited by: datoml on Feb 14, 2019 10:06 AM"
+Amazon Kinesis	"Data enrichment of Kinesis firehose stream
+We have a mobile game that sends events to our server and from there the server sends events to s3 using Kinesis Firehose. We wish to enrich that data with data from our RDS (for example to add to each record the first time the user installed the game). Is there a way to do it using Amazing Kinesis Data Analytics(Looks like an amazing service)? I saw in the docs there that it can use ""Reference data from s3"". Can i use somehow data from other services like rds/dynamodb etc?
+Thanks"
+Amazon Kinesis	"Streaming video from amazon bucket using Kinesis ?
+Sorry if this is not the right place. 
+Scenario. My application allows users who paid for memebership watch our videos stored on aws and currently using cloudfront for delivery .
+But even though there is signed url , you can fetch url through inspect elelment and download the video .
+We came to Kinesis and now are trying to understand will it work with aws bucket ? and if it is the solution to our project?
+Thanks"
+Amazon Kinesis	"Quick question on data analysis
+I'm new to AWS. I'm working on a project that requires a lambda function to analyze a bunch of data. This data, being stored in a mySQL database, does it requires kinesis to transfer it to the lambda function? Or can the lambda function just get it? It is thousands of data points. 
+
+Any response is appreciated!"
+Amazon Kinesis	"Re: Quick question on data analysis
+Kinesis is best suited to stream updates on the database to a Lambda function. Think of it as a way to trigger a lambda function whenever there is an update to the database. See the blog post below to see how it can be done
+https://aws.amazon.com/blogs/database/streaming-changes-in-a-database-with-amazon-kinesis/
+
+If this is a one-time/ad-hoc data analysis, then you could scan the database and write the data points to a Kinesis stream, or even directly invoke the lambda. 
+
+More info about using Lambda with Kinesis here - https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html"
+Amazon Kinesis	"Best practices to ""go back in time"" with KCL
+Hi!
+
+My use case involves the ability to rewind the processing of a Kinesis stream to a few hours. Eg: It is 15:00h my KCL application is in sync with the stream but an event happens and I need to rewind my KCL application to consume data from 10:00h.
+
+Using KCL, what is the best practice to accomplish this?
+
+I was thinking about doing the following:
+
+stopping the KCL application
+""truncating"" the dynamodb table used by KCL
+starting the KCL application again but using the timestamp of the desired point in time that I need to reprocess.
+
+
+This should work but seems a lot of effort to accomplish something that could be done more easily. So is there a better way to do this?
+
+Thanks!
+
+Edited by: fgasparini on Feb 5, 2019 6:21 AM"
+Amazon Kinesis	"Re: Best practices to ""go back in time"" with KCL
+Hi!
+
+There is initialPositionInStream [1] to be set, which does exactly what you need.
+Also, I suggest that you make a separate KCL application (can be same service with another app name) which will replay the events, and another one which will do real-time processing.
+
+Btw, don't forget to check what is your data-retention period (amount of time to rewind back in the past). By default, it's set to be 24h.
+
+Regards,
+Marko
+
+[1]: https://docs.aws.amazon.com/streams/latest/dev/developing-consumers-with-sdk.html#kinesis-using-sdk-java-get-data-shard-iterators"
+Amazon Kinesis	"Process multiple Kinesis streams within single Java process
+Hi,
+
+I would like to process multiple Kinesis streams using KCL within the same Java process.
+The idea is simple: make a new KCL instance for each stream and then run the workers concurrently.
+My question is whether in this case all KCL instances are using the same thread pool, and whether this idea is a good/common practice when dealing with stream processing.
+
+Thank you"
+Amazon Kinesis	"Specify ErrorOutputPrefix while creating a new Delivery Stream in Console
+Hello,
+
+there is no field for specifying ErrorOutputPrefix in the console. While creating a new delivery stream with a Prefix that contains expressions, the console gives error:
+
+Error
+Ths supplied prefix(es) do not satisfy the following constraint: ErrorOutputPrefix cannot be null or empty when Prefix contains expressions"
+Amazon Kinesis	"Firehose to S3 - Custom Partitioning Pattern
+Hi,
+
+Is there plan on the FH-S3 roadmap to enable custom bucket/folder partitioning?
+
+A the moment it is YYYY/MM/DD/HH based on arrival time into FH.  Some ideas for future feature.
+
+1. The date/time part can be a custom value from within the payload of the data being archived - this supports the concept of 'event' time, meaning late arriving data can be put into the right bucket folder, even if this is not the latest window.  As FH batches data, this would involve dis-aggregation of the batch to do the per record inspection, a bit of a performance hit, but its a archive process anyway.  Would need to configure the format type of the date value too (or I guess could be inferred?)
+
+Benefit will mean any consumers of such large timeseriees datasets do not need to then re-sort to ordering by event time before processing - can reason of their order more easiky.
+
+2. Add a partition element that that is based on non time field in the payload.
+
+e.g YYYY/MM/DD/EventType - e.g drop the hour, but use the event.eventType attribute (within the payload) as the leaf partition folder.  Sort of inline with a Parquet type of partitioning option.  
+
+Any inspection into the payload for values could use configured JSONPath for JSON
+
+Just some thoughts anyway based on use to-date.
+Cheers!!
+
+Edited by: kurtmaile on Nov 1, 2016 3:01 AM
+
+Edited by: kurtmaile on Nov 1, 2016 3:02 AM"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
+thank you for the feedback. We'll take these into consideration."
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
+Interested in this too."
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
+This is a necessary feature. Please put this in your pipeline AWS.
+Thanks."
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
+This is important for reading Firehose data using Athena, since Athena expects partitions to be define like ""year=YYYY/month=MM/day=DD/hour=HH"". Without this you have to manually add each hours partitions to the Athena table."
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
+I would like know this as well - to make folders like 
+`year=yyyy/month=mm/day=dd/hour=hh`
+
+Can you share your ways to handle this using firehose? I am looking into a way that triggers a sns topic that invokes a lambda that goes through the folders and rename them like above, but not sure if this plan is a good one or not. 
+
+I really like the firehose way that is handling data but it would be super cool if there is a feature to customize that partitioning yyyy/mm/dd/hh to year=yyyy/month=mm, etc for hive job. Thank you!
+
+Edited by: dkim0526 on Oct 27, 2017 11:27 AM"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
+Definitely need Hive partitioning across the board. You've got Firehose, Glue, Athena, and Redshift Spectrum but you can't make it all work together if they create incompatible output."
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1 for the `year=yyyy/month=mm/day=dd/hour=hh`partitioning option that would work better with Athena.  Currently our year partition is partition_0, month is partition_1, etc."
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1 for yyyy/mm/dd/hh to year=yyyy/month=mm/day=dd/hour=hh partitioning
+
+Edited by: srivigneshkn on Feb 13, 2018 11:58 AM"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
+any update on the custom partition keys ?"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
+""YYYY/MM/DD/EventType - e.g drop the hour, but use the event.eventType attribute (within the payload)""
+
+This is exactly the scenario we are struggling with currently. I really expected this to be a common scenario. e.g. firehose with various message types coming in that you want to represent in athena as a table per message type, yet all examples I have seen simply demonstrate a single schema going into a single table. 
+
+What firehose gives us by default is not usable so I initially resorted to manually saving these out to S3 to control the partitioning and just dropping all records as far as firehose is concerned.
+
+Cant you just allow us to override the prefix you use to save to S3? Then firehose can aggregate those with the same prefix for saving?"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1 We also need a feature, to at least save the data in an athena and hive compatible structure like year=yyyy/month=mm/day=dd/hour=hh.
+Now Firehose has the feature of ""record format conversion"", which is also a step forward, but unfortunately, it ignores the defined partitions of the selected table, and saves the data in the structure YYYY/MM/DD/HH. More worse, the saved parquet files are missing the partition columns (this would be ok, if they are used in the folder structure). @AWS: Is it possible to use the tables partitions? If not, do you plan it for the near future?"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1 
+to AWS...when you where developing all this wouldn't you have used athena to test it? AWS really needs to hire some non developer QA staff that would notice this kind of stuff. happens way to often."
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1 for this feature"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1 for this feature. Firehose's folder partitioning set in stone is not cool, forcing users to use Kinesis Streams or other solutions, in some cases, just because of this simple aspect. 
+
+I'm positive that Firehose, Glue and other serverless data pipeline services will enjoy some nice evolutions, just like Lambda did in the past years. Just a quick question: where's the best place to follow new updates in services?"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1. Its been two years since this was requested. Can someone from AWS at-least provide some feedback ?"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
+there's some functionality already available: https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html"
+Amazon Kinesis	"Re: Firehose to S3 - Custom Partitioning Pattern
++1"
+Amazon Kinesis	"Storing Kinesis Video Streams to S3
+I have a requirement where I need to store multiple real-time video streams(USB camera, RTSP streams) to S3. I should split the video recordings into 1hour video files for each camera and store in S3. For example, each camera produces 24 video files a day. I am thinking of using Kinesis Video Streams and Producer library (C++) on the client. As a newbie, I have few basic questions.
+1. Is Kinesis video streams is the right choice? Or should I record the video files on the client and use AWS Transfer manager to upload to S3
+2. If Kinesis is the right choice, then how do I store the kinesis streams into S3 as video files."
+Amazon Kinesis	"How much KPU is my application consuming?
+Hello,
+
+is there a way of seeing how much KPU my Kinesis Data Analytics is currently consuming? Or it has consumed in the last 1 hour/day?
+
+best wishes"
+Amazon Kinesis	"Shards VS Partition Key
+If at the time of creation of a Kinesis data stream I specify the number of shards to be let's say 10, and every time I put record I assign it a random Partition key like this:
+
+     var putRecord = new PutRecord
+                {
+                    Data = data ?? new byte[0],
+                    StreamName = stream,
+                    PartitionKey = GetRandomPartitionKey()
+                };
+How will kinesis decide to put a record in a certain shard, and what happens if the number of unique Partition keys is more than the number of shards?"
+Amazon Kinesis	"Re: Shards VS Partition Key
+We use a simple hash function to map the partition key to a specific shard. This is briefly described in the API docs - https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecord.html 
+""An MD5 hash function is used to map partition keys to 128-bit integer values and to map associated data records to shards using the hash key ranges of the shards."" 
+To learn more, you can also do DescribeStream on your stream to see the key ranges for each shard. 
+
+You can have as many partition keys as you like, the hash function will ensure that it maps to a specific shard. And since the hash function is deterministic, the same partition key will always result in the same integer value. It could map to the same or a different shard depending on if/whether you change the shard count on the stream, which in turn results in a change to the shard to key range mapping.
+
+Hope that helps."
+Amazon Kinesis	"VMware-Go-KCL a native Go implementation of Amazon KCL v2.0 API spec
+VMware-Go-KCL brings Go/Kubernetes community with Go language native implementation of KCL matching exactly the same API and functional spec of original Java KCL v2.0 without the resource overhead of installing Java based MultiLangDaemon.
+https://github.com/vmware/vmware-go-kcl
+
+Feedback greatly appreciated."
+Amazon Kinesis	"Firehose to S3 data dump on a single file
+I am having IOT device sending data to Kinesis Firehose (JSON format) 
+Firehose in turn adds this data into S3 (JSON format)
+This is the writing data into S3 part. 
+
+For reading data from S3 i am having Lambda (using python) function as follows:
+
+    bucket = 'xyzabc'
+    key = 't123.txt'
+
+    try:
+        data = s3.get_object(Bucket=bucket, Key=key)
+        json_data = data.read()
+
+
+This works fine only S3 filename is specified (key).
+Now the problem is Firehose dumps data into S3 creating new folder everytime as per timestamp. So it is very difficult to read data from different folders. 
+
+How can we force Firehose dump data into same folder and file on S3?"
+Amazon Kinesis	"Get the source hostname
+Is there a way I can get the hostname of the instance where the log was generated from by the Kinesis Agent? If not, what is the best practice?"
+Amazon Kinesis	"CloudWatch Log - Kinesis Firehose - ES Possible?
+Hi
+
+I've set up CloudWatch logs subscrition to a Kinesis Firehose Delivery Stream, and set this up to send data to a ES domain. As required, I configured the lambda to uncompress the events using the blueprint lambda ""kinesis-firehose-cloudwatch-logs-processor"" (removing the \n that it inserts after each event, that breaks ES requirement for single line JSON).
+It works only when the received CWL record contains a single event, if the record packs several events, ES complains with "" Malformed content, found extra data after parsing: START_OBJECT"".
+This symptom looks like the ES domain is receiving a JSON with more than one document without using _bulk, but the Kinesis Firehose documentation states that _bulk is used (https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html).
+May it be that Kinesis Firehose sends the buffered records in a _bulk but considering that each one is a sinble JSON document?
+Then, how could I convert a single record with several events into several records?, I cannot create new recordIds in the result of the lambda or return several records with the same recordId.
+do I have to preprocess them using a Kinesis stream? could not be this so much showed off use case be directly supported by the involved AWS services themselves?
+
+Regards
+
+Edited by: jalvarezferr on Jun 12, 2018 6:45 AM
+
+Edited by: jalvarezferr on Jun 12, 2018 6:48 AM"
+Amazon Kinesis	"Re: CloudWatch Log - Kinesis Firehose - ES Possible?
+Hi, I'm having the exact same issue using the same architecture pattern... 
+
+Have you been able to resolve? I could use some help, too."
+Amazon Kinesis	"Re: CloudWatch Log - Kinesis Firehose - ES Possible?
+Bump. Anyone have any thoughts?"
+Amazon Kinesis	"Re: CloudWatch Log - Kinesis Firehose - ES Possible?
+Stuck here as well! Would be great if anyone came up with a solution on ""unpacking"" the log entries within a single record."
+Amazon Kinesis	"Re: CloudWatch Log - Kinesis Firehose - ES Possible?
+I'm having this same issue as well.  Wrote into support, but didn't get clear guidance or a clear answer."
+Amazon Kinesis	"Re: CloudWatch Log - Kinesis Firehose - ES Possible?
+Also having this same issue. I found this thread on Reddit https://www.reddit.com/r/aws/comments/8yqwh2/cw_logs_to_firehose_to_elasticsearch_multiple/
+discussing the issue with alternative solutions.
+
+Seems to me that simply forcing the workflow to not process or send ES data in bulk would be a quick workaround. Whether that is possible, feasible or practical I don't know...
+
+It would be nice to have a concrete answer from AWS as it seems a major blocker to using Firehose for this purpose..."
+Amazon Kinesis	"Good Kinesis Data Analytics Use Case?
+Hello,
+
+Can someone tell me if the following is a valid use case for Kinesis Data Analytics?
+
+We have event data streaming in over time. We want to aggregate those events to form a final event ""record"", so a record would consist of a start event, and end event, and numerous other event types in between.  We don't know ahead of time how long any individual record will be. A good average is 10 minutes, but in theory it could last over an hour. We have proposed the following:
+
+
+Events are put into a Firehose via the API using the AWS SDK.
+We connect Kinesis Data Analytics to the firehose and use SQL to aggregate all the events for a record.
+We choose an appropriate destination (either S3 via Firehose or leverage a lambda).
+The entire record, once complete, is written to PostgreSQL.
+
+
+After looking in detail at how Kinesis Data Analytics works, however, we're not sure if this is the best way to go. Most of the SQL examples given use tumbling or sliding windows to gather data. In our case it's not clear what window size to use, since it can vary based on the record. Once we receive the “end event” for a record, we want to reach back in time and aggregate all the events associated with that record.
+
+Can someone help guide me in the right direction, either pointing out how KDA is a viable solution, or perhaps suggestion a different AWS architecture?
+
+Thanks,
+Jerrell"
+Amazon Kinesis	"Re: Good Kinesis Data Analytics Use Case?
+We have an upcoming blog post that talks about how to implement sessionization, which is effectively your use case. 
+
+The way it would work with KDA for SQL applications is to produce a single aggregated session for the majority of events by using a 15 minute STAGGER window (shown below). For sessions that are longer than this aggregation period of 15 minutes, you would get multiple results with partial results that you have to combine in the app (https://docs.aws.amazon.com/kinesisanalytics/latest/dev/examples-window-partialresults.html) or downstream to produce a result. In this way, you can use a single output for both the average and the longer extreme. 
+
+Alternatively, you could have a fast path in the application (like the above) and a slow path that uses the same approach by changes the aggregation period something like 2 hours. This means you would get fresh data from the fast path (15 minutes) and then use a separate query and destination 
+for the slow path (2 hours). This would use more KDA resources but the number of partial results you would get would decrease.
+
+Hope this helps. 
+
+Here is an example of the SQL code of how to accomplish this. 
+-- CREATE a Stream to receive the query aggregation result
+CREATE OR REPLACE STREAM ""DESTINATION_SQL_STREAM""
+(
+  session_id VARCHAR(60),
+  user_id INTEGER,
+  device_id VARCHAR(10),
+  timeagg timestamp,
+  events INTEGER,
+  beginnavigation VARCHAR(32),
+  endnavigation VARCHAR(32),
+  beginsession VARCHAR(25),
+  endsession VARCHAR(25),
+  duration_sec INTEGER
+);
+ 
+-- create the PUMP
+CREATE OR REPLACE PUMP ""WINDOW_PUMP_SEC"" AS INSERT INTO ""DESTINATION_SQL_STREAM""
+-- Insert as Select 
+    SELECT  STREAM
+-- Make the Session ID using user_ID+device_ID and Timestamp
+    UPPER(cast(""user_id"" as VARCHAR(3))|| '_' ||SUBSTRING(""device_id"",1,3)
+    ||cast( UNIX_TIMESTAMP(STEP(""client_timestamp"" by interval '30' second))/1000 as VARCHAR(20))) as session_id,
+    ""user_id"" , ""device_id"",
+-- create a common rounded STEP timestamp for this session
+    STEP(""client_timestamp"" by interval '15' minute),
+-- Count the number of client events , clicks on this session
+    COUNT(""client_event"") events,
+-- What was the first navigation action
+    first_value(""client_event"") as beginnavigation,
+-- what was the last navigation action    
+    last_value(""client_event"") as endnavigation,
+-- begining minute and second  
+    SUBSTRING(cast(min(""client_timestamp"") AS VARCHAR(25)),15,19) as beginsession,
+-- ending minute and second      
+    SUBSTRING(cast(max(""client_timestamp"") AS VARCHAR(25)),15,19) as endsession,
+-- session duration    
+    TSDIFF(max(""client_timestamp""),min(""client_timestamp""))/1000 as duration_sec
+-- from the source stream    
+    FROM ""SOURCE_SQL_STREAM_001""
+-- using stagger window , with STEP to Seconds, for Seconds intervals    
+    WINDOWED BY STAGGER (
+                PARTITION BY ""user_id"", ""device_id"", 
+                                STEP(""client_timestamp"" by interval '15' MINUTE)
+                RANGE INTERVAL '15' MINUTE);"
+Amazon Kinesis	"Re: Good Kinesis Data Analytics Use Case?
+Hi thanks for the feedback. Sorry for the late response.
+
+A stagger window sounds promising. However, there's one complication. For my example the Session ID we'd choose is pretty clear -- it's simply one of the columns. But we also want to capture all of the columns for every other row within each window, so each session would include a number of rows with columns of varying values, all with this same Session ID. It seems that to use a stagger window we'd need to include all these columns in the ""PARTITION BY"" list? In other words, if this is acting like a SQL GROUP BY statement, we'd need to include columns which aren't aggregate functions."
+Amazon Kinesis	"Kinesis GetRecords.IteratorAgeMilliseconds matric gradual increase
+Hello,
+
+I use an AWS Lambda function to process records in an AWS Kinesis data stream. Recently we track AWS cloudwatch metric from this Kinesis, finding that a gradual increase happen in the matric GetRecords.IteratorAgeMilliseconds.
+(attach file: Screen Shot 2019-01-08 at 12.27.50 PM.png)
+
+We first think that Kinesis’ IncomingRecords in metric is too big to make the GetRecords.IteratorAgeMilliseconds increase, but after we track the metric, we found that the two metric is irrelevant
+(attach file: Screen Shot 2019-01-08 at 12.29.33 PM.png)
+
+Then we think that the AWS lambda probably have some error, and AWS Lambda cannot read any new records from the shard until the failed batch of records either expire or is processed successfully, but we see the AWS Lambda has no error, and not exist any Lambda retry.
+
+In the end, we found that the Lambda’s invocation is related to GetRecords.IteratorAgeMilliseconds, when GetRecords.IteratorAgeMilliseconds approach zero, the invocation will increase to 100~200, but when GetRecords.IteratorAgeMilliseconds gradual increase, the invocation will only 5~10.
+(attach file: Screen Shot 2019-01-08 at 12.36.10 PM.png)
+
+Can someone help me what cause GetRecords.IteratorAgeMilliseconds gradually increase?"
+Amazon Kinesis	"2 Minutes Sliding Window Emit Same record for more than two hours
+Background:
+We have an analytics application that is consuming requests from firehose, do some parsing and call a post-processing lambda so we capture the output from analytics for further processing.
+
+Problem is whenever trying to apply sliding windows to the analytics SQL (we used  2 minutes interval), and push a single record to the firehose, we receive the output records (parsed records) from analytics application to the lambda several times and for more than two hours. Which cause lambda to fire many times unnecessarily.
+
+Am I applying it wrong?
+
+CREATE OR REPLACE STREAM  ""itemStream""
+(
+    ""itemID"" varchar(50),
+    ""AggregateValue"" int
+);
+ 
+CREATE OR REPLACE PUMP ""STREAM_PUMP_PRE"" AS 
+INSERT INTO ""itemStream""
+SELECT STREAM  ""itemID"", 
+                SUM(""sellValue"") OVER W1 AS ""AggregateValue""
+From ""parsed_ads"" 
+WINDOW W1 AS (
+   PARTITION BY ""itemID"" 
+   RANGE INTERVAL '2' MINUTE PRECEDING);"
+Amazon Kinesis	"JS console error enabling S3 encryption on an existing firehose stream
+When I try to enable S3 encryption on an existing firehose stream I click on ""Create new or update"" to update the role permissions, then accept, but then I just get a blank page and the JS console shows this error:
+Uncaught TypeError: Cannot read property 'acceptOneClickRoleCreationResponse' of null
+    at window.onload (ocrc.js:32)"
+Amazon Kinesis	"PHP Kinesis Client Library
+Is somebody working on a php port of the KCL? Will there ever be an official amazon php kcl port?
+
+Thanks
+André"
+Amazon Kinesis	"Re: PHP Kinesis Client Library
+We cannot comment specifically on future features. However, we are constantly reviewing customer feedback, including the forums, to identify new features for Kinesis. Availability of the Amazon Kinesis Client Library (KCL) in different languages has been a common request. 
+
+The AWS SDK for PHP does provide support for Amazon Kinesis. Here are the release notes. I know this is not exactly what you are looking for but wanted to provide it to those generally interested in using PHP with Amazon Kinesis."
+Amazon Kinesis	"Re: PHP Kinesis Client Library
+Although it has been many years since  last post,  I wrote a kinesis client for PHP this year. It is working well for my tasks.  https://github.com/sabmeua/amazon-kinesis-client-php 
+
+If someone is still interested in php client, please try it. I hope my work helps you."
+Amazon Kinesis	"Issue updating your application
+I have a very simple SQL query which I can not run in Kinesis Data Analytics. This SQL is from the Kinesis templates in which I only modify the fields in the select and delete the where
+
+In the attached image you can see what I'm trying to run, what could be wrong?
+
+
+ADDED 1:
+
+Continuing the test the problem it appears to be if you use reference data. With this reference data, each time I want to edit the SQL query I got this error.
+
+The file is CSV"
+Amazon Kinesis	"No rows in source stream in Analytics
+Hi!
+
+We are a startup having built a game that is about to be launched on iOS and Android. 
+We have implemented AWS Cognito support and use it for User/Identity mgmt and Cognito sync for data storage. 
+
+Everything works perfect on that part. We are now into the analytics part, being able to analyze Cognito data we have setup a Stream linked to our identity pool in Cognito, having that stream linked to an AWS Analytics application - we get correct schema analyzed and stored as it seems in the AWS Analytics application (having made bulk push of Cognito data to the linked and enabled Stream). Finally we create a simple Select * from STREAMID in our AWS Analytics application - and we constantly get ""No rows in source stream"" as the response. Having tried ""a lot"" - what could we be doing wrong?? 
+Any support appreciated. 
+BR Richard and Marcus"
+Amazon Kinesis	"Firehose + Elasticsearch: document Ids and idempotency
+Hello
+
+I can not see any way to specify how Firehose should generate document Ids when writing to Elasticsearch.
+
+I assume then, that it always does a POST and lets ES assign a autogenerated id.
+
+This in turn means that every document in the stream will ALWAYS be treated as an INSERT rather than an UPDATE.
+
+Since Kinesis is an 'at least once' technology, it is to be expected that from time to time records will be processed more than once. The documentation for Kinesis is clear in a number of places that kinesis consumers should be idempotent in order to properly handle these cases.
+
+In these cases it seems that Firehose will insert duplicate records into ES and hence is NOT idempotent.
+
+Here are my questions
+
+1) Is all the above correct?
+2) Is there any way for duplicate inserts by firehose to be avoided?
+
+Thanks"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
++1
+wondering the same. Some more details on how a firehose record gets mapped to an ES action would be appreciated. 
+It seems that e.g. one isn't able to specify the _id field (which would enable to do updates via a replace)"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
+Hi, 
+
+Firehose generates a random document ID while indexing a document to Elasticsearch. If the duplicates occur while Firehose receives these documents, they'll be treated as different documents and the duplicates will be populated to Elasticsearch as well. 
+
+Could you let me know a bit about your use case and requirement on idempotency? Is the ideal document ID in your document itself?
+
+thank you,"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
+In my case I am indexing documents that originate at a third party source. They have a distinct id already.
+Those documents can change in which case the third party service notifies us about the change. Ideally I would want to just send the updated document to the same firehose stream. 
+If I could specify the _id that would work without any issues but since I can't specify the _id, there is no way for me to use firehose in this use case.
+I would have to communicate directly with the ES servers (which opens a whole other set of issues due to the lack of VPC support)
+
+A major annoyance initially was also that this behavior is not documented. I.e. specifying a _id leads to dropped documents without any error message."
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
+In my case the id is indeed in the document itself (or can be produced by concatenating fields in the document)"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
+@rayzaws  Any news on this in context of ""Amazon Kinesis Firehose Data Transformation""?"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
++1
+
+Is it possible to use Lambda transformations to set the document id?"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
+So while streaming data to ES there is no way to check/modify if the data already exists.  This is a crippling limitation.  What use case then Kinesis Firehose support except for loading log data which is always an insert?"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
+Same here, this would be a great addition to kinesis firehose + elasticsearch delivery.  
+
+My use case is similar to the OP, loading documents which have already been assigned an ID.  In my case, they are UUID's and I don't need to update anything, so simply being able to set the Elasticsearch document ID (_id) when pushing to Firehose would be valuable!
+
+AWS, any update on this feature?
+
+Edited by: Brooks81 on Apr 9, 2017 2:16 PM"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
+Would love to see this implemented as we are looking for a better way to update records in elasticsearch"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
+ES5 has support for an ingest node to pre-process documents. It would solve the problem if I was able to specify my own preprocessor in the Firehose stream.
+
+See here for details: https://www.elastic.co/guide/en/elasticsearch/reference/current/ingest.html 
+All it would need is to allow me to specify a ?pipeline=my_pipeline_id
+ query parameter. Then I could take care of setting the _id field myself based on the document source.
+
+Absolutely ridiculous that AWS still doesn't support this."
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
+I'm puzzled as to why this is not a feature yet?
+
+It feels like a fairly standard use case to specify document ID's so that you can replay data to either clean up or add new information. Slight oversight?
+
+I've just implemented kinesis firehose and lambda -> elastic but it looks like I'll need to use a standard SQS queue or Kinesis stream with my own lambda for ingestion into elastic to get the desired outcome."
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
++1
+
+I am in need of this functionality as well"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
++1
+
+Does anyone know the status of this feature?"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
++1 . when will AWS developing the feature?"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
++1 on being able to specify the document ID, or the pipeline parameter for ingest node.
+
+Edited by: konliakos on Oct 14, 2017 10:43 PM"
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
++1 thought i was doing it wrong until I came upon this thread."
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
+I am in need of this functionality as well.
+
+We are in a similar situation as some of the others on this thread, our data has a pre-assigned id, which is part of the document.
+
+We can not use Kinesis to send data to ElasticSearch until this feature is implemented.  In the meantime we will use logstash on a local machine somewhere."
+Amazon Kinesis	"Re: Firehose + Elasticsearch: document Ids and idempotency
++1, its end of 2018 already, does anyone know if this is feature is available? Really need to specify document id. This is a deal breaker for data ingestion into the Elastic Search
+
+any update on this issue?
+
+Edited by: mrvini on Dec 20, 2018 3:38 PM"
+Amazon Kinesis	"Kinesis Data Analytics for Java Questions
+Hi, 
+
+It doesn't seem possible to run the flink application in a VPC, is that right? Is there any way to connect to an elasticache cluster in a VPC in the same account/region? Can you assign a static private ip to the flink application? 
+This would be useful for caching expensive requests between events. 
+
+Also the cloudwatch metrics num_records_out and num_records_in are not whole numbers which seems a little meaningless. Is there some manipulation on these metrics that needs to be done?
+
+Thanks"
+Amazon Kinesis	"Firehose to ElasticSearch Service Mapping
+Is it documented anywhere what the data type mappings are?
+
+For example, if I drop a timestamp property on my JSON object and PUT it into the firehose, it will create a field in the ElasticSearch mapping with the type of date. But if I call the property datetime it just ends up as a string.
+
+It would be handy to be able to control these mappings, or at the very least know what they are. I understand I can create a mapping on the index myself and Firehose will use that. But that doesn't work with the indices that are split by date - Firehose creates those mappings for you.
+
+Rob"
+Amazon Kinesis	"Re: Firehose to ElasticSearch Service Mapping
+Same question here. I also need to manage mappings with Firehose index rotation, ¿Is there any way to set mappings to the new index before start indexing?. I can develop a lambda function that create the index few time before index rotation and set mappings for it, but it's not a desirable solution.
+
+¿It's is going to be any future development in that way soon?
+
+Valentín"
+Amazon Kinesis	"Re: Firehose to ElasticSearch Service Mapping
+You could create an index template that will be applied to any new index created that matches the name pattern specified in the index template.
+See https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html for details."
+Amazon Kinesis	"Re: Firehose to ElasticSearch Service Mapping
+1
+
+Edited by: raplaplap1 on Dec 17, 2018 4:57 PM
+
+Edited by: raplaplap1 on Dec 17, 2018 4:58 PM"
+Amazon Kinesis	"Java SDK: getRecords no records after couple of hours of operation
+I have a strange problem in the Java Kinesis consumer I've implemented.
+
+The consumer performs the following steps on each shard:
+
+Initially get a shardIterator with TRIM_HORIZON to get the first available record from the shard
+Retrieve 100 records from the stream and store the latest seqNr.
+Process the records
+
+
+From that moment on the consumers performs the following steps on each shard:
+
+Get a shardIterator with AFTER_SEQUENCE_NUMBER filled with the latest seqNr.
+Retrieve 100 records, storing the latest seqNr.
+Process the records
+
+
+This works fine for a couple of hours (5 to 7) then the consumer gets stuck at a specific seqNr and no records are returned by the getRecords call. No exceptions are raised and the producer still adds new messages to the stream and shards. This situation continuous until I restart the process. In addition this behaviour is persistent, it will effect all the shards of a stream and shows itself every time the consumer process is started.
+
+I wonder what the cause of this problem could be and what would be a good remedy."
+Amazon Kinesis	"Re: Java SDK: getRecords no records after couple of hours of operation
+I am unsure if this is the case. However, the most common reason for the behavior you described is a poision record. Specifically, a record that causes on uncaught exception and the blocks processing of future records. You should make sure you are able to deal with poison records, typically by catching them and then storing them somewhere for further investigation. 
+
+This comment ""it will effect all the shards of a stream and shows itself every time the consumer process is started"" led me to believe that the above is not the case. It could be if you are processing all your records in the same thread but I am unsure."
+Amazon Kinesis	"Re: Java SDK: getRecords no records after couple of hours of operation
+In the end I've found the cause of the problem. It was not a poisson record as suggested but was caused by the means in which I create a ShardIterator to collect the next set of messages.
+
+In my original code I constructed the ShardIterator for every getRecords call, the first time using the TRIM_HORIZON option to get the first message (still) in the shard. After that initial getRecords call I stored the value of the last sequence number and for the next call constructed a shardIterator with the AFTER_SEQUENCE_NUMBER option with the last processed sequence number.
+
+This works fine but eventually no records are retrieved without reporting any issue (both in the Kinesis part and my application part). Reading through some documentation on AWS, I realise that this is suggested method. Rather than creating shardIterators one should use the nextShardIterator that is included in the getRecords response.
+
+After this change the consumer is working for 3 days straight and the problem is resolved."
+Amazon Kinesis	"Can't getting ""LATEST"" data with API-Gateway
+Hello,
+
+I'm trying to get data from Kinesis Stream, using API Gaetway.
+I made API following this article,and I changed ShardIteratorType ""LATEST"" from ""TRIM_HORIZON"".
+https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-kinesis.html
+
+
+Then, I called API from python3.6.7. POST method gets work. Responce is here. 
+{""SequenceNumber"":""49591024488122174007936017825990636052037368493488734210"",""ShardId"":""shardId-000000000000""}
+<Response [200]>
+
+
+After that, I tried to get above data.
+
+After getting shard Iterator,I called
+
+But GET method doesn't work. I mean, API returns empty Records, likes this.
+{'MillisBehindLatest': 0, 'NextShardIterator': 'AAAAAAAAAA************', 'Records': []}
+
+
+I referred those articules, and I tried to make loop using NextShardIterator.  
+https://stackoverflow.com/questions/38567528/aws-kinesis-is-not-returning-records
+https://forums.aws.amazon.com/thread.jspa?messageID=509980
+
+But I can't find records,even if ShardIteratorType is TRIM_HORIZON.
+How can I solve this problem?
+
+Thank you."
+Amazon Kinesis	"Kinesis Data Analytics - ROW_NUMBER() syntax support
+Hi All,
+
+I was trying to use ROW_NUMBER() syntax to solve a island and gap problem (finding the begining/end of a continuous group of number, similar output as  https://stackoverflow.com/questions/17046204/how-to-find-the-boundaries-of-groups-of-contiguous-sequential-numbers 
+I was not able to find any syntax support about that one, so I wonder if there's any support document that AWS can provide on the specific syntax to use ROW_NUMBER() without any error.
+
+Thank you!"
+Amazon Kinesis	"Re: Kinesis Data Analytics - ROW_NUMBER() syntax support
+Not a complete example, but should get you started.
+
+-- Percentile QUERY
+CREATE OR REPLACE STREAM ordered (
+	column_1 VARCHAR(100)
+);
+ 
+CREATE OR REPLACE PUMP ordered_pump AS INSERT INTO ordered
+SELECT STREAM column_1
+FROM source_sql_stream_001 AS S
+ORDER BY STEP(s.rowtime BY INTERVAL '1' MINUTE), column_1;
+ 
+/* Performs a count over the dataset so we get ordered and numbered columns*/
+CREATE OR REPLACE STREAM ordered_numbered (
+    column_1 VARCHAR(100),
+    numbered_count INTEGER
+);
+ 
+CREATE OR REPLACE PUMP ordered_numbered_pump AS INSERT INTO ordered_numbered
+SELECT STREAM column_1, COUNT(*) OVER w1
+FROM ordered
+WINDOW w1 AS (
+    PARTITION BY column_1
+	--window should be as long as you want to perform the count over (and order by)
+    RANGE INTERVAL '60' SECOND PRECEDING
+);"
+Amazon Kinesis	"Did anyone face issues while adding Reference Data to Kinesis Analytics ?
+I am getting an error while trying to join with reference data CompanyName
+There was an issue updating your application. Error message: Failed SQL command: CREATE OR REPLACE PUMP ""ENR_STREAM_PUMP"" AS INSERT INTO ""ENRICHED_SQL_STREAM"" SELECT STREAM ""c"".""Ticker"", ""c"".""Company"" FROM ""CompanyName"" as ""c"". SQL error message: From line 2, column 23 to line 2, column 30: Column 'Ticker' not found in table 'c'
+
+===================================================
+I used following sql to test if I can fetch data from S3 csv 
+
+CREATE OR REPLACE STREAM ""ENRICHED_SQL_STREAM"" (ticker_symbol VARCHAR(4), ""Company"" varchar(20));
+CREATE OR REPLACE PUMP ""ENR_STREAM_PUMP"" AS INSERT INTO ""ENRICHED_SQL_STREAM""
+    SELECT STREAM ""c"".""Ticker"", ""c"".""Company"" 
+    FROM  ""CompanyName"" as ""c"";
+
+===================================================
+
+Thanks"
+Amazon Kinesis	"Re: Did anyone face issues while adding Reference Data to Kinesis Analytics ?
+Looks like Kinesis SQL treats the default column names as COL0, COL1"
+Amazon Kinesis	"Re: Did anyone face issues while adding Reference Data to Kinesis Analytics ?
+We will make sure this is more clear in our documentation."
+Amazon Kinesis	"How to buffer or aggregate data in a consumer without data loss when split?
+I have the straightforward use case of a Kinesis stream consumer that is buffering records for upload to S3. The consumer buffers records in memory, and when the current hour ends (plus some lag time), the consumer uploads the buffer to S3. The data in S3 is keyed by hour, therefore the consumer's upload to S3 is idempotent.
+
+The question is how to handle shard splits and merges. When a consumer is being shutdown because the shard it is processing has been split or merged, what should the consumer do with the records buffered so far? The buffer cannot be uploaded to S3, because the record is incomplete, and the data will be overwritten later by the consumer for the downstream shard.
+
+I am considering the following solution: when a consumer is being shutdown, it saves to a store its incomplete buffers. The incomplete buffers are keyed by the ID of the shard from which the data was derived. Later, when a consumer is started, it gets the ID of the parent share of the share it is processing. It uses the parent shard ID to get the incomplete buffers stored by the parent's consumer.
+
+Also, I would like to know how Kinesis Analytics deals with aggregates that span stream splits and joins."
+Amazon Kinesis	"Re: How to buffer or aggregate data in a consumer without data loss when split?
+Your solution is solid for using the Kinesis Client Library.
+
+Kinesis Data Analytics for SQL applications maps shards to in-application streams, performs one to many reduces steps like GROUP BY per a customer's code, and then writes to a destination. The first and second step effectively re-partitions the stream within the application by logical keys. This makes the split shard operation not have a semantic impact. Beyond that, we have multiple checkpoints throughout the application which prevent data loss as well as reduce duplicates. Some more details can be found here: https://docs.aws.amazon.com/kinesisanalytics/latest/dev/failover-checkpoint.html
+
+Kinesis Data Analytics for Java applications follows a similar process as the above at a high level. Using Apache Flink, The FlinkKinesisConsumer transparently handles resharding of streams while the application is running. Data loss is prevented because application state is automatically backed up for each data source (FlinkKinesisConsumer), operator, and sink (S3) using checkpoints. In the event of a failure, your buffered file would be resumed from the latest checkpoint. Some more details can be found here: https://ci.apache.org/projects/flink/flink-docs-release-1.7/dev/connectors/kinesis.html"
+Amazon Kinesis	"Kinesis Firehose frequent querying on Redshift
+We use kinesis firehose to ingest a lot of data to Redshift. However Kinesis increasingly uses our Redshift query bandwidth with queries like:
+
+SELECT COUNT(*), 
+            SUM(data_size) 
+FROM STL_S3CLIENT 
+WHERE query = pg_last_copy_id() 
+            AND http_method = 'GET' 
+            AND key != 'path_to_manifest_file'
+
+
+It seems like every data load is actually accompanied by this query. With frequent data loading it is actually quite an issue, it accounts for a large % of our query volume.
+
+Is there any way to relieve this? What exactly is the purpose of it?"
+Amazon Kinesis	"Re: Kinesis Firehose frequent querying on Redshift
+Same here, interested in any help"
+Amazon Kinesis	"Kinesis Data Analytics for Java Implementation
+I was very interested to learn about the new Amazon Kinesis Data Analytics for Java support announced at re:Invent:
+
+https://aws.amazon.com/blogs/aws/new-amazon-kinesis-data-analytics-for-java/
+
+It appears now Flink is supported as a runtime. I'm wondering how this works in the implementation. Does it provision a full multi-node Flink cluster? Or does it just support the API but AWS provides its own customized implementation based on a single KCL app? Any information on the deployment topology would be useful in understanding how this may be leveraged 
+
+Thanks!
+
+Edited by: btiernay on Dec 1, 2018 3:42 PM"
+Amazon Kinesis	"Re: Kinesis Data Analytics for Java Implementation
+The underlying infrastructure is abstracted from you. How would you use the information to understand how this may be leveraged?
+
+Regardless, we run your Apache Flink-based application on a distributed set of containers running on Amazon EKS. The logical topology is displayed in the console via the Apache Flink job graph if your application is running."
+Amazon Kinesis	"Re: Kinesis Data Analytics for Java Implementation
+The underlying infrastructure is abstracted from you. How would you use the information to understand how this may be leveraged?
+
+Because knowing how a distributed computation is distributed is generally important, as it informs the throughput and latency aspects of the computation. Also, unlike Firehose or Lambda these seem to be relevant details to performance tuning."
+Amazon Kinesis	"Kinesis Streams Read limitation
+Hello,
+I would like to know if Kinesis Stream has a 5 reads/sec hard limit? If so why does the limitation exist technically?"
+Amazon Kinesis	"Re: Kinesis Streams Read limitation
+Yes, it is a hard limit. The technical reason is similar to why most AWS services enforce limits, it is a way to ensure safety and provide predictable behavior in a multi-tenant system. Kinesis now supports enhanced fan-out, where you can scale out the read TPS/throughput by registering more consumers. Using this feature is currently tied our HTTP/2 read API, which uses streaming and eliminates the need to worry about TPS limits. It is supported by our Java libraries and Lambda 
+https://docs.aws.amazon.com/streams/latest/dev/introduction-to-enhanced-consumers.html
+https://aws.amazon.com/about-aws/whats-new/2018/11/aws-lambda-supports-kinesis-data-streams-enhanced-fan-out-and-http2/"
+Amazon Kinesis	"Kinesis Analytics application stuck at starting
+My Kinesis Analytics application stuck on ""starting"" and never went to ""Running"", and I can't even stop the application.
+Please advise."
+Amazon Kinesis	"Re: Kinesis Analytics application stuck at starting
+Hi - We did encounter an issue with your application which we resolved and your application should be running now.
+
+Thanks"
+Amazon Kinesis	"Re: Kinesis Analytics application stuck at starting
+Thanks, but what was the cause? How to avoid in future? 
+We just started evaluating KDA and need to know how stable it is"
+Amazon Kinesis	"Kinesis or Glue to replace Logstash?
+Hi all, 
+
+I've already written another post to ask something about Glue. Here I'd like to know if, in order to do what I'd like to do, it would be better to use Kinesis or Glue (my gut tells me Glue should be the choice, but I'd rather ask you). 
+
+At the moment, I've got a system where Logstash picks data (json objects) couple of times per day from both a S3 data store and a PostgreSQL DB and puts it into an S3 bucket. From there, after some computations, Logstash picks it again and send it to a MongoDB Atlas database. 
+
+Now, my idea is to replace Logstash with an AWS and I think the best option to achieve my goal si Amazon Glue, since Kinesis should work with real-time data streams and because I'm not even sure Kinesis can get data from a db like postgresql and put it into another db like Mongo (not sure about S3-->Glue-->MongoDB either, that's what I asked in the other post). 
+
+So the question is, am I right? Would it technically be possible to configure Kinesis to pick data from Postgresql and S3 twice a day and send it to another S3 (even if semantically incorrect)? Would it be more/less expensive than using Glue (we're talking about very little amout of data up to now, less than 50MB a day)? 
+
+Hope I got the message across, just let me know if something's not so clear. 
+
+Thank you so much in advance!"
+Amazon Kinesis	"[Aws Kinesis Data Stream] Stream MP4 file on kinesis with C++ SDK
+Hi all boys
+I'm an absolute beginner in using aws, and I approached aws kinesis to try and make a simple stream of an Mp4 file.
+I'm using the sdk in c ++ right now and I've seen that you can use the GStreamer tool to stream.
+In the examples provided in the documentation, however, I noticed that only streams of webcams or cameras are used as sources of the stream ... my question is: I can make a stream from an MP4 file (or other format) through GStreamer, encode it in H / 264 and send it to my stream?
+I tried to use in the GStreamer pipeline with the ""filesrc location = ..... / file.mp4"" plugin but I get an error ""ERROR: pipeline does not want to preroll.""
+
+Do you know if there is an alternative way to upload a video file?
+Thanks a lot!"
+Amazon Kinesis	"Custom location for format-conversion-failed In kinesis firehose stream
+Hello,
+Is there any way to change location of ""Record Format Conversion"" data in firehose delivery stream ? Right now It's creating in same defined S3 Path with name ""format-conversion-failed"".
+
+Thanks & Regards,
+Chintan"
+Amazon Kinesis	"Kinesis Analytics step by month issue
+We are trying to aggregate data by a non-sliding window of one month. Corresponding documentation is 
+https://docs.aws.amazon.com/kinesisanalytics/latest/sqlref/sql-reference-step.html in section 'STEP with a Date Type Argument'.
+
+When using hours or days, the STEP function works fine, however it fails on 
+STEP(""DailyStream"".ROWTIME BY INTERVAL '1' MONTH)
+
+with an error:
+Cannot apply 'STEP' to arguments of type 'STEP(<TIMESTAMP> BY <INTERVAL MONTH>)'. Supported form(s): 'STEP(<DATETIME> BY <INTERVAL_DAY_TIME>)' 'STEP(<INTEGER> BY <INTEGER>)'
+
+Could the documentation be wrong on this case, and only time units up to days are supported?
+Thanks for the help!"
+Amazon Kinesis	"Kinesis Firehose to Redshift - firehose concatenating records
+Hi,
+I have a pipeline with the following services: 
+Kinesis stream -> Kinesis firehose > Lambda (which transforms data and calls Comprehend)
+Kinesis Firehose then writes data to S3 and copies to Redshift. 
+I call the Kinesis stream from Python using putRecords api. 
+If i ingest a single record per second, there is no problem. The records are written to Redshift as separate records. 
+
+Problem: 
+
+If i ingest more than 1 record at a time, firehose seems to concatenate all records and load into Redshift table as 1 record. This is a problem as i would like to see them as separate records. 
+
+Also if the record size is bigger than the colmn size on Redshift, the copy fails as it will have exceeded the size limit for the column. 
+I tried to add a line separator in the lambda function but it doesnt change anything. 
+
+My lambda function looks like: 
+
+import boto3 
+import base64 
+import json 
+
+comprehend = boto3.client(""comprehend"") 
+
+def lambda_handler(event, context):
+    output = []
+    print(event)
+    for record in event:
+        event_message = str(base64.b64decode(record))
+        split_message = event_message.split(',')
+        reply_msg = split_message[8]
+        sentmt = comprehend.detect_sentiment(Text=reply_msg, LanguageCode='en') 
+        sentmt_json_output = json.dumps(sentmt)
+        sentiment_rslt_txt = json.loads(sentmt_json_output)
+        message_sentiment = sentiment_rslt_txt
+        message_mixed_sent = sentiment_rslt_txt
+        message_negative_sent = sentiment_rslt_txt
+        message_Neutral_sent = sentiment_rslt_txt
+        message_Positive_sent = sentiment_rslt_txt
+        clean_message_1 = event_message.replace('b""','')
+        clean_message_2 = clean_message_1.replace('""','')
+        sentmt_results = clean_message_2 + ','+ message_sentiment +' ,'+str(message_mixed_sent)+ ','+str(message_negative_sent)+','+str(message_Neutral_sent)+ ','+str(message_Positive_sent) +' ' + '\n'
+        print(sentmt_results)
+        output_record = {
+            'recordId': record,
+            'result': 'Ok',
+            'data': base64.b64encode(json.dumps(sentmt_results).encode('utf-8')).decode('utf-8')
+            }
+
+        output.append(output_record)
+    return {'records': output}
+
+
+###################################################################################################
+
+Pls help"
+Amazon Kinesis	"Data Analytics - SQL error ""java.lang.ArrayIndexOutOfBoundsException: 1""
+Hello,
+
+I am attempting to use the following SQL statement to select records from the input stream in the analytics console:
+
+CREATE OR REPLACE STREAM ""DESTINATION_SQL_STREAM"" (
+  accountId VARCHAR(64),
+  hostname VARCHAR(64),
+  eventname VARCHAR(128),
+  entity VARCHAR(60183),
+  actor VARCHAR(2048),
+  created bigint
+);
+ 
+CREATE OR REPLACE PUMP ""STREAM_PUMP"" AS INSERT INTO ""DESTINATION_SQL_STREAM""
+ 
+SELECT STREAM accountId, hostname, eventname, entity, actor, created
+FROM ""SOURCE_SQL_STREAM_001""
+WHERE eventname IN (
+    'asset.create', 'asset.delete', 'asset.update', 'asset.processed',
+    'folder.create', 'folder.delete', 'folder.update',
+    'project.create', 'project.update', 'project_invitation.create',
+    'project_permissions.create', 'project_permissions.update', 
+    'project_permissions.delete', 'project_users.delete', 'user.create', 
+    'user.delete', 'user.update', 'quicklink_asset_comment.create', 
+    'quicklink_asset_approval.create', 'quicklink_asset_approval.delete'
+);
+
+
+However I am getting the following error
+There was an error in your SQL code
+There was an issue updating your application. Error message: Failed SQL command: CREATE OR REPLACE PUMP ""STREAM_PUMP"" AS INSERT INTO ""DESTINATION_SQL_STREAM"" SELECT STREAM accountId, hostname, eventname, entity, actor, created FROM ""SOURCE_SQL_STREAM_001"" WHERE eventname IN ( 'asset.create', 'asset.delete', 'asset.update', 'asset.processed', 'folder.create', 'folder.delete', 'folder.update', 'project.create', 'project.update', 'project_invitation.create', 'project_permissions.create', 'project_permissions.update', 'project_permissions.delete', 'project_users.delete', 'user.create', 'user.delete', 'user.update', 'quicklink_asset_comment.create', 'quicklink_asset_approval.create', 'quicklink_asset_approval.delete' ). SQL error message: java.lang.ArrayIndexOutOfBoundsException: 1
+
+
+I noticed if I remove one term from the ""in"" statement, everything works fine. Am I hitting an upper limit?
+
+Thanks for your time.
+
+Edited by: jean007 on Nov 14, 2018 7:04 AM"
+Amazon Kinesis	"Can we use Kineses Agent Authentication with STS?
+Hi, 
+
+I like to use Kinesis Agent on client sites and let it stream logs to Firehose. I guess to achieve this, I must write a script that gets temporary authentication token from our service backed by STS and reconfigure Kineses Agent at runtime. Does Kineses Agent reconfiguration at runtime? Alternative option would be to restart agent altogether, but that's not ideal. If this is not supported, are they alternative options or even architecture?
+
+Thanks"
+Amazon Kinesis	"Kinesis Analytics cross account access to Kinesis Firehose?
+I am trying to set up a Kinesis Analytics application that can assume a role in another AWS account so it can read a delivery stream from Kinesis Firehose in that second account. When I try to launch the Kinesis Analytics application from the CLI, I receive the error:
+
+An error occurred (AccessDeniedException) when calling the CreateApplication operation: Cross-account pass role is not allowed, The role should belong to account '111111111111'
+
+where 111111111111 is the AWS account ID of the Kinesis Analytics application.
+
+Is it possible to let a Kinesis Analytics application assume a role in another AWS account at all? Or have I just misconfigured the IAM permissions somehow?"
+Amazon Kinesis	"Re: Kinesis Analytics cross account access to Kinesis Firehose?
+Hi - Currently this is not possible. Whenever a IAM role is passed to Kinesis Analytics APIs, the service performs iam:PassRole check, which currently only allows roles to be passed that belongs to the same account as the calling entity.
+
+Can you please give your usecase so that we can look into it and prioritize on our roadmap.
+
+THanks"
+Amazon Kinesis	"Re: Kinesis Analytics cross account access to Kinesis Firehose?
+The use case is we have a Kinesis Firehose ingesting logs from the instances in its respective account, but we also have an account that we want to use to monitor the logs of all the other accounts. One option we considered was to use a Kinesis Analytics application in the monitoring account that could assume a role in the other account to process logs from that Kinesis Firehose and forward the results to a Kinesis Firehose in the monitoring account. Since the Kinesis Analytics application cannot assume a role in the other account, we must now create a mirror of the Kinesis Firehose from the one account as a Kinesis Firehose or Stream in the monitoring account before we can process the logs. This means that we will need to use twice as many Kinesis resources as would be optimal since the Kinesis Firehose from each account must be completely replicated in the monitoring account."
+Amazon Kinesis	"Re: Kinesis Analytics cross account access to Kinesis Firehose?
+I suppose one way to address the issue of allowing a Kinesis Analytics application to access a Kinesis Firehose delivery stream in another account within the current IAM model would be to support resource-based IAM permissions on Kinesis Firehose. That would address my use case."
+Amazon Kinesis	"Re: Kinesis Analytics cross account access to Kinesis Firehose?
+Thanks for the feedback. I passed it along to our product management team to potentially bump the priority.
+
+THanks"
+Amazon Kinesis	"Re: Kinesis Analytics cross account access to Kinesis Firehose?
+Hi Praveen, 
+
+Do you have any update on this?
+
+Thanks, 
+Sailesh
+
+Edited by: saileshkotha1234 on Nov 13, 2018 2:03 PM"
+Amazon Kinesis	"Data Analytics cannot read schema from Data Stream
+Hello, 
+
+I have a problem regarding getting the schema information from a data stream.
+I connected IoT-Core to a kinesis data stream but the data stream does not obtain any records and analytics can't read the actual schema. I attached pictures of my settings and errors.
+
+EDIT: I also have a rule from IoT-Core to dynamoDB and that one does work as intended.
+
+Edited by: sapporo on Nov 13, 2018 1:48 AM"
+Amazon Kinesis	"Re: Data Analytics cannot read schema from Data Stream
+We poll a stream to find records. If we are unable to find sufficient recorrds, than we return this error. It is typically because the stream is sparsely populated or data sent comes in bursts, and we happen to not find records at the position we polled from. 
+
+You can also use schemes discovery on an S3 object and apply that schemes via the CLI or AWS SDKs. Another alternative is to build t by hand."
+Amazon Kinesis	"Firehose issues transforming JSON Array
+I am using Firehose to transform ingested JSON to Parquet. I specified data structure in AWS Glue and it works well until I use JSON Array.
+
+Input looks like:
+{""somestring"":""stringval"",""tags"": [""tag1"",""tag2""] }
+
+
+In AWS Glue I created table with a column tags and structure: 
+ARRAY<STRING>
+I also tried:
+SET<STRING>
+and lowercased:
+array<string> and set<string>
+
+none of them worked.
+
+fieldSchema looks like:
+{
+""name"": ""tags"",
+""type"": ""array<string>"",
+""comment"": """"
+}
+
+
+or 
+{
+""name"": ""tags"",
+""type"": ""set<string>"",
+""comment"": """"
+}
+
+
+I keep getting following error:
+{""attemptsMade"":1,""arrivalTimestamp"":1541625559759,""lastErrorCode"":""DataFormatConversion.InvalidSchema"",""lastErrorMessage"":""The schema is invalid. Error parsing the schema: Error: type expected at the position 0 of 'set<string>' but 'set' is found."",""attemptEndingTimestamp"" ....
+
+How to configure AWS Glue to properly provide schema for Firehose Data Transformation?
+
+Edited by: Vlad on Nov 7, 2018 1:27 PM
+
+Edited by: Vlad on Nov 7, 2018 1:35 PM"

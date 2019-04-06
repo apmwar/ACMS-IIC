@@ -1,0 +1,1770 @@
+label	description
+AWS CodeDeploy	"AWS CodeDeploy with Autoscaling Launch Templates with Spot and On-Demand In
+Hello! It is possible to configure an autoscaling group to use Launch Template instead of Launch Configuration. I want to use it because when I configure an autoscaling group using Launch Configuration I can not set mixed instances policy (ondemand + spot instances).
+
+I have created launch template (name 'test') with such configuration:
+
+        AMI Ubuntu 16, 
+        some security groups and IAM Role with EC2, AutoScaling and CodeDeploy full access 
+        and all other settings in default *Not specified* state.
+    
+        Launch Template ID lt-0e1111
+        Default Version Number 1
+        Launch Template Name test
+        Owner arn:aws:iam::11111111:user/itsp
+        Version  1 (Default)
+        Name  test
+        Created by arn:aws:iam::179961111910:user/itsp
+        Description Not specified
+        Date Created February 8, 2019 at 12:47:54 AM UTC+3
+        AMI ID ami-0bf1924ed30c48a6a
+        Availability Zone Not specified
+        Security Groups Not specified
+        Instance Type t2.nano
+        Key pair name itsp
+        Security Group Ids sg-07e746cf0e4935b84,sg-0a45f7e6ac321614d,sg-27bf6d4b
+    
+        Advanced Details:
+        Purchasing option Not specified
+        Spot request type Not specified
+        Spot interruption behavior Not specified
+        IAM Instance Profile Not specified
+        Stop - Hibernate behavior Not specified
+        Monitoring Not specified
+        EBS-optimized instance Not specified
+        Tenancy Host ID Not specified
+        RAM Disk ID Not specified
+        User Data Not specified
+        Elastic Inference Accelerator Not specified
+        Maximum Spot price Not specified
+        Spot expiry date -
+        Spot block duration Not specified
+        Shutdown behavior Not specified
+        Termination Protection Not specified
+        Placement Group Name Not specified
+        Tenancy Not specified
+        Tenancy Affinity Not specified
+        Kernel ID Not specified
+        Elastic Graphics Not specified 
+
+
+Then I am creating an AutoScaling group with that launch template. Here is my autoscaling group configuration:
+
+    Launch Template test
+    Launch Template Version 1
+    Launch Template Description -
+    Instance Types -
+    Spot Diversity 0
+    Optional On-Demand Base 0
+    On-Demand Percentage 0%
+    Desired Capacity 1 
+    Min 1 
+    Max 1
+    Availability Zone(s) eu-central-1a
+    Subnet(s) subnet-53075e38
+    Classic Load Balancers -
+    Target Groups -
+    Health Check Type EC2
+    Health Check Grace Period 300
+    Instance Protection - 
+    Termination Policies Default
+    Suspended Processes -
+    Placement Groups -
+    Default Cooldown 300
+    Enabled Metrics -
+    Creation Time Fri Feb 08 00:50:16 GMT+300 2019
+    Service-Linked Role arn:aws:iam::11111111111:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling 
+
+
+Such configuration appears to be set when I choose 
+
+    *Fleet Composition - Adhere to the launch template
+    The launch template determines the instance type and purchase option (On-Demand or Spot).* 
+
+
+option and my lauch template configuration is described above.
+
+So there are no spots in my autoscaling group.
+
+Then I configure a CodeDeploy application 'Application' and DeploymentGroup 'DG_TEST' inside of it with such configuration:
+
+   Deployment type Blue/green
+    Service role ARN arn:aws:iam::11111111111111:role/CodeDeployRole
+    Deployment configuration CodeDeployDefault.AllAtOnce
+    Rollback enabled -
+    Environment configuration: Amazon EC2 Auto Scaling groups -> Name 'test' 
+
+
+
+Ok, after everything is set up I set desired instances count to 1 in my Autoscaling group and new on-demand instance spawns in my 'test' group.
+
+I am now starting a blue-green deployment with AWS CLI command:
+
+    aws deploy create-deployment --application-name Application --s3-location bucket=codedeploybucket,key=application,bundleType=zip --deployment-group-name DG_TEST 
+
+
+And I can see new autoscaling group with same lauch template appears in my green fleet.
+
+So we just checked all our services are working as expected.
+
+
+Now I want to tweak my autoscaling group configuration a little to mix ondemand and spot instances in it:
+
+    Fleet Composition - Combine purchase options and instances
+    Choose a mix of On-Demand Instances and Spot Instances and multiple instance types. Spot Instances are automatically launched at the lowest price available.
+    Instance Types:
+    t2.nano (1vCPUs, 0.5GiB)
+    t2.small (1vCPUs, 2GiB)
+    t2.micro (1vCPUs, 1GiB)
+    Maximum Spot Price - Use default (recommended)
+    Spot Allocation Strategy - Diversify Spot Instances across your 2 lowest priced instance types per Availability Zone
+    Optional On-Demand Base - Designate the first 0 instances as On-Demand
+    On-Demand Percentage 50% On-Demand and 50% Spot
+    Desired Capacity 1
+    Min 1
+    Max 1 
+
+
+I save it and try same AWS CLI command
+
+    aws deploy create-deployment --application-name Application --s3-location bucket=codedeploybucket,key=application,bundleType=zip --deployment-group-name DG_TEST 
+
+
+And now I have my deployment failed with such comment:
+
+    The following validation error occurred: Valid requests must contain either LaunchTemplate, LaunchConfigurationName, InstanceId or MixedInstancesPolicy parameter. (Service: AmazonAutoScaling; Status Code: 400; Error Code: ValidationError; Request ID: 11111114-2b2b-11e9-93b7-11111111111) 
+
+
+
+Another strange thing is that if I configure my Launch Templae to use spots only:
+
+    Launch Template ID lt-00dc4c187d1111159
+    Default Version Number   1
+    Launch Template Name test2
+    Owner
+    arn:aws:iam::179961111910:user/itsp
+    Version     1 (Default)
+    Name  test2
+    Created by  arn:aws:iam::179961111910:user/itsp
+    Description Not specified
+    Date Created    February 8, 2019 at 1:14:13 AM UTC+3
+    AMI ID    ami-0bf1924ed30c48a6a
+    Availability Zone    Not specified
+    Security Groups   Not specified
+    Instance Type    t2.micro
+    Key pair name    itsp
+    Security Group Ids    sg-0a45f7e6ac321614d,sg-07e746cf0e4935b84,sg-27bf6d4b
+ 
+    Advanced details
+    Purchasing option    spot
+    Spot request type    one-time
+    Spot interruption behavior    Not specified
+    IAM Instance Profile    CodeDeployRole (arn:aws:iam::1111111111:instance-profile/CodeDeployRole)
+    Stop - Hibernate behavior    Not specified
+    Monitoring    Not specified
+    EBS-optimized instance   Not specified
+    Tenancy Host ID    Not specified
+    RAM Disk ID    Not specified
+    User Data    Not specified
+    Elastic Inference Accelerator    Not specified
+    Maximum Spot price    Not specified
+    Spot expiry date    -
+    Spot block duration    Not specified
+    Shutdown behavior    Not specified
+    Termination Protection    Not specified
+    Placement Group Name    Not specified
+    Tenancy    Not specified
+    Tenancy Affinity    Not specified
+    Kernel ID    Not specified
+    Elastic Graphics    Not specified 
+
+
+and use that option in my autoscaling group:
+
+    *Fleet Composition - Adhere to the launch template
+        The launch template determines the instance type and purchase option (On-Demand or Spot).* 
+
+
+Then after same deployment command I receive another error in CodeDeploy (failed deployment reason):
+
+    The IAM role arn:aws:iam::179966034910:role/CodeDeployRole does not give you permission to perform operations in the following AWS service: AmazonAutoScaling. Contact your AWS administrator if you need help. If you are an AWS administrator, you can grant permissions to your users or groups by creating IAM policies. 
+
+
+And that is definitely not the case because my role for CodeDeploy have full EC2, Autoscaling and CodeDeploy access.
+
+
+Am I doing something wrong or that are bugs? How can I configure mixed autoscaling group (ondemand+spot instances) with codedeploy using launch templates? Thanks in advance!"
+AWS CodeDeploy	"Re: AWS CodeDeploy with Autoscaling Launch Templates with Spot and On-Demand In
+I'm running into the same issue,  I believe that the B/G Deploys don't support launch templates yet, which is unfortunate."
+AWS CodeDeploy	"CodeDeploy/CodePipeline undiagnosable error message
+I'm using CodePipeline to compile and release my code, but without any clear error message my deployments have been failing and I'll I've been given is an error message like
+
+Action execution failed
+InternalError. Error reference code: d0cf4553-6c45-4147-b1b5-c1ce6d35ac64
+
+This has more or less stopped me in my tracks with using CodePipeline.
+
+This has been with no change to my buildspec.yaml, or any configuration, but I'm unable to move further with this I can't seem to find how to use that Error Reference Code to get any further information.
+
+Anyone here able to help?"
+AWS CodeDeploy	"An error occurred (ThrottlingException) when calling the GetDeployment oper
+Hi All,
+
+I have been running multiple CodeDeploy Deployments for a few weeks now.
+Lately I have been noticing the following error on deployment failure.
+
+Failed to deploy application revision.
+An error occurred (ThrottlingException) when calling the GetDeployment operation (reached max retries: 4): Rate exceeded
+
+
+Application Name: ADJUSTit
+Deployment Group: ADJUSTit-UAT-Client
+Failed Deployment ID: d-24FPANM5M 
+Successful Deployment ID: d-1PS0CAS4M
+
+Is there an Account/User based service limit happening?
+Or maybe its dynamic throttling?
+
+Any help would be awesome.
+
+Thanks,
+Adan Rehtla
+
+Edited by: AdanRehtla on May 23, 2017 3:54 PM"
+AWS CodeDeploy	"Re: An error occurred (ThrottlingException) when calling the GetDeployment oper
+Hi Adan, 
+
+We do have account based limits on concurrent deployments. However, throttling could be due to various reasons. How many concurrent deployments are you running? Have you recently increased the number of concurrent deployment runs?"
+AWS CodeDeploy	"Re: An error occurred (ThrottlingException) when calling the GetDeployment oper
+We have been increasing the number of deployments as the project development grows.
+We deploy to 4 environments, and each can have 3+ deployment pipelines each.
+Just now we had 8 concurrent deployments via BitBucket Pipelines, 2 of which had this error.
+Is there a way to increase this limit?
+
+Edited by: AdanRehtla on Feb 14, 2019 2:00 PM"
+AWS CodeDeploy	"BlockTraffic/AllowTraffic durations
+Hello
+
+I've been playing with using CodeDeploy to push our applications live, but it always takes ages doing the BlockTraffic and AllowTraffic steps.
+
+The load balancer I'm using it with has connection draining set to 60s, but the block and allow traffic steps both take (reasonably reliably) 4m25 (265s) to complete which really does drag out the process.
+
+Is there a way to modify this timeout that I've missed?  Can I set the timeout on these steps in the appspec.yml even though these stages aren't documented for the hooks in that file?
+
+Thanks
+
+James
+
+Edited by: jameseogden on Apr 28, 2017 5:59 AM"
+AWS CodeDeploy	"Re: BlockTraffic/AllowTraffic durations
+I'm having this exact issue and was working on this yesterday 4/27. I wonder if it's a coincidence/service issue?
+
+Currently I have a classic ELB with two EC2 nodes. So, If I do a CodeDeploy OneAtATime, the whole process takes up to 25 minutes.
+
+-m"
+AWS CodeDeploy	"Re: BlockTraffic/AllowTraffic durations
+I have the same issue.  BlockTraffic and AllowTraffic take upwards of 5 minutes.  At first I thought it was due to the fact that my load balancer's Connection Draining was set to 300 seconds.  However, I disabled Connection Draining and got the same results.  I then enabled Connection Draining and set timeout to 5 seconds and still got the same results.
+
+UPDATE: CodeDeploy is dependent on the ELB Health Check settings.  My settings had been:
+
+Timeout	5 seconds
+Interval	30 seconds
+Unhealthy threshold	2
+Healthy threshold	10
+
+As a result, BlockTraffic and AllowTraffic were taking more than five minutes (30s interval * 10 healthy thresholds). After adjusting the settings to the following, BlockTraffic and AllowTraffic took about 20 seconds.
+
+Timeout	2 seconds
+Interval	5 seconds
+Unhealthy threshold	2
+Healthy threshold	2
+
+Edited by: krao411 on May 3, 2017 7:05 PM"
+AWS CodeDeploy	"Re: BlockTraffic/AllowTraffic durations
+Yes CodeDeploy depends on the ELB Health Check settings that you have configured your ELB with. After an instance is bound to the ELB, CodeDeploy wait for the status if the instance to be healthy (""inService"") behind the load balancer. This health check is done by ELB and depends on the health check configuration you have set."
+AWS CodeDeploy	"Re: BlockTraffic/AllowTraffic durations
+Resolved
+
+Edited by: browner on Aug 6, 2017 4:09 AM"
+AWS CodeDeploy	"Re: BlockTraffic/AllowTraffic durations
+I migrated my Classic ELB to Application... and now my BlockTraffic is taking more than 5 minutes, it used to be 1 min, health conditions are the same as before the only change is the migration to Application vs Classic ELB"
+AWS CodeDeploy	"Re: BlockTraffic/AllowTraffic durations
+I've had the same issue. Has there been any solutions to this yet?"
+AWS CodeDeploy	"Re: BlockTraffic/AllowTraffic durations
+At a deployment CodeDeploy deregisters the target from the Targetgroup. The Targetgroup now blocks new incoming traffic and gives the instance some time to finish open connections/requests. The instance is now in draining state, which is 300s by default. You can adjust it right here: deregistration-delay.
+
+https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#deregistration-delay
+
+Cloudformation (YAML)
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 60
+
+
+That helped me to improve my deployment time."
+AWS CodeDeploy	"Help: ECS Blue/Green ""Install"" time slower than necessary?
+I'm having issues with the deploy speed/performance for ECS CodeDeploy Blue/Green, using the Amazon ECS AMI and an ALB.
+
+In particular, it seems that CodeDeploy has a significant delay in completing the ""Install"" step setting up the tasks in the secondary ALB Target Group. 
+
+Containers start up and ECS says an initial ""stable"" is ready after 15 seconds. But it takes another minute or so for CodeDeploy to ""ready"" the Test ALB endpoint and complete the ""Install"" step. Everything else happens on CodeDeploy in ""Less than 1 second"".
+
+I've watched the Target Groups and ECS registers the tasks in them right away. The health checks are not failing. So I'm not sure what CodeDeploy is waiting for?
+
+Is there any reason why the CodeDeploy step is so slow? It seems to consistently take 1min 40s - 2min 30s for the CodeDeploy step to move forward, despite the containers ready to accept traffic after just 10 seconds or so.
+
+Thanks in advance for any help!
+
+Edit with more info after reviewing CloudTrail Logs:
+
+1. I see the CloudTrail logs for API calls by AWS services during the deployments.
+2. I can see that CodeDeploy polls the ECS DescribeServcies API every 20 seconds. 
+3. I can see ECS API calls to register the containers with the ALB target group.
+4. Then ECS and ALB API calls checking the TargetGroup health status for the Green/Blue ALB Target Groups. They both return ""healthy"" after ~10s. (ECS seems to poll once every 10 seconds). This ties in to when the ECS service logs consider the TaskSet ""Stable"".
+4. However.. it takes CodeDeploy a full 1 minute / 3 ""DescribeServices"" API calls after this state to execute the ALB API calls to update the ""Test"" ALB listener to point to the ALB TargetGroup with the new containers.
+5. When the ALB Listener is finally updated by CodeDeploy, it happens immediately following that DescribeService call
+
+This means that I'm sitting waiting with ready-to-go containers for a whole extra minute before we can switch them over to live. 
+
+Any reason CodeDeploy isn't performing step 5/Update ALB Listeners after the very first DescribeServices that would be returning the TaskSet as Stable?
+
+Edited by: armstrjare on Jan 28, 2019 6:05 PM
+
+Edited by: armstrjare on Jan 28, 2019 6:23 PM"
+AWS CodeDeploy	"Does CodeDeploy ignore the files listed in .gitignore?
+I've been trying to figure out if CodeDeploy will respect .gitignore and not zip the files listed within .gitignore as part of the deployment or if CodeDeploy zips the entire repo outside of the .gitignore itself with the --ignore-hidden-files flag? The only info I've been able to find is in this forum thread from 2015 https://forums.aws.amazon.com/thread.jspa?messageID=676492&#676492
+
+I'm using BitBucket Pipelines to kick off CodeDeploy to an On-Premises instance running Windows 2012 R2. There are files not contained in the repo that exist on the server so I don't want CodeDeploy to empty the directory before installing the revision, so I have the --file-exists-behavior OVERWRITE flag on my create-deployment command because otherwise CodeDeploy fails when a file already exists."
+AWS CodeDeploy	"CodeDeploy appspec.yml not found
+I've created a CodePipeline using CodeBuild and CodeDeploy that should deploy to an active ECS cluster.
+
+My buildspec.yml includes the appspec.yml (both located in git repo root) file as an artifact; however, CodeDeploy cannot find the revision AppSpec file and terminates with the error:
+
+""An AppSpec file is required, but could not be found in the revision""
+
+Upon reviewing the revision artifacts in S3 I can verify that the correct appspec.yml file exists at the archive root and is as expected.
+
+Lost as to what might be going wrong...
+
+Edited by: webish on Jan 7, 2019 9:03 PM"
+AWS CodeDeploy	"Re: CodeDeploy appspec.yml not found
+I'm having this same issue... I work with a mono repo and generate the appspec.yml file as an artifact from the CodeBuild step. The appspec.yml file exists in the revision, but I still see this error message.
+@webish did you figure this one out?"
+AWS CodeDeploy	"CodeDeploy LaunchTemplate support
+Hi,
+
+We are trying to use ASGs with Launch Templates and CodeDeploy. So far we are successfully using Launch Configurations.
+
+But when using an ASG with LaunchTemplate and do a blue/green CodeDeploy we receive following error:
+The following validation error occurred: Valid requests must contain either LaunchTemplate, LaunchConfigurationName, InstanceId or MixedInstancesPolicy parameter. (Service: AmazonAutoScaling; Status Code: 400; Error Code: ValidationError; Request ID: e9a3225f-1ee4-11e9-9807-eb812a98e572)
+
+(Deployment Id d-59Q4TENJW in eu-central-1)
+
+Is that just a configuration problem on my side or is a LaunchTemplate not supported by a blue/green deployment yet?
+
+Thanks,
+David"
+AWS CodeDeploy	"AllowTraffic failure on CodeDeploy...
+Greetings,
+
+Due to work that had been done prior to my assignment on my project, I started out with a working deployment.  It's revision location was on an S3 server.  The only change I have made is to change the revision location to a GitHub repository.
+
+This somehow triggers an AllowTraffic failure.  However, I cannot figure out why.  I have not found anything in the AWS documentation that leads me to an explanation and I have not seen anything in the forums that sounds like my situation.
+
+Can anybody offer up potential ""gotchas"" that I might have missed or suggestions based on their own experience?"
+AWS CodeDeploy	"Re: AllowTraffic failure on CodeDeploy...
+I have some additional information through my own investigative activities.
+
+I am now getting an error code:  HEALTH_CONSTRAINTS.  However, none of the troubleshooting links within the AWS documentation has lent a solution.
+
+If I navigate to my EC2 instance and click on View Logs, I see only what is captured in the attached image: ScriptFailed.  I can find no information on what script failed or how/why it failed.  It's unclear to me how to debug further based on this information."
+AWS CodeDeploy	"Re: AllowTraffic failure on CodeDeploy...
+Hi bradschricker,
+
+Have you checked the agent logs or the deployment script logs?
+https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-view-logs.html
+
+Thank you"
+AWS CodeDeploy	"Re: AllowTraffic failure on CodeDeploy...
+I have the same problem of AllowTraffic step took a long time (almost exactly 1 hour) and failed without any specific reason.
+
+I've checked both the codeDeploy agent log /var/log/aws/codedeploy-agent/codedeploy-agent.log
+ and the deployment log /opt/codedeploy-agent/deployment-root/ecffba40-aef6-45bf-9e81-c40df18a7c0e/d-A51BRWFBW/logs/scripts.log
+ but found no sign of error at all.
+
+Thanks for any help."
+AWS CodeDeploy	"Re: AllowTraffic failure on CodeDeploy...
+I also have the exact same problem.
+Both the aforementioned log files contain no errors here either. 
+AllowTraffic hangs for an hour, then the simple 'ScriptFailed' message appears in the CodeDeploy UI, without any further explanation.
+
+I don't see any running processes on the Ubuntu EC2 instance that could cause a problem.
+
+Does this have to do with HealthCheck timeouts? If yes, how is it remedied?
+
+Since this question was asked in November, and that's over a month ago, I hope someone figured out where to look..."
+AWS CodeDeploy	"Re: AllowTraffic failure on CodeDeploy...
+Check out https://docs.aws.amazon.com/codedeploy/latest/userguide/troubleshooting-deployments.html#troubleshooting-long-running-processes
+
+Make sure health for Environment Original/Replacement giving output health response 200
+
+Edited by: aa6my on Jan 22, 2019 8:08 PM"
+AWS CodeDeploy	"Role does not have permission for AWS service: AmazonAutoScaling
+I've been trying to get the Blue/Green deployment scenario working for a day now without much luck.  I've been able to use a role and deploy to an Auto Scaling Group successfully not using Blue Green, but when I try that scenario, during deployment, I get the following permission error:
+
+""The IAM role <my role> does not give you permission to perform operations in the following AWS service: AmazonAutoScaling. Contact your AWS administrator if you need help. If you are an AWS administrator, you can grant permissions to your users or groups by creating IAM policies.""
+
+My role <my role> is a simple role that has the ""AWSCodeDeployRole"" attached to it.  In CloudTrail, I do see an ""AccessDeniedException"" for event name ""CreateAutoScalingGroup"", however, that permission appears to be in the AWSCodeDeployRole as ""autoscaling:CreateAutoScalingGroup"".
+
+Has anyone run into this? Am I missing some extra policy that needs to be attached to my role?"
+AWS CodeDeploy	"Re: Role does not have permission for AWS service: AmazonAutoScaling
+I figured out the 2 permissions needed to get past this error, I created the policy below and attached it to the Code Deploy role:
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": [
+                ""iam:PassRole"",
+                ""ec2:RunInstances""
+            ],
+            ""Resource"": ""*""
+        }
+    ]
+}
+
+
+Edited by: mguignard on Jan 22, 2019 4:38 AM"
+AWS CodeDeploy	"CodeDeploy to instances in second subnet fail
+Hi,
+
+I'm experiencing some issues these days with CodeDeploy and EC2 instances. I have a VPC with two public subnets (VPC: 10.0.0.0/16 , subnet1: 10.0.0.0/24, subnet2: 10.0.1.0/24), both having assigned an internet gateway. I deploy an EC2 instance to both of them with the correct roles. The problem I have though, is that when using CodeDeploy to deploy to the instance in the first subnet (10.0.0.0/24) it works all the way but when I do the same thing to the instance in the second subnet it remains stuck in pending with no step completed and then times out. Both subnets seem to be the same as configuration but I have no idea why CodeDeploy works with the first one but not the second. 
+
+Other details:
+
+same security group
+same roles
+same launch template
+if I create one more instance in the first subnet, it also works
+different deployment groups (but identical, except for machine identification)
+
+
+Do you have any idea? What could I check? Is there an obvious reason why it fails?
+
+Edited by: AndreiTom on Jan 10, 2019 11:13 PM
+
+UPDATE:
+I tried other scenarios and still no success.
+
+What I tried:
+
+have vpc 10.0.0.0/16 with only one subnet 10.0.1.0/24 and it doesn't work but as soon as I add subnet 10.0.0.0/24 it does
+Create vpc 10.0.1.0/24 with one subnet 10.0.1.0/24 and again no success
+
+
+Apparently it only works in 10.0.0.0/24?
+
+Edited by: AndreiTom on Jan 11, 2019 12:25 AM"
+AWS CodeDeploy	"DownloadBundle Access Denied
+Hello, I found similar issues people posted here and StackOverflow and in all cases
+the cause was a lack of required permissions.
+
+I tried to follow the CodeDeploy tutorial as thorough as possible but I still cannot create a deployment. It fails, when a codedeploy agent tries to download the bundle. It throws ""Access Denied"" error.
+
+I created an EC2 instance with IAM role which has the following policy:
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Action"": ""s3:*"",
+            ""Effect"": ""Allow"",
+            ""Resource"": ""*""
+        }
+    ]
+}
+
+
+In the target bucket I cleared the policy all together (However, I tried to experiment with policies there too)
+
+And yet, codedeploy agent cannot download a revision (bundle.tar is 0 bytes)
+
+Thanks in advance for any help."
+AWS CodeDeploy	"'blue/green deploy' with 'auto scaling group' Fails
+'Blue/green deployment' with 'auto scaling group' fails.
+Error message is placed in the bottom of this thread.
+
+Even though other combinations are successful.
+ex) 
+1.in-place deployment with same auto scaling group.
+2.blue/green deployment with single instance.
+3.blue/green deployment with same auto scaling group with no scaling rules. (increase/decrease policy)
+
+these are successful. 
+so i think something about SNS, CloudWatch permission is needed somewhere.
+but i don't know where.
+please answering me.
+Erroe Message:
+
+The deployment failed because a non-empty field was discovered on your Auto Scaling group that Code Deploy does not currently support copying. Unsupported fields: http://DescribePoliciesResponse.DescribePoliciesResult.ScalingPolicies.member.Alarms.member.AlarmARN, DescribePoliciesResponse.DescribePoliciesResult.ScalingPolicies.member.StepAdjustments.member.MetricIntervalUpperBound, DescribePoliciesResponse.DescribePoliciesResult.ScalingPolicies.member.StepAdjustments.member.MetricIntervalLowerBound, DescribePoliciesResponse.DescribePoliciesResult.ScalingPolicies.member.StepAdjustments.member.ScalingAdjustment, DescribePoliciesResponse.DescribePoliciesResult.ScalingPolicies.member.Alarms.member.AlarmName (Error code: AUTO_SCALING_CONFIGURATION)
+
+Edited by: jeffchung on Feb 15, 2017 11:01 PM"
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+We are aware of this issue and we are currently working towards a fix. We do not have any date in particular but we plan to fix this as soon as possible."
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+To work around the issue, I have deleted the policies to re-create them after.
+
+This script can be useful for such approach (using AWS CLI and JQ)
+
+# Get current auto-scaling group
+currentAutoScalingGroup=$(aws deploy get-deployment-group --application-name myproj-deploy --deployment-group-name myproj-deploy-group | jq -r '.deploymentGroupInfo.autoScalingGroups[0].name')
+
+# Delete existing policies
+aws autoscaling delete-policy --auto-scaling-group-name $currentAutoScalingGroup --policy-name rrpjoc-as-decrease
+aws autoscaling delete-policy --auto-scaling-group-name $currentAutoScalingGroup --policy-name rrpjoc-as-increase
+
+# Start deployment
+deploymentId=$(aws deploy create-deployment --application-name myproj-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name myproj-deploy-group --description ""CLI deployment"" --s3-location bucket=myproj-deploy,bundleType=tgz,key=deployment.tar.gz | jq -r '.deploymentId')
+
+while test $(aws deploy get-deployment --deployment-id $deploymentId | jq -r '.deploymentInfo.completeTime') == 'null'; do
+	echo ""Deployment still in progress"";
+	sleep 15
+done
+
+if test $(aws deploy get-deployment --deployment-id $deploymentId | jq -r '.deploymentInfo.status') == 'Failed' ; then
+	echo ""Deployment failed""
+	exit 1
+fi
+
+# Get new auto-scaling group
+newAutoScalingGroup=$(aws deploy get-deployment-group --application-name myproj-deploy --deployment-group-name myproj-deploy-group | jq -r '.deploymentGroupInfo.autoScalingGroups[0].name')
+
+# Install new policies
+increasePolicyArn=$(aws autoscaling put-scaling-policy --auto-scaling-group-name $newAutoScalingGroup --policy-name rrpjoc-as-increase --policy-type StepScaling --cooldown 120 --estimated-instance-warmup 180 --adjustment-type ChangeInCapacity --step-adjustments MetricIntervalLowerBound=0,MetricIntervalUpperBound=20,ScalingAdjustment=2 MetricIntervalLowerBound=20,MetricIntervalUpperBound=40,ScalingAdjustment=3 MetricIntervalLowerBound=40,ScalingAdjustment=4 | jq -r '.PolicyARN')
+decreasePolicyArn=$(aws autoscaling put-scaling-policy --auto-scaling-group-name $newAutoScalingGroup --policy-name rrpjoc-as-decrease --policy-type StepScaling --cooldown 120 --adjustment-type ChangeInCapacity --step-adjustments MetricIntervalUpperBound=0,MetricIntervalLowerBound=-10,ScalingAdjustment=-2 MetricIntervalUpperBound=-10,MetricIntervalLowerBound=-20,ScalingAdjustment=-3 MetricIntervalUpperBound=-20,ScalingAdjustment=-4 | jq -r '.PolicyARN')
+
+# Bind them to metrics
+aws cloudwatch put-metric-alarm --alarm-name awsec2-myproj-as-group-CPU-Utilization --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 60 --threshold 50 --comparison-operator GreaterThanOrEqualToThreshold --dimensions ""Name=AutoScalingGroupName,Value=$newAutoScalingGroup"" --evaluation-periods 2 --alarm-actions $increasePolicyArn
+aws cloudwatch put-metric-alarm --alarm-name awsec2-myproj-as-group-High-CPU-Utilization-descrease --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 60 --threshold 40 --comparison-operator LessThanOrEqualToThreshold --dimensions ""Name=AutoScalingGroupName,Value=$newAutoScalingGroup"" --evaluation-periods 6 --alarm-actions $decreasePolicyArn
+
+Edited by: efavre-bi on Feb 23, 2017 10:51 AM"
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+I take is this is still an active issue? Running into this as we trying to move from in-place to blue/green deploys, just want to make sure it's not a configuration problem on our part."
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+We already have the fix, and the fix should start to release soon.
+
+Thanks,
+Binbin"
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+Hello,
+
+Is there an ETA on when this fix will be pushed?
+
+Thanks"
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+The fix has already been pushed. This should be resolved now. Please let us know if you are still seeing this issue."
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+I also get this error, although with a slightly different message:
+
+Error during deployment: code AUTO_SCALING_CONFIGURATION, message 'The deployment failed because a non-empty field was discovered on your Auto Scaling group that Code Deploy does not currently support copying. Unsupported fields: http://DescribeAutoScalingGroupsResponse.DescribeAutoScalingGroupsResult.AutoScalingGroups.member.TargetGroupARNs.member'.
+
+Is it the same issue?
+
+I use the same settings as above."
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+Unfortunately, this is an issue that customers will likely continue facing. When doing a blue/green deployment where we copy your ASG, we have to copy all of that configuration, which requires CodeDeploy to know about any new attributes that ASG supports. As such, there is a lag. We don't want to break our customers that use fields we don't support yet, so we send back an error message.
+
+There are two options:
+
+Remove field from ASG config SHORT TERM
+
+If the field is non-critical, you can remove it from your ASG config, and the deployment should work.
+
+Wait on CodeDeploy update LONGER TERM
+
+Once CodeDeploy is aware of unsupported ASG fields, we roll out support as quickly as we can. In your case, we have an update rolling out now that should fix your issue, which should be in service in a week or two.
+
+Edited by: merkes on Jun 19, 2017 9:58 AM"
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+So in my case I removed my Target Group from Auto Scale and now I don't get the error anymore.
+I will check in a couple of weeks if this still happens.
+
+Thanks you for your help."
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+The fix for TargetGroupARNs has been pushed already and should be resolved now. Please let us know if you have any further issues."
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+Any ETA on when these properties will be supported by CodeDeploy blue/green?
+
+The deployment failed because a non-empty field was discovered on your Auto Scaling group that Code Deploy does not currently support copying. Unsupported fields: [DescribePoliciesResponse.DescribePoliciesResult.ScalingPolicies.member.TargetTrackingConfiguration.TargetValue, DescribePoliciesResponse.DescribePoliciesResult.ScalingPolicies.member.TargetTrackingConfiguration.PredefinedMetricSpecification.PredefinedMetricType, DescribePoliciesResponse.DescribePoliciesResult.ScalingPolicies.member.TargetTrackingConfiguration.DisableScaleIn
+
+Being able to use this functionality would be nice: https://docs.aws.amazon.com/autoscaling/latest/userguide/as-scaling-target-tracking.html
+
+Thanks in advance!
+
+Edited by: Rene on Aug 7, 2017 11:32 AM"
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+TargetTrackingConfiguration is the new field ASG recently introduced, we have rolled out the fix to support this field in BlueGreen deployment. The original issue mentioned in this post has been fixed as well.
+
+Feel free to try BlueGreen deployment with Scaling policies again and let us know if you find anything is not working properly.
+
+Thanks,
+
+Bangxi"
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+What's the status on this?
+
+I have a Blue/green deployment with auto scaling group, and even though the deployment doesn't fail, at the end of the whole process, the new Auto scaling group does not have the Target group attribute set.
+
+It does reddirect the traffic to the new instances, but the copy of the Original Auto Scaling group doesn't have the target group assigned at the end of the deployment."
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+I have a similar issue here 
+
+The deployment failed because a non-empty field was discovered on your Auto Scaling group that Code Deploy does not currently support copying. Unsupported fields: [DescribeAutoScalingGroupsResponse.DescribeAutoScalingGroupsResult.AutoScalingGroups.member.Instances.member.LaunchTemplate.Version, DescribeAutoScalingGroupsResponse.DescribeAutoScalingGroupsResult.AutoScalingGroups.member.LaunchTemplate.LaunchTemplateName, DescribeAutoScalingGroupsResponse.DescribeAutoScalingGroupsResult.AutoScalingGroups.member.LaunchTemplate.LaunchTemplateId, DescribeAutoScalingGroupsResponse.DescribeAutoScalingGroupsResult.AutoScalingGroups.member.LaunchTemplate.Version
+DescribeAutoScalingGroupsResponse.DescribeAutoScalingGroupsResult.AutoScalingGroups.member.Instances.member.LaunchTemplate.LaunchTemplateName, DescribeAutoScalingGroupsResponse.DescribeAutoScalingGroupsResult.AutoScalingGroups.member.Instances.member.LaunchTemplate.LaunchTemplateId] (Error code: AUTO_SCALING_CONFIGURATION) """
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+this still hasn't been fixed and it's a serious glitch, because unhealthy instances in the target group are not terminated automatically when the target group is not associated with the newly created auto scaling group.
+
+Edited by: pltdmark on Aug 16, 2018 9:25 AM"
+AWS CodeDeploy	"Re: 'blue/green deploy' with 'auto scaling group' Fails
+Any update on this issue? Still seeing the same behavior as Re: 'blue/green deploy' with 'auto scaling group' Fails."
+AWS CodeDeploy	"How To Specify Lambda Function Package On CodeDeploy Revision/AppSpec File?
+Hi,
+
+I am trying to build a common Serveless DevOps Pipeline, where I expect when I commit code to a repository, this code automatically are compiled and deployed to a lambda function.
+
+So my stack are: CodeCommit >> CodeBuild >> CodeDeploy, where the CodeCommit store the code and commits, the CodeBuild downloads the latest source, compiles and package the application, and CodeDeploy updates the lambda function package. All orchestrated by the CodePipeline and its stages/actions.
+
+Well, my problem is at deploy. I am getting the error: BundleType must be either YAML or JSON at pipeline.
+
+
+I read the CodeDeploy documentation, and understand the concept of revisions, that are the files that need to be updated on our running environments:
+
+https://docs.aws.amazon.com/codedeploy/latest/userguide/application-revisions.html
+
+And there are a auxiliar file called appspec (Application Specification), that describes a little bit the running environment that will receive the automatic updates:
+
+https://docs.aws.amazon.com/codedeploy/latest/userguide/application-specification-files.html#appspec-files-on-lambda-compute-platform
+
+https://docs.aws.amazon.com/codedeploy/latest/userguide/reference-appspec-file-structure-resources.html#reference-appspec-file-structure-resources-lambda
+
+But (my misunderstanding) the documentation states that, for lambda, the revision is the own appspec file:
+
+https://docs.aws.amazon.com/codedeploy/latest/userguide/application-revisions-appspec-file.html#add-appspec-file-lambda
+
+
+Maybe it justifies my error, because probably the pipeline is providing the latest package to CodeDeploy and not the appspec file.
+
+So my doubt is, for lambda, how we specify the package that needs to be updated on function?
+
+My googles, not to fix but to accomplish the goal, pointed to use of AWS SAM (Serverless Application Model), that uses some CloudFormation templates. But particularly it looks a huge solution for a simple problem. I am trying to use only CodeDeploy before follow this strategy (if I can't do that only with CodeDeploy).
+
+Sorry for the ""big"" post.
+
+Thanks in advance if someone can help. Maybe others would have this same error/doubt.
+
+Regards,"
+AWS CodeDeploy	"AWS CodeDeploy - creating appspec.yml file to deploy spring boot app
+I have created a pipeline to deploy Spring boot application using AWS CodeDeploy, It has to pick my application artifact (jar) file from S3 bucket and deploy it to an EC2 Linux instance.  Currently it is unable to pick the jar file based on the ARN mentioned at files source. Please advise me on how my appspec.yml file should look like in order to deploy the application on EC2."
+AWS CodeDeploy	"Can we identify when a deploying instance is in codedeploy rollback state?
+Hey, All
+
+I have some scripts running as hooks during Codedeploy deployment.
+I am looking for a way to identify when the deployment is in rollback start and then skip some of the script.
+
+SO, is there a way to identify when a deploying instance is in codedeploy rollback state?
+
+Thanks
+Ofer"
+AWS CodeDeploy	"Hook in appspec include deployed lambda-name/version
+Hi,
+
+I'm triggering a generic verification lambda in the `BeforeAllowTraffic` hook specified in appspec.yml, and I'd like to invoke the lambda version currently being deployed from the verification lambda, but I don't find any info on  the lambda being deployed from within the verification lambda. Did I miss something? Do I need to look up the lambda in CodeDeploy from the deployment id and list all versions and use the latest? Doesn't seem optimal...
+
+/Alex"
+AWS CodeDeploy	"AWS CodeDeploy deployment failed at event BlockTraffic
+I am trying to set up auto-deployment from GitHub to EC2 behind an ELB.
+
+After following the Tutorial: Use AWS CodeDeploy to Deploy an Application from GitHub (https://docs.aws.amazon.com/codedeploy/latest/userguide/tutorials-github.html), my deployment fails at the BlockTraffic event, after trying for an hour (1h 2min last time) with error code ScriptFailed. I'm not sure how to troubleshoot the issue/where to look.
+
+The ELB target group target health status: healthy
+
+Health Check configuration:
+Healthy threshold: 2
+Unhealthy threshold: 2
+Timeout: 5
+Interval: 10
+Success codes: 200
+
+Edited by: nth-chile on Nov 12, 2018 1:07 PM
+
+Edited by: nth-chile on Nov 12, 2018 1:08 PM"
+AWS CodeDeploy	"Re: AWS CodeDeploy deployment failed at event BlockTraffic
+With the information available, it's hard to say exactly what happened. I wouldn't expect BlockTraffic to time out unless a combination of the health checks and connection draining time outs added up to more than an hour. If all of that doesn't add up, you may want to consider opening a ticket with support so that they can look at  load balancer configuration and look at things in the service to try to pinpoint the issue."
+AWS CodeDeploy	"Deployment failing with mismatched deployment IDs
+I have a deployment with ID d-8QMWU1PAV but I get the failure message 
+
+The CodeDeploy agent did not find an AppSpec file within the unpacked revision directory at revision-relative path ""appspec.yml"". The revision was unpacked to directory ""/opt/codedeploy-agent/deployment-root/561c0304-9b5a-49b4-9a4c-a9095cd0f5eb/d-S7VRQFEAV/deployment-archive"", and the AppSpec file was expected but not found at path ""/opt/codedeploy-agent/deployment-root/561c0304-9b5a-49b4-9a4c-a9095cd0f5eb/d-S7VRQFEAV/deployment-archive/appspec.yml""
+
+I've check and the d-S7VRQFEAV directory doesn't exists and surely should match the build ID?"
+AWS CodeDeploy	"Re: Deployment failing with mismatched deployment IDs
+That's strange...
+
+Is that the message that shows up in the CodeDeploy console for your deployment or is that something you got off the box? What step did the instance fail on for deployment d-8QMWU1PAV?"
+AWS CodeDeploy	"Install failure not being read as a failure
+Hi, I have shell script that runs `npm install`, and that npm install fails. Instead of exiting on this step, it doesn't catch this failure and goes on to go all the way to ""allow traffic"" and hangs there. My code deploy agent error logs are here:
+
+```
+018-11-20 16:52:50.526] https://forums.aws.amazon.com/https://forums.aws.amazon.com/    at parseField (/usr/lib/node_modules/npm/lib/config/core.js:389:7)
+2018-11-20 16:52:50.526 https://forums.aws.amazon.com/https://forums.aws.amazon.com/    at /usr/lib/node_modules/npm/lib/config/core.js:330:24
+2018-11-20 16:52:50.526 https://forums.aws.amazon.com/https://forums.aws.amazon.com/    at Array.forEach (<anonymous>)
+2018-11-20 16:52:50.526 https://forums.aws.amazon.com/https://forums.aws.amazon.com/    at Conf.add (/usr/lib/node_modules/npm/lib/config/core.js:328:23)
+2018-11-20 16:52:50.526 https://forums.aws.amazon.com/https://forums.aws.amazon.com/    at ConfigChain.addString (/usr/lib/node_modules/npm/node_modules/config-chain/index.js:244:8)
+2018-11-20 16:52:50.526 https://forums.aws.amazon.com/https://forums.aws.amazon.com/    at Conf.<anonymous> (/usr/lib/node_modules/npm/lib/config/core.js:316:10)
+2018-11-20 16:52:50.526 https://forums.aws.amazon.com/https://forums.aws.amazon.com/    at /usr/lib/node_modules/npm/node_modules/graceful-fs/graceful-fs.js:78:16
+2018-11-20 16:52:50.528 https://forums.aws.amazon.com/https://forums.aws.amazon.com//usr/lib/node_modules/npm/lib/npm.js:61
+2018-11-20 16:52:50.528 https://forums.aws.amazon.com/https://forums.aws.amazon.com/      throw new Error('npm.load() required')
+2018-11-20 16:52:50.528 https://forums.aws.amazon.com/https://forums.aws.amazon.com/      ^
+2018-11-20 16:52:50.528 https://forums.aws.amazon.com/https://forums.aws.amazon.com/
+2018-11-20 16:52:50.528 https://forums.aws.amazon.com/https://forums.aws.amazon.com/Error: npm.load() required
+2018-11-20 16:52:50.528 https://forums.aws.amazon.com/https://forums.aws.amazon.com/    at Object.get (/usr/lib/node_modules/npm/lib/npm.js:61:13)
+2018-11-20 16:52:50.528 https://forums.aws.amazon.com/https://forums.aws.amazon.com/    at process.errorHandler (/usr/lib/node_modules/npm/lib/utils/error-handler.js:205:18)
+2018-11-20 16:52:50.528 https://forums.aws.amazon.com/https://forums.aws.amazon.com/    at emitOne (events.js:116:13)
+2018-11-20 16:52:50.528 https://forums.aws.amazon.com/https://forums.aws.amazon.com/    at process.emit (events.js:211:7)
+2018-11-20 16:52:50.528 https://forums.aws.amazon.com/https://forums.aws.amazon.com/    at process._fatalException (bootstrap_node.js:391:26)
+2018-11-20 16:52:51.422 https://forums.aws.amazon.com/LifecycleEvent - ApplicationStart
+```
+
+I have fixed the underlying cause, but I want to ensure that in the future this stderr output caused an error in the correct step. Can anyone help me out?"
+AWS CodeDeploy	"Blue/Green deployment for statefull connection (web socket)
+Hello,
+
+We have an issue of B/G deployment for statefull connection in case of WebSocket servers
+
+Clients <--->  Servers (with set including Nginx + WebSocket server )
+
+Solution 1: Each running application have own Elastic IP + CodeDeploy hooks
+   Try to catch event hook of CodeDeploy (BeforeBlockTraffic,  AfterBlockTraffic ) to let WebSocket server have a chance to clean up remaining connections.
+   It's only work for InPlace but B/G required to create LoadBalancer for DeployementGroup
+
+Solution 2: Each running application have own Elastic IP + AutoScaling hooks
+  Lifecycle Hooks let us know when the instance Launching or Terminating then WebSocket server will clean up remaining connections.
+
+We tried solution#1 but it just work for InPlace deployment.
+Do you have any suggestions for other solutions?
+
+Thanks a lot.
+
+Edited by: lbthanh on Nov 8, 2018 7:06 PM"
+AWS CodeDeploy	"Re: Blue/Green deployment for statefull connection (web socket)
+I could create Target Groups without attach Load Balancer but registered-target instances are always unsued status. Then the CodeDeploy stoped at Allow Traffic 
+
+Is it possible to deploy Blue/Green with only Target Groups setting?
+
+Many thanks,"
+AWS CodeDeploy	"Re: Blue/Green deployment for statefull connection (web socket)
+My workaround created dummy ALB rule forward to target group for B/G deployement health check.
+Then websocket server will self-manage remaining client connections  based on BeforeBlockTraffic hook event.
+
+Edited by: lbthanh on Nov 13, 2018 8:30 PM"
+AWS CodeDeploy	"Re: Blue/Green deployment for statefull connection (web socket)
+I solved my issue."
+AWS CodeDeploy	"CodeDeploy - DownloadBundle (S3) - Failed - Access denied
+The CodeDeploy configuration in question has been in place for a long time and has not been updated / changed.
+
+The last successful deployment was on 9 October, 2018. (Note, it's not in the AWS account I'm logged in to when posting to the forum. I'm managing multiple accounts via cross-account admin.)
+
+Now, deployments fail to all Applications / Deployment groups at DownloadBundle with Error code: UnknownError and Message: Access Denied.
+
+We have recently changed account aliases but the involved policies do not use account aliases. May this erroneous behaviour still be related to the account alias changes?
+
+May it be related to a bug in the new CodeDeploy console?
+
+The Policy Simulator succeeds with the Policy and S3 Object in question.
+
+I can provide more details upon request. Please advise.
+
+Regards,
+Marcel
+
+Edited by: marekful on Nov 2, 2018 9:18 AM
+
+Edited by: marekful on Nov 2, 2018 9:20 AM
+
+Edited by: marekful on Nov 2, 2018 9:20 AM"
+AWS CodeDeploy	"Re: CodeDeploy - DownloadBundle (S3) - Failed - Access denied
+Good morning East Coast! 
+
+Any AWS engineer would like to elaborate on this, please?"
+AWS CodeDeploy	"CodeDeploy kept failing
+Since yesterday night, my codedeploy kept failing. I use travis to trigger codedeploy. And it works fine before. Somehow it started failing and never recover.
+
+I only see ""Skipped"" for all the events in the failed deployments.
+
+Any idea? Thanks!"
+AWS CodeDeploy	"CodePipeline: CodeDeploy reports “BundleType must be either YAML or JSON”
+I have a CodePipeline set. 
+CodeCommit -> CodeBuild -> CodeDeploy
+
+CodeDeploy fails with ""BundleType must be either YAML or JSON""
+
+appspec.yml is in the root.
+I have downloaded artifact zip from S3 bucket, it has appspec.yml inside.
+
+buildspec.yml
+version: 0.2
+phases:
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Compiling the Python code...
+      - python HelloWorld_tst.py
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - HelloWorld.py
+    - appspec.yml
+  discard-paths: yes
+
+
+appspec.yml
+
+version: 0.0
+Resources:
+    - autovisionfunction:
+        Type: AWS::Lambda::Function
+        Properties:
+            Name: ""autovisionfunction""
+            Alias: ""staging""
+            CurrentVersion: ""1""
+            TargetVersion: ""2"""
+AWS CodeDeploy	"Deployment succeeds although all instances did not update
+We are using codedeploy with codepipeline. When our pipeline push code out to our workers, (there are 5 of them) one of them failed the deployment while downloading the bundle. (The actual error was disk out of space, we will need to increase the space on our /opt volume.) Instead of failing the deployment and hence the pipeline so we can investigate and fix, the deployment group end result was succeeded. I have attached a screenshot to show the state of the deployment.
+
+We have just pushed codedeploy into production after months of staging. Through all of our testing this never happened and I am a bit baffled why the deployment group did not fail if all the instances did not update. The end result is we now have an instance in production with old code sitting on it, and in a stopped state.
+
+Can anyone advise if I have missed a setting that would have prevented this?
+
+Thanks in advance.
+Matt."
+AWS CodeDeploy	"Bug in Create Deployment Group / Auto Scaling Groups
+When trying to create a deployment group that deploys to an auto-scaling group the drop-down list is populated with a fixed number(limit is 50) of existing auto-scaling groups.  If you have more than the limit the groups that are at the end of the alphabetically sorted list get excluded and won't get included in a search either.
+
+--eric
+
+Edited by: ekai2 on Oct 29, 2018 12:44 PM
+
+Edited by: ekai2 on Oct 29, 2018 12:44 PM"
+AWS CodeDeploy	"CodeDeploy Failing on all deploys on all instances with no error message
+As of yesterday, CodeDeploy is failing on all my deploys on all my applications. Here are 3 deployment ID's on 3 different applications. 2 are running from an external build application to codedeploy, the other is being triggered by code pipeline. Everything was fine on the 15th and on the 16th they all started to fail. 
+
+I changed nothing, and as of right now, I see no error messages other than The overall deployment failed because too many individual instances failed deployment, too few healthy instances are available for deployment, or some instances in your deployment group are experiencing problems.
+
+
+But none of the instances in EC2 show issues. 
+
+d-DBNRBU81W
+d-L5JPEM51W
+d-4HE6KAJ0W
+
+Any ideas?"
+AWS CodeDeploy	"Re: CodeDeploy Failing on all deploys on all instances with no error message
+To help with investigation please share -
+[1] deployment id
+[2] aws account id"
+AWS CodeDeploy	"CodeBuild fails with golang
+When I run the following command: - go build -o app I get the following error (for multiple dependencies) : main.go:21:2: cannot find package ""github.com/gorilla/mux"" in any of:
+    /usr/local/go/src/github.com/gorilla/mux (from $GOROOT)
+    /go/src/github.com/gorilla/mux (from $GOPATH)
+    /codebuild/output/src324986171/src/github.com/gorilla/mux
+
+
+After adding go get ./... to the build I get the following error for all my local packages:# cd .; git clone https://github.com/aristotle/dbhelper /go/src/github.com/aristotle/dbhelper
+Cloning into '/go/src/github.com/aristotle/dbhelper'... (I get this error message for multiple of my local packages)
+
+My buildspec.yml looks like this:
+version: 0.2
+ 
+phases:
+  install: 
+    commands:
+      - echo CODEBUILD_SRC_DIR - $CODEBUILD_SRC_DIR
+      - echo GOPATH - $GOPATH
+      - echo GOROOT - $GOROOT
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Getting packages
+      - go get ./...
+      - echo Compiling the Go code...
+      - go build -o app main.go
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - app
+
+
+Meaning the codebuild fails. Any idea how I can fix this, or in general where the problem is ? Thanks for your help."
+AWS CodeDeploy	"Re: CodeBuild fails with golang
+Hello johnny326, thank you for reaching out to us. I have a suspicious of what is going on and I would love your help to see if we can determine what I suspect it to be. I believe when running go get./... you are in the wrong folder where it can see all dependencies. Have you tried go get github.com/gorilla/mux to see if that is the case? If it is able to get the mux dependency, I would change folders to the root folder and that should allow you to run go get./...
+
+Another option is to use 1.11 and use Go modules. That should take care of handling dependencies altogether.
+
+Edited by: bpowell on Oct 17, 2018 5:57 PM
+
+Edited by: bpowell on Oct 18, 2018 11:52 AM"
+AWS CodeDeploy	"How to modify appspec.yml for different environments?
+I have three environments:
+(1) Development,
+(2) Staging, and
+(3) Production
+
+The S3 bucket has artifacts and contains appspec.yml in the .zip file.
+
+Once deployment starts, the artifacts go to ""Staging"" environment. If at staging it gets approved then it goes to production.
+
+In appspec.yml, I have to check what is the current environment and execute the hook scripts accordingly. Like if the environment is Staging, it should deploy to a different folder and if environment is Production, it should deploy to a different folder in IIS and rename few files there in.
+
+My appspec.yml looks something like this:
+
+version: 0.0
+os: windows
+files:
+  - source: \DemoApp
+    destination: C:\inetpub\wwwroot
+- source: \DemoApp
+    destination: C:\inetpub\wwwroot\ProdApps
+hooks:
+    AfterInstall:
+        - location: code_deploy/post_install.ps1
+            timeout: 600
+            runas: ec2-user
+
+
+Here, the second source and destination is for Production Environment and the first one is for Staging. How to check the current environment and choose source and destination accordingly?"
+AWS CodeDeploy	"Re: How to modify appspec.yml for different environments?
+Hi,
+
+You can combine with codepipeline to create Stage and Action to get approval.
+
+It should not share your deployment environment to dev and staging or production.
+In case you have separate servers for each of environments you will check the environment variable inside shared powershell code defined at hooks.
+
+Hope this help."
+AWS CodeDeploy	"Re: How to modify appspec.yml for different environments?
+You don't in CodeDeploy. 
+
+You can use a CI tool like CodePipeline, Jenkins, or Bamboo, to write a different version of the appspec for each environment. 
+
+or
+
+You can also write you script to read CodeDeploy Variables. https://aws.amazon.com/blogs/devops/using-codedeploy-environment-variables/
+
+Edited by: arojeffp on Oct 18, 2018 8:35 AM"
+AWS CodeDeploy	"Why deployment continuously failing with error ""HEALTH_CONSTRAINTS""?
+I already checked a couple of posts before submitting this question. Even this post:  https://stackoverflow.com/questions/39143191/aws-deployment-failed-due-to-health-constraints 
+
+After reading the above post, I checked the links provided and pasted that CodeDeploy Agent script in Deployment Configuration. I even added the proper CodeDeploy role to IAM as mentioned in the link.
+
+Still the deployment is failing and giving the same ""HEALTH_CONSTRAINTS"" error.
+
+What I am trying to achieve is that I have a .ZIP file in S3 bucket. This zip file contains a simple .html page and appspec.yml. This page needs to be deployed to IIS https://forums.aws.amazon.com/."
+AWS CodeDeploy	"Re: Why deployment continuously failing with error ""HEALTH_CONSTRAINTS""?
+Please share -
+[1] deployment id
+[2] aws account id 
+
+to help us investigate deployment failure."
+AWS CodeDeploy	"Re: Why deployment continuously failing with error ""HEALTH_CONSTRAINTS""?
+Thanks.
+
+Sent as private message. Please check."
+AWS CodeDeploy	"Re: Why deployment continuously failing with error ""HEALTH_CONSTRAINTS""?
+Account Id: 586459669847 
+Deployment Id: d-OG3YBTAWV"
+AWS CodeDeploy	"Re: Why deployment continuously failing with error ""HEALTH_CONSTRAINTS""?
+I finally fixed the issue. There are several causes for this HEALTH_CONSTRAINT error and this is one of them.
+
+I resolved this issue by creating an Elastic IP and associating it with EC2 instance. Internally there were some access related errors. After associating it, I edited the IIS Bindings and added one more IP (Elastic IP) with port 8080.
+
+It worked."
+AWS CodeDeploy	"CodeDeploy Agent in Windows instance not logging
+I have installed CodeDeploy Agent in Windows instance. On checking the log folder I found CloudDeploy Agent is not logging anything.
+
+Which policy needs to be enabled for the IAM role? Any other configuration required?"
+AWS CodeDeploy	"How do you run PowerShell scripts in 64-bit mode from a hook?
+Team,
+
+According to my testing, the CodeDeploy agent runs PowerShell scripts (.ps1) in 32-bit mode and almost anything you do with a modern, 2012R2 Service instance is going to be in 64-bit mode.  
+
+Is there some magic switch to get CodeDeploy to run your scripts in 64-bit mode?  I think I can put a wrapper around the hook script but that seems pretty ghetto and unnecessary.
+
+Thanx!
+  Richard"
+AWS CodeDeploy	"Re: How do you run PowerShell scripts in 64-bit mode from a hook?
+Hi,
+
+We had a similar problem and solved it using the following method.
+
+in the appsepc.yml file specify a batch file against the hook of your choice.
+
+BeforeInstall:
+    - location: \Scripts\runscript.bat
+
+Then inside that execute a powershell script using the following method
+
+%SystemRoot%\sysnative\WindowsPowerShell\v1.0\powershell.exe -command "".\runscript.ps1""
+
+The Codedeploy agent is actually a 32bit application and as such the command prompt is also running under a 32bit environment. 
+
+Using the sysnative virtual folder allows you to gain access to a 64bit powershell environment or any other 64 bit executable that you require.
+
+Hope this helps you"
+AWS CodeDeploy	"Re: How do you run PowerShell scripts in 64-bit mode from a hook?
+I found a workaround to the problem of running 64-bit PowerShell scripts.  I found this little snippet on the PowerShell Code Repository and it works great.  Just add it to the top of your script and add your 64-bit code to the end.  Perfect!  
+
+#############################################
+# am I running in 32 bit shell?
+#############################################
+if ($pshome -like ""*syswow64*"") {
+ 
+  Write-Warning ""Restarting script under 64 bit powershell""
+ 
+  # relaunch this script under 64 bit shell
+  & (join-path ($pshome -replace ""syswow64"", ""sysnative"") powershell.exe) -file `
+    (join-path $psscriptroot $myinvocation.mycommand) @args
+ 
+  # exit 32 bit script
+  exit
+}"
+AWS CodeDeploy	"Re: How do you run PowerShell scripts in 64-bit mode from a hook?
+Hello.
+
+I have tried the two suggestions above and neither of them worked. I'm getting the same error
+
+nuget : The term 'nuget' is not recognized as the name of a cmdlet, function, script file, or operable program.
+msbuild : The term 'msbuild' is not recognized as the name of a cmdlet, function, script file, or operable program.
+
+
+However, if I run the same PowerShell script from PowerShell console on the EC2 instance, all the Nuget packages are installed and the project is built.
+
+What may cause the following errors?"
+AWS CodeDeploy	"Re: How do you run PowerShell scripts in 64-bit mode from a hook?
++1 to CP_DevOps post!
+It solved my problem. Thanks!!!
+
+Edited by: markcbb on Jan 14, 2017 2:50 PM"
+AWS CodeDeploy	"Re: How do you run PowerShell scripts in 64-bit mode from a hook?
+CP_DevOps wrote:
+I found a workaround to the problem of running 64-bit PowerShell scripts.  I found this little snippet on the http://poshcode.org/3827 and it works great.  Just add it to the top of your script and add your 64-bit code to the end.  Perfect!  
+
+#############################################
+# am I running in 32 bit shell?
+#############################################
+if ($pshome -like ""*syswow64*"") {
+ 
+  Write-Warning ""Restarting script under 64 bit powershell""
+ 
+  # relaunch this script under 64 bit shell
+  & (join-path ($pshome -replace ""syswow64"", ""sysnative"") powershell.exe) -file `
+    (join-path $psscriptroot $myinvocation.mycommand) @args
+ 
+  # exit 32 bit script
+  exit
+}
+
+
+Just an FYI to anyone thinking about implementing this work around  - 
+
+If you go with this solution to restart powershell in 64bit mode, be aware that the new 64bit PS session will not pass exit codes back to CodeDeploy. So if you're script encounters an error, CodeDeploy will still report the deployment as a success.
+
+$lastexitcode needs to be added to the 'exit 32 bit script section' so the exit code is passed back to the 32 bit PS session and then back to CodeDeploy. See below:
+
+ #############################################
+ # am I running in 32 bit shell?
+ #############################################
+ if ($pshome -like ""*syswow64*"") {
+ 
+   Write-Warning ""Restarting script under 64 bit powershell""
+ 
+   # relaunch this script under 64 bit shell
+   & (join-path ($pshome -replace ""syswow64"", ""sysnative"") powershell.exe) -file `
+     (join-path $psscriptroot $myinvocation.mycommand) @args
+ 
+   # exit 32 bit script
+   exit $lastexitcode
+ }"
+AWS CodeDeploy	"Slow deployment
+Hi, we have an application deployment that has surprisingly long delays between steps:
+(deployment: d-EIM4BX4DU, instance is a t2.large with CPU credits increasing from 200 to 300 over the last 3 hour period)
+(dates removed for brevity, but they were all ""July 19, 2018"")
+
+ApplicationStop	5:48:00 PM UTC	5:48:01 PM UTC	less than one second	Succeeded		
+DownloadBundle	5:50:42 PM UTC	5:51:02 PM UTC	20 secs			Succeeded		
+BeforeInstall	5:52:04 PM UTC	5:52:04 PM UTC	less than one second	Succeeded		
+Install		5:53:25 PM UTC	5:53:25 PM UTC	less than one second	Succeeded		
+AfterInstall	5:53:27 PM UTC	5:54:49 PM UTC	1 min, 22 secs		Succeeded		
+ApplicationStart 5:54:50 PM UTC	5:57:31 PM UTC	2 mins, 41 secs		Succeeded		
+ValidateService	5:58:52 PM UTC	5:58:52 PM UTC	less than one second	Succeeded	
+
+About 10'52"" of deploy time for 4'27"" of action.  Is this normal? 
+# sudo dpkg -s codedeploy-agent
+Package: codedeploy-agent
+Status: install ok installed
+Section: admin
+Maintainer: Amazon Web Services
+Architecture: all
+Version: 1.0-1.1458
+Depends: ruby2.0 | ruby2.1 | ruby2.2 | ruby2.3
+Conffiles:
+ /etc/codedeploy-agent/conf/codedeployagent.yml 6dcbe87bcd02b3f65c5eadb375269779
+# uname -a
+Linux ip-172-31-102-89 4.4.0-1054-aws #63-Ubuntu SMP Wed Mar 28 19:42:42 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+
+
+Also, in the appspec.yml, the timeouts are listed as 60, which I assume means seconds and not minutes, so it appears that the timeouts should be triggered.
+
+# This is an appspec.yml template file for use with AWS CodeDeploy. 
+# [...]
+version: 0.0
+os: linux
+ 
+files:
+  - source: /services
+    destination: /opt/mv2/services
+  - source: /schedule
+    destination: /opt/mv2/schedule
+ 
+permissions:
+  - object: /opt/mv2/services
+    pattern: ""**""
+    owner: mv2
+    group: mv2
+    mode: 644
+  - object: /opt/mv2/schedule
+    pattern: ""**""
+    owner: mv2
+    group: mv2
+    mode: 644
+ 
+hooks:
+  ApplicationStop:
+    - location: scripts/stop.sh
+      timeout: 60
+ 
+  ApplicationStart:
+    - location: scripts/run.sh
+      timeout: 60
+ 
+  BeforeInstall:
+    - location: scripts/before-install.sh
+      timeout: 60
+ 
+  AfterInstall:
+    - location: scripts/after-install.sh
+      timeout: 60"
+AWS CodeDeploy	"Re: Slow deployment
+I am told that marking the instances with T2 Unlimited solves this, but when I tested this it did not seem to make a difference.  Indeed the deploy times have gone up, with 2/3rds of the time in ""wait states"" and not actually executing our code."
+AWS CodeDeploy	"Re: Slow deployment
+Hi jlatwork,
+
+The timeouts are in seconds, but the timeout is for how long that specific script can take, not the hook as a whole. The time for each step includes running your script and doing the calls we need to do behind the scenes.
+Could you please explain how you calculated ""4'27"" of action""?
+
+Thank you"
+AWS CodeDeploy	"Re: Slow deployment
+Hi, sorry I thought I'd get notices when someone replies. 
+
+As you can see in the first part of my original post, this the deployment groups details for a single instance deployment:
+
+ApplicationStop	5:48:00 PM UTC	5:48:01 PM UTC	less than one second	Succeeded		
+DownloadBundle	5:50:42 PM UTC	5:51:02 PM UTC	20 secs			Succeeded		
+BeforeInstall	5:52:04 PM UTC	5:52:04 PM UTC	less than one second	Succeeded		
+Install		5:53:25 PM UTC	5:53:25 PM UTC	less than one second	Succeeded		
+AfterInstall	5:53:27 PM UTC	5:54:49 PM UTC	1 min, 22 secs		Succeeded		
+ApplicationStart 5:54:50 PM UTC	5:57:31 PM UTC	2 mins, 41 secs		Succeeded		
+ValidateService	5:58:52 PM UTC	5:58:52 PM UTC	less than one second	Succeeded	
+
+
+By 10'52"" duration, I mean the time difference between the start of the Application Stop and end of ValidateService steps.
+
+By 4'27"" of action, I am totalling the time in the Duration column: 1'20"" + 1'41"" + 1"" + 1"" + 4"" + 1"" + 1"".
+
+During these pauses I can look at top on the machine and nothing is apparently happening.
+
+It's not surprising to me that the duration is so short - the scripts are trivial.  What is surprising is that it waits between these trivial steps for minutes sometimes."
+AWS CodeDeploy	"Re: Slow deployment
+This continues to be a problem.  I'm looking at a deployment which has been sitting ""In Progress"" for ApplicationStop for 30+ minutes.  (FYI: Deployments > Deployment d-RO92SPKRV > Instance i-087ecaed49c04a864).
+
+ApplicationStop is literally service mv2 stop,  where mv2 is a java process that takes less than a second to stop; as well as a test for a pid file, then kill pid file contents and rm pid file.  The mv2 services is still running."
+AWS CodeDeploy	"Occasional Network timeouts Re: Slow deployment
+This is happening more and more often now.  The odd thing about these is that sometimes it works.  
+Sometimes terminating the instances helps.  It appears to be irregular network timeouts to/from https://codedeploy-commands.us-east-1.amazonaws.com/, which works fine from the command line.
+
+Details below:
+
+I've since found the /var/log/aws/codedeploy-agent/codedeploy-agent.log and set the logging verbose to true:
+
+2018-10-04 16:46:29 DEBUG [codedeploy-agent(13877)]: InstanceAgent::Plugins::CodeDeployPlugin::CommandPoller: Calling PollHostCommand:
+2018-10-04 16:46:29 INFO  [codedeploy-agent(13877)]: Version file found in /opt/codedeploy-agent/.version with agent version OFFICIAL_1.0-1.1458_deb.
+2018-10-04 16:49:10 INFO  [codedeploy-agent(13877)]: [Aws::CodeDeployCommand::Client 200 161.174911 2 retries] poll_host_command(host_identifier:""arn:aws:ec2:us-east-1:743947360968:instance/i-05fe86188fd520fd1"")
+ 
+2018-10-04 16:49:10 DEBUG [codedeploy-agent(13877)]: InstanceAgent::Plugins::CodeDeployPlugin::CommandPoller: PollHostCommand: Host Identifier = arn:aws:ec2:us-east-1:743947360968:instance/i-05fe86188fd520fd1; Host Command Identifier = eyJiYXRjaElkIjoiZDg4OGMyZDdmOGZkNmQ3MGYyZDgyOTFhMGFjNmVmY2EvcHVibGljMDAxIiwiZGVwbG95bWVudElkIjoiQ29kZURlcGxveS91cy1lYXN0LTEvcHJvZC9vcnBoZXVzOnB1YmxpYzAwMS9hcm46YXdzOnNkczp1cy1lYXN0LTE6NzQzOTQ3MzYwOTY4OmRlcGxveW1lbnQvZC1SQzVZRlRDU1YiLCJob3N0SWQiOiJhcm46YXdzOmVjMjp1cy1lYXN0LTE6NzQzOTQ3MzYwOTY4Omluc3RhbmNlL2ktMDVmZTg2MTg4ZmQ1MjBmZDEiLCJjb21tYW5kSWQiOiJBcG9sbG9EZXBsb3lDb250cm9sU2VydmljZXxhcm46YXdzOmVjMjp1cy1lYXN0LTE6NzQzOTQ3MzYwOTY4Omluc3RhbmNlL2ktMDVmZTg2MTg4ZmQ1MjBmZDF8MXwwIiwiY29tbWFuZE5hbWUiOiJBcHBsaWNhdGlvblN0b3AiLCJjb21tYW5kSW5kZXgiOjEsImF0dGVtcHRJbmRleCI6MX0=; Deployment Execution ID = CodeDeploy/us-east-1/prod/orpheus:public001/arn:aws:sds:us-east-1:743947360968:deployment/d-RC5YFTCSV; Command Name = ApplicationStop
+2018-10-04 16:49:10 DEBUG [codedeploy-agent(13877)]: InstanceAgent::Plugins::CodeDeployPlugin::CommandPoller: Calling PutHostCommandAcknowledgement:
+2018-10-04 16:49:10 INFO  [codedeploy-agent(13877)]: Version file found in /opt/codedeploy-agent/.version with agent version OFFICIAL_1.0-1.1458_deb.
+2018-10-04 16:50:31 INFO  [codedeploy-agent(13877)]: [Aws::CodeDeployCommand::Client 200 80.4175 1 retries] put_host_command_acknowledgement(diagnostics:nil,host_command_identifier:""eyJiYXRjaElkIjoiZDg4OGMyZDdmOGZkNmQ3MGYyZDgyOTFhMGFjNmVmY2EvcHVibGljMDAxIiwiZGVwbG95bWVudElkIjoiQ29kZURlcGxveS91cy1lYXN0LTEvcHJvZC9vcnBoZXVzOnB1YmxpYzAwMS9hcm46YXdzOnNkczp1cy1lYXN0LTE6NzQzOTQ3MzYwOTY4OmRlcGxveW1lbnQvZC1SQzVZRlRDU1YiLCJob3N0SWQiOiJhcm46YXdzOmVjMjp1cy1lYXN0LTE6NzQzOTQ3MzYwOTY4Omluc3RhbmNlL2ktMDVmZTg2MTg4ZmQ1MjBmZDEiLCJjb21tYW5kSWQiOiJBcG9sbG9EZXBsb3lDb250cm9sU2VydmljZXxhcm46YXdzOmVjMjp1cy1lYXN0LTE6NzQzOTQ3MzYwOTY4Omluc3RhbmNlL2ktMDVmZTg2MTg4ZmQ1MjBmZDF8MXwwIiwiY29tbWFuZE5hbWUiOiJBcHBsaWNhdGlvblN0b3AiLCJjb21tYW5kSW5kZXgiOjEsImF0dGVtcHRJbmRleCI6MX0="")
+ 
+2018-10-04 16:50:31 DEBUG [codedeploy-agent(13877)]: InstanceAgent::Plugins::CodeDeployPlugin::CommandPoller: Command Status = Failed
+2018-10-04 16:50:32 DEBUG [codedeploy-agent(13877)]: InstanceAgent::Plugins::CodeDeployPlugin::CommandPoller: Calling PollHostCommand:
+2018-10-04 16:50:32 INFO  [codedeploy-agent(13877)]: Version file found in /opt/codedeploy-agent/.version with agent version OFFICIAL_1.0-1.1458_deb.
+2018-10-04 16:55:54 INFO  [codedeploy-agent(13877)]: [Aws::CodeDeployCommand::Client 0 322.439826 3 retries] poll_host_command(host_identifier:""arn:aws:ec2:us-east-1:743947360968:instance/i-05fe86188fd520fd1"") Seahorse::Client::NetworkingError Net::ReadTimeout
+ 
+2018-10-04 16:55:54 ERROR [codedeploy-agent(13877)]: InstanceAgent::Plugins::CodeDeployPlugin::CommandPoller: Error during perform: Seahorse::Client::NetworkingError - Net::ReadTimeout - /usr/lib/ruby/2.3.0/net/protocol.rb:158:in `rbuf_fill'
+/usr/lib/ruby/2.3.0/net/protocol.rb:136:in `readuntil'
+/usr/lib/ruby/2.3.0/net/protocol.rb:146:in `readline'
+/usr/lib/ruby/2.3.0/net/http/response.rb:40:in `read_status_line'
+/usr/lib/ruby/2.3.0/net/http/response.rb:29:in `read_new'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/net_http/patches.rb:29:in `block in new_transport_request'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/net_http/patches.rb:26:in `catch'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/net_http/patches.rb:26:in `new_transport_request'
+/usr/lib/ruby/2.3.0/net/http.rb:1407:in `request'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/net_http/connection_pool.rb:330:in `request'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/net_http/handler.rb:72:in `block in transmit'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/net_http/handler.rb:121:in `block in session'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/net_http/connection_pool.rb:96:in `session_for'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/net_http/handler.rb:119:in `session'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/net_http/handler.rb:71:in `transmit'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/net_http/handler.rb:45:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/plugins/content_length.rb:12:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/json/error_handler.rb:8:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/request_signer.rb:88:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/helpful_socket_errors.rb:10:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/retry_errors.rb:89:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/retry_errors.rb:120:in `retry_request'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/retry_errors.rb:103:in `retry_if_possible'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/retry_errors.rb:91:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/retry_errors.rb:120:in `retry_request'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/retry_errors.rb:103:in `retry_if_possible'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/retry_errors.rb:91:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/retry_errors.rb:120:in `retry_request'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/retry_errors.rb:103:in `retry_if_possible'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/retry_errors.rb:91:in `call'
+/opt/codedeploy-agent/vendor/gems/codedeploy-commands-1.0.0/lib/aws/plugins/deploy_agent_version.rb:28:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/json/handler.rb:11:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/user_agent.rb:12:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/plugins/endpoint.rb:41:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/param_validator.rb:21:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/logging.rb:39:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/plugins/raise_response_errors.rb:14:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/jsonvalue_converter.rb:20:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/idempotency_token.rb:18:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/aws-sdk-core/plugins/param_converter.rb:20:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/plugins/response_target.rb:21:in `call'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/request.rb:70:in `send_request'
+/opt/codedeploy-agent/vendor/gems/aws-sdk-core-2.10.104/lib/seahorse/client/base.rb:207:in `block (2 levels) in define_operation_methods'
+/opt/codedeploy-agent/lib/instance_agent/plugins/codedeploy/command_poller.rb:101:in `next_command'
+/opt/codedeploy-agent/lib/instance_agent/plugins/codedeploy/command_poller.rb:69:in `perform'
+/opt/codedeploy-agent/lib/instance_agent/agent/base.rb:28:in `run'
+/opt/codedeploy-agent/lib/instance_agent/runner/child.rb:39:in `block in run'
+/opt/codedeploy-agent/lib/instance_agent/runner/child.rb:78:in `with_error_handling'
+/opt/codedeploy-agent/lib/instance_agent/runner/child.rb:38:in `run'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/child.rb:70:in `block in run_with_error_handling'
+/opt/codedeploy-agent/lib/instance_agent/runner/child.rb:78:in `with_error_handling'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/child.rb:69:in `run_with_error_handling'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/child.rb:33:in `block in start'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/child.rb:22:in `loop'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/child.rb:22:in `start'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/master.rb:206:in `block in spawn_child'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/master.rb:204:in `fork'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/master.rb:204:in `spawn_child'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/master.rb:196:in `block in spawn_children'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/master.rb:195:in `times'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/master.rb:195:in `spawn_children'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/master.rb:134:in `start'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/master.rb:37:in `block in start'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/master.rb:36:in `fork'
+/opt/codedeploy-agent/vendor/gems/process_manager-0.0.13/lib/process_manager/master.rb:36:in `start'
+/opt/codedeploy-agent/bin/../lib/codedeploy-agent.rb:43:in `block (2 levels) in <main>'
+/opt/codedeploy-agent/vendor/gems/gli-2.11.0/lib/gli/command_support.rb:126:in `execute'
+/opt/codedeploy-agent/vendor/gems/gli-2.11.0/lib/gli/app_support.rb:284:in `block in call_command'
+/opt/codedeploy-agent/vendor/gems/gli-2.11.0/lib/gli/app_support.rb:297:in `call_command'
+/opt/codedeploy-agent/vendor/gems/gli-2.11.0/lib/gli/app_support.rb:79:in `run'
+/opt/codedeploy-agent/bin/../lib/codedeploy-agent.rb:90:in `<main>'
+2018-10-04 16:55:55 DEBUG [codedeploy-agent(13877)]: InstanceAgent::Plugins::CodeDeployPlugin::CommandPoller: Calling PollHostCommand:
+
+
+using tcpdump I can see that the process is accessing codedeploy-commands.us-east-1.amazonaws.com on port 443. 
+
+It's not a simple rouring problem because if I access that host directly from the command line I get a response: 
+Rnd API ubuntu@ip-172-31-78-xx:~$ http https://codedeploy-commands.us-east-1.amazonaws.com/
+HTTP/1.1 403 Forbidden
+Content-Length: 127
+Content-Type: null
+x-amzn-RequestId: a0708150-c7f6-11e8-b20a-5f7d074d2542
+ 
+<MissingAuthenticationTokenException>
+  <Message>Missing Authentication Token</Message>
+</MissingAuthenticationTokenException>
+ 
+ 
+Rnd API ubuntu@ip-172-31-78-xx:~$
+
+
+Turning on the aws_wire_log (man I wish I'd found that before)... (note edited some hashes since I don't know how ephemeral they are).
+opening connection to codedeploy-commands.us-east-1.amazonaws.com:443...
+opened
+starting SSL for codedeploy-commands.us-east-1.amazonaws.com:443...
+SSL established
+<- ""POST / HTTP/1.1\r\nContent-Type: application/x-amz-json-1.1\r\nAccept-Encoding: \r\nUser-Agent: aws-sdk-ruby2/2.10.104 ruby/2.3.1 x86_64-linux-gnu\r\nX-Amz-Target: CodeDeployCommandService_v20141006.PutHostCommandAcknowledgement\r\nX-Amz-Codedeploy-Agent-Version: OFFICIAL_1.0-1.1458_deb\r\nX-Amz-Date: 20181004T170847Z\r\nHost: codedeploy-commands.us-east-1.amazonaws.com\r\nX-Amz-Security-Token: IvYXdzECIaDG32pI62oiB0yTQQlyK3A8Gx64TiJw3kGO6XRGvPyY641jLinZV6JWqDVA4iBN0Sd0akCncBjb9rkufu90Oe3tgHtqwxYE7YkKxA8Q/JRf7e6lnZ2obGjRNw9y5x5FCdKTwt+zj3x/EQpxE5bogBsQj8ftV44rgZ5ncG7HSyTe7wOlybF6SNKpVflKsJ30IYpHj/L8E0kCQJ1Rjj4VAS7nlb8UG0sQgimysa0CKYgZNmK7NdsFDDbDNifVwlg6xI42L/6jpirUDrOAwXmHF76oJBT+ws3ptbRgeVATJjmYhODLFCrJW1oWX+1pt7GE00GmrYvmU8kKqpvj4qB40tMr1zOkWBSOMCbCzRWtdWbrL99mubwmsQZV/MHJUqY3jOauC6/s5q3/5KmKNf3z7NEgDzPJroQFkXa5oEfIvSuViYpUdJaIa4DbvsCrNYtC60yf2ijzdgUG60TX9GA7TrHcYgX5HcSifWhJ9SRJxS27HEw7gIm7+otYmUfNQdG1aBN3OXiduCIHCK1ZkFnLv4rkttYKHv4CTrONBVF4o2M+PdlBcYuML8dqRtauKPU2ajxIskAfOVqDk6kaE8l1ux2ayx7oT56Pko54bZ3QU=\r\nX-Amz-Content-Sha256: a235b6272232b60a8509f3e1c6bb0f3c035536fff8d6450025b3f64dd39b\r\nAuthorization: AWS4-HMAC-SHA256 Credential=ASIA22NVX3LEAKYLDVGK/20181004/us-east-1/codedeploy-commands/aws4_request, SignedHeaders=content-type;host;x-amz-codedeploy-agent-version;x-amz-content-sha256;x-amz-date;x-amz-security-token;x-amz-target, Signature=611ab9c4b25519b14b81d6be74c83c3a079eebd69538001f29a2c4b7f764\r\nContent-Length: 596\r\nAccept: */*\r\n\r\n""
+-> ""HTTP/1.1 200 OK\r\n""
+-> ""x-amzn-RequestId: 28302293-c7f8-11e8-b55e-a1daf72f467d\r\n""
+-> ""Content-Type: application/x-amz-json-1.1\r\n""
+-> ""Content-Length: 26\r\n""
+-> ""\r\n""
+reading 26 bytes...
+-> """"
+-> ""{\""CommandStatus\"":\""Failed\""}""
+read 26 bytes
+Conn keep-alive
+I, [2018-10-04T17:08:47.528453 #15380]  INFO -- : [Aws::CodeDeployCommand::Client 200 80.432243 1 retries] put_host_command_acknowledgement(diagnostics:nil,host_command_identifier:""eyJiYXRjaElkIjoiMDRhMjI3NTRmM2UyZDgzNDRiMDdjOTA5NTczMjk3YWQvcHVibGljMDAxIiwiZGVwbG95bWVudElkIjoiQ29kZURlcGxveS91cy1lYXN0LTEvcHJvZC9vcnBoZXVzOnB1YmxpYzAwMS9hcm46YXdzOnNkczp1cy1lYXN0LTE6NzQzOTQ3MzYwOTY4OmRlcGxveW1lbnQvZC1IMU1PREVEU1YiLCJob3N0SWQiOiJhcm46YXdzOmVjMjp1cy1lYXN0LTE6NzQzOTQ3MzYwOTY4Omluc3RhbmNlL2ktMDVmZTg2MTg4ZmQ1MjBmZDEiLCJjb21tYW5kSWQiOiJBcG9sbG9EZXBsb3lDb250cm9sU2VydmljZXxhcm46YXdzOmVjMjp1cy1lYXN0LTE6NzQzOTQ3MzYwOTY4Omluc3RhbmNlL2ktMDVmZTg2MTg4ZmQ1MjBmZDF8MXwwIiwiY29tbWFuZE5hbWUiOiJBcHBsaWNhdGlvblN0b3AiLCJjb21tYW5kSW5kZXgiOjEsImF0dGVtcHRJbmRleCI6MX0="")
+ 
+<- ""POST / HTTP/1.1\r\nContent-Type: application/x-amz-json-1.1\r\nAccept-Encoding: \r\nUser-Agent: aws-sdk-ruby2/2.10.104 ruby/2.3.1 x86_64-linux-gnu\r\nX-Amz-Target: CodeDeployCommandService_v20141006.PollHostCommand\r\nX-Amz-Codedeploy-Agent-Version: OFFICIAL_1.0-1.1458_deb\r\nX-Amz-Date: 20181004T170848Z\r\nHost: codedeploy-commands.us-east-1.amazonaws.com\r\nX-Amz-Security-Token: FQoGZXIvYXdzECIaDG32pI62oiB0yTQQlyK3A8Gx64TiJw3kGO6XRGvPyY641jLinZV6JWqDVA4iBN0Sd0akCncBjb9rkufu90Oe3tgHtqwxYE7YkKxA8Q/JRf7e6lnZ2obGjRNw9y5x5FCdKTwt+zj3x/EQpxE5bogBsQj8ftV44rgZ5ncG7HSyTe7wOlybF6SNKpVflKsJ30IYpHj/L8E0kCQJ1Rjj4VAS7nlb8UG0sQgimysa0CKYgZNmK7NdsFDDbDNifVwlg6xI42L/6jpirUDrOAwXmHF76oJBT+ws3ptbRgeVATJjmYhODLFCrJW1oWX+1pt7GE00GmrYvmU8kKqpvj4qB40tMr1zOkWBSOMCbCzRWtdWbrL99mubwmsQZV/MHJUqY3jOauC6/s5q3/5KmKNf3z7NEgDzPJroQFkXa5oEfIvSuViYpUdJaIa4DbvsCrNYtC60yf2ijzdgUG60TX9GA7TrHcYgX5HcSifWhJ9SRJxS27HEw7gIm7+otYmUfNQdG1aBN3OXiduCIHCK1ZkFnLv4rkttYKHv4CTrONBVF4o2M+PdlBcYuML8dqRtauKPU2ajxIskAfOVqDk6kaE8l1ux2ayx7oT56Pko54bZ3QU=\r\nX-Amz-Content-Sha256: 125158890129b9df41f337e349a0163d75d6e29bf18e5b6bfc2f2fa6751c3f10\r\nAuthorization: AWS4-HMAC-SHA256 Credential=ASIA22NVX3LEAKYLDVGK/20181004/us-east-1/codedeploy-commands/aws4_request, SignedHeaders=content-type;host;x-amz-codedeploy-agent-version;x-amz-content-sha256;x-amz-date;x-amz-security-token;x-amz-target, Signature=9e88181bb7fe7dbf455c59e9781d378d909d55655b7597251f5d7c6a55e2b2f3\r\nContent-Length: 84\r\nAccept: */*\r\n\r\n""
+Conn close because of error Net::ReadTimeout
+
+
+Edited by: jlatwork on Oct 4, 2018 10:22 AM
+
+Edited by: jlatwork on Oct 4, 2018 10:23 AM"
+AWS CodeDeploy	"CodeDeploy, deployment failed (Error code: HEALTH_CONSTRAINTS)
+Hi,
+
+I'm new to CodeDeploy and trying to automate the whole build process. I have started loving AWS with lots of features and I do all sorts of experiments and learning it. So what I did now. I'm storing my code from my local system to BitBucket (through Git) and from there the automation starts & request goes to AWS S3 for storing build zip file and later CodeDeploy refers that zip file (in S3 bucket) for deployment on my EC2 instance (Unix). However the problem is the deployment fails everytime. And it is very simple test deployment and trying to deploy index.html.
+I'm getting following error which is also not much in detailed :-
+
+Deployment Failed
+The overall deployment failed because too many individual instances failed deployment, too few healthy instances are available for deployment, or some instances in your deployment group are experiencing problems. (Error code: HEALTH_CONSTRAINTS)
+
+Any idea about this error and how to get it rectified. My EC2 instance is up and running but then why it is showing as health contraints?
+
+Thank you"
+AWS CodeDeploy	"Re: CodeDeploy, deployment failed (Error code: HEALTH_CONSTRAINTS)
+Hi Vinod,
+
+From the failed deployments, I can see all lifecycle events were skipped. Instance  i-0bcc36e73851297f2 is currently in Stopped state but I can see IAM instance profile is missing. Your Amazon EC2 instances need permission to access the Amazon S3 buckets or GitHub repositories where the applications that will be deployed by AWS CodeDeploy are stored. To launch Amazon EC2 instances that are compatible with AWS CodeDeploy, you must create an additional IAM role, an instance profile. [1]
+
+For such failures, you can always begin with general troubleshooting checklist for a failed deployment [2] and then look for troubleshooting guide on Deployment Issues and Instance issues[3].
+
+[1]http://docs.aws.amazon.com/codedeploy/latest/userguide/how-to-create-iam-instance-profile.html
+[2] http://docs.aws.amazon.com/codedeploy/latest/userguide/troubleshooting-general.html
+[3] http://docs.aws.amazon.com/codedeploy/latest/userguide/troubleshooting.html"
+AWS CodeDeploy	"Re: CodeDeploy, deployment failed (Error code: HEALTH_CONSTRAINTS)
+To add to what Deepa said, if you do not want to deal with understanding of the IAM roles, instance profles, etc, you can always use our first run wizard to create everything for you. It runs a sample deployment with a lot of resources, EC2 instances and a dummy application, all of which you can re-use later in your deployments"
+AWS CodeDeploy	"Re: CodeDeploy, deployment failed (Error code: HEALTH_CONSTRAINTS)
+IAM roles etc. would have caused a different error.  Health Constraints would refer to the health check on your load balancer.  Check your health check grace period.  It might need to be increased to give the instance time to get deployed to if you get this error.
+
+Edited by: dsmithatx on Sep 1, 2017 9:58 AM"
+AWS CodeDeploy	"Re: CodeDeploy, deployment failed (Error code: HEALTH_CONSTRAINTS)
+After working with Codedeploy for a few days I found this actually can be an ec2 instance profile issue.  To verify that is the issue, check your logs on your server.  They are located in:
+
+/var/log/aws/codedeploy-agent/codedeploy-agent.log
+
+If you are missing an EC2 instance profile you will get the error:
+
+2017-09-04 16:42:13 ERROR https://forums.aws.amazon.com/: InstanceAgent::Plugins::CodeDeployPlugin::CommandPoller: Missing credentials - please check if this instance was started with an IAM instance profile"
+AWS CodeDeploy	"Re: CodeDeploy, deployment failed (Error code: HEALTH_CONSTRAINTS)
+How to enable wizard to create the deployment ? can you suggest because iam still facing the error
+
+Thannks"
+AWS CodeDeploy	"Re: CodeDeploy, deployment failed (Error code: HEALTH_CONSTRAINTS)
+So we have a codedeploy pipeline that sounds very similar to this issue except our instance do have the correct profiles and we have verified this via the cli, can you please have a look at what we are doing wrong because we have been at this for days now.
+
+Cheers"
+AWS CodeDeploy	"Re: CodeDeploy, deployment failed (Error code: HEALTH_CONSTRAINTS)
+Having same problem with the CodeDeploy stage of the CodePipeline.  Got the IAM roles and Instance profile set up and attached.  CodePipeline successfully gets the source from GitHub, then successfully does the build, and then always fails at the CodeDeploy stage giving an error of a HEALTH_CONSTRAINT.  
+
+However, looking at the logs on the server, I see that the actual problem says ""error code: 5, message: ""Access Denied"". for the put_host_command_complete, and the next line says ""Cannot reach Instance SErvice: Aws:: S3::Errors::AccessDenied.
+
+Edited by: Richard on Feb 17, 2018 3:28 PM
+ I went back and edited the instance profile that I had created and removed my settings and just imported an existing AWS EC2 to S3 Policy and it worked"
+AWS CodeDeploy	"Re: CodeDeploy, deployment failed (Error code: HEALTH_CONSTRAINTS)
+In my case, I had mistakenly chosen the 'Linux 2' AMI for my CodeDeploy instances, which do not have Ruby and other dependent packages.
+Replaced the instances with the standard Linux AMI 2018.03.0, update CodeDeploy to use the new instances and then it worked."
+AWS CodeDeploy	"please add support for multiple deployments
+Right now, CodeDeploy forces you to bundle everything into one file (ZIP,...).  If you have a big set of files then it takes a long time for a deployment to finish.  This means that during development, if you change one file, you have to wait forever for all files to be deployed.  It would be nice if CodeDeploy supported multiple deployments (e.g. one after the other) then you could separate large binaries into one deployment (that occurs less frequently) and small things that get changed a lot (e.g. configuration files) into another deployment."
+AWS CodeDeploy	"aws deploy push - [Errno 28] No space left on device
+So I am running:
+
+aws deploy push --application-name XXX --s3-location s3://YYY/ZZZ.zip --ignore-hidden-files
+
+And I am getting an error: 
+
+https://forums.aws.amazon.com/ No space left on device
+
+Does this command use some local disk space for temporary storage?"
+AWS CodeDeploy	"Re: aws deploy push - [Errno 28] No space left on device
+Luckily, it seems to understand TMPDIR or TMP environment variables. so using them to point to a different location than /tmp worked.
+
+E.g.:
+
+export TMPDIR=/foobar/tmp
+export TMP=/foobar/tmp"
+AWS CodeDeploy	"Python script support in deployment hook
+I'm yet to try out but I wanted to know whether Codedeploy supports python scripts i.e. can i  h'v '.py' file instead of '.sh' file? I guess error handling for python & shell (sub-process) are different. Do i need to be aware of any gotchas to workaround for python support?
+
+Another 'hack' i can think of is to use '.sh' file but use python interpreter at the top instead of bash. Not sure if that will work.
+
+The reason why we want to go down python way is for json object handling during deployment of our package. 'jq' with bash is another option but the script will get convoluted & difficult to mange over time with enhancements.
+
+Any thoughts or recommendation is welcome
+
+Edited by: seeker on Sep 6, 2018 10:18 PM
+
+Edited by: seeker on Sep 6, 2018 10:19 PM"
+AWS CodeDeploy	"CodeDeploy uses wrong revision
+I have set up Bitbucket pipelines to build my system and upload it to a S3 bucket and everything works fine to this step. Then CodeDeploy kicks in and creates a Deployment and it seems to be a correct one (the Revision Location matches the latest S3 bucket build file) and deploys to my EC2 instance, however the code is not from the latest build file, it is using my previous build even though it says in Revision Location that it is the latest. 
+
+Has anyone else experienced the same problem?
+
+Thanks in advance
+Vatan"
+AWS CodeDeploy	"Re: CodeDeploy uses wrong revision
+Can anyone at AWS check why this is happening?"
+AWS CodeDeploy	"Re: CodeDeploy uses wrong revision
+Some more debug information:
+
+cat /opt/codedeploy-agent/deployment-root/deploymnet-instructions/XXX_most_recent_install
+Prints that the most recent install is an old one, not the one I deployed. This seems wrong.
+
+ls /opt/codedeploy-agent/deployment-root/XXX/<latest_deployment>/
+Only contains logs/scripts.log, while the deployment that is actually trying to be installed everytime contains:
+bundle.tar
+deployment-archive/
+logs/"
+AWS CodeDeploy	"Deploy to Windows EC2 process hangs on ApplicationStart
+Hi,
+
+I am having trouble configuring Codedeploy to work with my Java program on a Windows EC2 instance. The ApplictionStart step hangs indefinitely, and nothing I have tried has resolved the issue.
+
+My appspec.yml looks like this:
+version: 0.0
+os: windows
+files:
+  - source: my-jar-file.jar
+    destination: C:\my-directory
+  - source: my-config-file.json
+    destination: C:\my-directory
+hooks:
+  ApplicationStart:
+    - location: codedeploy\start.bat
+  ApplicationStop:
+    - location: codedeploy\stop.bat
+
+And the start.bat file looks like this:
+echo ""Start""
+cd C:\my-directory
+start my-process-name /B java -jar my-jar-file.jar  my-config-file.json
+echo ""End""
+
+
+I can see in the codedeploy logs on my EC2 instance that the start.bat runs the start command, but the final echo ""End""
+ does not run.
+
+According to this Codedeploy trouble shooting guide (https://docs.aws.amazon.com/codedeploy/latest/userguide/troubleshooting-deployments.html#troubleshooting-long-running-processes) this may be due to the fact that the output streams are not closed. I tried adding the following to the start line in start.bat:
+start my-process-name /B java -jar my-jar-file.jar  my-config-file.json >nul 2>nul <nul
+
+
+However, the application still hangs indefinitely.
+
+I can find lots of tips on resolving this issue for a Linux machine, but I haven't been able to find any solutions for Windows. 
+
+I think its either I am not redirecting the output streams correctly or that I am incorrectly using the /B flag in the start statement to run my program.
+
+Does anybody have any experience getting this working in Windows? I've tried every variation I can think of but nothing has worked so far."
+AWS CodeDeploy	"Blue Green Failed deployment ASG dont get cleaned up
+We have to manually come up with a logic to delete them. Otherwise they just hang  there doing nothing. Can CodeDeploy not clean them up after a defined interval or as part of the RollBack policy ? 
+
+Rollback is non existent in Blue Green Deployment Strategy . Why  ?"
+AWS CodeDeploy	"Re: Blue Green Failed deployment ASG dont get cleaned up
+Hello,
+
+The Rollback option is available for Blue/Green deployment, however, it works in a different way. CodeDeploy initiates rollback only if the newly provisioned fleet already has started to serve traffic when the deployment fails or is stopped due to alarm.
+
+CodeDeploy service doesn't perform a rollback if the deployment fails before traffic rerouting, as the current instances are unmodified and still serving traffic.
+
+Pertain to clean up of newly created instances in case of failure, you are right it is not supported yet. I've informed the service team about this feature request, thanks for pointing our attention to this.
+
+Best,
+Ruslan."
+AWS CodeDeploy	"Re: Blue Green Failed deployment ASG dont get cleaned up
+Codedeploy currently does not clean up the provisioned resources during a blue green deployment. However, we do have the clean up support feature in our backlogs and we will prioritize it soon. We do not have a date yet."
+AWS CodeDeploy	"Re: Blue Green Failed deployment ASG dont get cleaned up
+Is this issue solved? It looks like it not solved yet.
+
+I don't find an option to configure CodeDeplot to automatically delete the ASG in case of deployment failure via Blue Green method. 
+
+Please, can someone help with a solution?
+
+Thanks,
+Vineeth"
+AWS CodeDeploy	"Pass Parameters to Scripts
+Is it possible to pass parameters to scripts being run with CodeDeploy?  I've attempted a few tests but was unable to get it working.
+
+I would like to keep the scripts as generic a possible and simply pass in the appropriate values from the YAML configuration."
+AWS CodeDeploy	"Re: Pass Parameters to Scripts
+Hi,
+Thank you for your feedback,
+
+It is currently not possible to pass arguments to scripts that are being run by CodeDeploy. 
+
+We have sent your request to the CodeDeploy team as a feature request, but although we can't provide any ETA at this time we will publish an update to our Official Blog in case this gets approved and included in the next future release.
+
+Thank you"
+AWS CodeDeploy	"Re: Pass Parameters to Scripts
+Hi, is this feature still currently not available? I would like to have only 1 deploy script but I can pass a parameter depends on the need.
+
+Thanks"
+AWS CodeDeploy	"Deploying to different virtual hosts
+Hi guys,
+
+I currently have a AWS CodePipeline with CodeDeploy configured with a Github repository to automatically deploy to a dev site in /var/www/html/dev.domain.tld/ once a change is released in the repository. I want now to configure a new stage in CodePipeline so once the dev changes have been manually approved CodeBuild will deploy the content to the production site in /var/www/html/www.domain.tld.
+
+I cant seem to find a way to do this since Im only allowed one buildspec.yml file, is there anyway to use multiple buildspec files in CodeDeploy, how can I do this?
+
+Any help will be appreciated! Thanks!"
+AWS CodeDeploy	"BlockTraffic suddenly takes a lot more time
+So, i'm using codedeploy for some time now and yesterday i noticed increased deployment-times.
+We have 5 Applications using codedeploy and they all suddenly take 5 minutes more per server due to the BlockTraffic-step, which took 21seconds before (which roughly corresponds with the healthcheck settings of the targetgroups).
+
+Those applications use different loadbalancers and different targetgroups. The last deploy before yesterday was at the 22nd of june, just a few days earlier. so between then and yesterday something changed.
+So does anyone have an idea why this would happen?
+
+Edited by: sebastianreloadedone on Jun 26, 2018 3:53 AM"
+AWS CodeDeploy	"Re: BlockTraffic suddenly takes a lot more time
+Ok, i know now which value is responsible for the extended deployment times. It is the target groups deregistration_delay.timeout_seconds.
+Even though the documentation states ""If a deregistering target has no in-flight requests and no active connections, Elastic Load Balancing immediately completes the deregistration process, without waiting for the deregistration delay to elapse.""[1] that is not the case, there are no connection or requests. Monitoring confirms that. I even created a new loadbalancer unknown to anyone.
+
+What i couldn't figure out is, where this change of behaviour comes from. Whether it is to considering this value at all, or some part thinking there are connections.
+I just know it worked differently before.
+
+[1] https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#deregistration-delay
+
+Edited by: sebastianreloadedone on Jul 6, 2018 1:55 AM
+
+Edited by: sebastianreloadedone on Jul 6, 2018 3:44 AM"
+AWS CodeDeploy	"Re: BlockTraffic suddenly takes a lot more time
+Hi sebastianreloadedone,
+
+We previously were not honoring the deregistration delay. Since we fixed that, the BlockTraffic takes longer. I believe by default, the deregistration delay is set to 5 minutes.
+
+Thank you"
+AWS CodeDeploy	"Re: BlockTraffic suddenly takes a lot more time
+Hi sebastianreloadedone, 
+
+You are correct. The delay comes from the value that you set for deregistration_delay for your load balancer. Previously, there was a bug where CodeDeploy did not respect the deregistration_delay set by users for their load balancers and that affected users who wanted to have proper connection draining. Since the default deregistration_delay set by ELB is 300 secs you are suddenly seeing this increase in deployment time. You should be able to adjust the delay as appropriate for your service and that should reduce the deployment time. This is not a bug but a valid behavior."
+AWS CodeDeploy	"Re: BlockTraffic suddenly takes a lot more time
+Thank you for the confirmation.
+
+One last question concerning this sentence in the documentation:
+""If a deregistering target has no in-flight requests and no active connections, Elastic Load Balancing immediately completes the deregistration process, without waiting for the deregistration delay to elapse. However, even though target deregistration is complete, the status of the target will be displayed as draining until the deregistration delay elapses.""
+
+Does this mean the BlockTraffic-step takes as long as the deregistration_delay is set, even though the deregistration is already complete?
+Im asking because in my test setup there were definitely no requests and it still took 300 seconds."
+AWS CodeDeploy	"Re: BlockTraffic suddenly takes a lot more time
+Hello,
+
+Yes, BeforeTraffic-step will take as long as deregistration_delay is set and by default deregistration_delay is set to 300 seconds."
+AWS CodeDeploy	"Re: BlockTraffic suddenly takes a lot more time
+Would be nice to shorten the step when the deregistration was already successful, but anyway thanks for solving this."
+AWS CodeDeploy	"Code Deploy --Error The security token included in the request is invalid
+Code Deploy --Error The security token included in the request is invalid
+Hi
+
+I am trying sample deployment to Amazon EC2 instances  using Amazon Code Deploy by following code deploy tutorial document at the final step when i hit the deploy button i am receiving a error 
+"""" Error
+The security token included in the request is invalid""""
+
+I am at learning phase i am unable to figure out what  causing error any advise will be really appreciated.
+
+many Thanks"
+AWS CodeDeploy	"Re: Code Deploy --Error The security token included in the request is invalid
+Since you said you ""hit the deploy button"" I am assuming you are using CodeDeploy console.
+I believe after you login your token is set get invalid in short period of time.
+You need to check this.
+
+Also try this, when you get this message try logging in again in a new tab and see if you can deploy now."
+AWS CodeDeploy	"Re: Code Deploy --Error The security token included in the request is invalid
+I also hit this error while trying to follow the ""Deploy Code to a Virtual Machine"" tutorial. Per your suggestion, I tried logging out and logging immediately back in in another tab. I then proceeded through the 9 steps of the wizard as fast as possible. However, I still get ""Error: The security token included in the request is invalid."" 
+
+I probably just need to learn how to troubleshoot my credentials, but this is hard to get past when I'm taking the tutorial as a total newbie!"
+AWS CodeDeploy	"Re: Code Deploy --Error The security token included in the request is invalid
+Happy to report that I was able to get past this and deploy for the tutorial by following the much more involved instructions (5 steps under Getting Started) here:
+https://docs.aws.amazon.com/codedeploy/latest/userguide/getting-started-create-service-role.html
+
+Of course in the service role part of the tutorial you'll then need to change it to use the existing role set up, which in the Getting Started step is CodeDeployServiceRole. It's hard for me to tell if something was assumed to be in place by the tutorial but wasn't in place for me, or if I just overlooked a step."
+AWS CodeDeploy	"Re: Code Deploy --Error The security token included in the request is invalid
+That did the trick. Thanks, reed9999
+
+I created the service role from the IAM console (I gave it the suggested name from the tutorial) and then in the CodeDeploy console, contrary to what the tutorial https://aws.amazon.com/getting-started/tutorials/deploy-code-vm suggests, I chose Use an existing service role not Create a new service role, and selected the one I had previously created in the IAM console."
+AWS CodeDeploy	"[Blue/Green] Deploy fails if ASG has a request count target scaling policy
+Deployments fails if you configure a Target Tracking scaling policy with Execute policy of ""As required to maintain Application Load Balancer Request Count Per Target at ##""
+
+Fails at Step 1 - Internal error occurred during deployment (Error code: INTERNAL_ERROR)"
+AWS CodeDeploy	"Re: [Blue/Green] Deploy fails if ASG has a request count target scaling policy
+Can you please include more details so we can look into the failure case here. How did you make the request? Console / CLI? Can you include the deployment Id? If we have that information we can dig in further.
+
+Thank you,
+-Asaf"
+AWS CodeDeploy	"Re: [Blue/Green] Deploy fails if ASG has a request count target scaling policy
+Hello Asaf,
+
+Sorry, it is been a long time. We have used in place deployments instead for other reasons.
+
+If I come across this again. I will provide more details.
+
+Thanks"
+AWS CodeDeploy	"codedeploy cross account deployment
+We have one scenario in which we have 2 AWS account one for devops and other for production 
+1. In Account A (devops ) having code build and codepipline and code deployment 
+2. Account B (Production) this account only use for autoscalling group and ec2 instance. We want to do deployment by assuming above mentioned scenario, In which account A have code build and code deploy configured however account B has auto-scaling group on which this deployment will happened. Please guide us with proper details. We want it as a automation."
+AWS CodeDeploy	"Code Deploy fails at ApplicationStop: string contains null byte
+Is anyone having these types of failures?  Seems to be happening on random instances in the deployment group. The deployment group is not an Autoscaling type.  We typically start all instance up, then run the CodeDeploy/CodePipeline against them, then stop them via script. Looking at the event logs, there's an entry type like: ""The previous system shutdown at 5:15:58 AM on ‎8/‎8/‎2018 was unexpected."" But it looks as though the codedeployagent is starting up as expected.  Should I clean anything out on the instance so that the next deploy with be successful?
+
+Any ideas?
+
+here is a log snippet:
+
+2018-08-09T05:03:58 ERROR https://forums.aws.amazon.com/: InstanceAgent::Plugins::CodeDeployPlugin::CommandPoller: Error during perform: ArgumentError - string contains null byte - C:/Windows/TEMP/ocr2735.tmp/src/opt/codedeploy-agent/lib/instance_agent/plugins/codedeploy/hook_executor.rb:98:in `join'
+C:/Windows/TEMP/ocr2735.tmp/src/opt/codedeploy-agent/lib/instance_agent/plugins/codedeploy/hook_executor.rb:98:in `initialize'
+C:/Windows/TEMP/ocr2735.tmp/src/opt/codedeploy-agent/lib/instance_agent/plugins/codedeploy/command_executor.rb:147:in `new'
+C:/Windows/TEMP/ocr2735.tmp/src/opt/codedeploy-agent/lib/instance_agent/plugins/codedeploy/command_executor.rb:147:in `block (3 levels) in map'
+C:/Windows/TEMP/ocr2735.tmp/src/opt/codedeploy-agent/lib/instance_agent/plugins/codedeploy/command_executor.rb:146:in `each'
+C:/Windows/TEMP/ocr2735.tmp/src/opt/codedeploy-agent/lib/instance_agent/plugins/codedeploy/command_executor.rb:146:in `block (2 levels) in map'
+C:/Windows/TEMP/ocr2735.tmp/src/opt/codedeploy-agent/lib/instance_agent/plugins/codedeploy/command_executor.rb:68:in `execute_command'
+C:/Windows/TEMP/ocr2735.tmp/src/opt/codedeploy-agent/lib/instance_agent/plugins/codedeploy/command_poller.rb:114:in `process_command'
+C:/Windows/TEMP/ocr2735.tmp/src/opt/codedeploy-agent/lib/instance_agent/plugins/codedeploy/command_poller.rb:96:in `acknowledge_and_process_command'
+C:/Windows/TEMP/ocr2735.tmp/src/opt/codedeploy-agent/lib/instance_agent/plugins/codedeploy/command_poller.rb:75:in `block in perform'
+C:/Windows/Temp/ocr2735.tmp/gemhome/gems/concurrent-ruby-1.0.5/lib/concurrent/executor/ruby_thread_pool_executor.rb:348:in `run_task'
+C:/Windows/Temp/ocr2735.tmp/gemhome/gems/concurrent-ruby-1.0.5/lib/concurrent/executor/ruby_thread_pool_executor.rb:337:in `block (3 levels) in create_worker'
+C:/Windows/Temp/ocr2735.tmp/gemhome/gems/concurrent-ruby-1.0.5/lib/concurrent/executor/ruby_thread_pool_executor.rb:320:in `loop'
+C:/Windows/Temp/ocr2735.tmp/gemhome/gems/concurrent-ruby-1.0.5/lib/concurrent/executor/ruby_thread_pool_executor.rb:320:in `block (2 levels) in create_worker'
+C:/Windows/Temp/ocr2735.tmp/gemhome/gems/concurrent-ruby-1.0.5/lib/concurrent/executor/ruby_thread_pool_executor.rb:319:in `catch'
+C:/Windows/Temp/ocr2735.tmp/gemhome/gems/concurrent-ruby-1.0.5/lib/concurrent/executor/ruby_thread_pool_executor.rb:319:in `block in create_worker'
+C:/Windows/Temp/ocr2735.tmp/lib/ruby/gems/2.3.0/gems/logging-2.2.2/lib/logging/diagnostic_context.rb:474:in `block in create_with_logging_context'
+2018-08-09T05:03:58 WARN  https://forums.aws.amazon.com/: InstanceAgent::Plugins::CodeDeployPlugin::CommandPoller: Calling PutHostCommandComplete: ""Code Error"" 
+2018-08-09T05:03:58 INFO  https://forums.aws.amazon.com/: Version file found in C:/ProgramData/Amazon/CodeDeploy/.version with agent version OFFICIAL_1.0.1.1518_msi.
+2018-08-09T05:03:58 INFO  https://forums.aws.amazon.com/: Aws::CodeDeployCommand::Client 200 0.031252 0 retries put_host_command_complete(command_status:""Failed"",diagnostics:{format:""JSON"",payload:""{\""error_code\"":5,\""script_name\"":\""\"",\""message\"":\""string contains null byte\"",\""log\"":\""\""}""},host_command_identifier:""WyJjb20uYW1hem9uLmFwb2xsby5kZXBsb3ljb250cm9sLmRvbWoiQ29kZURlcGxveS91cy1lYXN0LTEvUHJvZC9hcm46YXdzOnNkczp1cy1lYXN0LTE6MTQzMDQ2OTQ0NzM1OmRlcGxveW1lbnQvZC1PUDBUSTVWUVDQ2OTQ0NzM1Omluc3RhbmNlL2ktMDBjY2MwMzEzOWMxOWI4YTUiLCJjb21tYW5kTmFtZSI6IkFwcGxpY2F0aW9uU3RvcCIsImNvbW1hbmRQb3NpdGlvbiI6MSwiY29tbWFuZEF0dGVtcHQiOjF9XQ=="")
+
+Edited by: stevenbelanger on Aug 9, 2018 10:32 AM
+
+Edited by: stevenbelanger on Aug 9, 2018 10:33 AM"
+AWS CodeDeploy	"Error with CodeDeploy - No such file or directory - /opt/codedeploy-agent/.
+Hi,
+I had been looking to check the blue-green deployment using CodeDeploy and was following the below blog from Ramesh Adabala.
+
+https://aws.amazon.com/blogs/devops/bluegreen-infrastructure-application-deployment-blog/
+
+Find that the deployment fails when it tries to install the application at the ""Application Start"" stage. I looked to use the same set of codes as shared in the blog, yet got the error. 
+
+Did look at other posts on similar error but none was at the ""Application Start"" stage. 
+
+This is my first try on blue-green deployments using CodeDeploy, could you please help with the error. The complete error is as follows:
+Script at specified location: scripts/write_codedeploy_config.sh failed with error Errno::ENOENT with message No such file or directory - /opt/codedeploy-agent/deployment-root/fcdd9744-0689-4ca3-b317-57748f9376eb/d-4WB18YPPU/deployment-archive/scripts/write_codedeploy_config.sh
+
+Thanks."
+AWS CodeDeploy	"CodeDeploy deletes previous files.
+hey folks,
+
+i'm facing a strange situation where when i run code deploy, it makes a new folder every time and copy the code, when i checked the old folder which deployed previous that folder is empty. which can cause this? 
+roll back is enable"
+AWS CodeDeploy	"Re: CodeDeploy deletes previous files.
+Could you clarify which folder are you referring to here? Is it the raw bundle being downloaded or Git hub repository or are you referring to file copying during install step."
+AWS CodeDeploy	"Re: CodeDeploy deletes previous files.
+i'm referring to DownloadBundle step. source is S3. for example heres my appspec
+
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/www/html/releases/201807181208/
+hooks:
+  BeforeInstall:
+    - location: /BeforeInstall.sh
+      runas: root
+  AfterInstall:
+    - location: /AfterInstall.sh
+      runas: root
+
+in every deploy this value will change in the appspec ""201807181208"", so when i do a deployment previous release destination files get removed.
+
+Edited by: frodo on Jul 18, 2018 9:41 PM
+
+Edited by: frodo on Jul 18, 2018 9:50 PM
+
+Edited by: frodo on Jul 18, 2018 9:51 PM"
+AWS CodeDeploy	"Re: CodeDeploy deletes previous files.
+I am having a similar issue as well.  I am using the same CodeDeploy application for different CodePipelines.  This is used as my staging server and we have multiple GitHub being deployed to this instance under different subdirectories unser /var/www/html. 
+
+For example: ClientA with ProjectA gets deployed to /var/www/html/ClientA/ClientAProjectA, but client B would have their ProjectA being deployed to /var/www/html/ClientB/ClientBProjectA.  It seems if I have more then one application being deploy to /var/www/html/https://forums.aws.amazon.com/ then it removes anything else previously deployed in /var/www/html/
+
+Example of my appspec.yml file:
+
+version: 0.0
+os: linux 
+files:
+  - source: dist
+    destination: /var/www/html/https://forums.aws.amazon.com//Summer-Rates-2018"
+AWS CodeDeploy	"Re: CodeDeploy deletes previous files.
+Hi,
+
+We will look into this and get you some answers. Can you please tell us your OS and agent version? And if you are alright with it, can you share the agent logs with us?
+
+Thank you"
+AWS CodeDeploy	"Re: CodeDeploy deletes previous files.
+OS: ubuntu 16.04 LTS
+Agent Version: OFFICIAL_1.0-1.1518_deb"
+AWS CodeDeploy	"Bug in AWS Console found - Revision location is always wrong
+Hi guys,
+
+I think I found a bug in the AWS Console with CodeDeploy.
+And else its very anti user friendly :-D
+
+So we are talking about adding a new deployment.
+https://eu-west-1.console.aws.amazon.com/codedeploy/home?region=eu-west-1#/deployments/new
+
+1. Try with bucket=...
+2018-08-06 23_31_53-AWS CodeDeploy Management.png
+Revision location is ""bucket=my-bucket,key=appspec.yml,bundleType=YAML"".
+Error message: The detected file type for the specified Revision Location is unsupported.
+
+2. Try with the example s3://
+s3://my-bucket/appspec.yml
+2018-08-06 23_33_59-AWS CodeDeploy Management.png
+Error message: Bucket, Key and BundleType must be specified
+
+3. Try with the whole url
+https://s3-eu-west-1.amazonaws.com/my-bucket/appspec.yml
+Error message: Bucket, Key and BundleType must be specified
+
+OK let's help the web console a bit with the AWS CLI.
+aws deploy register-application-revision --application-name MyDeployApp --s3-location bucket=my-bucket,key=appspec.yml,bundleType=YAML
+
+Ah, now it shows me this revision in the autocomplete of the web console.
+But oh no, I get the same error again, if I want to select this revision.
+Error message: Bucket, Key and BundleType must be specified
+
+I tried with a distribution.zip file on S3 and with different S3 permissions.
+At the end I tried to only have the appspec.yml there because its working when I specify it manually.
+
+So I dont know but I tried this now since 3-4 hours.
+This must be a bug on aws web console.
+I dont know what the mistake could be.
+The examples says something about s3:// and the docs saying something similar.
+
+Please check.
+Thanks in Advance.
+But I give up now. Its not possible :-D"

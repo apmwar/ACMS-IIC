@@ -1,0 +1,1135 @@
+label	description
+Amazon Elastic Container Service (Amazon ECS)	"Can't find error log for a wildfly server running on ECS cluster
+The server startup log is in cloudwatch, but one of the apps fails with error 500 (internal server error) and that log is nowhere. The app works fine in local container; only fails in when deployed in the EC2 instance.
+
+Any ideas where should I look for the log?"
+Amazon Elastic Container Service (Amazon ECS)	"Memory limits detection by java process (Fargate)
+I'm trying to take advantage of the feature that allows java process to detect what is the memory limit set for a given container run. (Container Awareness) 
+
+I'm using java version 8u192b12 that allows to use the following VM options without the need of (-XX:+UseContainerSupport)          
+-XX:InitialRAMPercentage=50.0 
+-XX:MaxRAMPercentage=90.0 
+
+
+That should set the max memory allocation for a java process to 90% of what the container is allowed to take.
+Here's my test class
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.RuntimeMXBean;
+ 
+public class Check {
+    public static void main(String[] args) {
+        MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+        System.out.println(""heap: "" + memoryBean.getHeapMemoryUsage());
+        System.exit(0);
+    }
+}
+ 
+
+
+with java -XX:InitialRAMPercentage=50.0 -XX:MaxRAMPercentage=90.0  MyClass
+
+This works as expected locally when I run my container with docker:
+docker run -m=256M img
+heap init = 134217728(131072K),... max = 243269632(237568K)
+docker run -m=512M img
+heap  init = 268435456(262144K), ...max = 484442112(473088K)
+
+but when I execute the same using Fargate(Platform 1.3) with task mem limit of 512MB 
+
+I get:
+heap: init = 1971322880(1925120K) ...max = 3546284032(3463168K)
+with 1GB
+heap: init = 1971322880(1925120K) max = 3546284032(3463168K)
+
+Is AWS ECS Farget using that docker -m switch for memory restriction or something custom?
+I'm using Docker version 18.09.0 locally.
+
+Edited by: kubakuba on Jan 22, 2019 2:58 AM
+
+Edited by: kubakuba on Feb 27, 2019 3:54 AM"
+Amazon Elastic Container Service (Amazon ECS)	"Amazon ECR Lifecycle Policy is deleting incorrect tags
+We recently added an ECR policy to a repository that looks like the following:
+
+{
+    ""rules"": [
+        {
+            ""rulePriority"": 1,
+            ""description"": ""Keep only one untagged image, expire all others"",
+            ""selection"": {
+                ""tagStatus"": ""untagged"",
+                ""countType"": ""imageCountMoreThan"",
+                ""countNumber"": 1
+            },
+            ""action"": {
+                ""type"": ""expire""
+            }
+        },
+        {
+            ""rulePriority"": 2,
+            ""description"": ""Expire all development images older than 30 days"",
+            ""selection"": {
+                ""tagStatus"": ""tagged"",
+                ""tagPrefixList"": [""dev""],
+                ""countType"": ""sinceImagePushed"",
+                ""countUnit"": ""days"",
+                ""countNumber"": 30
+            },
+            ""action"": {
+                ""type"": ""expire""
+            }
+        }
+    ]
+}
+
+
+When it was triggered, it deleted our master tag.  Any ideas why this may be happening?  Is there a problem with the policy?  We found that the delete happened from a CloudTrail event.
+
+Edited by: LawrenceOngAtHA on Feb 27, 2019 12:22 AM"
+Amazon Elastic Container Service (Amazon ECS)	"Cannot get ECS->Service->ScheduledTasks to run a command override
+Hi,
+
+I have an ECS service, which contains 4 tasks (2 web services (PHP) and 2 front-ends (AngularJS))
+
+I'm trying to run a command on one of the PHP web service containers using an ECS service scheduled task. I have created the scheduled task, assigned all the correct details but my test will not run.
+
+I've seen multiple reports of this and I have tried any suggested command override method, which includes:
+
+  - /bin/bash,-c,touch,/var/www/html/test.file
+  - touch /var/www/html/test.file
+  - touch,/var/www/html/test.file
+
+But none create a file named test.file in the /var/www/html directory
+
+I have tried creating a bash script, which when run manually from the command line, executes fine and gives results
+
+CloudWatch Metrics isn't reporting any errors. It shows multiple 'TriggeredRules' and 'Invocations'
+
+Where do I go from here? Is there any other method to see debug output? Does anybody have a suggestion as to what I should set in the 'Command override'?
+
+Stephen,"
+Amazon Elastic Container Service (Amazon ECS)	"Support for GPU with multiple containers
+I currently manually run a p2 instance that runs about 30 containers via nvidia-docker on a single instance. I wanted to convert this over to ECS but was shocked when I realized I would be forced to use one EC2 instance per container! If I didn't set GPU = 1, it would seem my container doesn't use the nvidia runtime.
+
+Perhaps I'm doing something wrong but I really would love the ability to treat the GPU resource much like the CPU, where I can subdivide the GPU ""units"" and ensure that I don't overload it but still run more than one container. Is there a way to do this with the current ECS offering (or EKS for that matter).
+
+PS> If you set GPU = 1, you cannot revert it to 0 in the console.. it says it has to be a positive integer. This seems like a bug!"
+Amazon Elastic Container Service (Amazon ECS)	"Fargate tasks stop logging to CloudWatch immediately after ecs stop-task
+I have a Fargate task that is handling the SIGTERM sent by ecs stop-task gracefully (active processes are run to completion). However, the CloudWatch logs for the task are not written to at all after the stop-task is issued, so I lose 0-30s of log events. I am certain the processes are running to comletion, as they are logging to a database. Can the logs be accessed somehow?
+
+Thanks.
+Ezra"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Fargate tasks stop logging to CloudWatch immediately after ecs stop-task
+I'm also experiencing this (using the awslog log driver)
+
+I tried running the task in EC2 mode and the SIGTERM is handled just fine and I see all the logs. 
+
+In Fargate, nothing."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Fargate tasks stop logging to CloudWatch immediately after ecs stop-task
+I have the same problem running commands in fargate and trying to log the stdout in cloudwatch. For now my short term solution is to add a sleep 5 at the end of the command I run to allow cloudwatch to get the output before the sigterm"
+Amazon Elastic Container Service (Amazon ECS)	"Fargate - Javascript SDK - IAM Instance Profile - Credentials
+When using nodejs docker image inside fargate with a set profile. When the SDK tries to access DDB - which it has access to - the call fails when when it tries to retrieve credentials from the metadata endpoint.
+
+Opened an issue on github: https://github.com/aws/aws-sdk-js/issues/2534
+
+I can see the following error:
+{ Error: connect EINVAL 169.254.169.254:80 - Local (0.0.0.0:0) 
+at internalConnect (net.js:964:16)
+at defaultTriggerAsyncIdScope (internal/async_hooks.js:281:19)
+at net.js:1062:9
+at _combinedTickCallback (internal/process/next_tick.js:132:7)
+at process._tickDomainCallback (internal/process/next_tick.js:219:9)
+message: 'Missing credentials in config',
+errno: 'EINVAL',
+code: 'CredentialsError',
+syscall: 'connect',
+address: '169.254.169.254',
+port: 80,
+time: 2019-02-13T12:46:53.403Z,
+
+
+Temporary solution is to use the credentials in env variables, but that is a suboptimal solution. Any insight is welcome.
+
+Seems like the metadata endpoint is unaccessible -  169.254.169.254:80, I think that the problem is that the SDK should use the task metadata endpoint - 169.254.170.2 which in the SDK expects some variables to be set - from documentation:
+
+ ENV_RELATIVE_URI = 'AWS_CONTAINER_CREDENTIALS_RELATIVE_URI',
+  ENV_FULL_URI = 'AWS_CONTAINER_CREDENTIALS_FULL_URI',
+ ENV_AUTH_TOKEN = 'AWS_CONTAINER_AUTHORIZATION_TOKEN',
+
+
+But they definitely haven't been set in my node process on startup logged by 'process.env'.
+
+By the documentation that the fargate is not using the EC2 metadata endpoint and the SDK relies on some ENV variables to be set. Haven't faced a problem with Java based SDK. 
+
+What endpoint is used for credentials on fargate services?
+
+Edited by: MJanousek on Feb 22, 2019 8:03 AM"
+Amazon Elastic Container Service (Amazon ECS)	"What are the pros and cons of running Apache Tika in Fargate?
+I am interested in running Apache Tika Server 1.20 in a container and I am curious if running it in Fargate is practical and if anyone has had success in doing so?
+
+What are the caveats?"
+Amazon Elastic Container Service (Amazon ECS)	"Can I configure ipcMode for my TaskDefinition using Cloudformation?
+Been trying to install an apm agent and it requires me to setup my ipcmode for my taskdefinition, however when I tried adding that parameter in my cf script I get this error:
+
+Encountered unsupported property IpcMode
+
+Does this mean IpcMode can only be added via the TaskDefinition aws console?"
+Amazon Elastic Container Service (Amazon ECS)	"ECS fargate health check exit 143
+I was unable to configure the docker container health check in Fragtae deployment. The container always fails with Exist code 143 when I set the health check command. But the same health check command works when I run the docker image locally.  
+
+Below are my deployment model details:
+
+ALB -- > Target group ( ALB are in different subnets)
+ECS Service (Fargate) are behind ALB in different subnets
+
+HTTPS Request -> ALB rule based --> forwards to Target Group --> ECS Service
+
+Thanks
+-khader"
+Amazon Elastic Container Service (Amazon ECS)	"Mailbox unavailable.
+Please help,
+ When I try to send email through custom SMTP, I'm always receiving:"" The server response was: sender IP address *.***.**.*** is part of Amazon AWS, and may not use this."" in Task ECS."
+Amazon Elastic Container Service (Amazon ECS)	"ECS stops the container and starts after some time
+We are experiencing an issue with one of the ECS cluster deployed using cloudformation in our production network.
+We have a service which runs two tasks. One of the task running in a container instance is stopped by ECS agent and started after some time. 
+
+In the attached log, you can see container is stopped 
+2019-02-19T05:41:49Z https://forums.aws.amazon.com/ Task engine arn:aws:ecs:us-east-1:361190373704:task/b9c3f4e6-faf3-44f6-8c82-e4d1f6fb45c1: stopping container https://forums.aws.amazon.com/
+Then it starts pulling container image again and starts the new tasks.
+Can you please explain this behaviour of ECS?
+
+There is no change in container image definition and there is no errors in our docker container and the container was running fine, but this issue happens suddenly and consistently over the period of time.
+
+Please help us to understand the issue."
+Amazon Elastic Container Service (Amazon ECS)	"Re: ECS stops the container and starts after some time
+Container starting and stopping indicates that either:
+
+
+the image does not get pulled,
+some configuration could be wrong or incomplete,
+not enough CPU, RAM or disk space resources are available to run container.
+
+
+Find detailed message of container log. Which Docker image is used?"
+Amazon Elastic Container Service (Amazon ECS)	"Re: ECS stops the container and starts after some time
+Hi thanks for the response. 
+dvohra wrote:
+Container starting and stopping indicates that either:
+
+
+the image does not get pulled,
+some configuration could be wrong or incomplete,
+
+Can you explain what configuration is incomplete? we are running the same setup in other regions, it is smooth over there.
+- not enough CPU, RAM or disk space resources are available to run container.
+I can see no problem with available CPU, RAM or disk we have alarms configured for that. There is no spike in EC2 monitoring, in past 3 days where we saw this problem the maximum CPU utilisation is 2.5%
+ 
+Find detailed message of container log. Which Docker image is used?
+I have checked the container logs there is bunch of http requests and responses logs only.
+We are a docker image that is baked with our web application which has base image of node:8-alpine, what else you need about docker image?"
+Amazon Elastic Container Service (Amazon ECS)	"BUG: Invalid Resource Policy accepted by ECR
+I've found a bug on the ECR console which I believes results from insufficient policy validation
+
+Reproducible steps:
+1. Create a repo
+2. Go to Permissions
+3. Select Edit and ""Add Statement""
+4. In the Service Principal field enter ""lambda.amazonaws.com""
+5. Check and then uncheck a user or role in the list of users and roles.
+6. Select at least one Action
+7. Save
+
+Result:
+User returns to a blank permissions screen. JS Console prints: 
+
+TypeError: ""e.Principal.AWS is undefined""
+
+Expected:
+Either the entered policy is rejected as invalid, or the page loads correctly.
+
+Note: This is the policy JSON generated:
+
+{
+  ""Version"": ""2008-10-17"",
+  ""Statement"": [
+    {
+      ""Sid"": ""new statement"",
+      ""Action"": [
+        ""ecr:PutImage""
+      ],
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""Service"": [
+          ""lambda.amazonaws.com""
+        ],
+        ""AWS"": []
+      }
+    }
+  ]
+}
+
+I believe the validation is checking to see if ""AWS"" exists in the statement, but not if it is empty."
+Amazon Elastic Container Service (Amazon ECS)	"Using IPv6 with Fargate
+I'm trying to figure out if it's possible to run Fargate tasks in a subnet using IPv6 with an Egress-Only Internet Gateway.
+
+Ultimately, what I'd like to do is connect an API Gateway deployment to a NLB that connects to my containers running in Fargate. I'd prefer that these containers not be publicly accessible, only reachable via the API Gateway.
+
+My understanding is that 1) Tasks need to run with some outbound connectivity in order to download their container images from ECR and 2) the way to provide outbound internet access is either via a NAT Gateway (IPv4) or an EIGW (IPv6). I'd prefer to use an EIGW since it's a simpler setup and there's no cost associated with it, but it doesn't seem that the task containers are assigned an IPv6 address and so, can't reach the ECR to pull their image.
+
+Does Fargate support deploying containers with IPv6?"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Using IPv6 with Fargate
+I tried and failed. But it's not unthinkable I screwed something up in the process. It's difficult to debug this error:
+
+CannotPullContainerError: API error (500): Get https://foobar.dkr.ecr.ap-northeast-1.amazonaws.com/v2/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+
+I can tell it can't connect to ECR, but why? Not sure. Maybe ECR is not accessible over IPv6, maybe I just misconfigured something? My route table looks fine to be honest, so.. not sure.
+
+Would love a definitive answer on this from AWS."
+Amazon Elastic Container Service (Amazon ECS)	"How to deregister/remove task definition(ECS)?
+Try to remove task definition with following commands, seems it's not implemented (I'm using aws-cli version 1.7.3), possible to  delete the task definition other way?
+
+aws ecs deregister-task-definition --task-definition wordpress:1             
+ 
+A client error (InvalidAction) occurred when calling the DeregisterTaskDefinition operation: Deregistering task definitions is currently unsupported.
+ 
+
+
+Edited by: jamesxz on Jan 26, 2015 4:46 PM"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+Hello,
+
+I have engaged the concerned team to look in to the issue that you reported.
+I will update you as soon as I hear back from them.
+
+Thank you."
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+Hello, 
+
+The API is currently unsupported and there is not another way to remove task definitions. We are looking to improve this functionality and will post in the forums once available.
+
+If you have any other questions, please do not hesitate to contact us."
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+Any update on this?  Seems sort of silly that you cant remove a task definition, I would understand if this were still beta but this is GA now."
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+Eh.... any update?
+
+This is hazardous to my OCD. O_o"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+We have around a thousand task def versions defined because of this. This causes several problems with the ECS console. 
+
+The task definitions page becomes useless, because it only displays pages of 10 at a time and has no global search, only a filter on the current 10.
+
+Also, the task selection drop-down in the service definition page stops working when there are more than 100 (?) task definitions, and we have to enter the task name and version manually."
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+Same issue here. It is incomprehensible why deleting a task was  not implemented. It also only shows first 10 defined tasks. I really do hope this is implemented in near feature. It causes a lot of clutter and confusion.
+
+Edited by: shaytac on Apr 28, 2015 6:30 AM"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
++1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
++1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
++1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
++1 more vote."
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
++1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+This makes it really hard to use ECS. I'm stunned AWS went GA without the ability to delete task definitions."
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
++1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
++1 Should have a big bold disclaimer that you should only play in a test cluster.  Would have never thought this was not possible."
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
++1.  It's hard to believe that task deletion isn't implemented.  What did their QA people do?"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+Booooooo, Hurry
+Prepares Pitchfork & Torches Shop
+Downloading Mesos Installation
++1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
++1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+Hi all,
+
+Looks like the team built out the page here - http://docs.aws.amazon.com/cli/latest/reference/ecs/deregister-task-definition.html but it's still not implemented yet. 
+
+Regards,
+
+Rodney"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+Thanks! I wrote Feedback on that page, asking that this be implemented in the web-based AWS Console GUI ASAP."
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+Last I tried it needs to be implemented in the CLI as well, it is just stubbed out.
+
+Frankly I would have assumed that with as many comment/views as there has been on this thread, that this would have already been brought to the teams attention and assigned a high priority just like other things on this forum.  I don't understand why for this we need to comment on a page. 
+
+I would not even call this a feature request as it seems like a gap or oversight in expected base/core functionality.  I would classify this as a bug."
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+Thank you all for the feedback. We're working on delivering deregisterTaskDefinition in the API/CLI/Console. We will update this thread when it is delivered."
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
+not sure it matters at this point, but +1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
++1 too"
+Amazon Elastic Container Service (Amazon ECS)	"Re: How to deregister/remove task definition(ECS)?
++1"
+Amazon Elastic Container Service (Amazon ECS)	"Alternate Domain Name with ECR?
+We're investigating migrating to ECR from Docker Hub, but are running into Docker's inability to set a default registry other than Docker Hub, which makes it impossible to migrate transparently. For non-Dockerhub repositories, we have to use the fully-qualified image name including the repository. That change ripples out through all our Dockerfiles, Docker Compose configurations, etc...
+
+<aws_account_id>.dkr.ecr.us-east-1.amazonaws.com is pretty unwieldy, though. We'd really like to be able to create an alias of docker.company.com, which can be resolved to the appropriate location (whether it's a local mirror, or a different AWS region when ECR is eventually available in other regions). 
+
+However, creating a CNAME record and trying to push or pull a repository using it, unsurprisingly, results in a TLS verification error because the TLS certificate is for the AWS domain, and I can find no way to configure ECR to use an alternative certificate. 
+
+Is there any way around this (aside from running our own registry in EC2)? I don't feel like ECR is ready for production use yet. 
+
+Thanks!
+
+Edited by: aalpern74 on Jan 22, 2016 4:18 PM
+Formatting"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
+I agree with this post: the hostnames of the ECR registry is a problem.
+
+If we're to use ECR we'd need to start  all of our Dockerfiles like this:
+
+    FROM <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/foo/bar
+
+Would much prefer to have this branded as something that could be remembered.
+
+    docker run -t -i registry.company.com/foo/bar"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
+Any chance for an update on this issue from Amazon?"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
+Hi, thanks for the feedback and comments. We'll take your request for alternative domains into account as we prioritize our roadmap."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
++1 -- These domain names for the ECR are hideous.  And this get's carried across many dockerfiles, and even contaminates our documentation, which almost makes us want to run our own private registry.  But, then we'd lose IAM roles and have to support our own upgrades etc.
+
+This may not seem like a big problem to AWS, but trust me, developers find these long registry DNS names  very distasteful."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
+It would be great if this could interface with AWS Certificate Manager, so you could generate a certificate and apply it to an ECR instance."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
++1 from me. Would love to have some way to alias this in Route53. What is the best way to submit product enhancement requests to the AWS ECS team?
+
+Edited by: dencold on May 3, 2016 12:07 PM"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
++1 Here too. This is an important feature and necessary to move ECR to a production environment. ECR should be able to set a custom domain name, certificates, and be domain aware for things like aws ecr get-login"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
++1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
+A way to use you custom domain with <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com it's to put a proxy in front of it, like nginx.
+
+Here a simple example with an http server (obviously you can set this up with https)
+server {
+  listen 80;
+  server_name my.docker.registry.com;
+  client_max_body_size 0; # disable any limits to avoid HTTP 413 for large image uploads
+  # required to avoid HTTP 411
+  chunked_transfer_encoding on;
+ 
+  location / {
+   proxy_pass                          https://<account-id>.dkr.ecr.eu-west-1.amazonaws.com;
+   proxy_set_header  Host              ""<account-id>.dkr.ecr.eu-west-1.amazonaws.com"";
+   proxy_set_header  X-Real-IP         $remote_addr; # pass on real client's IP
+   proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+   proxy_set_header  X-Forwarded-Proto ""https"";
+   proxy_read_timeout                  900;
+  }
+ 
+}
+
+Tested and it works
+
+I'm trying to use cloudfront as proxy, but without success for the moment, not really sure what it doesn't like, as the registry returns a 500 error. Hope I can setup with CF so that I don't need to run any EC2"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
+Did you get authentication working? When i try to proxy through nginx i'm getting 
+
+Error response from daemon: login attempt to https://registry.example.com/v2/ failed with status: 400 Bad Request"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
+I use docker version 1.13.0-rc2, build 1f9b3ef
+This is my nginx.conf 
+server {
+  listen 443 ssl;
+  server_name {custom-domain};
+ 
+  ssl on;
+  ssl_certificate /etc/ssl/certs/{custome-domain}.crt;
+  ssl_certificate_key /etc/ssl/certs/{custome-domain}.key;
+ 
+  client_max_body_size 0;
+  chunked_transfer_encoding on;
+ 
+  location / {
+   proxy_pass                       ""https://{account-id}.dkr.ecr.eu-west-1.amazonaws.com"";
+   proxy_set_header  Host           ""{account-id}.dkr.ecr.eu-west-1.amazonaws.com"";
+   proxy_set_header  X-Real-IP      $remote_addr; # pass on real client's IP
+   proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+   proxy_set_header  X-Forwarded-Proto ""https"";
+   proxy_read_timeout               900;
+  }
+ 
+}
+
+(the SSL certificate is valid, it's not a self-signed)
+
+this is the docker comand that I use to test nginx
+docker run -v $PWD/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro -v $PWD/certs:/etc/ssl/certs/ --rm -p 443:443 nginx
+
+
+And I'm able to login, pull and push"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
+argh, thanks - it was a copy/paste error, our ecr instance is in `eu-central-1`. 
+
+The proxy works fine, thanks a lot for this hint!"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
++1 for Alternate Domain Names and adding a certificate to the repository.
+
+For the moment, I make my ECR url an environment variable called ECR_URL. That makes things a little easier in the meantime."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
+It's a clever hack, but beware that this makes you dependant upon a single and failable nginx, which will act as a bottleneck for ECR bandwidth and will totally defeat the purpose of using ECR in first place.
+
+Yes, I know you can put an array of EBS backed nginx in front of it, but adds more complexity to a managed service, which again defeats the purpose"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
++1. AWS, yes, pretty please add the ability to use custom domain name for ECR."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
+It's been 15 months since you acknowledged this request. Any update on when it might become available?"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
+does aws support this yet, or we should workaround with reverse proxy?
+
+Edited by: tiendungitd on Aug 1, 2017 10:01 PM"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
++1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
++1
+
+Besides ECR, S3 also needs an option for a CNAME that does not involve Cloud Front. Using Cloud Front for proxying is like using a bazooka to kill a fly: you're using a globally distributed content delivery network just to be able to have a custom domain name as your bucket name and have this bucket accessible through HTTPS.
+
+Alternatively AWS should offer some sort of easily configurable proxy service, ""Hosted Nginx"""
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
++1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
++1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
+Very much a +1 here. Been following this thread since it's inception. Figured I'd add my +1, although AWS seems to move at their own incredibly frustrating, slow pace with a bemusing order of priority... it took them YEARS to get ""column sorting"" on a few of their service pages. Why don't all list views use the same code/module? Because they have thousands of engineers isolated into their own sub-group/sub-teams that do not share anything, in fact are often competing with each other. It's fine though, plenty of money to throw at people problems 
+
+I digress."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
++100"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Alternate Domain Name with ECR?
++1"
+Amazon Elastic Container Service (Amazon ECS)	"AWS ECS - How to stop oldest task/container
+I have an ECS Cluster on AWS. On the scaling configuration I need to stop the oldest task when the scaling down step is executed. Something like the Termination Policies of Auto Scaling Groups on EC2. How can I configure that on ECS scalation policies?
+
+I do not know how to do that. By default, the service stops the Newest task (the container) and keeps up the oldest container. For example:
+
+I have the container ""container-1"" that memory use is over 60% and the scalation step turn on container named ""container-2""; After some minutes, the average memory is under 20% and scaling down step is executed, and ECS shutting down the ""container-2"".
+
+I need to configure the temination policy to stop the ""container-1"" (oldest) instead ""container-2"" (newest). That is possible?"
+Amazon Elastic Container Service (Amazon ECS)	"Schedule task with CloudWatch on ECS Fargate
+Hello
+I'm trying to create scheduled task with CloudWatch.
+Task should be running with Fargate launch type.
+From CloudWatch rule configuration (target ECS task) i can configure Ecs cluster and task definition. 
+As from ECS run task or start task API I should be able to set network configuration for my task. But on CloudWatch target configuration i don't have such fields.
+Any ideas on how to pass network configuration (subnet, security group) to scheduled task?
+Thanks!"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Schedule task with CloudWatch on ECS Fargate
+I'm having the same issue and I don't see any good documentation on this. I see that it's possible to specify a network configuration for a task through the AWS cli when launching a fargate task, but there doesn't seem to be a way to do this via a cloudformation template when using Cloudwatch Events."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Schedule task with CloudWatch on ECS Fargate
+I am writing this on February 11th 2019, and while what you ask can be done on the Amazon Console Web Application, it looks like it can't be done with CloudFormation (that is my chosen setup method ). So, manually, you can set all the parameters that you are requesting, but not with cloud formation. It would be interesting to know if there is a deadline / feature request to let cloudformation catch up"
+Amazon Elastic Container Service (Amazon ECS)	"Task definitions
+Looking at application architecture  https://docs.aws.amazon.com/AmazonECS/latest/developerguide/application_architecture.html?shortFooter=true 
+It seems I have set up wrong by having ONE task definition for 3 docker containers. So I have once ECS instance which contains one EC2 instance which has 3 docker containers. It was nice process to use ecs-cli compose to use my docker-compose file alongside an ecs-params file to create a task definition only to read as above that there should be a separate task definition for each docker container. So would I have a separate task definition for gunicorn/django, nginx and postgresql? Why do I need to do this when I can specify CPU/memory shares and settings all in the ecs-params.yml?"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Task definitions
+Use the Fargate launch type using the wizard and add multiple containers to a task definition. A task is a collection of one or more containers that is the smallest deployable unit of an application.
+
+Edited by: dvohra on Feb 9, 2019 4:39 PM"
+Amazon Elastic Container Service (Amazon ECS)	"Are AWS Fargate vCpu minutes reserved minutes or actual minutes?
+I understand that AWS Fargate tasks are charged on a vCpu-minute basis.
+
+Is this a reserved vCPU minute or an actual vCPU minute? In other words, will I get charged 20% more, if my tasks are 20% busier than similar tasks with the same configuration.
+
+jon."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Are AWS Fargate vCpu minutes reserved minutes or actual minutes?
+With Fargate, you pay for the amount of vCPU and memory resources that your containerized application requests. vCPU and memory resources are calculated from the time your container images are pulled until the Amazon ECS Task* terminates, rounded up to the nearest second. A minimum charge of 1 minute applies.
+
+https://aws.amazon.com/ecs/pricing/"
+Amazon Elastic Container Service (Amazon ECS)	"Which Services do I need for my Task?
+Hello,
+
+I have two containerized applications. A web server and a high performance computation task. The web server should be a web interface where you can set configurations and start the high performance computation task. This means, that the web server should be available 24/7 whilst the high performance computation task should only be started when it is needed and be terminated when it's done.
+
+I was thinking to start a EC2 instance with ECS to host the web server on it. I was planing on using a EC2 instance for the high performance computation task as well but i can't find any means to start a ECS Service or Task on demand. The high performance computation task cannot be divided into smaller containers. It needs to stay in one container which runs on a high performance machine. Since it will idle most of the time and only run for short periods of time, I want to call this machine on demand.
+
+What is the best solution to such a problem? Which services do I need to use for this? It seems that AWS Batch might be quite fitting, but I'm not sure.
+
+Thank you in advance!
+Peter"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Which Services do I need for my Task?
+Use launch type AWS Fargate which added support for Time and Event-Based Task Scheduling.
+https://aws.amazon.com/about-aws/whats-new/2018/08/aws-fargate-now-supports-time-and-event-based-task-scheduling/"
+Amazon Elastic Container Service (Amazon ECS)	"Fargate access to AWS services
+Hello,
+
+I'm trying to reach AWS hosted ElasticSearch from Fargate task/container (logstash) and it does not work using roles in task (both roles are whitelisted in ES access policy and have admin rights to all AWS). It works only when I whitelist container external IP in ES access policy.
+
+Here are ""Task Role"" and ""Task execution role"" in the task definition, I have whitelisted both in ES.
+
+ES Access Policy
+    {
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""AWS"": ""arn:aws:iam::XXXXXX:role/ecsTaskRole""
+      },
+      ""Action"": ""es:*"",
+      ""Resource"": ""arn:aws:es:eu-west-1:XXXXXX:domain/test/*""
+    },
+    {
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""AWS"": ""arn:aws:iam::XXXXXX:role/ecsTaskExecutionRole""
+      },
+      ""Action"": ""es:*"",
+      ""Resource"": ""arn:aws:es:eu-west-1:XXXXXX:domain/test/*""
+    },
+
+Please advise.
+
+Thank you"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Fargate access to AWS services
+It works only when I whitelist container external IP in ES access policy.
+A container's external IP is not even exposed. Task public IPs are assigned from an Elastic Network Interface and task IP would need to be whitelisted. A task definition is an abstract definition or template to create a task from."
+Amazon Elastic Container Service (Amazon ECS)	"ECS service keeps being unhealthy no matter what I do
+I'm confused about what's wrong here, and could use some help.
+
+I have one EC2 cluster, with one load balancer and target group, which works fine (port 8080).
+
+Now I want to add another load balancer to my existing cluster, forwarding to a different port (port 8081).
+
+Checks I have completed:
+
+Security group allows 8080 and 8081
+Container definitions expose port 8081
+I can cURL http://localhost:8081/status from inside (bastion) the EC2 instance without problems
+New target group continously drains instances as unhealthy. Logs show the /health endpoint is never called.
+
+What am I missing?"
+Amazon Elastic Container Service (Amazon ECS)	"Re: ECS service keeps being unhealthy no matter what I do
+Hi kbg, did you checked the task directly? may be you are using dinamical ports. 
+
+You can do that cluster>services>click on the task>view container>click on ""External Link"" 
+
+Only you need to keep open this container port in the SG."
+Amazon Elastic Container Service (Amazon ECS)	"ECS Agent not (re)starting when EC2 instances have no public IPv4...
+I have an EC2-based ECS  cluster with some services running. If my ECS/EC2 instances are not configured with (dynamic) public IPv4, after rebooting my EC2 instances, the ECS agents are not able to be started. No auto-scaling set. This is the docker log:
+
+2019-01-31T10:51:11Z [INFO] Loading configuration
+2019-01-31T10:51:11Z [INFO] Image excluded from cleanup: amazon/amazon-ecs-agent:latest
+2019-01-31T10:51:11Z [INFO] Image excluded from cleanup: amazon/amazon-ecs-pause:0.1.0
+2019-01-31T10:51:11Z [INFO] Amazon ECS agent Version: 1.25.1, Commit: 0c8913ba
+2019-01-31T10:51:11Z [INFO] Creating root ecs cgroup: /ecs
+2019-01-31T10:51:11Z [INFO] Creating cgroup /ecs
+2019-01-31T10:51:11Z [INFO] Loading state! module=""statemanager""
+2019-01-31T10:51:11Z [INFO] Event stream ContainerChange start listening...
+2019-01-31T10:51:11Z [INFO] Restored cluster 'XXX-Cluster'
++2019-01-31T10:51:11Z [WARN] Udev watcher reconciliation: unable to send state change: udev watcher send ENI state change: eni status already sent: ENI Attachment: task=arn:aws:ecs:eu-west-2:XXXXXXXXXXXXXXXXX;attachment=arn:aws:ecs:eu-west-2:XXXXXXXXXXXXXXXXX;attachmentSent=true;mac=YY:YY:YY:YY:YY:YY;status=ATTACHED;expiresAt=2019-01-31 10:14:39.989014735 0000 UTC
+2019-01-31T10:51:11Z [INFO] Restored from checkpoint file. I am running as 'arn:aws:ecs:eu-west-2:XXXXXXXXXXXXXXXXX' in cluster 'XXX-Cluster'
+2019-01-31T10:51:11Z [INFO] Remaining mem: 3887
+2019-01-31T10:51:32Z [ERROR] Unable to register as a container instance with ECS: RequestError: send request failed
+caused by: Post https://ecs.eu-west-2.amazonaws.com/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+2019-01-31T10:51:32Z [ERROR] Error re-registering: RequestError: send request failed
+caused by: Post https://ecs.eu-west-2.amazonaws.com/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+
+But, the problem is that even when I configure dynamic public IPv4 in my ECS/EC2 instances, there is no new public IPv4 generated for my instances after a ECS/EC2 instance reboot, only the first time the instance is created. (f**k!).
+
+If I terminate and re-create my instances associated to the same ECS cluster, the dynamic public IPv4 is generated, the ECS agent starts suitably and the existing services are able to re-distribute the tasks suitably again (slowly, but it does) in the new instances.
+
+I don't know if it is related, but my cluster uses a private DNS namespace and service discovery (awsvpc, A).
+
+Any idea about how can I stop and start my ECS/EC2 instances so that their ECS agents run suitably after the restart (I don't mind the public IPv4 itself, I just enable it because it seems to be related with the problem/bug)?
+
+Regards.
+
+Edited by: Eneko on Jan 31, 2019 3:22 AM
+
+Edited by: Eneko on Jan 31, 2019 3:30 AM
+
+Edited by: Eneko on Jan 31, 2019 4:00 AM
+It seems that the public IP is not re-assigned after reboot only when the container instance has more than one private IP, due probably to the fact that awsvpc gives a private IP to each task hosted by the ECS instance. If no task/private IP was assigned to the container instance, it gets a public IPv4 and its ECS agent connects suitably.
+
+But I still don't know how to solve the issue."
+Amazon Elastic Container Service (Amazon ECS)	"Re: ECS Agent not (re)starting when EC2 instances have no public IPv4...
+The problem was related with the ENIs. An ENI (Elastic Network Interface) is assigned to the EC2 instance hosting a task configured to use AWSVPC network mode and using service discovery. The fact is that, on reboot, those networks interfaces turned ""magically"" into ethX network interfaces, all configured as default network interfaces, so networking was failing. As networking was failing, the ECS agent could not start and was permanently restarting in a loop. That magical ""conversion"" should be avoided, it seems to be a bug.
+
+I have decided to use Auto Scaling groups with suitable launch configurations so that EC2 instances are re-created to get rid of those phantom network interfaces.
+
+Edited by: Eneko on Feb 8, 2019 12:04 AM"
+Amazon Elastic Container Service (Amazon ECS)	"Problem with ECS task definition
+There seems to be a problem with all old task definition versions.
+Network Mode is now ""None"" for them instead of the previous ""Bridge"" value.
+Is it a general issue? We're having this problem in eu-west-1 region."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Problem with ECS task definition
+We're having the same issue. Cannot deploy new task versions, common error is "".. is missing an attribute required by your task""
+
+Best,
+Stjepan"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Problem with ECS task definition
+I'm seeing the same behaviour for all Task Definitions. We also run in eu-west-1
+
+Have submitted a support ticket
+
+Edited by: palsivertsen on Nov 8, 2017 3:43 AM"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Problem with ECS task definition
+We found a solution to our problem, might help you as well.
+
+This morning when we updated one of our tasks then requires attributes changed from:
+com.amazonaws.ecs.capability.ecr-auth
+
+to:
+com.amazonaws.ecs.capability.logging-driver.none
+com.amazonaws.ecs.capability.docker-remote-api.1.18
+com.amazonaws.ecs.capability.ecr-auth
+
+Then we inspected container for those attributes and realized there is no such attribute ""com.amazonaws.ecs.capability.logging-driver.none"".
+
+When we changed logging driver to ""syslog"" it worked.
+
+Hope this helps."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Problem with ECS task definition
+Thank you for this report. We will track the issue on the ECS Agent's GitHub project at https://github.com/aws/amazon-ecs-agent/issues/1056. Please feel free to follow that issue for the most timely updates."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Problem with ECS task definition
+alex-payu wrote:
+There seems to be a problem with all old task definition versions.
+Network Mode is now ""None"" for them instead of the previous ""Bridge"" value.
+Is it a general issue? We're having this problem in eu-west-1 region.
+
+The issue in which a task's network mode could be reset to 'none' was identified within the service back end and has been resolved. Newly launched tasks will not see this incorrect behavior. Please follow up here or with AWS support if you see ongoing impact. Thank you."
+Amazon Elastic Container Service (Amazon ECS)	"Re: Problem with ECS task definition
+Hi,
+
+I am trying to deploy windows container and getting same error
+
+service *** was unable to place a task because no container instance met all of its requirements. The closest matching container-instance ***** is missing an attribute required by your task. For more information, see the Troubleshooting section.
+
+I can see below attributes in my task definition.
+
+Requires attributes
+ecs.capability.execution-role-ecr-pull
+com.amazonaws.ecs.capability.docker-remote-api.1.18
+ecs.capability.task-eni
+com.amazonaws.ecs.capability.ecr-auth
+com.amazonaws.ecs.capability.task-iam-role
+ecs.capability.execution-role-awslogs
+com.amazonaws.ecs.capability.logging-driver.awslogs
+com.amazonaws.ecs.capability.docker-remote-api.1.19"
+Amazon Elastic Container Service (Amazon ECS)	"ServiceDiscovery on PublicDnsNamespace (via Cloudformation)
+Hello,
+
+I'm trying to implement public service discovery on a fargate instance.
+I have a Public Hosted Zone in Route53 and I would like the service discovery to add a DNS A record.
+
+In Cloudformation, Service discovery requires a namespace: if I declare a public dns namespace, CF creates a new Hosted Zone with the same domain name ""mydomain.com"" under Route53 and the new A record gets created there. 
+Now I use dig to check the new record: 
+dig myservice.mydomain.com
+
+but it return no result since the authoritative server for mydomain.com is in the existing Hosted Zone.
+
+Question: is there a way to tell Service Discovery to use an existing Hosted Zone?
+
+Thanks,
+Manuel
+
+  myService:
+    Type: AWS::ECS::Service
+    Properties:
+      [...]
+      LaunchType: FARGATE
+      NetworkConfiguration: 
+        AwsvpcConfiguration:
+        [...]
+      ServiceRegistries:
+        - RegistryArn: !GetAtt myServiceDiscovery.Arn
+ 
+  myServiceDiscoveryNamespace:
+    Type: AWS::ServiceDiscovery::PublicDnsNamespace
+    Properties:
+      Name: mydomain.com
+ 
+  myServiceDiscovery:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      Name: myservice
+      DnsConfig:
+        DnsRecords: [{Type: A, TTL: ""10""}]
+        NamespaceId: !Ref myServiceDiscoveryNamespace
+      HealthCheckCustomConfig:
+        FailureThreshold: 1"
+Amazon Elastic Container Service (Amazon ECS)	"Change path while forwarding with Application Load Balancer
+I have a number of containers running in Amazon ECS (in a private subnet) and each serving a different app on port 8080.
+
+I have a public-facing Application Load Balancer (attached to `apps.example.com`) forwarding traffic based on the requested path. To illustate, `apps.example.com/app1` is forwarded to the target group for the app1 service on port 8080.
+
+The problem I have is that the apps running in the containers are not expecting a path. 
+
+Right now, it seems like `apps.example.com/app1` is forwarded to `private_app1_container:8080/app1` but I need it to be forwarded to `private_app1_container:8080`. 
+
+Is there a way to achieve that?
+
+I am creating the forwarding rules via the aws web interface and while I can forward to a specific target group, I do not see a way to specify the forwarding path. I have thought of redirecting instead of forwarding but my containers are in a private subnet and I would like them to stay isolated."
+Amazon Elastic Container Service (Amazon ECS)	"Unable to access private s3-bucket  from inside fargate ecs task
+Hi,
+
+How can i access a private S3 bucket from inside a fargate ecs task? 
+
+I have tried using the s3client for java with default values, but all i get is 403 forbidden. 
+I'm pretty sure the roles have been set up properly. However, it looks like the s3 client is unable to get the security credentials. Checking the environment variables reveals that AWS_CONTAINER_CREDENTIALS_RELATIVE_URI has not been set. 
+
+I would rather not have to pass access keys and secrets directly into the container, I'm hoping for a more secure and standard way to do this.
+
+Edited by: abe-airthings on Apr 26, 2018 4:28 AM"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Unable to access private s3-bucket  from inside fargate ecs task
+Got it working. I forgot to add the IAM role to the container definition. I only added the role to the ecs task"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Unable to access private s3-bucket  from inside fargate ecs task
+In my specific case, I was trying to test my scripts by ssh'ing into my container. AWS_CONTAINER_CREDENTIALS_RELATIVE_URI wasn't set in my login shell, so SDK commands all failed. Solution in my case was to do things properly and run my script as the CMD.
+
+Edited by: scene53 on May 3, 2018 8:55 AM"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Unable to access private s3-bucket  from inside fargate ecs task
+Hello,
+
+can you tell me where exactly?
+
+I see only ""Task Role"" and ""Task execution role"" in the task definition, but no roles in the container definitions (for Fargate).
+
+I'm trying to reach AWS hosted ElasticSearch from Fargate task/container (logstash) and it does not work using roles in task (both roles are whitelisted in ES access policy and have admin rights to all AWS). It works only when I whitelist container external IP in ES access policy.
+
+Please advise.
+
+Thank you"
+Amazon Elastic Container Service (Amazon ECS)	"NVMe Instance Storage not natively supported on ECS AMI
+We're looking to deploy ECS instances using R5d, but have hit an issue running the docker pool on NVMe Instance Storage (EBS presented as NVMe works fine).
+
+Running amzn-ami-2018.03.l-amazon-ecs-optimized
+
+The issue is udev (70-ec2-nvme-devices.rules) only running ebsnvme-id (which returns the /dev/xvdcz symlink) for EBS volumes.
+
+# ebs nvme devices
+KERNEL==""nvme[0-9]*n[0-9]*"", ENV{DEVTYPE}==""disk"", ATTRS{model}==""Amazon Elastic Block Store"", PROGRAM=""/sbin/ebsnvme-id -u /dev/%k"", SYMLINK+=""%c""
+
+
+It doesn't do this for native NVMe (""Amazon EC2 NVMe Instance Storage""), so instances come up with an unused block device (docker pool on the root volume)"
+Amazon Elastic Container Service (Amazon ECS)	"ECS with Custom Load Balancer - Container scaling issues
+Currently my ECS setup is running with a HAProxy server acting as our load balancer, along with a lambda that acts as a service discovery mechanism for the servers. Our servers have a custom scaling metric based on queue times, when this metric is exceeded, it just scales the particular servers in question up one, and spins up a container.
+
+However, the container is the first to attempt to spin up, and when it does it fails because the new server is not available. Once the server is actually available, the container might not attempt to scale up for quite a long period of time. 
+
+Is there any way to increase the frequency of which it attempts to scale up the container, or is there something special that has to be done to force the container to continue trying to scale up when using a custom load balancer?"
+Amazon Elastic Container Service (Amazon ECS)	"Re: ECS with Custom Load Balancer - Container scaling issues
+I eventually came to an answer for this question.
+
+My setup only had one container and one instance, but I expected it to scale up a new server with a new container instance. In reality ECS would just fail since it couldn't find any space to put a new container for the switch over. I solved this by just having enough server resources available for a swap."
+Amazon Elastic Container Service (Amazon ECS)	"VPC endpoint support needed to start using ECR
+Hi!
+
+For us it is a PCI impossibility to open up egress connections to 0.0.0.0/0 port 443. This means that we are unable to use any Amazon services which need to be reached over the internet from our most secure servers.
+
+However, we have been very successful in using Docker inside these subnets because S3 has VPC endpoint support, which means we can have S3 access even inside our most secure servers. We are running a separate copy of the docker registry on each server which all use a shared S3 bucket to store and access the images.
+
+We would very much like to switch to Elastic Container Registry, but as of now that seems impossible. The actual layers seem to be stored in S3 and ECR gives signed S3 urls to download the layers, but the communication with the ECR service happens directly over the internet without a fixed destination IP address.
+
+What would solve this is an ECR VPC endpoint - but any alternative solutions would be fine for us as well.
+
+(As an aside, we are completely in eu-west-1, so we also need ECR supported in eu-west-1 before we can start using it, but I assume that requires no encouragement to happen in due time.)"
+Amazon Elastic Container Service (Amazon ECS)	"Re: VPC endpoint support needed to start using ECR
+Hello,
+
+I'll make sure the right people are aware of this feature request.
+
+Happy holidays 
+
+Richard"
+Amazon Elastic Container Service (Amazon ECS)	"Re: VPC endpoint support needed to start using ECR
++1. Endpoint support for ECR is a must-have feature for us as well."
+Amazon Elastic Container Service (Amazon ECS)	"Re: VPC endpoint support needed to start using ECR
++1 - We have to use NAT to reach ECR today, but would rather not NAT some servers which will never go anywhere else. We can lock it down using Network ACLs and outbound SGs in the meantime, but I would really like to see VPC-Endpoint be for all of the AWS services. Maybe this is harder than we think??
+
+Thanks!"
+Amazon Elastic Container Service (Amazon ECS)	"Re: VPC endpoint support needed to start using ECR
+@Richard What's the status of this feature request (""ECR VPC endpoint"")?"
+Amazon Elastic Container Service (Amazon ECS)	"Re: VPC endpoint support needed to start using ECR
+Is there any update on this?"
+Amazon Elastic Container Service (Amazon ECS)	"Re: VPC endpoint support needed to start using ECR
++1 for this. It would be awesome to be able to throw out the NAT gateway."
+Amazon Elastic Container Service (Amazon ECS)	"Re: VPC endpoint support needed to start using ECR
+With Fargate this need is even more prevalent. When using Fargate similarly to lambda, the need for a networking layer at all is kind of bothersome, as I'd like to just let it be a long-running process without a networking requirement. 
+
+I get that a lot of times you would like to have networking with Fargate (in a private subnet), and in those cases it'd be extremely useful if you were able to download the ECR image from a VPC endpoint rather than creating an outbound networking path just for the ECR download.
+
++1
+
+Edited by: larryboymi2 on Sep 21, 2018 12:23 PM"
+Amazon Elastic Container Service (Amazon ECS)	"Re: VPC endpoint support needed to start using ECR
++1
+
+I think this is a must-have feature in order to use in PCI-DSS systems with Fargate. This is a stopper issue for migrating from EC2 services to Fargate. We cannot afford having outbound rules to access 0.0.0.0 in our private subnets only for pulling our docker images."
+Amazon Elastic Container Service (Amazon ECS)	"Re: VPC endpoint support needed to start using ECR
+Head over to the public AWS' container roadmap. A VPC endpoint for ECR is the first issue on it:  https://github.com/aws/containers-roadmap/issues/1"
+Amazon Elastic Container Service (Amazon ECS)	"Re: VPC endpoint support needed to start using ECR
+Our ECR Team is actively working on this feature to get it released as soon as possible.
+
+While there is no definite ETA on when this feature will be released, the following link helps track the progress: 
+https://github.com/aws/containers-roadmap/projects/1
+
+As soon as it gets released, it should be publicly announced in either one of the following links:
+
+
+
+
+AWS blogs: https://aws.amazon.com/blogs/aws/
+Whats New: http://aws.amazon.com/new/
+
+
+
+
+Edited by: aws-Ashwin on Jan 17, 2019 9:23 PM"
+Amazon Elastic Container Service (Amazon ECS)	"Re: VPC endpoint support needed to start using ECR
+Should we take https://aws.amazon.com/about-aws/whats-new/2019/01/aws-fargate--amazon-ecs--and-amazon-ecr-now-have-support-for-aws/ to mean that this functionality is now available?"
+Amazon Elastic Container Service (Amazon ECS)	"Sporadic failures on ALB healthcheck
+Hi,
+
+We have an ALB in front of an ASG serving at least 8 running EC2 instances.
+We have recently started seeing the ALB health checks failing across ALL the EC2 instances for a short period of time and then seeming to recover slowly. This seems to be repeating at least once significantly per day and at other times to a lesser impact.
+I've checked a couple of the EC2 instances and they are still working as expected. I can't see anything untowards in the EC2 logs so was wondering what could be causing this and how it can be rectified?
+
+Thanks
+Simon"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Sporadic failures on ALB healthcheck
+Drilling down into the target group shows that this has been happening frequently, multiple times every day at brief intervals during this week and is not limited to an AZ (the instances are split between two).
+One post suggests a hardware issue with the ALB.
+
+It would be good to get a response from AWS regarding this as it is negatively impacting on our system in a big way.
+
+Thanks
+Simon"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Sporadic failures on ALB healthcheck
+On further investigation this appears to be heavy load (with very sporadic jumps in CPU) on the Web servers. The overall effect is that the Auto Scaling rules do not look to be being triggered as they used to.
+We will look into this further and if anything useful comes out of it will post here.
+
+Edited by: SimonMann on Jan 28, 2019 2:01 AM"
+Amazon Elastic Container Service (Amazon ECS)	"ECS Container not recognizing EC2 instances after updating AMI
+Last night I received a notification that I needed to update the ECS Agent on my AWS ECS instances from 1.24.0 to 1.25.0
+
+I did this by updating the launch configuration, assigning the launch configuration to the Auto Scaling Group and ensured the new EC2 instance is up and running.
+
+The new EC2 Instance is running the ECS Agent, the security group is set properly, it's even running the services/tasks I have set up for it to run. However in the ECS Cluster the 2nd container is NOT showing up. So while I should have 2 containers running, it only recognizes 1 container and doesn't recognize that the services are spun up and working on the new EC2 Instance. I can even visit the EC2 instance on the correct ports (AWS assigned) and verify the tasks are running properly. What must I do to get the Cluster to recognize the new EC2 Instances?
+
+I can also ""scale"" the cluster by using the scale button in the cluster's definitions and it'll turn on ec2 instances/turn them off just fine, but the number of containers stays constant at 1 even though I can have 5 EC2 instances running."
+Amazon Elastic Container Service (Amazon ECS)	"Re: ECS Container not recognizing EC2 instances after updating AMI
+I downgraded the AMI to the 1.24.0 and it still runs, I still need to figure out how to upgrade the launching AMI to 1.25.0 but I can manually update once the new instance is launched."
+Amazon Elastic Container Service (Amazon ECS)	"How to find a service by IP address?
+There is some unexpected and suspicious connection originating presumably from one of my services running in ECS. Time and client IP address are known. How can I find out which service is that?"
+Amazon Elastic Container Service (Amazon ECS)	"1 hour interval between starting of new task
+I have a case where I want the ECS task should be replaced at an interval of 1 hour. That if we do the production deployment of a service. And the container requirement is 3. Then it should start the first container, wait for 1hr and start the next container wait for 1hr before starting the last one.
+
+What settings can help me achieve this. 
+
+Thanks you"
+Amazon Elastic Container Service (Amazon ECS)	"best way to build code sandbox
+Hello everyone!
+
+I'm trying to develop a web code editor in which the code for each user should run in a separate Docker container. - Just a basic sandbox.
+I am thinking of running an empty Docker container for the user when he enters the code editor. And transfer the source code there for execution, every time when user press Run button.
+I can do this with a Docker locally (on the server) with stdin / stdout / stderr streams and a shared directory.
+But can I do the same with Fargate ? Or is this not the right way?
+Maybe it is better to start a lightweight http server on each container and create all actions based on HTTP requests?
+
+I will be glad to hear your opinion!
+
+Edited by: ParadoxMaster2 on Jan 19, 2019 11:44 AM"
+Amazon Elastic Container Service (Amazon ECS)	"Access ECS Service Discovery endpoint from Java SDK
+Is there a way to get an ECS service's service discovery endpoint with the AWS Java SDK? I can get an Service Registry ARN but I haven't figured out how to translate that into a host name or IP address."
+Amazon Elastic Container Service (Amazon ECS)	"Best way to secure ecs tasks where many users can use many containers
+I have
+
+several docker containers in ECS behind elb
+several registered users
+each user is assigned to one of a few IAM roles via Cognito
+Threw a website, registered users can purchase access to run one or more of the docker containers via ecs task
+users can only run the docker containers they have purchased
+multiple users can purchase access to the same containers
+
+How can I manage this process using IAM where each user runs under an assigned role, but then that user has different access to containers than another user in the same role (or do I do this differently). The overall goal is to lock down container access, using IAM but for multiple users and multiple docker instances each running in a ecs task. Needs to be dynamic as users will have access to a docker instance ecs task for a limited time and then it will expire. Is there some way to dynamically assign an IAM (policy ??) to a user for access to a docker container, and remove access when needed?"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Best way to secure ecs tasks where many users can use many containers
+Anyone, Anyone.... Crickets"
+Amazon Elastic Container Service (Amazon ECS)	"ECS task index within container?
+Is there something analogous to Heroku's DYNO ID that can be used on each running ecs docker container?
+
+Basically this DYNO ID is a unique number from 1..N, of the number of running instances.  On ECS if I'm running a task with 4 instances I'd like each instance to receive a unique environment variable from 1 to 4.
+
+Obviously, I could create multiple task definitions, and have each one manual set it's instance index, but this seems like it would get out of hand.  Or I could have some separate service that somehow allows ECS instances to register and deregister at which point they receive an ID. Or maybe I can query AWS for a list of running instances for a task, and assuming the order doesn't change, find my ARN id or something?
+
+For those curious I am currently using this unique id/index so that each instance can have a sharded portion of the DBs ID space when creating unique ids.  
+
+thanks again."
+Amazon Elastic Container Service (Amazon ECS)	"Task stuck in pending state
+Hi,
+
+I have a problem after deploying a service in an ECS cluster for the first time. The respective task (service is configured to have only one task in the beginning) just stays pending forever, and no docker container is created for it.
+
+The only related logs I found are:
+
+2019-01-18T13:03:39Z [INFO] Managed task [***]: unable to create task state change event []: create task state change event api: status not recognized by ECS: NONE
+2019-01-18T13:03:39Z [INFO] Managed task [***]: waiting for any previous stops to complete. Sequence number: 15
+
+Deleting the service and redeploying can solve the problem somethimes, as can terminating the corresponding EC2 instance. However, this already used to work.
+
+Any input is much appreciated.
+
+Regards
+Sebastian
+
+Edited by: sebastianSch on Jan 18, 2019 5:29 AM
+
+Edited by: sebastianSch on Jan 18, 2019 5:29 AM"
+Amazon Elastic Container Service (Amazon ECS)	"""Task failed ELB health checks""
+I am trying out Fargate with nginx but it's not working. I can deploy it and it displays status running in ECS but when I try and access it via the ip number it does not respond. 
+
+What is wrong? There seems to be something wrong with the external network connection and the load balancer, which is ridiculous because I only want to try the simplest setup.
+
+The stack id is arn:aws:cloudformation:eu-west-1:839887052626:stack/nginx/746438c0-1aec-11e9-ab62-0a86846a053c
+
+The error message I get is ""Task failed ELB health checks"""
+Amazon Elastic Container Service (Amazon ECS)	"Cloudformation Tags for ECS resources
+I see that I can create tags in the AWS web console for my ECS resources: Cluster, Service and Task Definition, but I can't create them through Cloudformation.
+When this feature will be enabled in Cloudformation?
+
+AWS::ECS::Cluster https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-cluster.html
+AWS::ECS::Service https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html
+AWS::ECS::TaskDefinition https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Cloudformation Tags for ECS resources
+Thank you for your feedback.
+
+Our ECS, Fargate Teams are working with CloudFormation team to get this feature out. As soon as it gets released, it should be publicly announced in either one of the following links:
+
+
+
+
+AWS blogs: https://aws.amazon.com/blogs/aws/
+Whats New: http://aws.amazon.com/new/
+
+
+
+
+For better tracking of this features with timelines, kindly refer the following links:
+https://github.com/aws/containers-roadmap/projects/1
+https://github.com/aws/containers-roadmap/issues/93"
+Amazon Elastic Container Service (Amazon ECS)	"Deployment with ECS and a slow starting task, ignoring ALB health checks
+I have an ECS EC2 Service connected to an ALB, with 3 Tasks running.
+
+The Health Check Grace Period is set to 7200 seconds, it can take over an hour to spin up.
+
+Deployments are done via Cloud Formation that updates the Task Definition with a new ECR Image.
+
+This triggers a deployment on ECS and it successfully stops one old task and starts a new Task. However, after 5 minutes, even though the ALB is still reporting the instance as Unhealthy, ECS continues the deployment, stopping all the old Tasks and spinning up new ones before the first new Task is healthy.
+
+This results the ALB having no available instances and experiencing an outage.
+
+I suspect this is because ECS doesn't really talk to the ALB, just that the ALB will terminate the Task.
+
+I have looked at using Task Definition Health Check but it only has a startPeriod, or grace period, of 300 seconds.
+
+Is there anything obvious I'm missing here?"
+Amazon Elastic Container Service (Amazon ECS)	"Task runs on EC2, but ""illegal instruction"" on Fargate; how to fix?
+In an attempt to explore a Fargate deployment for our service, I set up the same task (a Python Flask app behind gunicorn) running on Fargate... to total silence, no logs, nothing.  This same task runs perfectly under EC2, and is based off the publicly-available ""ubuntu:18.04"" image; I really didn't think we were doing anything too exotic, although sure, a couple of things are being compiled in the process.
+
+After a torturous bout of slowly starting the container just at a shell to 'echo' sample messages to watching gunicorn keep starting workers, I finally set the starting command to run a shell script that culminated in ""flask run"", I saw this in the logs:
+
+* Running on http://127.0.0.1:8000
+* Restarting with stat
+* Debugger is active!
+* Debugger pin code: ...
+./run-platform.sh: line 15: 8 illegal instruction (core dumped) flask run -p 8000
+
+
+I don't mind saying that's baffling; this is a pretty straightforward flask app that runs fine in the docker container on workstations, CircleCI, and EC2 instances.  It's not complex (up until you start calling some of the endpoints, although maybe something is happening in the imports).  But it collapses instantly when that same container is run under Fargate.
+
+Why would this be happening and what can I do to get this container running under Fargate?"
+Amazon Elastic Container Service (Amazon ECS)	"Re: Task runs on EC2, but ""illegal instruction"" on Fargate; how to fix?
+Additional sleuthing; changing the command of my container to ""cat /proc/cpuinfo"" and ssh'ing into one of the EC2 machines reveals, not too surprisingly, that the EC2 machines and the Fargate machines don't have the same CPU, which could be the root of this.
+
+To the point, the EC2 machine is an Intel Xeon E5-2676 v3@2.4GHz, and the Fargate machine is an Intel Xeon E5-2680 v2@2.8GHz.
+
+Now, I don't know the real differences between these, but the EC2 machine seemed to have these flags enabled where Fargate did not:
+
+avx2
+bmi1
+bmi2
+fma
+invpcid
+invpcid_single
+
+Now, I don't know if any of that relates to my illegal instruction, but it's interesting to note the differences, and maybe that's part of the problem? (I've seen references in the past to illegal instructions if a CPU didn't support AVX, although the Fargate CPU does support AVX, just not AVX2...?)
+
+Still baffling.  Will keep sleuthing."
+Amazon Elastic Container Service (Amazon ECS)	"Celery and RabbitMQ not receiving tasks on ECS cluster
+I'm trying to run a docker-compose setup in ECS with a Flask API using Celery and RabbitMQ as a broker.
+
+In my docker-compose.yml I have a service for the API, another for Celery and one more for RabbitMQ. When I run this locally it works just fine and my tasks are executed by celery.
+I can successfully deploy it to AWS ECS but the tasks are not being executed by celery. I'm not sure if this is a problem with celery or rabbitmq.
+
+There are no errors in the logs but I can see the tasks are not being executed.
+
+In the API container, I check that it can connect to rabbitmq before starting the application and in the celery's container I can also see in the logs that it has connected to the broker.
+
+Edited by: hygor on Jan 16, 2019 5:53 AM
+
+Edited by: hygor on Jan 16, 2019 5:57 AM"
+Amazon Elastic Container Service (Amazon ECS)	"CodeBuild is not authorized to perform: sts:AssumeRole
+Please Delete. I posted this in the wrong forum.
+
+Edited by: jonwis on Jan 15, 2019 9:50 AM"
+Amazon Elastic Container Service (Amazon ECS)	"Windows ECS
+Hi,
+
+I'm looking at ECS containers and would like to be able to use Windows 2019 for my AMI. I notice the ECS Optimised version isn't available is there a timeframe for this being available or information on how to create my own for the 2019 Base AMI.
+
+Thanks
+Andy
+
+Edited by: AndyFelton on Jan 13, 2019 2:46 AM"
+Amazon Elastic Container Service (Amazon ECS)	"Debugging failed fargate task initialization
+Hello,
+
+I have a fargate task which I have scheduled to run with CloudWatch Event rules, and output a timestamp to a database on a successful run. It also outputs a logfile to CloudWatch for every time it runs.
+
+However, there was 1 time where the log file was not created, and the database not updated. I suspect the task was never even started, or had failed to start.
+
+In CloudWatch, the event rule shows trigger and invocation at the time I expected the task to run, so I assume the task at least attempted to start.
+
+My question is: is there any way I can debug or log information about the cluster failing to start a task?
+
+Please let me know if I need to provide more information.
+
+Edit: I should specify I'm looking for a way to read this information in a log file somewhere. I know I can see failed task reason in the web console, but that's only for relatively recent tasks.
+
+I also posted in aws.reddit.com: https://www.reddit.com/r/aws/comments/adtqvt/debugging_failed_fargate_task_initialization/ and StackOverflow: https://stackoverflow.com/questions/54131298/how-to-debug-failed-fargate-task-initialization
+
+Edited by: nielsp on Jan 10, 2019 6:49 AM"
+Amazon Elastic Container Service (Amazon ECS)	"AWS Fargate Introspection
+Is there a possibility for an application that is launched as Fargate task to determine if it runs inside Amazon ECS without trying the task metadata endpoint?
+
+It would be great if there are environment variables or files that can be read."
+Amazon Elastic Container Service (Amazon ECS)	"Fargate version 1.3.0 does not log to cloudwatch
+I am running a docker container that runs a a cron job daily and tails the log file. When using Fargate version 1.2.0, any logs produced by the running container are visible in cloudwatch. However, when bumping to version 1.3.0, cloudwatch shows the following log and does not display any other logs:
+tail: unrecognized file system type 0x794c7630 for '/var/log/my_app'. please report this to bug-coreutils@gnu.org. reverting to polling
+
+
+Here is a snippet from my Dockerfile
+. . .
+ 
+# Create a file for storing logs and set appropriate permissions
+RUN touch /var/log/my_app
+RUN chmod 620 /var/log/my_app
+ 
+# Add line to cron config to be able to log cron messages
+RUN echo ""CRONLOG=YES"" >> /etc/default/cron
+ 
+# Run cron and tail log file
+CMD cron && tail -f /var/log/my_app"

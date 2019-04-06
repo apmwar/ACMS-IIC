@@ -1,0 +1,2531 @@
+label	description
+Amazon Fulfillment Web Service	"How do you calculate the ""Signature"" value for an Amazon MWS query in VB6
+Please help!
+
+I'm trying to submit queries to Amazon's servers to get information on our orders and I know nothing about HMAC, SHA-256, etc. I've managed to get everything set up in a Visual Basic 6 program in order to submit the XML queries, but I get an error message from the Amazon server saying that the ""Signature"" parameter is required. Does anyone know how you can use VB6 to come up with this value and for that matter, what information does Amazon want me to feed into a function in order to come up with the value? 
+
+I've read the Amazon MWS Orders API Section Reference manual, but it seems to make a lot of assumptions about the signature value without spelling it out.
+
+Thanks,
+
+Alan Denke
+Blue Jeans Cable"
+Amazon Fulfillment Web Service	"Re: How do you calculate the ""Signature"" value for an Amazon MWS query in VB6
+Well first start with the MWS API for guidance.
+
+Docs are here:
+https://developer.amazonservices.com/gp/mws/docs.html
+
+Also...... don't know of anything for VB6 but maybe this will help:
+
+https://images-na.ssl-images-amazon.com/images/G/01/mwsportal/doc/en_US/fba/inventory/v20101001/MWSDeveloperGuide.V175102177.pdf
+
+Creating an Amazon MWS Request
+
+Amazon MWS supports query requests for calling web service actions. Query requests are simple HTTP requests, using the GET or POST method with query parameters in the URL or HTTP body, respectively. Amazon MWS requires the use of HTTPS to prevent third party eavesdropping on your communication with Amazon.
+
+Each of the HTTP header lines must be terminated with a carriage return and a line feed. Query requests must contain an Action parameter to indicate the action to be performed. The response is an XML document.
+
+The Amazon MWS Developer Guide goes into detail on how to create a valid HTTP query request. Note that Amazon MWS Scratchpad is a helpful tool for understanding how to create correctly formed HTTP query requests. Amazon MWS Scratchpad automatically generates and displays many of the inputs that are required in a HTTP query request to Amazon MWS. Examining the Amazon MWS responses that Amazon MWS Scratchpad displays for each of your query requests can help you build successful parsing logic.
+
+Edited by: oneida_books on Sep 9, 2011 4:48 PM"
+Amazon Fulfillment Web Service	"Re: How do you calculate the ""Signature"" value for an Amazon MWS query in VB6
+Thank you for the reply. I appreciate the help.
+
+Let me make myself clear.
+
+I already know how to submit queries to Amazon. I'm am 99% of the way there - I have submitted queries and received an error message from the Amazon server stating that the ""Signature"" field is required. 
+
+I have further (since my last post) gathered some informatiion on SHA-256 encryption and I believe that I have the VB code that I need in order to generate the signature.
+
+I can't TEST that my code works because I have no idea what Amazon wants me to use as a ""key"" (I've assumed that this is either my AWS Access Key ID or my Secret Key, but I can't find anywhere in the documentation that tells me what to use) and further, I don't know what the string is that I'm supposed to submit for encryption.
+
+I have already used the MWS Scratchpad (again, before writing my first inquiry) and because of that, I know that the Signature value changes even if you are requesting the same data, so I'm assuming that whatever this elusive string is that I submit for encryption to create the Signature value also changes, presumably because the timestamp is part of the string.
+
+Is that clearer?
+
+Let's pretend that I already have a simple function like:
+
+Signature=(""key"", ""message"")
+
+that did the encryption using SHA-256 and further conversion to Base 64 HMAC (please forgive me if I've worded something strangely - this is new territory for me). I may actually have this now, but I don't have any way to test it BECAUSE...
+
+My problem right now is that I have no idea what to use instead of ""key"" or ""message"" in order to arrive at the Signature. Anyone who could at least tell me WHERE in the many Amazon manuals I can find the section on what these two pieces are would be my friend for life and could have Christmas dinner at my house.
+
+Thanks,
+
+Alan Denke
+Blue Jeans Cable"
+Amazon Fulfillment Web Service	"Re: How do you calculate the ""Signature"" value for an Amazon MWS query in VB6
+I can't TEST that my code works because I have no idea what Amazon 
+wants me to use as a ""key"" (I've assumed that this is either my AWS Access Key ID 
+or my Secret Key, but I can't find anywhere in the documentation that tells me what to use)
+and further, I don't know what the string is that I'm supposed to submit for encryption.
+
+SSssssooooooo ... you didn't follow the link to MWSDeveloperGuide and read page 12 ..... did you? ; )
+
+Pg 12
+
+Creating a query request
+
+To create an Amazon MWS query request, you first construct a query string with the query information.
+
+You then sign this query string and include it in the request submission. Note that the query string cannot contain white space or line breaks. The string consists of:
+
+• The HTTP action. This value is most often POST.
+• The domain name of the request, such as https://mws.amazonservices.com/. For a list of endpoints for each Amazon marketplace, see the Amazon MWS Endpoints section in this guide. After the endpoint is a forward slash (/), which separates the endpoint from the parameters.
+• AWSAccessKeyId (click to get one)—Your Amazon MWS account is identified by your Access Key ID, which Amazon MWS uses to look up your Secret Access Key.
+• Action—The action you want to perform on the endpoint, such as the operation
+GetFeedSubmissionResult.
+• Parameters—Any required and optional request parameters.
+• Marketplace—Your Marketplace ID.
+• Merchant or SellerId—Your Merchant ID.
+• SignatureMethod—The HMAC hash algorithm you are using to calculate your signature, either SHA256 or SHA1.
+• SignatureVersion—Which signature version is being used. This is Amazon MWS-specific information that tells Amazon MWS the algorithm you used to form the string that is the basis of the signature. For Amazon MWS, this value is currently SignatureVersion=2.
+• Timestamp—Each request must contain the timestamp of the request. Depending on the API function you're using, you can provide an expiration date and time for the request instead of or in addition to the timestamp.
+• Version—The version of the API section being called.
+The following example is a query string for a GetFeedSubmissionResult request.
+Note: The example query string contains line breaks and white space which are shown for ease of reading. The actual query string cannot contain white space or line breaks. All query string examples in this guide are formatted for readability.
+
+Example I will UNformat):
+POST
+mws.amazonservices.com
+/ 
+AWSAccessKeyId=AKIAFJPPO5KLY6G4XO7Q&Action=GetFeedSubmissionResult&FeedSubmissionId=4321011681&Marketplace=ATVPDKIKX0DER&Merchant=A3F1LGRLCQDI4D&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2011-02-04T23%3A08%3A19Z&Version=2009-01-01
+
+
+I have already used the MWS Scratchpad
+
+Click on Request Detail see see the string also....
+
+Edited by: oneida_books on Sep 9, 2011 6:30 PM
+
+PS - What's little momma cooking anyway?"
+Amazon Fulfillment Web Service	"Re: How do you calculate the ""Signature"" value for an Amazon MWS query in VB6
+All right, either I'm really dim (the most likely case) or you're not understanding my question. Yes, I've read that part of the manual. As far as I can tell it says NOTHING about how to calculate the signature value. I'm sure it's in there, but it's not in the stuff you posted on this thread and not in anything I've been able to find.
+
+The sample in your reply is much like the one's I've sent to Amazon - it does NOT contain the parameter (which I am assuming is just part of the submission string) &Signature=(whateverthe signature is). When I post queries to Amazon that are similar to the one you listed as an example, it comes back with an error saying that the Signature parameter is required.
+
+I've also found nothing in the Amazon manual that says what is used to create the Signature value. I need to encrypt something with a key value using HMAC-SHA-256 -  what is that string that I need to encrypt and what do I use for the key value?"
+Amazon Fulfillment Web Service	"Re: How do you calculate the ""Signature"" value for an Amazon MWS query in VB6
+Maybe I'm getting this now. Is the manual saying that the string to encrypt is:
+
+AWSAccessKeyId=&ltAccess Key Removed>&Action=GetFeedSubmissionResult&FeedSubmissionId=4321011681&Marketplace=ATVPDKIKX0DER&Merchant=A3F1LGRLCQDI4D&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2011-02-04T23%3A08%3A19Z&Version=2009-01-01
+
+in the example?
+
+If so, how do you then send the Signature parameter? Do you add it onto this string? Do you send it instead of this string?"
+Amazon Fulfillment Web Service	"Re: How do you calculate the ""Signature"" value for an Amazon MWS query in VB6
+Blue Jeans Cable wrote:
+Maybe I'm getting this now. Is the manual saying that the string to encrypt is:
+
+AWSAccessKeyId=&ltAccess Key Removed>&Action=GetFeedSubmissionResult&FeedSubmissionId=4321011681&Marketplace=ATVPDKIKX0DER&Merchant=A3F1LGRLCQDI4D&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2011-02-04T23%3A08%3A19Z&Version=2009-01-01
+
+in the example?
+
+If so, how do you then send the Signature parameter? Do you add it onto this string? Do you send it instead of this string?
+
+SSssssssooooooooooo  CCCCcccllllllllloooooosssssseeeee ...LOL
+
+I think some of the confusion is in looking closely at the ScratchPad I don't see where they show you the signed URL. It might be in a different version I have.
+
+Also let me add in here that I'm still not sure about how to do what exactly because I'm not a programmer.
+
+I just know that basics.................
+
+Look at my post with ""Example I will UNformat):""
+
+THAT whole thing is the string to (sign) encrypt......... as noted in the Developer Guide top of page 13.
+
+If you look at the tab in ScratchPad, ""Request Details"", towards the bottom in a blue bar it says ""String to sign"" and has:
+
+POST
+mws.amazonservices.com
+/ 
+AWSAccessKeyId=********&Action=GetFeedSubmissionResult&FeedSubmissionId=4371429174&Merchant=****&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2011-09-12T18%3A57%3A05Z&Version=2009-01-01
+
+
+So you do something like a ...
+HmacSHA256 (
+POST
+mws.amazonservices.com
+/ 
+AWSAccessKeyId=********&Action=GetFeedSubmissionResult&FeedSubmissionId=4371429174&Merchant=****&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2011-09-12T18%3A57%3A05Z&Version=2009-01-01)
+
+
+Then take that signature and do the HTTP post or add it to the URL ... A completed one looks like this and is at the bottom of page 14 / top 15.
+
+https://mws.amazonservices.com/AWSAccessKeyId=********
+&Action=GetFeedSubmissionResult
+&FeedSubmissionId=**** 
+&Merchant=ANZE9ULNDLIJJ
+&SignatureMethod=HmacSHA256
+&SignatureVersion=2
+&Timestamp=2011-09-12T18%3A57%3A05Z
+&Version=2009-01-01
+&Signature=******************
+1HTTP/1.1Host:mws.amazonservices.comX-Am
+azon-User-Agent:AmazonJavascriptApp/1.0(Language=Javascript)Content-Type:text/xml
+
+
+Not exactly sure about that 1HTTP/ ... copied from example but the 1 may not go in there.
+
+After that you're on your own.... Base 64? MD5 ??? Not much of a clue.
+
+I've got it working in Java but I got away from the signed request and went to opening/connecting to the WebServiceClient .....not even 100% on how I did that...LOL
+
+Edited by: oneida_books on Sep 12, 2011 3:27 PM"
+Amazon Fulfillment Web Service	"Re: How do you calculate the ""Signature"" value for an Amazon MWS query in VB6
+Hi,
+I AM PROVIDING THIS DETAIL IN C SHARP. BUT WITH FEW LITTLE CHANGES YOU WILL GET IDEA WHAT ACTUALLY IS HAPPENING:
+The authorization header for calling AWS API end point consists of Signature Key.
+Your authorization header will look like 
+ var authorization_header = ""AWS4-HMAC-SHA256""+ ' ' + ""Credential="" + access_key + '/' + credential_scope + "", "" + ""SignedHeaders="" + signed_headers + "", "" + ""Signature="" + signature;
+
+access_key => Will be provided when making connection if is dosen't provided please raise a concern for it.
+var signed_headers = ""cache-control;content-length;content-type;host;x-amz-date;x-amz-target"";
+Please refer complete 
+
+public static string Post(string readTextFile)
+        {
+            var method = ""POST"";
+            var service = ConfigurationManager.AppSettings;
+            var host = ConfigurationManager.AppSettings;
+            var region = ConfigurationManager.AppSettings;
+            var endpoint = ConfigurationManager.AppSettings;
+            var content_type = ConfigurationManager.AppSettings;
+            var amz_target = ConfigurationManager.AppSettings;
+            var datas = ""{   \""MLModelId\"": \""ml-OuAtnihixZl\"",    \""Record\"": {       \""clean ocr\"" : \""{0}\""    }}\n"";
+            var request_parameters = datas.Replace(""{0}"", readTextFile);
+
+            var access_key = ConfigurationManager.AppSettings;
+            var secret_key = ConfigurationManager.AppSettings;
+
+            var t = DateTime.UtcNow;
+            var amz_date = t.ToString(""yyyyMMddTHHmmss"") + ""Z"";
+            var date_stamp = t.ToString(""yyyyMMdd"");
+
+            var canonical_uri = ""/"";
+            var canonical_querystring = """";
+
+            var canonical_headers = ""cache-control:"" + ""no-cache"" + '\n' + ""content-length:"" + request_parameters.Length + '\n' + ""content-type:"" + content_type + '\n' + ""host:"" + host + '\n' + ""x-amz-date:"" +
+                                    amz_date + '\n' + ""x-amz-target:"" + amz_target + '\n';
+            var signed_headers = ""cache-control;content-length;content-type;host;x-amz-date;x-amz-target"";
+
+            var payload_hash = HexEncode(Hash(ToBytes(request_parameters)));
+            var canonical_request = method + '\n' + canonical_uri + '\n' + canonical_querystring + '\n' +
+                                    canonical_headers + '\n' + signed_headers + '\n' + payload_hash;
+
+            var algorithm = ConfigurationManager.AppSettings;
+            var credential_scope = date_stamp + '/' + region + '/' + service + '/' + ""aws4_request"";
+
+            var string_to_sign = algorithm + '\n' + amz_date + '\n' + credential_scope + '\n' +
+                                 HexEncode(Hash(ToBytes(canonical_request)));
+            var signing_key = GetSignatureKey(secret_key, date_stamp, region, service);
+
+            var signature = HexEncode(HmacSHA256(string_to_sign, signing_key));
+
+            var authorization_header = algorithm + ' ' + ""Credential="" + access_key + '/' + credential_scope + "", "" +
+                                       ""SignedHeaders="" + signed_headers + "", "" + ""Signature="" + signature;
+
+            HttpWebRequest webRequest = WebRequest.Create(endpoint) as HttpWebRequest;
+            webRequest.Host = host;
+            webRequest.ServicePoint.Expect100Continue = false;
+            webRequest.KeepAlive = false;
+            webRequest.Accept = ""/"";
+
+            webRequest.Timeout = 20000;
+            webRequest.Method = method;
+            webRequest.Headers.Add(""cache-control"", ""no-cache"");
+            webRequest.ContentLength = request_parameters.Length;
+            webRequest.ContentType = content_type;
+            webRequest.Headers.Add(""X-Amz-Date"", amz_date);
+            webRequest.Headers.Add(""X-Amz-Target"", amz_target);
+            webRequest.Headers.Add(""accept-encoding"", ""gzip, deflate"");
+            webRequest.Headers.Add(""Authorization"", authorization_header);
+
+            ASCIIEncoding encoding = new ASCIIEncoding();
+            byte[] data = encoding.GetBytes(request_parameters);
+            ServicePointManager.ServerCertificateValidationCallback = delegate
+            {
+                return true;
+            };
+            Stream newStream = webRequest.GetRequestStream();
+            newStream.Write(data, 0, data.Length);
+            HttpWebResponse response = (HttpWebResponse)webRequest.GetResponse();
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                Stream receiveStream = response.GetResponseStream();
+
+                // Pipes the stream to a higher level stream reader with the required encoding format. 
+                StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
+
+                // Console.WriteLine(""Response stream received."");
+                var res = readStream.ReadToEnd();
+                return res;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        static bytehttps://forums.aws.amazon.com/ key)
+        {
+            String algorithm = ""HmacSHA256"";
+            KeyedHashAlgorithm kha = KeyedHashAlgorithm.Create(algorithm);
+            kha.Key = key;
+
+            return kha.ComputeHash(Encoding.UTF8.GetBytes(data));
+        }
+
+        static byte[] GetSignatureKey(String key, String dateStamp, String regionName, String serviceName)
+        {
+            byte[] kSecret = Encoding.UTF8.GetBytes((""AWS4"" + key).ToCharArray());
+            byte[] kDate = HmacSHA256(dateStamp, kSecret);
+            byte[] kRegion = HmacSHA256(regionName, kDate);
+            byte[] kService = HmacSHA256(serviceName, kRegion);
+            byte[] kSigning = HmacSHA256(""aws4_request"", kService);
+
+            return kSigning;
+        }
+
+        private static byte[] ToBytes(string str)
+        {
+            return Encoding.UTF8.GetBytes(str.ToCharArray());
+        }
+
+        private static string HexEncode(byte[] bytes)
+        {
+            return BitConverter.ToString(bytes).Replace(""-"", string.Empty).ToLowerInvariant();
+        }
+
+        private static bytehttps://forums.aws.amazon.com/ bytes)
+        {
+            return SHA256.Create().ComputeHash(bytes);
+        }
+
+readTextFile => Is my requirement no need may not required in your case.
+I Hope is will help you . All the best.
+
+Edited by: Vinaa007 on Aug 23, 2018 11:17 PM"
+Amazon Fulfillment Web Service	"Hei, error Merchant ID provided in feed does not match Merchant ID used to
+error Merchant ID provided in feed does not match Merchant ID used to generate the request ?? 
+
+what 
+
+begin:
+     use MarketplaceWebService_Model_SubmitFeedRequest 
+     FeedType _POST_FBA_INBOUND_CARTON_CONTENTS_ 
+     (sumbit carton http://docs.developer.amazonservices.com/en_US/fba_guide/FBAGuide_SubmitCartonContentsFeed.html )
+
+then:
+     FeedResult: Merchant ID provided in feed does not match Merchant ID used to generate the request. (FBA_INBOUND_CARTON_004)"
+Amazon Fulfillment Web Service	"Testing if the authentication information provided is correct or not
+Hi ,
+
+I am writing a connector which connects to Amazon web services like MWS.
+I am asking the user to enter authentication information like ""AWSAccessKeyId, SellerId, SecretKey, MarketPLaceId"" for MWS.
+
+Does Amazon Webservice provide an API which authenticates the user?
+
+Which means I need to check if the information entered by the user is correct or not.
+
+Can someone give me pointers as to how I can authenticate the user and what all permissions the user has?
+
+Thanks,
+Asawari"
+Amazon Fulfillment Web Service	"How send my warehouse products quantity to amazon
+Hello
+
+Is there possibility to send to amazon quantity (in my warehouse) of my single or many products registered in amazon at once?
+
+details description
+When I add new product to amazon I can set quantity not from amazon warehouse but from our warehouse (Fulfilled By merchant). How can I refresh quantities of our products from our warehouses by MWS services or AWS services ?
+greetings
+
+Edited by: ENAN S.A. on Nov 17, 2015 2:04 AM
+
+Edited by: ENAN S.A. on Nov 17, 2015 6:30 AM"
+Amazon Fulfillment Web Service	"Do fulfillment orders created for AFN products require the FNSKU?
+I am working on an integration that will submit fulfillment orders via the MWS API and in the documentation for MWS Fulfillment Outbound API the Fulfillment Network SKU is listed as being optional - but since all of our products are going to be AFN, do we need to include the FNSKU with each item or is the Merchant SKU enough on its own?"
+Amazon Fulfillment Web Service	"Re: Do fulfillment orders created for AFN products require the FNSKU?
+Wrong forum .........
+
+Amazon Marketplace Web Service (Amazon MWS)
+
+......... but yes.
+
+Re-post over there and I'll explain further."
+Amazon Fulfillment Web Service	"Error Trying to Connect to FBAOutboundServiceMWS
+Any help with my code please? It comes back with the following message... Notice: Undefined index: port in /var/www/dispatcherM6/FBAOutboundServiceMWS/Client.php on line 771
+ 
+Notice: Undefined variable: port in /var/www/dispatcherM6/FBAOutboundServiceMWS/Client.php on line 641
+ 
+Notice: Undefined variable: _config in /var/www/dispatcherM6/FBAOutboundServiceMWS/Client.php on line 659
+Caught Exception: The request must contain the parameter Items.
+Response Status Code: 400
+Error Code: InvalidRequestException
+Error Type: Sender
+Request ID: 7cbb961b-a4c7-40cc-8d06-6dc5abb4980e
+XML: <ErrorResponse xmlns=""http://mws.amazonaws.com/FulfillmentOutboundShipment/2010-10-01/"">
+  <Error>
+    <Type>Sender</Type>
+    <Code>InvalidRequestException</Code>
+    <Message>The request must contain the parameter Items.</Message>
+  </Error>
+  <RequestId>7cbb961b-a4c7-40cc-8d06-6dc5abb4980e</RequestId>
+</ErrorResponse>
+my code is...<?php
+include_once ('.config.inc.php'); 
+ 
+$config = array (
+  'ServiceURL' => MWS_ENDPOINT_URL,
+  'ProxyHost' => null,
+  'ProxyPort' => -1,
+  'MaxErrorRetry' => 3
+);
+ 
+ $service = new FBAOutboundServiceMWS_Client(
+     ACCESS_KEY_ID, 
+     SECRET_ACCESS_KEY, 
+     $config,
+     APPLICATION_NAME,
+     APPLICATION_VERSION);
+ 
+$address	= new FBAOutboundServiceMWS_Model_Address();
+$address->setName('Test Order');
+$address->setLine1('7 Housham Hall');
+$address->setLine2('Harlow Road');
+$address->setCity('Matching Tye');
+$address->setStateOrProvinceCode('Essex');
+$address->setCountryCode('UK');
+$address->setPostalCode('CM17 0PA');
+$address->setPhoneNumber('01279123456');
+ 
+$itemPrice	= new FBAOutboundServiceMWS_Model_Currency();
+$itemPrice->setCurrencyCode('GBP');
+$itemPrice->setValue('19.99');
+ 
+$itemList	= new FBAOutboundServiceMWS_Model_FulfillmentOrderItem();
+$itemList->setSellerSKU('ABC-123');
+$itemList->setSellerFulfillmentOrderItemID('ABC-123-DISP');
+$itemList->setQuantity('1');
+$itemList->setPerUnitDeclaredValue($itemPrice);
+ 
+$request	= new FBAOutboundServiceMWS_Model_CreateFulfillmentOrderRequest();
+$request->setSellerId(SELLER_ID);
+$request->setMarketplace('eBay');
+$request->setSellerFulfillmentOrderId(date('Ymd').'001');
+$request->setDisplayableOrderId(date('Ymd').'001');
+$request->setDisplayableOrderDateTime(date('Y-m-d\TH:i:s').'+00:00');
+$request->setDisplayableOrderComment('Thank you for your order!');
+$request->setShippingSpeedCategory('Standard');
+$request->setDestinationAddress($address);
+$request->setFulfillmentPolicy('FillAllAvailable');
+$request->setFulfillmentMethod('Consumer');
+$request->setItems($itemList);
+ 
+  invokeCreateFulfillmentOrder($service, $request);
+ 
+  function invokeCreateFulfillmentOrder(FBAOutboundServiceMWS_Interface $service, $request) 
+  {
+	  print_r($request);
+      try {
+              $response = $service->createFulfillmentOrder($request);
+              
+                echo (""Service Response\n"");
+                echo (""=============================================================================\n"");
+ 
+                echo(""        CreateFulfillmentOrderResponse\n"");
+                if ($response->isSetResponseMetadata()) { 
+                    echo(""            ResponseMetadata\n"");
+                    $responseMetadata = $response->getResponseMetadata();
+                    if ($responseMetadata->isSetRequestId()) 
+                    {
+                        echo(""                RequestId\n"");
+                        echo(""                    "" . $responseMetadata->getRequestId() . ""\n"");
+                    }
+                } 
+ 
+     } catch (FBAOutboundServiceMWS_Exception $ex) {
+         echo(""Caught Exception: "" . $ex->getMessage() . ""\n"");
+         echo(""Response Status Code: "" . $ex->getStatusCode() . ""\n"");
+         echo(""Error Code: "" . $ex->getErrorCode() . ""\n"");
+         echo(""Error Type: "" . $ex->getErrorType() . ""\n"");
+         echo(""Request ID: "" . $ex->getRequestId() . ""\n"");
+         echo(""XML: "" . $ex->getXML() . ""\n"");
+     }
+ }
+
+
+Edited by: m6footwear on Dec 20, 2012 5:24 AM
+
+Edited by: m6footwear on Dec 20, 2012 5:31 AM"
+Amazon Fulfillment Web Service	"Re: Error Trying to Connect to FBAOutboundServiceMWS
+Wrong forum ...... move over to Amazon Marketplace Web Service (Amazon MWS) .... link"
+Amazon Fulfillment Web Service	"Timeouts on FBA Outbound
+Lately there have been a lot of timeouts accessing fba-outbound.amazonaws.com with our code, or in browser to test. We are having issues at this moment."
+Amazon Fulfillment Web Service	"Re: Timeouts on FBA Outbound
+FWS is depreciated ... move over to MWS Fulfillment Outbound API
+
+Amazon Marketplace Web Service (Amazon MWS) .... link"
+Amazon Fulfillment Web Service	"TV Series in AWSECommerceService Search?
+Hi,
+
+Is there a way to only get the item that has DOWNLOADABLE_TV_SERIES ProductTypeName? For example, I know there is a series ""Dexter"":
+
+<Item><ASIN>B000JO9JDQ</ASIN><ItemAttributes><Actor>Michael C. Hall</Actor><Actor>Julie Benz</Actor><Actor>Jennifer Carpenter</Actor><Actor>Erik King</Actor><Actor>Lauren Vel?z</Actor><Binding>Amazon Instant Video</Binding><Creator Role=""Producer"">John Goldwyn</Creator><Creator Role=""Producer"">Sara Colleton</Creator><Creator Role=""Producer"">Clyde Phillips</Creator><Director>Michael Cuesta</Director><Genre>Drama</Genre><ProductGroup>TV Series Video on Demand</ProductGroup><ProductTypeName>DOWNLOADABLE_TV_SERIES</ProductTypeName><Studio>Showtime</Studio><Title>Dexter</Title></ItemAttributes></Item>
+
+When I try to search with this unsigned link:
+
+http://ecs.amazonaws.com/onca/xml?Service=AWSECommerceService&Version=2011-08-01&AssociateTag=PutYourAssociateTagHere&Operation=ItemSearch&ResponseGroup=Large&BrowseNode=16261631&SearchIndex=UnboxVideo&Title=Dexter
+
+I only get DOWNLOADABLE_MOVIE or DOWNLOADABLE_TV_EPISODE items back.
+
+I have even tried adding Keywords=DOWNLOADABLE_TV_SERIES but still can't get the series item back.
+
+Am I missing something obvious here? Can someone help me?
+
+Thanks."
+Amazon Fulfillment Web Service	"Preview Error NO_EXTERNAL_IDENTIFIER_FOR_EXISTING_MAP
+We have been sending an item to FBA Shipment using MWS in the past and it was good. But all of a sudden, it stopped recognizing it. Here is the response message
+
+  <?xml version=""1.0"" ?> 
+
+<ErrorResponse xmlns=""http://mws.amazonaws.com/FulfillmentInboundShipment/2010-10-01/"">
+<Error>
+
+  <Type>Sender</Type> 
+  <Code>InvalidRequestException</Code> 
+  <Message>Reason: Invalid shipment items. InvalidItems (skuType={SellerSKU}, sku=801280kit, reason=NO_EXTERNAL_IDENTIFIER_FOR_EXISTING_MAP).</Message> 
+  </Error>
+  <RequestId>6e28902d-5411-47e6-af36-161e99d91791</RequestId> 
+  </ErrorResponse>
+
+I thought that the NO_EXTERNAL_IDENTIFIER means there is no related product in FBA. but we have it and we are selling it.
+
+   Is there someone who knows what exactly that means (NO_EXTERNaL_IDENTIFIER)? and also, if there is a list somewhere which can explain such reasons in English? (I mean, have description of each such error reason code)
+
+   thanks,
+   Sameers"
+Amazon Fulfillment Web Service	"Re: Preview Error NO_EXTERNAL_IDENTIFIER_FOR_EXISTING_MAP
+Does anyone have an answer for this?  We are experiencing the same problem."
+Amazon Fulfillment Web Service	"Get picking, packing, weight and commission fees
+Where do I find information on how to make calls so I can enter an ASIN and a cost we want to sell it for and have it grab the following bits of data:
+
+Picking Fees
+Packing Fees
+Weight Fees
+Commission Fees
+
+Similar to what the Amazon FBA calculator does but I want to integrate it into our systems so we dont have to spend time copying and pasting ASIN's into their calculator manually
+
+Edited by: w2pac12345 on Feb 15, 2013 8:13 AM"
+Amazon Fulfillment Web Service	"Re: Get picking, packing, weight and commission fees
+I know it is possible as I am using a company now that does it but we want to integrate it into our own inventory system."
+Amazon Fulfillment Web Service	"how to get amazon devtag
+do I need amazon devtag for fws"
+Amazon Fulfillment Web Service	"Re: how to get amazon devtag
+Sorry to be dense, but what is a devtag?"
+Amazon Fulfillment Web Service	"Re: how to get amazon devtag
+I need a DEVTAG for my front end application - where do I get one from?"
+Amazon Fulfillment Web Service	"Re: how to get amazon devtag
+Hi Adrian,
+
+You've just followed up on a 3 year old post. 
+Not sure what exactly you are trying to do but devtag has been replaced by AWS Access key. 
+See http://aws.amazon.com/iam/
+
+Regards,
+Brinley"
+Amazon Fulfillment Web Service	"Using FWS to buy any Amazon item?
+Hey all,I apologize if this is a regularly asked question - I tried searching but didn't get much. I am looking for a way to programmatically buy goods off of Amazon, but not ones that I myself have sent to a fulfillment center. In other words, I want to sell goods from Amazon on my website, and have the orders sent to Amazon programmatically. Not sure if this is something Amazon would frown on, but I figured, an order is an order, and if they end up with list price paid, who cares where the order originates?Any help would be greatly appreciated!Thanks,Dave"
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+Dave:The only way as a buyer you can do this is with Corporate Accounts :http://www.amazon.com/Corporate-Accounts/b?ie=UTF8&node=600460mbg"
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+Take a look at the Associates program:https://affiliate-program.amazon.com/gp/associates/join/landing/main.htmlThey seem to be putting an emphasis on ""advertising"" these days, but the basic model would seem to fit your use-case pretty well.-- Joel."
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+Thanks for all the responses, however, I'm not sure they are exactly what I am looking for. I think my explanation wasn't very clear.To simplify, forgot any consideration of my website. I just want to be able buy things off Amazon.com with a script. For example, have a PHP script that accepts a product id and shipping address, and when called, accesses an Amazon.com web service to place an order with instructions to ship to the given address. Ideally, this would be done without human input; however, if necessary, it do something like queue orders and simply have a human rubber stamp it. Don't worry, I know how to code the PHP - I am not asking someone to do the job for me. I just don't know of any Amazon published web service that would allow for that functionality.@mark: It seems to me that Corporate accounts still require a human to physically place the order.@Joel: I initially looked at the Associate's program, but I could only find product advertising tools there. Everything dealt with referrals and links back to Amazon.com. I am hoping for a solution that allows me to run a script to actually execute the purchase.I am new to the e-commerce and AWS realm, so forgive me if the answer to this question is obvious."
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+I have a similar requirment from my client, who wants a semi ""secret santa"" application where users can buy an amazon item for another user.
+
+the problem with the associate program is that it requires the user to go through the entire purchase, including filling out the shipping adress, which for privacy reasons, our users do not want to be publicly available.(although we(the host) internally have the addresses for each user)
+
+A function where my company can trigger a purchase of a specific amazon item with a shipping adress  is all we really need, but I am afraid this does not exist. Can FWS do this?
+
+I suppose we could let the user simply choose an item(but not buy it).  An we could manually make the purchase for them, but this has obvious scalablitly issues, and we would not be getting the associate percentage..
+
+Message was edited by: Jeff Kelsey
+
+Message was edited by: Jeff Kelsey
+
+Message was edited by: Jeff Kelsey"
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+Hi Mark, 
+
+Can you please answer the question on this thread?
+
+Is there a way to programmatically buy goods off of Amazon with any of the Amazon web services?
+
+Thanks
+
+C"
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+Mark, I would also appreciate clarification to what you posted."
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+Does anyone know if mark is suggesting that you can fulfill the order electronically after receiving it on your website by using the corporate account?"
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+The Amazon Fulfillment Web Service is used for managing your own Amazon-Fulfilled inventory - i.e. items you store in an Amazon Fulfillment Center. It can be used to request fulfillment of an order you've taken elsewhere but cannot be used to place an order.Amazon does not offer APIs to place a customer order. Neither a Corporate Account or the Associate Program will allow you to build the type of solution you are describing."
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+Lorraine,
+    It is now May 2011.  Is this still true.  We submit about 10 to 20 orders a week, all for in house usage, ( althoogh different in-house customers)   each with 10 to 100 items, and we are desperate to automate the process."
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+Amazon still does not offer this service, to the best of my knowledge, and this isn't something I would ever expect to see included in the Fulfillment Web Service which is specific to the FBA program. 
+
+I suggest you re-post your question/request to the MWS (Marketplace Web Service) Forum: http://www.amazonsellercommunity.com/forums/forum.jspa?forumID=43."
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+Not sure if this helps any because I still had to checkout at the end.... any it was a while ago ... but using the Product Advertising API
+
+I could:
+1. create addresses in my address book automated by URL
+2. create a cart and put the items into it automated by URL
+3. delete addresses in my address book automated by URL
+4. check out in 1 instance with 10-20 orders
+
+This was before the required signatures though so not even sure mine still works......"
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+oneida_books 
+
+  Thanks for the response.  I am very interested in how you created a cart and loaded it with items using URLs."
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+I use FileMaker Pro as a database. It has a LOT of functionality. I've learned a good bit more about using it so I think some things I did manually I could probably program in now.
+
+I would import in a flat sales file from Amazon and my off site sales.
+Create a list of ASIN's from it to purchase and quantites
+Create the cart through a calculation of something like:
+
+http:// ecs.amazonaws.com/onca/xml?
+Service=AWSECommerceService&
+AWSAccessKeyId=AWS Access Key ID&
+AssociateTag=Associate Tag& (I didn't use this line)
+Operation=CartCreate&
+Item.1.ASIN=ASIN&
+Item.1.Quantity=2&
+Item.2.ASIN=ASIN&
+Item.2.Quantity=7&
+Item.3.ASIN=ASIN&
+Item.3.Quantity=5
+&Timestamp=YYYY-MM-DDThh:mm:ssZ
+&Signature=Request Signature
+
+(This is in the Product Advertising API...)
+
+Add the addresses to my account with by URL (which took me a bit to figure out)
+
+Open a browser window and check out...."
+Amazon Fulfillment Web Service	"Re: Using FWS to buy any Amazon item?
+http://zinc.io lets you order things from Amazon programmatically."
+Amazon Fulfillment Web Service	"Help with Error / Mistake / Bug in FBA Outbound API - PHP - Ver 2010-10-01
+Has anyone else solved the bug in the FBA Outbound API - PHP sample code? When creating a ""CreateFulfillmentOrder"" the documentation is lacking quite a bit on how to add items. Fumbling around I created the following process to add and item:
+
+=== PHP code ===
+// collect item values
+$order_item_query 		= ""SELECT * FROM order_details WHERE order_id ='"".$receipt_number.""'"";
+$order_item_result 	= $db -> Execute($order_item_query)
+
+while ($order_item_row = $order_item_result->FetchRow())
+{
+	//Create item
+	$afn_item = new FBAOutboundServiceMWS_Model_CreateFulfillmentOrderItem();
+	$afn_item-> setSellerSKU($order_item_row);
+	$afn_item-> setSellerFulfillmentOrderItemId($receipt_number.""-"".$order_item_row);
+	$afn_item-> setQuantity($order_item_row);
+	$afn_item-> setFulfillmentNetworkSKU($order_item_row);
+	$afn_item-> setGiftMessage(""This is an example GiftMessage"");
+	$afn_item-> setDisplayableComment(""This is an example DisplayableComment"");
+	$request-> setItems($afn_item);
+}
+=== end PHP code ===
+
+The problem is when it is called I found there is a mistake / error / bug in the sample code. The sample 'Client.php' file calls ""$itemscreateFulfillmentOrderRequest->getmember()"" but the getmember() function does not exist.
+
+I replaced:
+$itemscreateFulfillmentOrderRequest = $request->getItems();
+foreach ($itemscreateFulfillmentOrderRequest->getmember() as $memberitemsIndex => $memberitems) {
+
+with the following:
+foreach ($request->getItems() as $memberitemsIndex => $memberitems) {
+                if ($memberitems->isSetSellerSKU()) {
+
+... but now I get an error from the server saying:
+Caught Exception: The request must contain the parameter Items.
+Response Status Code: 400
+Error Code: InvalidRequestException
+Error Type: Sender
+
+I have successfully used other portions of the AWS system but I am at a road block here. Any advice would be appreciated.
+
+Best Regards,
+Pat"
+Amazon Fulfillment Web Service	"Re: Help with Error / Mistake / Bug in FBA Outbound API - PHP - Ver 2010-10-01
+Wow, this forum is really dead! Not a single reply. I was able to figure it out trough trial and error. It comes down to the realization that the example code does not work but if you reverse engineer it you can get it to work. Don't expect the documentation to help in finding the answer."
+Amazon Fulfillment Web Service	"Re: Help with Error / Mistake / Bug in FBA Outbound API - PHP - Ver 2010-10-01
+Bringing this back to life.. I have the EXACT same issue. Thanks for that foreach fix, but I'm getting that same exception.
+
+Caught Exception: Invalid Section name or version provided - FulfillmentOutboundShipment/1.1 Response Status Code: 404 Error Code: InvalidAddress Error Type: Sender Request ID: 0e57b51d-6704-4321-88d7-78a32d36bde5 XML: Sender InvalidAddress Invalid Section name or version provided - FulfillmentOutboundShipment/1.1 0e57b51d-6704-4321-88d7-78a32d36bde5
+Thank you for your order!"
+Amazon Fulfillment Web Service	"What is going on? Charged $39.99 a month; don't know why.
+So, is there a 40$ / month subscription for using Amazon FBA? Here: https://forums.aws.amazon.com/message.jspa?messageID=97029 someone asked the same question and the person who answered said: 
+
+""*bold*In order to use Fulfillment By Amazon, you MUST have an Amazon Merchant account*bold* (even if you do not plan on selling any product on Amazon.com).  *bold*The Amazon Merchant account*bold* that you have created *bold*is why you are being charged the monthly $39.99*bold* fee.""
+
+Yet, here http://www.amazon.com/gp/seller-account/mm-product-page.html?topic=200274770 it clearly shows that FBA is enabled as an individual seller and that there is no monthly fee at all. Only a free per sell. 
+
+Why the contradiction? Can I use FBA selling maybe 5-10 items a month and not LOSE money; getting 25$ in sales of 2$ bath powder packets that I have no use for, then getting charged 40$?
+
+I LOVE FBA; nothing beats throwing a bunch of stuff you bought and didn't need into a box and having Amazon sell it for you, but I definitely don't sell anywhere near the 40 items a month that Amazon recommends I be selling in order to be a ""pro merchant"" and be charged $39.99, monthly.
+
+Edited by: rocksteadyrobin on Dec 2, 2012 9:03 PM"
+Amazon Fulfillment Web Service	"Re: What is going on? Charged $39.99 a month; don't know why.
+Hello,
+
+I am unable to answer your question, however this may be the correct avenue to get an answer: https://sellercentral.amazon.com/gp/contact-us/contact-amazon.html?&ld=AS
+
+Regards,
+
+Matt J"
+Amazon Fulfillment Web Service	"GetInventorySupply - identify if fulfilled by Merchant or FBA
+Hi,
+
+I'm have a program which calls the Inventory API GetInventorySupply
+
+There does not seem to be a Data Type to identify whether the item is currently fulfilled by Merchant or FBA.
+
+Is there a way to programmatically determine the Fulfilled by Status
+
+Thanks
+David J."
+Amazon Fulfillment Web Service	"Re: GetInventorySupply - identify if fulfilled by Merchant or FBA
+Hi David,
+
+If you're calling GetInventorySupply in the Fulfillment Web Service or the Fulfillment Inventory section of the Marketplace Web Services, then you'll only see inventory that's fulfilled by Amazon.
+
+I hope this helps.
+
+-Josh"
+Amazon Fulfillment Web Service	"Re: GetInventorySupply - identify if fulfilled by Merchant or FBA
+Josh,
+
+Thank-you!
+
+Here is the issue.
+
+When the item goes to zero on FBA which I detect with GetInventorySupply we then remove the item
+from FBA to be fulfilled by merchant by uploading the item data using AMTU.
+
+However when we want to send new stock to FBA we need to update the inventory listing (done via
+seller central) for the shipping labels and this changes the fulfillment to FBA even though the stock isn't there.
+
+Therefore after we ship I want to put it back to being fulfilled by merchant till the 
+inventory arrives.
+
+What I noticed with GetInventorySupply is that it doesn't seem to differentiate btw an item 
+which is fulfilled by Merchant and FBA (Both show zero quantity).
+
+Thats why I""m looking for some data element which will indicate that its FBA so I can switch it back to Merchant.
+
+Thanks
+David j."
+Amazon Fulfillment Web Service	"Version GSQV1.4 is not available. View your environment events for details.
+As per Amazon deployment process I have necessary change and deployed my sample web site but I am getting message “Version GSQV1.4 is not available. View your environment events for details.”http://GSQV1.4 is my version name
+And if I try to browse my web site URL(http://gsquotient.elasticbeanstalk.com/) not displaying anything on web page.
+
+Can you please help me to configure my test/sample website?
+
+Following are the Event details
+
+2012-11-26 18:10 GMT+0530	INFO	Environment update completed successfully.
+2012-11-26 18:10 GMT+0530	INFO	Successfully deployed new configuration to environment.
+2012-11-26 18:09 GMT+0530	INFO	Added URLCheck healthcheck for 'http://gsquotient.elasticbeanstalk.com:80/Content'
+2012-11-26 18:09 GMT+0530	INFO	Switched configuration attached to environment.
+2012-11-26 18:09 GMT+0530	INFO	Publishing file Deployment.2012-11-26T12_37_07_566Z.log from instance i-e368059c to S3 bucket elasticbeanstalk-us-east-1-918892042414
+2012-11-26 18:09 GMT+0530	INFO	Environment update is starting.
+
+Edited by: das_aeri on Nov 26, 2012 4:43 AM"
+Amazon Fulfillment Web Service	"Re: Version GSQV1.4 is not available. View your environment events for details.
+Hi,
+
+It sounds like you're trying out Elastic Beanstalk. You might get a quicker, more knowledgeable response at the Elastic Beanstalk forum, https://forums.aws.amazon.com/forum.jspa?forumID=86.
+
+Sorry I can't be more help."
+Amazon Fulfillment Web Service	"ASIN for UPC
+Hello,
+
+I have this scenario, there are different items in my inventory which have particular UPC/diff identifiers other than ASIN. Now I have to retrieve certain information from the report API but in reports we have products with respect to their ASIN. So I am unable to get information for those products which have UPC/Other identifiers. 
+
+I want to know if there is any way to get ASIN for particular UPC or how to convert UPC to ASIN.
+
+I hope I deliver my question. I am using php development sdk.
+
+Thanks in advance."
+Amazon Fulfillment Web Service	"Amazon Save webmasters and integrate Cpanel automatic Backup to AMAZON
+Hello,
+
+Can AMAZON Team save the  hundreds and thousands of webmasters and create a free Cpanel automatic website Backup to amazon s3. I think many webmasters would like to backup to AMAZON and if you create that application and make it free, still you will be the one to benefit from storage charges.
+
+
+I thought about telling Cpanel team to create the plugin/application and realized that it should be AMAZON TO DO SO because they are one to benefit more from the Plugin. Please try to take this seriously before other big companies come up with this idea.
+
+Thank you
+Ronnie"
+Amazon Fulfillment Web Service	"Re: Amazon Save webmasters and integrate Cpanel automatic Backup to AMAZON
+Thanks for your suggestion but this isn't relevant to FBA."
+Amazon Fulfillment Web Service	"Re: Amazon Save webmasters and integrate Cpanel automatic Backup to AMAZON
+Google it ""cpanel backup to s3""
+
+Here are some results that look okay.
+
+http://www.nicecoder.com/cpb/
+http://www.cpanelbackupscript.com/"
+Amazon Fulfillment Web Service	"Re: Amazon Save webmasters and integrate Cpanel automatic Backup to AMAZON
+Hello,
+Yes i one time bought the  cpanel backup script from ""cpanelbackupscript.com"" and installed it on my sites. But it stopped working and when i complained to the person who sold it to me, he started ignoring my emails. It is the reason to why i would like to see amazon develop a reliable and dependable script to help us solve this problem of automatic backup of websites to amazon s5. 
+
+But Believe me that every webmaster is struggling for way to backup his or her clients website some where else Rather than hosting company. Should this be developed by one of these giants (google,amazon, skydrive,etc) am sure that company would make real money from storage  of websites.
+
+Do you know another script?
+
+Thank you
+Ronnie"
+Amazon Fulfillment Web Service	"Re: Amazon Save webmasters and integrate Cpanel automatic Backup to AMAZON
+I agree that this should be done by amazon!
+
+The options for backing up to S3 from Cpanel are slim to none. 
+
+Think of the people that pay per gb of data downloading! Need to automate this...
+
+Can't be downloading locally then uploading to s3 or vice versa.
+
+
+Heck even Akeeba Backup Pro can import export from to S3, pretty sweet! Not all of my data can be backed up with Akeeba though, just my joomla! sites.
+
+Edited by: J. Jones on Oct 10, 2012 1:35 AM"
+Amazon Fulfillment Web Service	"Amazon UK and Canada API
+Hi,
+
+How to access amazon UK and amazon Canada using API.
+What extra changes does i need to do to access them for other countries.?
+
+Regards,
+Raghu"
+Amazon Fulfillment Web Service	"Product listing
+Could you please let me know how I can get a product listing using the API (I am using MWS). 
+
+I have AmazonUK.
+
+Please help"
+Amazon Fulfillment Web Service	"FBA Cost Calculation
+Is there any API or WS that will allow me to get the FBA Handling and Pick & pack costs for an ASIN?
+
+Thanks."
+Amazon Fulfillment Web Service	"FWS Shipment
+When Creating a Shipment via FWS, how I do find which Fullment Center needs to be in the shipment? Is there a way I can figure this out via the API? Do I haveto submit the shipment first ? Could someone kindly help me? Thanks a lot"
+Amazon Fulfillment Web Service	"Re: FWS Shipment
+Hello,
+
+I reviewed the API reference for FWS here: http://docs.amazonwebservices.com/fws/latest/APIReference/ 
+
+I don't see anything that specifically requires you to specify the fulfillment center, where are you using this?
+
+Regards,
+David s."
+Amazon Fulfillment Web Service	"Getting Item Information
+Hi All,  I'm trying to get Item Information using FWS Inventory Web Service.ListUpdatedInventorySupplySample.phpFew fields I've got :- <table border=""0"">	<tbody>		<tr>			<td>MerchantSKU :</td>			<td>                        9780132294386</td>		</tr>		<tr>			<td>                    FulfillmentNetworkSKU</td>			<td>                        X0001SH6LX</td>		</tr>		<tr>			<td>                    ASIN</td>			<td>                        0132294389</td>		</tr>		<tr>			<td>                    Condition</td>			<td>                        NewItem</td>		</tr>		<tr>			<td>                    TotalSupplyQuantity</td>			<td>                        12</td>		</tr>		<tr>			<td>                    InStockSupplyQuantity</td>			<td>                        12</td>		</tr>	</tbody></table>I would like to get some other fields :- Title    Condition                    Price    MFN Listing Exists    MFN Fulfillable Qty    AFN Listing Exists    AFN Warehouse Qty    AFN Fulfillable Qty    AFN Unsellable Qty    AFN Encumbered Qty    AFN Total Qty    Qty AFN Fulfilled Last 7 Days    Volume    AFN Inbound Working Qty    AFN Inbound Shipped Qty    AFN Inbound Receiving Qty    AFN Inbound Problem QtyIs this possible using this AWS? Please guide me.Regards,Arnab"
+Amazon Fulfillment Web Service	"Re: Getting Item Information
+You can't get all the information you request from FWS, but you can get a lot of it.If you set the ResponseGroup of your Inventory FWS call to ""Detailed"", as described in the WSDL (https://fba-inventory.amazonaws.com/doc/2009-07-31/AmazonFBAInventory.wsdl), this will give you the SupplyDetail information, which differentiates among sellable, unsellable, and encumbered AFN inventory, for example.To find out how much of anything was shipped by AFN over a time range, I'd suggest using the Amazon Fulfilled Shipments Report, which can be downloaded using MWS (https://mws.amazon.com/. The report you're most likely interested in is described at http://developer.amazonwebservices.com/connect/thread.jspa?threadID=44625&tstart=68.)I'm afraid I don't know much about what reporting options are available for MFN items, but I believe that information should be available through MWS.Information about inbound FBA shipments can mostly be found in the Inbound FWS. I think the information you're looking for will mostly be found in the ListInboundShipments and the ListInboundShipmentItems operations.At the moment, AFN listing issues are only reported on SellerCentral on the Inventory Amazon Fulfills page."
+Amazon Fulfillment Web Service	"Re: Getting Item Information
+Has there any way to find the ""TITLE"" of the product??"
+Amazon Fulfillment Web Service	"Re: Getting Item Information
+You can use the Product Advertising APIs to look up product information.Here's a reference to their documentation for ItemLookup: http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/ItemLookup.html"
+Amazon Fulfillment Web Service	"Re: Getting Item Information
+I also need the solution  how to get reporting options are available for MFN items.
+Somebody can help me,thanks."
+Amazon Fulfillment Web Service	"How can I pass a valid ISO8601 timestamp to product advertising API?
+Hello,
+I've used the Signed requests helper to generate a timestamp for me and hard coded that into my code to generate the signature, but I still get this error message:
+<?xml version=""1.0""?>
+<ItemLookupErrorResponse xmlns=""http://ecs.amazonaws.com/doc/2011-08-02/""><Error><Code>InvalidParameterValue</Code><Message>Value '2012-07-23T05:47:39.000Z' for parameter Timestamp is invalid. Reason: Must be in ISO8601 format.</Message></Error><RequestId>b0231c0f-23f7-4693-a81e-27a9d98ff523</RequestId></ItemLookupErrorResponse>
+
+Can someone tell me why that value is not already in ISO8601 format?  I used the gmdate(""Y-m-d\TH:i:s\Z"") php code to generate the timestamp (which doesn't include the .000) and that didn't work, so then I tried using the helper to generate a timestamp for me (the one above) and that still didn't work.  Has anyone else faced this?
+Thanks,
+Robert"
+Amazon Fulfillment Web Service	"Re: How can I pass a valid ISO8601 timestamp to product advertising API?
+Hi,
+
+For questions relating to the Product Advertising API, you may want to ask at the Product Advertising API forum, which is at https://forums.aws.amazon.com/forum.jspa?forumID=9.
+
+Sorry I can't be more helpful."
+Amazon Fulfillment Web Service	"Re: How can I pass a valid ISO8601 timestamp to product advertising API?
+Thanks Josh, I just opened a thread in that forum.  I don't know why I couldn't find that forum last night when I was searching for it."
+Amazon Fulfillment Web Service	"3dcart help - ""The AWS Access Key Id needs a subscription for the service""
+3dcart store with CBA and FBA. CBA works and communicates perfectly. FBA not at all. I have repeatedly checked my access keys and all seems to be well. I am using my AWS keys in the ""Amazon FBA"" Plugin within 3dCart. 
+
+I get the message: ""The AWS Access Key Id needs a subscription for the service."" in the notes for any order. I am assuming that means there is some sort of communication, and it's just a config problem. I believe that I have tried all of the methods seen in the forums including setting us SES but to no avail. 
+
+Does anyone have any insight? I am losing my mind and my client is losing his patience.
+
+BTW, I also checked the billing with AWS. All is and has been good. I have emailed and spoken on the phone with several reps (free customer service obviously) and they all say our account is in fine shape and have no idea what that message could mean. Amazon blames 3d cart and 3d cart blames Amazon. I'm sure it's something that I am overlooking but I am obviously beyond helping myself at this point. 
+
+Thanks!"
+Amazon Fulfillment Web Service	"Re: 3dcart help - ""The AWS Access Key Id needs a subscription for the service""
+Hi alumaskin,
+
+If you are trying to use Amazon Fulfillment Web Service (FWS), then I recommend ensuring that you are subscribed to the service by going here and clicking ""Sign up for Amazon FWS"":
+
+http://aws.amazon.com/fws/
+
+If you have already subscribed to Amazon FWS and are still getting that error message when issuing FWS API calls, then please complete the following online form:
+
+https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/aws-account-and-billing
+
+If you are not using Amazon FWS and are only using Checkout By Amazon and Fulfillment By Amazon, then we aren't able to provide any assistance with those services since they are not provided by Amazon Web Services (AWS).  The list of AWS products that we do support is available here:
+
+http://aws.amazon.com/products/
+
+If you need assistance with Checkout By Amazon, then please complete this form:
+https://payments.amazon.com/sdui/sdui/contactusemail
+
+If you need assistance with Fulfillment By Amazon, then please complete this form:
+https://sellercentral.amazon.com/gp/contact-us/contact-amazon.html
+
+Best Regards,
+-Cindy"
+Amazon Fulfillment Web Service	"Re: 3dcart help - ""The AWS Access Key Id needs a subscription for the service""
+Hi - I realize that nearly 7 months have passed since this response.
+
+You recommended clicking ""Sign up for Amazon FWS"".  This option is no longer available, presumably because MWS is replacing FWS.
+
+What is the equivalent set of steps recommended for dealing with this issue given that your recommended action is no longer an option?"
+Amazon Fulfillment Web Service	"itemSearch for books with IdType ISBN or EAN
+Hi,
+
+I search the books using keywords, title, author etc. For the response, I only want to get the books with ISBN or ISBN13, not ASIN. I added IdType=ISBN. But, it does not work. Can someone tell me how to do it?  i.e. I do not want the books with ASIN returned as the keywords search.
+
+Thank you."
+Amazon Fulfillment Web Service	"Is there an API to recommend products?
+Hi All,
+I'm a newbie here.
+First, please forgive me if I send this question to the wrong forum and please inform me about where is the correct one, thanks in advance.
+I am asking if there is an API that takes one or several keywords and return all the related products, maybe with descriptions.
+As an example,
+if I input Lebron, it may return me a list or something with Lebron
+James' Jersey, his shoes or/and the tickets for heat.
+
+If so, would you please give me a link or better a brief example about how to use it.
+Thanks in advance"
+Amazon Fulfillment Web Service	"get shipping cost
+Hi,I am looking to display the various shipping methods with actual costs for FBA products during checkout on my own site.  What would be the best or easiest way to go about doing this?For example, I want to present shoppers with the following at checkout:O Standard ($7.88)O Expedited ($12.18)O Priority ($24.68)Any pointers would be greatly appreciated.Stephen"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Hello Stephen :Later this year we'll be releasing a new API called preview() this will take as in put an address and set of SKU's (which have previously registered and sent into a fulfillment center).  The API will return a set of available shipment options (Standard, Expedited, Priority) as well as the fees that we'll charge the Merchant.  This can in turn be marked up as appropriate for the customer display.  We currently have the API implemented internally and are beta testing, once complete we'll rationalize it for external consumption.  We'll keep you updated. In the meantime you would have to preform your own calculations based on the rate card published here :http://www.amazon.com/gp/seller/fba/fba_pricing.htmlCheersmbg"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Please let me know how I can get involve with beta testing this new API.Thank you for your help."
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Is there a web service to calculate the shipping cost now?  We are making an online ordering system and I want to show the user how much it will cost to ship... does it calculate based on address?Thanks,Robert"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Robert:This should roll out to the US in web-UI form at the end of Jan or in early Feb.  We are chasing down the ""last bug"" right now.  From there we want to get some feedback regarding the UI usage and we'll work on exposing it externally.  That won't happen until at least the end of Q1.Sorrymbg"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Hi Mark,Thank you for the reply.  Is the end of Q1 still good in terms of this functionality being available through API to the public?Stephen"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Stephen :Unfortunately we are still working through some bugs.  It now appears that a web-ui for this is imminent, but this will push out an API version of this until sometime in Q2.mbg"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Thanks for the update.  The API would be much more helpful! Please keep us posted."
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Hi,  just checking in on the status of an API to calculate shipping cost.  Is this now available?"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+I would like to second that... Right now I actually had to make a store on Volusion.com because they had all of the shipping calculators (not with fulfillment yet but would like to be)"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Other priorities have prevented this, we are however doing our first internal review. No promises on timeline of delivery yet but at least its underway."
+Amazon Fulfillment Web Service	"Re: get shipping cost
+I would be interested in beta testing the API.Thanks!"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Please provide an update for all those interested.  Thanks for your help."
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Hi - If you grab the current version of the FWS Outbound WSDL, you'll see a new operation there called ""GetFulfillmentPreview"", which will provide available shipping speeds, estimated fulfillment fees, ship and delivery date estimates, etc., given a ship-to address and list of items. It doesn't actually create an order, or reserve any inventory, but gives a good indication of what would happen to the order if it were submitted in the next few minutes. It's intended for the kind of use-case you describe: supporting checkout pages, etc.Proper documentation is in the works, but the WSDL is reasonably well-documented. We're in the process of updating the FWS Outbound client libraries as well.Thanks -- Joel."
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Nevermind. Found it.
+
+Edited by: limewheel on Mar 22, 2011 4:16 PM"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+would you share what it is, thank you"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Hi,
+
+I am not able to successfully retrieve the shipping costs of one item. The following c# code always returns a ""bad request error 400"":
+
+AmazonOutbound.AmazonFBAOutboundPortTypeClient amazonOutboundClient = new AmazonOutbound.AmazonFBAOutboundPortTypeClient(
+                        binding,
+                        new EndpointAddress(""https://webservices.amazon.de/onca/soap?Service=AWSECommerceService""));
+            // add authentication to the client
+            amazonOutboundClient.ChannelFactory.Endpoint.Behaviors.Add(new AmazonSigningEndpointBehavior(""XXX"", ""XXXXXX""));
+			
+			
+			AmazonOutbound.GetFulfillmentPreview ffPreview = new GetFulfillmentPreview();                
+                Address adrs = new Address();
+                adrs.CountryCode = ""DE"";                
+                ffPreview.Address = adrs;
+                GetFulfillmentPreviewItem ffItem = new GetFulfillmentPreviewItem();
+                ffPreview.Items = new GetFulfillmentPreviewItem[] { ffItem };
+                ffPreview.Items[0].MerchantSKU = item.ItemAttributes.SKU;
+                ffPreview.Items[0].Quantity = 1;
+                AmazonOutbound.GetFulfillmentPreviewRequest ffPreviewRequest = new GetFulfillmentPreviewRequest(ffPreview);
+                AmazonOutbound.GetFulfillmentPreviewResponse ffPreviewResponse = new GetFulfillmentPreviewResponse();
+                ffPreviewResponse = amazonOutboundClient.GetFulfillmentPreview(ffPreview); //this line returns the ""error 400 - bad request""
+
+
+Can you help me?"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Hi,
+
+You must use a different endpoint to talk to the Outbound Service. To receive the endpoint in Europe, please contact fba-eu@amazon.lu.
+
+However, please note that we recommend that all merchants, especially outside the United States, integrate with the Marketplace Web Services that offer additional functionality and are easier to sign up for. You can see the documentation for that at developer.amazonservices.de.
+
+I hope this helps.
+
+Thanks for your interest in the FBA Outbound Service.
+
+-Josh"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+Hi,
+
+thank you for your fast response. I tried to use the MWS but my account get rejected with the message: ""Sorry, you are not an authorized Seller Central user.""
+
+I just want to create a website that uses the amazon api where you can browse computer parts and see the cheapest price (including shipping cost).
+
+whats the best way to accomplish this since iam not an amazon seller?
+
+thanks in advance"
+Amazon Fulfillment Web Service	"Re: get shipping cost
+It sounds like you're interested in the Product Advertising API, which is discussed at https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html. Sorry for the confusion."
+Amazon Fulfillment Web Service	"Re: get shipping cost
+I am sorry to hijack this thread but I am already using the Product Advertising API. I have read in several threads that the Product Advertising API doesn't provide the shipping costs.
+Whats the best way to get the shipping cost of a specific item?
+
+thanks in advance
+
+edit: i have opened a new thread for this topic: https://forums.aws.amazon.com/thread.jspa?threadID=94924
+
+Edited by: ravel7 on May 19, 2012 6:35 AM"
+Amazon Fulfillment Web Service	"Can Amazon FWS be integrated with Ebay, PayPal or ProStores?
+<span style=""font-family: Calibri; font-size: small"">I currently am selling on both Amazon and eBay using a third party software (Solid Commerce) to manage my orders and inventory from one centralized place.</span><span style=""font-family: Calibri; font-size: small"">I want to start using Fulfillment by Amazon and have my products stored and shipped by Amazon.</span><span style=""font-family: Calibri; font-size: small"">Can Amazon FWS be integrated with either EBay (e.g. Seller manager Pro, Blackthorne),  PayPal, ProStores, or a third party multichannel management software such as Solid Commerce?If this is possible where can I find some proffesionals who can do it?Thanks,Stoyan</span>"
+Amazon Fulfillment Web Service	"Re: Can Amazon FWS be integrated with Ebay, PayPal or ProStores?
+I'm certain that we could integrate Ebay with FBA. (ie Grab your eBay orders and submit them to FBA for fullfillment, and then grab the shipping/tracking data from FBA and use that information to update eBay directly so that buyers who look for shipping status in MyEbay will see the latest tracking info.
+
+If SolidCommerce has an API for retrieving orders and submitting shipping/tracking data, we could use that API to integrate SolidCommerce with FBA. If SolidCommerce has no such API, but they have the capability to export orders via CSV data files and import shipping/tracking data via CSV data files, then we could make something like that work as well.
+
+Call or email anytime.. I'd be happy to brainstorm with you what might be your best approach overall.
+
+Tobe Goldfinger
+tobe@jdttech.com
+
+JDT Technologies
+Certified eBay Solution Provider
+800-252-5519
+516-569-5606
+skype: tobegold"
+Amazon Fulfillment Web Service	"Re: Can Amazon FWS be integrated with Ebay, PayPal or ProStores?
+Solid Commerce has public API and also fully integrated with Amazon fulfillment Services (FBA). For more information please visit our website at:www.solidcommerce.com"
+Amazon Fulfillment Web Service	"Re: Can Amazon FWS be integrated with Ebay, PayPal or ProStores?
+SellerCloud.com already has this option available, to send ebay orders to FBA with one click. It then pull the tracking number when it ships and sends it back to eBay, the original order source."
+Amazon Fulfillment Web Service	"Re: Can Amazon FWS be integrated with Ebay, PayPal or ProStores?
+Hello,
+I am also looking for this.  Here is the breakdown, we have googled this to death and found very few options:
+We are looking to solve order/inventory/tracking management across multiple marketplaces- our primary warehouse being FBA (Fulfillment by Amazon).
+1ST PIECE-
+Inventory Example:
+SKU: SONY:PLAYSTATION
+
+We receive 10 pcs to FBA, of which 10 are made available to sell on the amazon marketplace automatically.  We also sell that same sku on eBay and have that sku listed on ebay at 10 pcs.  In real time (or as close to it) as items sell on either marketplace we are looking for a solution that would adjust the active quantity of the sku.
+
+Amazon listing:
+Sony Playstation video game package-initial qty 10
+3 sell.
+
+Ebay listing:
+Sony Playstation PS3 video game package brand new in box- initial qty 10
+2 sell.
+
+Ending qty: 5 sitting in amazon.  System needs to update that ebay listing has only 5 pieces, and same for amazon.
+
+2ND PIECE-
+Update tracking from FBA to ebay order or other marketplaces.
+
+3rd PIECE-
+Import orders into quickbooks"
+Amazon Fulfillment Web Service	"Selling products that includes online members area
+Hello all,
+
+We're are considering to take our very successful product also to Amazon, however, we're running affiliate program for it of our own.
+
+So there are two things we need to address:
+
+
+the product consists of physical product and membership area where the rest of the purchase content is - videos / reports etc; So we need the customers be signed up there automatically as part of their purchase; Is this possible and how?
+
+
+
+and we need to have pixel tracking of some kind upon the order successful so we can track which affiliate and/or channel has driven the sale;
+
+
+Looking forward for answers/pointers.
+
+Edited by: Sandy on Apr 27, 2012 6:57 AM"
+Amazon Fulfillment Web Service	"MerchantServiceQuery Error with Inventory Template
+I hope I am putting this in the correct section. I am relatively new to selling on Amazon and not tech-savvy at all so forgive my ignorance. 
+
+I am currently using Amazon's macro-enabled beta templates to upload items to my store which was working great until it wasn't. 
+
+Recently when I have attempted to upload my templates, I receive an error that reads:
+
+""Upload has failed, Please try again. 
+Reason: AccessDenied
+Details: Access to the resource MerchantQueryService is denied""
+
+I am thoroughly baffled. Amazon Seller Support couldn't help me and told me to look here for my answer. 
+
+So I humbly ask to please help me out. thank you!"
+Amazon Fulfillment Web Service	"Re: MerchantServiceQuery Error with Inventory Template
+Hi N. Corporation,
+
+I'm sorry to hear about the trouble you've encountered.  It is nice of you to include the complete error message you received.  That type of detailed information can greatly assist in most troubleshooting situations.
+
+Based on the error message, it simply sounds like you need to subscribe to the ""MerchantQueryService"".
+
+I can confirm that there is no such service provided by AWS.  All services of AWS are listed here:
+
+http://aws.amazon.com/products/
+
+That being said, I tried to see if I could find more information about that service so I could at least point you in the right direction.  The only remotely helpful clue I could find was in this documentation covering transitioning from AIM to MWS (both of which are services provided by ""Amazon Services"", not AWS):
+
+https://images-na.ssl-images-amazon.com/images/G/02/mwsportal/doc/bde/AIM_to_Amazon_MWS_Migration_Guide._V180902185_.pdf
+
+
+It's mentioned being used for Order Fulfillment and Canceling Orders which is discussed on pages 9 and 10 of the PDF.  Since the context is one where the reader would be transitioning to using MWS, my best guess is that the MWS team many know about the ""MerchantQueryService"" and may be able to assist you.  With that in mind, you may want to try posting your question in the MWS forums for assistance:
+
+http://www.amazonsellercommunity.com/forums/forum.jspa?forumID=43
+
+I'm sorry I can't provide more specific guidance with the MerchantQueryService.
+
+Kind Regards,
+-Cindy"
+Amazon Fulfillment Web Service	"sellerengine.com
+i am trying to use sellerengine.com. i keep getting an error which says ""aws access key id needs a subscription for the service."" this error relates specifically to my fba credentials. what do i do? thanks."
+Amazon Fulfillment Web Service	"CreateInboundShipmentPlan Fail with Internal Server error
+The code look like: (I checked the correctness of the keys and of the service URL)
+
+     mwsConfig = new FBAInboundServiceMWSConfig();
+     mwsConfig.SetUserAgentHeader(""Sales Hub"", ""1.1"", ""C#"");
+     mwsConfig.ServiceURL = ""https://mws.amazonservices.com"";
+FBAInboundServiceMWSClient mwsClient = new FBAInboundServiceMWSClient(accessKeyId, secretAccessKey, mwsConfig);
+                CreateInboundShipmentPlanRequest request = new CreateInboundShipmentPlanRequest();
+                request.ShipFromAddress = new FBAInboundServiceMWS.Model.Address();
+                request.ShipFromAddress.AddressLine1 = adL1s;
+                request.ShipFromAddress.AddressLine2 = adL2s;
+                request.ShipFromAddress.City = citys;
+                request.ShipFromAddress.CountryCode = ccodes;
+                request.ShipFromAddress.Name = names;
+                request.ShipFromAddress.StateOrProvinceCode = states;
+                request.ShipFromAddress.PostalCode = zips;
+                request.InboundShipmentPlanRequestItems = new InboundShipmentPlanRequestItemList();
+                foreach(string val1 in val)
+                {
+                string[] itemV= listV.Split('#');
+                InboundShipmentPlanRequestItem Item = new InboundShipmentPlanRequestItem();
+                Item.ASIN = itemV[0];
+                Item.Quantity = Convert.ToInt16(itemV[1]);
+                Item.Condition = itemV[2];
+                Item.SellerSKU = itemV[3];
+                request.InboundShipmentPlanRequestItems.member.Add(Item);
+                }
+                CreateInboundShipmentPlanResponse response = mwsClient.CreateInboundShipmentPlan(request);
+
+I get the error Internal Error with Stack
+  at FBAInboundServiceMWS.FBAInboundServiceMWSClient.Invoke[T](IDictionary`2 parameters) in C:\Sales Hub\FBAInboundServiceMWS\FBAInboundServiceMWS\FBAInboundServiceMWSClient.cs:line 424
+   at FBAInboundServiceMWS.FBAInboundServiceMWSClient.CreateInboundShipmentPlan(CreateInboundShipmentPlanRequest request) in C:\Sales Hub\FBAInboundServiceMWS\FBAInboundServiceMWS\FBAInboundServiceMWSClient.cs:line 156
+
+I use c# any idea"
+Amazon Fulfillment Web Service	"Unable to setup Shopify integration with FBA (Fulfillment by Amazon)
+I am getting an error when I try to connect my Shopify store to Amazon:
+
+""Can't save variant: Sku Unable to fetch remote stock levels: aws:Client.OptInRequired The AWS Access Key Id needs a subscription for the service. (amazon)""
+
+I signed up for AWS and provided my credit card info.  I don't understand what else I need to ""subscribe to"" or ""opt in"" to."
+Amazon Fulfillment Web Service	"Re: Unable to setup Shopify integration with FBA (Fulfillment by Amazon)
+I have done all of the things that you stated, and I am having the exact same issue. Did you ever get this issue resolved? If so, how? Thanks."
+Amazon Fulfillment Web Service	"Re: Unable to setup Shopify integration with FBA (Fulfillment by Amazon)
+Hello,
+
+Hopefully by this time you've got this figured out, but for others who may be having similar problems, make sure you subscribe to the Amazon Fulfillment Web Service at http://aws.amazon.com/fws/
+
+Regards,
+JBrown"
+Amazon Fulfillment Web Service	"Re: Unable to setup Shopify integration with FBA (Fulfillment by Amazon)
+Figure it out yet?
+
+Check the Shopify Wiki: http://wiki.shopify.com/Help:Preferences#Fulfillment_by_Amazon 
+
+You need to give shopify the API keys so it can access your FWS/FBA/Merchant account on Amazon. You also need to make sure your SKU numbers are identical."
+Amazon Fulfillment Web Service	"Re: Unable to setup Shopify integration with FBA (Fulfillment by Amazon)
+That how to is completely out of date.  THere is no ""FWS"" anymore, now it's ""MWS"".  I signed up for that but still get the same error.  This is absolutley unbelievable why this is so complicated and unreliable.  Shopify is providing no useful support - Amazon's support is terrible.  I can fulfill no orders now.
+
+Information from the shipping service
+Http code 	
+500
+Http message 	
+Internal Server Error
+Response status 	
+Failure
+Faultcode 	
+aws:Client.InvalidAccessKeyId
+Faultstring 	
+AWS was not able to validate the provided access credentials.
+Response comment 	
+aws:Client.InvalidAccessKeyId AWS was not able to validate the provided access credentials."
+Amazon Fulfillment Web Service	"Re: Unable to setup Shopify integration with FBA (Fulfillment by Amazon)
+ever figure this out? I got the same prob as you"
+Amazon Fulfillment Web Service	"Re: Unable to setup Shopify integration with FBA (Fulfillment by Amazon)
+In case anyone else comes across this thread, CaptainJack managed to resolve the issue and posted a good summary here: https://forums.aws.amazon.com/thread.jspa?threadID=89165&tstart=0"
+Amazon Fulfillment Web Service	"Manage Returns
+Hello all,
+
+I hope I am posting this question to the correct forum. If not please feel free to move it to the correct place. 
+
+I am trying to find the documentation how to manage returns programmatically. Can someone provide me some links: which service I should use, which request I should make in order to authorize a return, issue refund,.. etc. or related documentation will help me a lot. Anyone please?
+
+Thanks in advance.
+
+Edited by: orc_orc on Mar 27, 2012 12:21 PM"
+Amazon Fulfillment Web Service	"product re-pricing
+Who knows that,how to use amzon aws to change the price of procuct.
+if you konw,please tell me the API  ,thanks.
+Dearzhong."
+Amazon Fulfillment Web Service	"product re-pricing
+Who knows that,how to use amzon aws to change the price of procuct.
+if you konw,please tell me the API  ,thanks.
+Dearzhong."
+Amazon Fulfillment Web Service	"Cannot download PHP Library for Amazon FWS Outbound
+http://aws.amazon.com/code/Amazon-FWS/1315
+
+When I click on the download link, 
+
+It gives me 
+This XML file does not appear to have any style information associated with it. The document tree is shown below.
+<Error>
+<Code>AllAccessDisabled</Code>
+<Message>All access to this object has been disabled</Message>
+<RequestId>4CE09C70BF878B4E</RequestId>
+<HostId>
+Ren3H39ucTcZlQp3BmJf1ZB+afWNGser0FB4ANq9JnP/plO6S8tPAHlyBDGlzjOi
+</HostId>
+</Error>
+
+
+Anyone got a copy that I could download?  THanks.
+
+Edited by: aaronfan on Mar 11, 2012 10:20 PM"
+Amazon Fulfillment Web Service	"Re: Cannot download PHP Library for Amazon FWS Outbound
+We're in the process of turning off the AWS version of the Fulfillment Web Services. If you're new to integrating with them, please use the version from the Marketplace Web Services, which you can find at https://developer.amazonservices.com/doc/fba/outbound/v20101001/php.html. This new version will provide more features going forward."
+Amazon Fulfillment Web Service	"Re: Cannot download PHP Library for Amazon FWS Outbound
+Hi, no, actually I'm not newly implementing FWS.  There's is an existing system however, somehow the library has been removed or gone.  That is why I would like to download it again.  Is there any way for this?"
+Amazon Fulfillment Web Service	"Re: Cannot download PHP Library for Amazon FWS Outbound
+Please try again."
+Amazon Fulfillment Web Service	"Re: Cannot download PHP Library for Amazon FWS Outbound
+Nice, thanks a lot!"
+Amazon Fulfillment Web Service	"readyshipper ?????
+Am attempting to use third party software (readyshipper) to manage Amazon orders. is this a good reliable software?
+
+any suggestions on another software?
+
+i do about 20 orders a day but am expecting increase. what portion (IF ANY) of AWS do i need ... what are my costs looking like?"
+Amazon Fulfillment Web Service	"How to generate Signature for Amazon Fullfillment Web Service
+I have to use AFWS( Amazon Fullfillment Web Service) to integrate it with my rails application but while making request i am using Query request and i am providing My access key and secret access key as my signature.but i am getting this error..help me
+
+HOW TO GENERATE SIGNATURE..
+
+This XML file does not appear to have any style information associated with it. The document tree is shown below.
+<ErrorResponse xmlns=""http://fba-inbound.amazonaws.com/doc/2007-05-10/"">
+<Error>
+<Type>Sender</Type>
+<Code>SignatureDoesNotMatch</Code>
+<Message>
+The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. Consult the service documentation for details.
+</Message>
+<Detail/>
+</Error>
+<RequestID>ddc5fbb9-01c0-4091-bc89-0baf8e83ac47</RequestID>
+</ErrorResponse>
+
+plz help me...
+thnx in advance....
+
+Edited by: sontya on Mar 17, 2012 11:23 AM"
+Amazon Fulfillment Web Service	"SellerCentral Throttle Error shipping software
+We are using a 3rd party software for inventory and shipping.  We are a large merchant and are getting throttle errors. 
+
+I went to the increase limits section but did not see a link for sellercentral.
+
+Where do we request this?"
+Amazon Fulfillment Web Service	"Re: SellerCentral Throttle Error shipping software
+Please ask the third-party software developer if they are using the newer Marketplace Web Services; I suspect they are.
+
+If so, you can ask at https://sellercentral.amazon.com/gp/mws/contactus.html."
+Amazon Fulfillment Web Service	"Re: SellerCentral Throttle Error shipping software
+Will contact them.  Thank You"
+Amazon Fulfillment Web Service	"CreateInboundShipmentPlan returns 500 error
+I have get a 500 error from the server when I use invokeCreateInboundShipmentPlan() method.
+Usually, it works well. But, when I using some specific products data set, it returns a 500 error.
+
+Do you have any ideas to solve this?"
+Amazon Fulfillment Web Service	"Re: CreateInboundShipmentPlan returns 500 error
+If I should show you more information, please let me know what it is..."
+Amazon Fulfillment Web Service	"aws:Client.OptInRequired The AWS Access Key Id needs a subscription for the
+I have a Shopify account and have set it up to be autofulfilled by my Amazon FBA. I have followed the instructions to a tee but I keep getting the following error message on Shopify from Amazon: "" aws:Client.OptInRequired The AWS Access Key Id needs a subscription for the service. (amazon)"". Shopify referred me to you for assistance. We have a seller account, and FBA account, and and AWS account. 
+
+This is for our product Saw Palmetto Conditioner, SKU PP-AAIT-LUEL"
+Amazon Fulfillment Web Service	"Re: aws:Client.OptInRequired The AWS Access Key Id needs a subscription for the
+I am also on shopify and having the exact same issue"
+Amazon Fulfillment Web Service	"Re: aws:Client.OptInRequired The AWS Access Key Id needs a subscription for the
+I too am having this issue - is there any help out there?"
+Amazon Fulfillment Web Service	"Re: aws:Client.OptInRequired The AWS Access Key Id needs a subscription for the
+I assume you're in the US?
+
+Are they all the same, in that the AWS account and the Selling on Amazon account have the same e-mail and password?
+
+Have you given Shopify the correct keys?
+
+Finally, have you signed up for FWS specifically? Please visit http://aws.amazon.com/fws/ to do so. I suspect that your issue is this last one."
+Amazon Fulfillment Web Service	"Re: aws:Client.OptInRequired The AWS Access Key Id needs a subscription for the
+I assume you're in the US?
+
+Yes
+
+Are they all the same, in that the AWS account and the Selling on Amazon account have the same e-mail and password?
+
+Yes
+
+Have you given Shopify the correct keys?
+
+Yes
+
+Finally, have you signed up for FWS specifically? Please visit http://aws.amazon.com/fws/ to do so. I suspect that your issue is this last one.
+
+Yes
+
+I am still getting this error...."
+Amazon Fulfillment Web Service	"Re: aws:Client.OptInRequired The AWS Access Key Id needs a subscription for the
+Wait - I believe everything may have just synched up with itself!  I will try a couple more product entry's on the website and see what happens.  Perhaps I'[m just too impatient!
+
+Thank you kindly for your assistance!"
+Amazon Fulfillment Web Service	"Re: aws:Client.OptInRequired The AWS Access Key Id needs a subscription for the
+I am having the same problem too.  I canceled my AWS because I started getting repetitive form mails warning me that I would be charged.  I emailed the totally incompetent support asking repeatedly for them to explain what services I was using and what I might be charged for and they kept telling me they can't give me that information.  Thinking AWS was just some trial I signed up for I canceled it.   Now I cannot reactive it I get an error: 
+
+Error 
+Your information could not be submitted because of the following errors: 
+
+
+We encountered an error while trying to process your last request. Please try again later.
+
+
+ What a nightmare."
+Amazon Fulfillment Web Service	"<UnknownOperationException /> as XML return
+Dear Sir/Madam,
+
+When we make a API request of the following:
+
+https://mws.amazonservices.com/FulfillmentOutboundShipment/2010-10-01?
+AWSAccessKeyId=<Access ID>&Action=GetFulfillmentOrder&SellerFulfillmentOrderId=<Order ID>&SellerId=<Seller ID>&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2012-03-06T04%3A34%3A30.000Z&Version=2010-10-01&Signature=eXZmAq2%2B%2F9E094Yo2l7TmLCEMORRDt2PECmtq%2Bhp3IQ%3D
+
+We got the XML output with the <UnknownOperationException />
+
+May i know what is the problem of this ?
+
+Edited by: domlsg on Mar 5, 2012 8:49 PM"
+Amazon Fulfillment Web Service	"Re: <UnknownOperationException /> as XML return
+Hi,
+
+The request you provided was a ""Marketplace Web Service"" Fulfillment API request, not an ""Amazon Web Services"" Fulfillment API request. I know the difference seems minor, but this forum is about the AWS version of the APIs. The newer, MWS version is supported at http://www.amazonsellercommunity.com/forums/forum.jspa?forumID=43. Maybe they can help you?
+
+One thing I notice that might be relevant is that it looks like your timestamp is to greater than a second's precision. Historically, for the AWS version, those have been rejected as not conforming to the standard format AWS uses. Can you try with a timestamp only to 1 second's precision?
+
+I hope this helps."
+Amazon Fulfillment Web Service	"Time to beg !!  I just can not get the string figured out for the signature
+I'm just trying to get the basic GetServiceStatusResult and I have spent many many hours..
+but to no avail.......
+
+String to sign: 
+
+POST
+mws.amazonservices.com
+/FulfillmentInboundShipment/2010-10-01
+AWSAccessKeyId=***********&Action=GetServiceStatus&SellerId=A********&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2011-05-21T02%3A06%3A29Z&Version=2010-10-01
+
+Right?
+
+So then how about the URL??
+
+https://mws.amazonservices.com/FulfillmentInboundShipment/2010-10-01?AWSAccessKeyId=*********&Action=GetServiceStatus&SellerId=A*********&SignatureVersion=2&Timestamp=2011-05-21T02%3A06%3A29Z&Version=2010-10-01&Signature=*****************&SignatureMethod=HmacSHA256
+
+???????????????????????????????????
+
+I have tried everything I can think of and still get the dreaded 'SignatureDoesNotMatch'
+
+The signatures which I get work with the Product Advertising API just fine and are 48 char.'s long (maybe this tells something?)
+
+However the 2 .. SHA 256 HMAC & Base64 HMAC .. from the MWS scratchpad are 64 & 44 characters long.
+
+FYI - I use Filemaker Pro.... and a plug in that does the HMAC SHA 256 for me
+
+PLEASE someone help me......... : (
+
+LOL ... but really not laughing"
+Amazon Fulfillment Web Service	"Re: Time to beg !!  I just can not get the string figured out for the signature
+Hey,
+
+did you got solution? Have same problem. No idea what is wrong.
+
+Other MWS API working with credentials, InboundAPI failed with SignatureDoesNotMatch.
+
+Thanks,
+Michael"
+Amazon Fulfillment Web Service	"Re: Time to beg !!  I just can not get the string figured out for the signature
+I am using PHP, the sign function i am using is:
+
+<?
+
+    function sign(......) {
+
+        ....................
+
+        $sc = base64_encode( hash_hmac(""sha256"", $stringToSign, $AWSAccessSecretKey, true));
+        $sc = str_replace(""%7E"", ""~"", rawurlencode($sc));
+
+        return ($sc);
+
+    }
+?>
+
+You may convert it into your programming language you are using.
+
+Hope it helps"
+Amazon Fulfillment Web Service	"Amazon Fulfillment Web Service (FWS) using Ruby
+Can i Amazon Fulfillment Web Service (FWS) using Ruby  use inbound and outbound calls to get product details in my rails application(Using Rest calls)....
+thnx in advance"
+Amazon Fulfillment Web Service	"Can I display shipment details from amazon.com to my rails application ?
+Hi everybody,
+Need some help as i am new to AWS 
+I am developing an Shipment Tracking web application in which I want to display buyer and seller account 
+So i will display Inbound items details and Outbound Item details for the each user.
+which service of amazon(AWS) provide API methods for this?, plz help.
+I am using Ruby as my development language.
+Thnx in advance.................."
+Amazon Fulfillment Web Service	"Can I display shipment details from amazon.com to my rails application ?
+Hi everybody,
+                         Need some help as i am new to AWS 
+I am developing an Shipment Tracking web application in which I want to display buyer and seller account 
+So i will display Inbound items details and Outbound Item details for the each user.
+which service of amazon(AWS) provide API methods for this?, plz help.
+I am using Ruby as my development language.
+Thnx in advance..................
+
+Edited by: sontya on Mar 3, 2012 12:00 PM"
+Amazon Fulfillment Web Service	"getting FBA product using AIM
+I'm using the AIM API to get updates on my product lists, but I've converted some inventory to FBA.
+
+The FBA product doesn't show up in the OpenListings report anymore. 
+
+How can I see the FBA products and their inventory counts?"
+Amazon Fulfillment Web Service	"How to find FBA products
+How can I get products sold by Amazon or Fulfilled by Amazon? I know , I can get products sold by Amazon (only ) if I set 'MerchantId=Amazon', but it doesn't give me FBA products. Any ideas?"
+Amazon Fulfillment Web Service	"How to get products eligible for Free Shipping?
+How can I get products qualifying for Free Shipping?"
+Amazon Fulfillment Web Service	"Re: How to find FBA products
+Hi Dear,
+Use ""FBAInventoryServiceMWS"" service and in that call ""ListInventorySupply"" method will do you job.
+
+Thanks
+Jaiswar Vipin Kumar R"
+Amazon Fulfillment Web Service	"Re: How to find FBA products
+Jaiswar Vipin Kumar wrote:
+Hi Dear,
+Use ""FBAInventoryServiceMWS"" service and in that call ""ListInventorySupply"" method will do you job.
+
+1. 2 1/2 yr old thread....
+
+2. That's to get your own inventory.."
+Amazon Fulfillment Web Service	"The AWS Access key ID needs a subscription for the service
+I have an amazon account using FBA and now selling multi channel. trying to use the FWS service to send over orders for amazon warehouse to ship for us which we sold on other channel.We have signed up for FWS and have an FBA working account. All the same account. Whe we try to send over the XML order we get ""The AWS access key ID needs a subscription for the service"" Error:OptInRequired. 
+
+I cant find anywhere else to option and according to all we see we are set up and working. I have also confirmed that we have signed up for FWS and the service says it is activated for my account. Any ideas out there?"
+Amazon Fulfillment Web Service	"Re: The AWS Access key ID needs a subscription for the service
+In general, this is caused by either not signing up for the Fulfillment Web Services or by signing up on the website and trying to use the Fulfillment Web Services (AWS version) outside of the US. Additionally, signing up for the MWS version will not grant you access to the AWS version and vice versa.
+
+I hope this helps."
+Amazon Fulfillment Web Service	"Re: The AWS Access key ID needs a subscription for the service
+We are having the exact same problem.
+SenderOptInRequiredThe AWS Access Key Id needs a subscription for the service
+
+Been trying to fix it now for 8+ hours. What is the easy solution? How many services do you need to sign up for to make it work.
+
+Thanks, Barry"
+Amazon Fulfillment Web Service	"Re: The AWS Access key ID needs a subscription for the service
+Hello,
+
+It looks like you signed up for the Fulfillment Web Service a few hours after the other services.  Please let us know if you're still having problems.
+
+Regards,
+JBrown"
+Amazon Fulfillment Web Service	"Re: The AWS Access key ID needs a subscription for the service
+I am getting this same error: 
+
+The AWS Access key ID needs a subscription for the service.
+
+I am trying to use a third party service for inputting inventory and printing labels for FBA inventory etc. 
+
+Any suggestions?"
+Amazon Fulfillment Web Service	"Files have been lost
+Hello, i had upleasant  situation occured yestrday on the site.Three files have been lost, two people have access rights  but none of them worked with the site. Could it be any server failure or was it just a break?."
+Amazon Fulfillment Web Service	"Re: Files have been lost
+I'm sorry, but I don't understand. The Fulfillment Web Service does not allow files to be uploaded. Perhaps you meant to ask your question in a different forum?"
+Amazon Fulfillment Web Service	"Item dimensions are associated to the Sku instead of the Product (ASIN)
+This is Raja Ramadass from Monsoon and we are one of the integarators of amazon marketplace services. Few of our customers have reported that while sending their product to FBA through shipment, they are getting missing dimensions error from FWS API. 
+Please see below for an example. 
+ERROR Monsoon.Core.FBA.FBAProvider - Exception getting ShipmentPreview for [sku: 3955, quantity: 1]. Amazon.FWSInbound.AmazonFWSInboundException: Value Invalid parameter for parameter UnknownSku is invalid. Reason: Invalid shipment items. InvalidItems[ (skuType={Enum::MSKU}, sku=3955, reason=MISSING_DIMENSIONS)]. 
+at Amazon.FWSInbound.AmazonFWSInboundClient.Invoke[T](IDictionary`2 parameters) 
+
+We recommend our sellers to provide dimensions data for the product on the amazon.com site when they encounter this error and then try adding the item to the shipment. Our understanding is that product data such as item dimensions are associated to the asin /product and not to the sku. However based on our customer reports and our testing, we have found that the dimensions are only stored 
+at the sku level and not at the product level. We were able to prove our theory with the following test 
+
+
+We have attempted to send the item with asin B0023QXCG8 to amazon fulfilment center by creating a shipment through the FWS call 
+Missing dimensions error was thrown by the GetShipmentPreview call. 
+We have added dimensions information by creating a listing with sku jewel001_loc and attempted to add that item to a shipment and the operation was successful 
+When we tried to send another item (same asin asin B0023QXCG8 ) with a different sku say jewel001_usf, we could not add that to a shipment and it failed with missing dimensions error 
+We deleted the previously created listing (sku jewel001_loc ) and added another listing for the sku jewel001_usf and provided dimensions information for that sku 
+After this, we were able to add the item with sku jewel001_usf to the shipment successfully 
+
+
+Please let us know whether this is a bug or an expected behavior and based on that we can make appropriate changes to FBA shipment creation process in our product. 
+
+Thank you for your help 
+
+with regards 
+Raja Ramadass
+
+Edited by: monsoonworks on Jan 30, 2012 2:11 PM"
+Amazon Fulfillment Web Service	"Regarding FBA revenue calculator for big inventory
+Hi,
+
+Iam a seller with growing FBA inventory. Iam not sure this is correct forum. I have tried to find correct department after best technical abilities but this is really not my area of expertise and I hope some one could direct me to correct department or atleast in a good direction.
+
+I have already contacted amazon seller support with below questions but yet not recieved anything helpful. 
+
+To my question then. For bigger sellers who list alot of SKUs, what is best practice for finding out exact fba fee for each asin? Going trough fba calculator one by one is very tedious and time consuming for big inventories (1000+ SKUs). Variable fees like comission varies from 6-15% depending on category and our products are scattered over many categories. Weight based fees and 30 day storage are also variable, thus makes it impossible to just setup an equation in excel. Finding out our breakeven price after FBA fees for each asin is critical for us to decide minimum selling price or in deciding our margin inpact.
+
+If we have our cost price in csv file for every asin, is it possible to fetch exact fees for all asins in the file?
+
+Please advice ASAP. This is a very big issue for us.
+
+Best regards"
+Amazon Fulfillment Web Service	"Re: Regarding FBA revenue calculator for big inventory
+I'm afraid we don't currently offer anything like that to see what you would be charged. You would need to do the calculations yourself.
+
+If you are already selling the items, you can use the Sku Net Revenue Tool to see your revenue and what you have been charged. It's an Excel file under Payments Account > Past Settlements in Seller Central.
+
+I'm sorry I couldn't be more help."
+Amazon Fulfillment Web Service	"Please help with limitation of requests per hour
+Hi ,
+
+I am sorry, I have no idea if I am posting the right place for my question. We are using AWSECommerceService.
+And here is the error message I 've got
+
+<?xml version=""1.0""?>
+<ItemSearchErrorResponse xmlns=""http://ecs.amazonaws.com/doc/2011-08-01/""><Error><Code>AccountLimitExceeded</Code><Message>Account limit of 2000 requests per hour exceeded.</Message></Error><RequestID>971de55a-03a8-4847-928b-546cc4ec3ac4</RequestID></ItemSearchErrorResponse>
+
+Please can anybody tell me, how can I increase in hourly limit?
+Thank you very much!"
+Amazon Fulfillment Web Service	"Re: Please help with limitation of requests per hour
+Unfortunately, this isn't the right forum section for questions about the Product Advertising API (formerly the ECommerce Service). Perhaps you could try your question at https://forums.aws.amazon.com/forum.jspa?forumID=9&start=0?
+
+Sorry I couldn't be more help."
+Amazon Fulfillment Web Service	"Create order for purchasing programmatically
+I am new to implement Amazon API.
+I want to develop an iphone and android application which will display product from amazon for selected suppliers or category. Then user will be able to Order from my application. So far i understand that, i have to call amazon api to collect product information and i did it and it works fine.
+Now, i need to know, is there any way that from my application i will be able to create an order for my user with selected cart items. I want, user will provide all the information in my application and when he will press the submit order button, i will call amazon api (if they have?) with the required parameters and the api will do the order and send the order id.
+
+Please let me know.
+
+Edited by: xpertlabbd_faisal on Jan 15, 2012 4:17 AM"
+Amazon Fulfillment Web Service	"Re: Create order for purchasing programmatically
+We do not currently provide this functionality, but we will consider your suggestion.
+
+Thanks for trying out AWS."
+Amazon Fulfillment Web Service	"InsufficientInventoryGroupsMap FBA listing error
+Posted this on the MWS board as well, but since we are still using this API, perhaps this is a better location for this question:
+
+Got a new one today... One of our sellers is trying to add this item to an FBA shipment:
+
+http://www.amazon.com/X-Files-Beyond-Sea-B/dp/6304153775
+
+We were able to get the FNSKU properly. But calling PutInboundShipmentItems to add the item to shipment resulted in this error:
+
+Value -- for parameter -- is invalid. Reason: InsufficientInventoryGroupsMap: {US=[{InventoryCapacityGroup Contents: [ capacityType=SORTABLE capacityLimit=0 capacityUtilization=15022 isOverCapacityLimit=false merchantSkus=mymerchantsku] }, {InventoryCapacityGroup Contents:  capacityType=NON_SORTABLE capacityLimit=0 capacityUtilization=3 isOverCapacityLimit=false merchantSkus=[ ]}]}.
+
+Reading between the lines, I'm guessing Amazon is maybe starting to implement the ability to reject an item if they have too many in their warehouse.
+
+I'm not sure if this is a bug on your end or our end? We are still using the old FWS API.
+
+Thanks!"
+Amazon Fulfillment Web Service	"MISSING_DIMENSIONS error
+We are occasionally getting this missing dimensions error:Value Invalid parameter for parameter item.merchantSku is invalid. Reason: Invalid Items  InvalidItems[ (skuType={Enum::MSKU},sku=nnnnnnnn,reason={Enum::MISSING_DIMENSIONS})].Sometimes on fairly common items.  I saw in another thread the suggestion to add a new product detail page on amazon with the dimensions provided, but I find it hard to believe that Amazon wants all of these duplicates in the catalog.So I guess this is more of a feature request.  Can you add an API call to the FWS API that would allow us to send you the dimensions when requesting the FNSKU?Here is one sample asin I was able to find that we tried to send in that is missing dimensions:http://www.amazon.com/exec/obidos/ASIN/B001EY5PRE"
+Amazon Fulfillment Web Service	"Re: MISSING_DIMENSIONS error
+How often do these cases come up?  If you go to Seller Central and convert the problematic item to Amazon Fulfilled, you'll be prompted for package dimensions.  After this future creatshipment calls through the API should go through with no problems.Another approach is to include the package dimensions in your product feed.  But that's not available for all categories.John"
+Amazon Fulfillment Web Service	"Re: MISSING_DIMENSIONS error
+Thanks for the response John.  I guess that will be an acceptable workaround.  It breaks our backend process a little bit since our software will still think the item is Merchant fulfilled instead of Amazon fulfilled, but I guess we could have a feature to let the user change that field after they do the conversion online.As for frequency, I guess it isn't happening quite as much as I thought.  It varies from about 2% to 0.2% depending on the seller."
+Amazon Fulfillment Web Service	"Re: MISSING_DIMENSIONS error
+Hi John,I just thought I'd drop you another note on this feature request.  We've recently had a few more FBA sellers come on board.  These are primarily toy sellers and are getting the missing dimensions error quite frequently.  They were a bit upset when I explained that the only workaround is to list direct via Seller Central.  A function call to provide these dimensions via the API would really be useful.Andy"
+Amazon Fulfillment Web Service	"Re: MISSING_DIMENSIONS error
+Hi John,
+I vote +1 for this feature as well.  I am seeing this error in closer to 10% of the lots processed.
+Marty"
+Amazon Fulfillment Web Service	"Re: MISSING_DIMENSIONS error
+Hey John,
+
+I have included the package dimensions in product feed, but that doesn't change anything. Event after couple of days. I have used different categories to prevent from sending in categories that will not allow putting dimensions. I have sent about 10 items, all of them throws MISSING_DIMENSIONS, even after couple of days.
+
+Asking users to use seller central to set dimensions is a very wrong way. When we offer useful tool how I can send user to do sth manual?
+
+API method to set dimensions is really needed. 
+
+In our tests 5% of items throws MISSING_DIMENSIONS error.
+
+Please reply,
+Michael"
+Amazon Fulfillment Web Service	"Submit Feed API - what is correct FeedType for Inbound Shipment Files
+I've created a tab delimited file for Updating Inbound Shipments.  I've tested the file using manual upload and it works fine.
+
+I'm now trying to use the Submit Feed API (as instructed in the AIM to Amazon MWS Migration Guide) to upload the file.
+
+However, I cannot seem to find the correct FeedType Enumeration (page 30 Amazon Marketplace Web Service Feeds API Section Reference (API Version 2009-01-01)) to properly upload this file.  
+
+Can anyone help?"
+Amazon Fulfillment Web Service	"Re: Submit Feed API - what is correct FeedType for Inbound Shipment Files
+Wrong forum ..... try MWS Forum
+
+Possibly you have and already received help because this sounds familiar.
+
+If not:
+You can't do it that way as far as I know. How did you manually upload it?
+
+Look over the FBA Inbound Shipment API"
+Amazon Fulfillment Web Service	"Re: Submit Feed API - what is correct FeedType for Inbound Shipment Files
+Thanks for replying.  I'll head over to MWS and see what I can find."
+Amazon Fulfillment Web Service	"Re: Submit Feed API - what is correct FeedType for Inbound Shipment Files
+OH, I manually uploaded by logging into my account, navigating to the correct area in the report and using the available interface to upload a file."
+Amazon Fulfillment Web Service	"Inbound Shipment Request Template Workbook
+Hello there,
+
+I am looking for this ""Inbound Shipment Request Template Workbook"" as described at https://sellercentral.amazon.com/gp/help/help-page.html/ref=au_200626310_cont_scsearch?ie=UTF8&itemID=200626310
+
+Where can I download or request this template?
+
+Thanks"
+Amazon Fulfillment Web Service	"Re: Inbound Shipment Request Template Workbook
+I too am looking for the Inbound Shipment Request Template Workbook"
+Amazon Fulfillment Web Service	"Re: Inbound Shipment Request Template Workbook
+I found this .... in my Seller Account>Inventory>Shipping Queue
+
+Shipping Queue | Scan & Ship | Upload Inbound Shipment File 
+
+Upload Inbound Shipment File
+
+Create Inbound Shipment
+
+Update Inbound Shipment"
+Amazon Fulfillment Web Service	"Amazon Fulfillment Web Service Sample Code, C#
+I've just downloaded the sample code and was wondering if anyone knows how to set the request parameters and has an example of this?
+
+I'm trying to use the request.items paramter and can see from the documentation its expecting three values (MerchantSKU, Quantity and MerchantFulfillmentOrderItemId)
+
+ GetFulfillmentPreview request = new GetFulfillmentPreview();
+ //@TODO: set request parameters here
+?????"
+Amazon Fulfillment Web Service	"Re: Amazon Fulfillment Web Service Sample Code, C#
+First let me say if you're developing you need to move to MWS since it's the newest API sets and FWS will be diminished.
+Migrate from Amazon FWS to Amazon MWS
+
+MWS Forum
+
+I'm a java guy but we would do:
+
+GetFulfillmentPreview request = new GetFulfillmentPreview();
+request.setMerchantSKU(merchantSKU);
+request.setQuantity(quantity);
+request.setMerchantFulfillmentOrderItemId(MerchantFulfillmentOrderItemId);
+
+Note: in MWS it is in list form where you add an item with the 3 params to the list...."
+Amazon Fulfillment Web Service	"FNSKU Lookup -> Convert to B00 ASIN
+Is there a way to lookup any FNSKU and convert to a B00 ASIN? This would be extremely helpful dealing with return inventory in our supply chain.
+
+I know we can run reports through FBA on sellercentral but is there a way to simply look up any FNSKU?"
+Amazon Fulfillment Web Service	"Re: FNSKU Lookup -> Convert to B00 ASIN
+I store my listings in a database and have the FNSKU in a field for easy lookup in the records. You could easily download your listings and do the same.
+
+I also print my own labels so I included the ASIN and condition on the bottom of the label.
+
+Worse case keep a browser window open of your listings and scan them into the web page for lookup......
+https://sellercentral.amazon.com/gp/ssof/knights/items-list.html/ref=sm_fbalist_cont_fbamnginv"
+Amazon Fulfillment Web Service	"Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+We are trying to make a call to get all the FBA products offerred by the seller using FWS call ListAllFulfillmentItems, but for some reason, we are getting error <span style=""color: #ff0000"">[Amazon.FWSInbound.AmazonFWSInboundException] = {""Maximum number of retry attempts reached : 3""}<span style=""color: #000000"">What may be we are missing ?ThanksPaul</span></span>"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+This is the xml version of the same error<ErrorResponse xmlns=""http://fba-inbound.amazonaws.com/doc/2007-05-10/"">  <Error>     <Type>Receiver</Type>     <Code>InternalError</Code>     <Message>We encountered an <span style=""color: #cc0000"">internal error</span>. Please try again.</Message>     <Detail/>  </Error>  <RequestID>xxx</RequestID></ErrorResponse>"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+Hello Paul,Please provide the 'RequestID' in a failed response so that I can look up your specific failure.  Publicly sharing your RequestID is safe, so in the future please provide that so we can troubleshoot for you faster.Thanks.EricO"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+<span style=""word-spacing: 0px; text-transform: none; text-indent: 0px; white-space: normal; letter-spacing: normal; border-collapse: separate; color: #000000""><span>Here it is !!<ErrorResponse <span>xmlns</span>=""<span><span class=""nfakPe"">http</span>://<span class=""nfakPe"">fba</span>-<span class=""nfakPe"">inbound</span>.<span class=""nfakPe"">amazonaws</span>.<span class=""nfakPe"">com</span>/<span class=""nfakPe"">doc</span>/<span class=""nfakPe"">2007</span>-<span class=""nfakPe"">05</span>-<span class=""nfakPe"">10</span>/</span>""></span><span>   <Error></span><span>      <Type></span>Receiver<span></Type></span><span>      <Code></span>InternalError<span></Code></span><span>      <Message></span>We encountered an <span style=""color: #cc0033"">internal error</span>. Please try again.<span></Message></span><span>      <Detail/></span><span>    </Error></span><span>    <RequestID></span><span style=""color: #ff0000"">1d1984f0-3c20-4dda-9e4c-d6fc61329d57</span><span></RequestID></span><span></ErrorResponse></span></span>"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+Hello Paul,We are having a hard time finding any kind of merchant account associated with your login credentials (which we found from the request ID).Are you sure that you have created a merchant account on Amazon.com with the same email and password you used to create your AWS account and sign up for FWS?Please make sure you have followed all the steps outlined in our Getting Started Guide: http://docs.amazonwebservices.com/AWSFWS/1.0/GettingStartedGuide/, specifically the section titled 'Register for a Merchant Account'.  Once you have gone through all the necessary steps, please re-try your request and let us know the results.Thanks.EricO"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+Hi EricO,We have tried many accounts, and the last requestID, I am not sure which one I have used .. Please see this threadhttp://www.amazonsellercommunity.com/forums/message.jspa?messageID=1784248We are one of the very early bunch of FWS integrators and has been working fine .. Its the <span class=""jive-subject"">ListAllFulfillmentItems that has problem .. We have many other FWS functions working very well for many months ..I will create another requestID for one of our sellers who is using FWS through our system on a daily basis and send it over.Sincerely,Paul</span>"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+Hi EricO,Please check this RequestID .. This is for an Amazon account who is using FWS on a daily basis using ChannelMAX.<?xml version=""1.0""?>  <ErrorResponse xmlns=""http://fba-inbound.amazonaws.com/doc/2007-05-10/"">    <Error>     <Type>Receiver</Type>     <Code>InternalError</Code>     <Message>We encountered an internal error. Please try again.</Message>     <Detail/>  </Error>  <RequestID>6d6fb9d7-0680-4298-8dce-d4277dabaca2</RequestID></ErrorResponse>ThanksPaulhttp://www.linkedin.com/in/pauldaschannelmaxnet"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+Here is RequestID for another Amazon seller who has already been using FWS for other API calls. Seller has both AWS and FWS account<?xml version=""1.0""?>  <ErrorResponse xmlns=""http://fba-inbound.amazonaws.com/doc/2007-05-10/"">    <Error>     <Type>Receiver</Type>     <Code>InternalError</Code>     <Message>We encountered an internal error. Please try again.</Message>     <Detail/>  </Error>  <RequestID>dc5ab7e4-f626-4fa5-a309-8e53d711e757</RequestID></ErrorResponse>I hope with your kind help, we can come over this nuance and move on to the actual integration .. and be productive ..Sincerely,Paulhttp://www.ChannelMAX.Nethttp://www.linkedin.com/in/pauldaschannelmaxnet"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+Mark/Eric,Did you get a chance to look at these two RequestIDs that I sent <RequestID>6d6fb9d7-0680-4298-8dce-d4277dabaca2</RequestID>and <RequestID>dc5ab7e4-f626-4fa5-a309-8e53d711e757</RequestID>Both are registered for AWS and FWS ..Appreciate your investigation and what you find ?ThanksPaulhttp://www.linkedin.com/in/pauldaschannelmaxnet"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+Hi Mark/Eric,We come with a very strong Amazon technology credentials .. So we are very sure that we know to make sure that the seller account is registered with both AWS and FWS before FWS calls could be made !!1) If you see, we are a Amazon Certified Seller 3rd party solution providerhttp://developer.amazonwebservices.com/connect/entry.jspa?externalID=8382) We have successfully integrated AIM API3) We have successfully integrated Amazon SOAP API4) We are one of the early adopters of FWS and already implemented successfully back in April 2008..I definitely need little more help than you keep sending the getting started document. If you have paid service, I am absolutely open to it .. But at thispoint we have few platinum sellers on hold because of this issue thatmakes no sense to us ..Please HELP !!Sincerely,PaulMessage was edited by: channelmaxnet
+
+Message was edited by: channelmaxnet"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+Hello Paul,I'm glad that your integration efforts have been smooth so far.  As I see it now you are currently experiencing 2 issues as outlined in the Get AFN Inventory post and the ListAllFulfillmentItems post.  Mark (mbg) can help you best with the former issue and I am investigating your latter issue. I have confirmed that your requests are not being processed correctly.  Other clients, including a test account that I created are able to successfully call ListAllFulfillmentItems, so the issues lies with your request or how we are processing the way in which you make the request.  I am digging deeper into this issue.  If I am unable to debug your issue with the information on hand, I may have to privately get some information from you in order to reconstruct your requests so I can debug real time.  If I need any personally identifiable informatino from you I will send you a private message, so please be sure to check your AWS Forum Inbox.Thanks for the patience.EricO"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+Paul, I have found the issue and submitted the fix. This will take a little while to make it to production.  In the meantime, the work around is to simply pass in the 'MaxCount' element with a value ranging from 1 - 1,000 (inclusive).Let me know if the work around helps.  I will post back once my fix has made it to production so you can confirm.Thanks.EricO"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+Paul, I have deployed the fix to production and verified the fix for my client (when sending a request without the MaxCount element).  Please verify that the fix works on your end as well. Sorry for any inconvenience.Thanks.EricO"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+Thanks a lot Eric !!ListAllFulfillmentItems works now. I wish that the API does not throw generic error message such as ""Internal Error"", it does not help anybody !!Sincerely,Paulhttp://www.linkedin.com/in/pauldaschannelmaxnet"
+Amazon Fulfillment Web Service	"Re: Error:Maximum number of retry attempts reached :3: ListAllFulfillmentItems?
+Hi Eric,
+
+We are facing the same problem but we are using ""ListUpdatedInventorySupply"" method from Inventory API.
+
+If we use the ""ListAllFulfillmentItems"" from Inbound API, so we will not get the Inventory Count, so we need to use ""ListUpdatedInventorySupply""method, am i correct?
+
+Please suggest.
+
+Thanks,
+Mark"
+Amazon Fulfillment Web Service	"CreateInboundShipmentPlan throws UNKNOWN_SKU
+Hello,
+
+So we have our application working with new FWS api (which is part of MWS). It took us a while to implement it, but we're finally here.
+There is a problem, though. From time to time, our users receive strange error from API, when calling CreateInboundShipmentPlan.
+The response looks like this:
+
+<?xml version=""1.0""?> 
+<ErrorResponse xmlns=""http://mws.amazonaws.com/FulfillmentInboundShipment/2010-10-01/""> 
+  <Error> 
+    <Type>Sender</Type> 
+    <Code>InvalidRequestException</Code> 
+    <Message>This operation may be partially successful, Please check the status. Reason: Invalid Items InvalidItems[ (skuType={SellerSKU}, sku=2285173689, reason=UNKNOWN_SKU)].</Message> 
+  </Error> 
+  <RequestId>51899d24-b05a-451f-808b-866a709098aa</RequestId> 
+</ErrorResponse> 
+
+
+The API doc says nothing regarding this problem. What might be the cause? Is Amazon API undergoind some problems at the moment?
+
+Thanks!"
+Amazon Fulfillment Web Service	"Re: CreateInboundShipmentPlan throws UNKNOWN_SKU
+Hi 
+This happnes, just because in you code you Destincation Warehouse location code is worng.
+Pleaes correct it.
+
+Thanks
+Jaiswar Vipin Kumar R"
+Amazon Fulfillment Web Service	"UK Outbound failing
+Since last night, I've noticed the UK Outbound FBA WSDL is not responding to requests. The request just times out which makes our sending outbound requests impossible. The inventory and inbound APIs seem to still be working OK. This is a fairly major problem as we cannot send in orders to be shipped.
+
+Anyone else seeing this? 
+
+Outbound WSDL times out:
+https://fba-outbound-eu.amazonaws.com/doc/2007-08-02/AmazonFBAOutbound.wsdl
+
+Inbound WSDL works:
+https://fba-inbound-eu.amazonaws.com/doc/2007-05-10/FBAInboundService.wsdl
+Inventory WSDL works:
+https://fba-inventory-eu.amazonaws.com/doc/2009-07-31/AmazonFBAInventory.wsdl"
+Amazon Fulfillment Web Service	"Re: UK Outbound failing
+We believe this issue was resolved.
+
+Can you try again, and, if it's still not working, post the time you tried here, so we can look into it further?"
+Amazon Fulfillment Web Service	"Re: UK Outbound failing
+Seems fine now, thanks"
+Amazon Fulfillment Web Service	"Can a joomla website be installed on AWS?
+Hello,
+I have a joomla website and i would like to transfer it to AWS. is it possible to run it on AWS?
+
+Hope to hear from you soon
+
+Thank you
+
+Ronnie"
+Amazon Fulfillment Web Service	"Cannot mix items of different destination FC error
+I started seeing this error today that I've never seen before when trying to create an inbound shipment: Cannot mix items of different destination FC.  This is just from creating a normal inbound shipment like we always have with a group of fnskus of all the same type of items.
+
+What caused this and how do I fix it?
+
+Thanks,
+Chris"
+Amazon Fulfillment Web Service	"Re: Cannot mix items of different destination FC error
+Chris wrote:
+I started seeing this error today that I've never seen before when trying to create an inbound shipment: Cannot mix items of different destination FC.  This is just from creating a normal inbound shipment like we always have with a group of fnskus of all the same type of items.
+
+What caused this and how do I fix it?
+
+Thanks,
+Chris
+When you do as preview it says where to send each fnsku.
+
+Example:
+I do a preview with 10 items
+8 go to ABE3
+2 go to IND1
+shipment1 has 8 fnsku's bound for ABE3
+shipment2 has 2 fnsku's bound for IND1
+
+So what if I....
+
+I create a shipment with 7 items and they all go to ABE3
+I try to add 3 more fnsku's
+1 goes to ABE3 but 2 go to IND1 - THUS THE ERROR... 'Cannot mix items of different destination FC'
+
+Does that help any?"
+Amazon Fulfillment Web Service	"Does amazon support Cpanel website hosting?
+Hello,
+
+I would like to start hosting my personal and clients websites to AMAZON. But  does it support cpanel website hosting  and if not how can i host my joomla website to AMAZON? because i see that AMAZON is the way to go for many webmasters in reseller hosting especially when it comes to prices  security for our clients' websites.
+
+Your response will be highly appreciated
+
+Thank you
+Ronnie"
+Amazon Fulfillment Web Service	"MWS migration workflow questions
+Hi
+I started looking over the FWS to MWS migration documents and am a bit alarmed at some of the workflow changes.  
+
+Our primary workflow is labeling our items (one by one from your perspective) and then creating an inbound shipment at a later point in time.  Our stations to sticker items and create inbound shipments are completely different stations in the warehouse and sometimes in completely different physical locations.  So it is not possible for us to combine these two steps.  I'll also add that we are dealing with lots of unique items that each get their own fnsku (~500k). It doesn't seem right to be creating a new shipment each time we need to register an fnsku. But anyhow, there doesn't seem to be any other option with the new API, so I'm trying to understand the new workflow around registering fnskus and creating inbound shipments.  
+
+1. If this is a new item (or its condition has changed), I need to call CreateInboundShipmentPlan for the single item, passing over merchant sku, condition, and asin.  
+2. CreateInboundShipmentPlan returns an fnsku which we label the item with and store in our database.  And now I need to store DestinationFulfillmentCenterId and ShipmentId for each item in our database too?
+
+And now this is where I'm lost.  Let's say we have a pile of items labeled with fnskus ready to be shipped (also consider many fnskus that may have been registered with the old API), what do I need to do in order to create a new inbound shipment for them?  I don't really understand the workflow in your guide.   Is there anyway just to create a brand new shipment for the items and not have to deal with all this complexity around looking at existing inbound shipments and the destination for each item, etc?
+
+Thanks,
+Chris"
+Amazon Fulfillment Web Service	"Re: MWS migration workflow questions
+This question would be better listed in the MWS forum but .....
+
+Chris wrote: 
+
+1. If this is a new item (or its condition has changed), I need to call CreateInboundShipmentPlan for the single item, passing over merchant sku, condition, and asin.  
+
+Yes.....
+
+2. CreateInboundShipmentPlan returns an fnsku which we label the item with and store in our database.  And now I need to store DestinationFulfillmentCenterId and ShipmentId for each item in our database too?
+
+
+Only store the FNSKU
+
+And now this is where I'm lost.  Let's say we have a pile of items labeled with fnskus ready to be shipped (also consider many fnskus that may have been registered with the old API), 
+
+They will have the same FNSKU regardless of API
+
+what do I need to do in order to create a new inbound shipment for them?  I don't really understand the workflow in your guide.   Is there anyway just to create a brand new shipment for the items and not have to deal with all this complexity around looking at existing inbound shipments and the destination for each item, etc?
+
+
+Yes .... and just add whichever items you want to send in to the new shipment.
+
+Edited by: oneida_books on Oct 11, 2011 4:27 PM"
+Amazon Fulfillment Web Service	"Re: MWS migration workflow questions
+Thanks for the answers.  That works for me.  
+
+Didn't realize there was an MWS forum, found it on Google though, will check that out.
+
+Thanks,
+Chris"
+Amazon Fulfillment Web Service	"Re: MWS migration workflow questions
+Sorry ... I thought I posted the link to it. 
+
+Got in to big a hurry to get out the door, I guess, but should anyone else see this post....
+
+Amazon Marketplace Web Service (Amazon MWS)
+http://www.amazonsellercommunity.com/forums/forum.jspa?forumID=43&start=0"
+Amazon Fulfillment Web Service	"By using AWS Fullfilment API can we upload compatibility chart on amazon
+Do anyone have information how can we upload or submit the compatibility chart on Amazon by using AWS API..
+
+Compatibility chart
+http://www.amazon.com/gp/product/compatibility-chart/B001G6MO1K/ref=au_pf_dp_chart"
+Amazon Fulfillment Web Service	"Re: By using AWS Fullfilment API can we upload compatibility chart on amazon
+wrong forum ...
+
+AWS API forum:
+https://forums.aws.amazon.com/forum.jspa?forumID=9&start=0"
+Amazon Fulfillment Web Service	"New to Amazon API programming. Help please.
+Hi All,
+
+I got a task to do following. Please help me. I'm new to this Amazon API programming.
+I don't know how to start. I like to tell you that, I am very good in C# programming.
+
+Tasks:
+
+1. Connect to Amazon
+2. Get Orders from Amazon.
+3. Update Orders
+
+Your help is very much important. Kindly help.
+
+Thanks,
+Mark"
+Amazon Fulfillment Web Service	"Re: New to Amazon API programming. Help please.
+This API is going out the door before long.
+
+Best to start with the MWS API ...
+
+MWS Forum:
+http://www.amazonsellercommunity.com/forums/forum.jspa?forumID=43&start=0
+
+MWS API's:
+https://developer.amazonservices.com/"
+Amazon Fulfillment Web Service	"2011-10-05T13:09:01Z: SIRM unavailable,SISS available,SIPS available??
+We are having problems sending fulfillment orders to Amazon today.  Nothing has changed in our code that has been running great for a year.
+
+
+Dim servicestatusresponse As New Amazon.FWSOutbound.Model.GetServiceStatusResponse
+Dim servicestatusrequest As New Amazon.FWSOutbound.Model.GetServiceStatus
+
+servicestatusresponse = _AmazonFWSservice.GetServiceStatus(servicestatusrequest)
+
+
+We are getting:
+2011-10-05T13:09:01Z: SIRM unavailable,SISS available,SIPS available
+
+in the servicestatusresponse.GetServiceStatusResult.Status 
+
+This is causing our multichannel orders to fail being sent to Amazon for fulfillment.  
+
+Is the system down now?"
+Amazon Fulfillment Web Service	"Re: 2011-10-05T13:09:01Z: SIRM unavailable,SISS available,SIPS available??
+We're aware of this issue and working to resolve the problem. We'll be updating the following thread as more news is available.
+
+https://forums.aws.amazon.com/thread.jspa?threadID=77545"
+Amazon Fulfillment Web Service	"""We encountered an internal error. Please try again"" errors
+Hi,
+I'm seeing a much higher rate than normal of the following error while sending and updating fulfillment orders:
+We encountered an internal error. Please try again.
+
+It started around 11:30am PST yesterday morning and is still continuing.
+
+Here's an example response:
+= Response
+
+HTTP/1.1 500 Internal Server Error
+Content-Type: text/xml;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 05 Oct 2011 06:37:11 GMT
+Connection: close
+Server: Amazon Fulfillment Service
+
+1e2
+<?xml version=""1.0""?>
+<env:Envelope xmlns:env=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:aws=""http://webservices.amazon.com/AWSFault/2005-15-09""><env:Body><env:Fault><faultcode>aws:Server.InternalError</faultcode><faultstring>We encountered an internal error. Please try again.</faultstring><detail><aws:RequestId xmlns:aws=""http://webservices.amazon.com/AWSFault/2005-15-09"">8eb9bb6f-7077-4096-8f8a-24bcf93a5448</aws:RequestId></detail></env:Fault></env:Body></env:Envelope>
+0
+
+Thanks,
+Chris"
+Amazon Fulfillment Web Service	"Re: ""We encountered an internal error. Please try again"" errors
+We're aware of this issue and have been working on it through the night.
+
+I'm sorry I wasn't able to update you sooner."
+Amazon Fulfillment Web Service	"Re: ""We encountered an internal error. Please try again"" errors
+Hey Josh,
+
+Thanks for the update.  Much appreciated.
+
+-Chris"
+Amazon Fulfillment Web Service	"A create request already exists for Merchant Fulfillment Order Id
+I've been getting a log of these errors today. Seems pretty random. However, the orders do appear to be going through because they appear in they manage orders list. Anyone else seeing this?"
+Amazon Fulfillment Web Service	"Re: A create request already exists for Merchant Fulfillment Order Id
+This can be caused when one retries after a timeout or Service Fault if the Fulfillment Web Service eventually does process your request completely. The reason for the elevated rate right now is the problem discussed in https://forums.aws.amazon.com/thread.jspa?threadID=77545."
+Amazon Fulfillment Web Service	"Re: A create request already exists for Merchant Fulfillment Order Id
+Thanks for the update. I was seeing a lot of these earlier:
+
+Amazon.FWSOutbound.AmazonFWSOutboundException: Maximum number of retry attempts reached : 3
+
+I'll keep watching the forums for more information."
+Amazon Fulfillment Web Service	"Shopping Cart with FWS Integration
+Are there ANY shopping carts out here that have FWS integration either out of the box or via a plugin/extension?  I've looked into magento, oscommerce, zen cart....doesn't seem like any have any pre-existing integrations, which seems a little absurd!"
+Amazon Fulfillment Web Service	"Re: Shopping Cart with FWS Integration
+As far as I am aware of ixxo cart (www.ixxocart.com) integrates with Amazon Merchant Services."
+Amazon Fulfillment Web Service	"Re: Shopping Cart with FWS Integration Magento
+HMM did not see that in the demo site for payment gatewayI am also wanting  to use magento system  for shopping store and wish to import Amazon products in to itDose anybody have any scripts or a modules  to pass the ASIN ID's to the HASH virtual carts for checkout
+
+Message was edited by: webboy"
+Amazon Fulfillment Web Service	"Re: Shopping Cart with FWS Integration Magento
+associatesformagento.com ? I know my boss is using that..."
+Amazon Fulfillment Web Service	"Shopify and Shipping Options (free shipping? International Shipping?)
+Hi,
+
+I'm working on integrating my Shopify ecommerce store with my Amazon account. I currently have stock in inventory at an Amazon warehouse.
+
+I was looking at the Shopify Wiki on Amazon FWS/FBA:  http://wiki.shopify.com/Help:Preferences#Fulfillment_by_Amazon
+
+I have three questions from this:
+
+1: International Shipping A significant percentage of my customers are International. The Shopify Wiki claims FWS can't do international shipping:
+
+
+Note: Only Amazon USA is supported. Amazon only ships within the USA.
+
+Items configured to use Amazon Fulfillment can ONLY be shipped to US customers via Amazon. See here: http://aws.amazon.com/fws/
+
+
+Is this true? I can find nothing on the aws/fws documentation that says Amazon can't ship internationally.
+
+2: Free Shipping The Shopify Wiki also claims that FWS can't do free shipping:
+
+
+Shipping Methods
+
+    * Standard Shipping
+    * Expedited Shipping
+    * Priority Shipping 
+
+These must be weight-based rates and can have any non-zero $ value. Specify the weight range that you want to cover for each of the 3 rates. For example, you could have:
+
+    * Standard Shipping 0-50lbs $25
+    * Expedited Shipping 0-50lbs $50
+    * Priority Shipping 0-50lbs $75 
+
+and also
+
+    * Standard Shipping 50.1-100lbs $55
+    * Expedited Shipping 50.1-100lbs $75
+    * Priority Shipping 50.1-100lbs $100
+
+I interpret this to mean that I can't offer free shipping, and I must calculate shipping based on weight, but I want to offer free shipping based on how much my customers spend (free shipping for orders over $20). My items are very light, so I'm not concerned about weight.
+
+3: Shipping Options/Carriers Finally, given the previous quote, I am curious about the differences for Standard, Expedited, and Priority Shipping. I assume my customers want to know how quickly each option is, and I want to know how much each option will cost, as well as who the carrier will be. The wiki claims I need to set shipping rates:
+
+
+Additionally...
+
+Amazon DOES NOT return shipping rates automatically, so values for the rates MUST BE SET in Shopify.
+
+I'm fine with that, but I need to know an estimate for each option to a given location so that I can extend those rates to my customers. This is particularly true for international, as well as priority and expedited shipping options.
+
+Thanks for any feedback on this topic!
+
+-Martin
+
+Edited by: whenitpours on Sep 8, 2011 12:33 PM"
+Amazon Fulfillment Web Service	"Re: Shopify and Shipping Options (free shipping? International Shipping?)
+Hi,
+
+I'll try to address your questions in order.
+
+1. FWS does not currently support international shipments. On-Amazon sales of your FBA inventory can be shipped internationally if you sign up for that service on SellerCentral.
+
+2. FWS will always charge you for shipping based on the FBA Rate Card. FWS has no interaction with your customers aside from sending whatever you ask us. If you want to pass this cost on to your customer (or not), that's up to you.
+
+3. The GetFulfillmentPreview operation will allow you to display, for each order, when we believe each shipping speed will arrive, just like we do on the Amazon.com website.
+
+The shipping speeds vary for each country, and exceptions can apply (which is why we encourage using GetFulfillmentPreview), but, in general, in the United States:
+Priority: 1 business day
+Expedited: 2 business day
+Standard: 3 - 5 business day
+
+I hope this helps."
+Amazon Fulfillment Web Service	"Re: Shopify and Shipping Options (free shipping? International Shipping?)
+Thanks Josh,
+
+That helps a lot, and I really appreciate the rapid response. I have some follow up questions:
+
+1: What does FWS do for International Customers? If FWS doesn't support international shipping (please add this feature, and soon!) what will happen if a customer of mine puts in an international shipping address? If I have to handle all international shipments manually, that's OK (for now), but I need to make sure the orders are still going through, and preferably be notified when there is an order that FWS/FBA can't fulfill.
+
+2a: Shipping Rates I will redirect this question to the shopify staff, since I'm confused why the shopify wiki says it must be weight based, and must be a non-zero value. Based on your comment, as long as they're named ""Standard Shipping"" ""Expedited Shipping"" and ""Priority Shipping"" then they will ship as such from Amazon, no matter what I charge my customers.
+
+2b: Shipping Titles I want to add transit time estimates to the shipping options. Can I title my shipping options with the estimated deliver times? Such as ""Priority Shipping: 1 business day"" or must it be ""Priority Shipping"" verbatim? I want to be compliant with Amazon FWS, but also provide my customers with the requisite information.
+
+3: GetFulfillmentPreview I didn't know about this function. Thanks, I'll look into it further.
+
+Edited by: whenitpours on Sep 8, 2011 1:08 PM"
+Amazon Fulfillment Web Service	"Re: Shopify and Shipping Options (free shipping? International Shipping?)
+Hi,
+
+I'll try to answer your questions in order.
+
+1. I don't know what Shopify does. If you were placing the order through SellerCentral, AWS, MWS, or feeds directly, the order would be immediately rejected by our systems. (GetFulfillmentPreview would also reject the order.)
+
+2a. I don't know if the names matter. You'll need to ask Shopify. Our APIs specify the names, but Shopify may handle that integration for you.
+
+2b. Again, there's no reason (from Amazon's perspective) why you can't do this, so long as the names you pass to Amazon are correct. You'll need to ask Shopify.
+
+3. I hope it helps.
+
+-Josh"
+Amazon Fulfillment Web Service	"Re: Shopify and Shipping Options (free shipping? International Shipping?)
+Thanks again, Josh!
+
+It can be difficult to know who the right person to contact is (you guys or the Shopify guys). Thanks for the rapid and thorough responses, they've been very helpful to understand how this is all going to work."
+Amazon Fulfillment Web Service	"How to send 'test' data?
+I'm integrating FWS and making CreateFulfillmentOrder calls to pass order data to fulfillment by Amazon.  How do I flag the data as 'test' in order to test the integration?  I want to be able to verify I've built the API call correctly, but I don't want Amazon to actually fulfill the order.  Is there a standard way to generate test orders?  Thanks."
+Amazon Fulfillment Web Service	"Re: How to send 'test' data?
+Right now, there's no way to flag an order for testing. You can submit purposely invalid orders to make sure that you're integrated correctly. You might use invalid SKUs, invalid ZIP codes, or SKUs for which you have no inventory, for example. These should result in error messages that indicate exactly those problems, rather than any other issues.
+
+If you'd like to make sure everything is working and that the orders actually ship, you may want to send in some ""test"" inventory that can be shipped. This, though, will result in an actual shipment (and fees).
+
+I hope this helps."
+Amazon Fulfillment Web Service	"Re: How to send 'test' data?
+I think I'd go MWS instead for developing right now .. it's the future.
+
+However it doesn't have the getfn_sku capability....."
+Amazon Fulfillment Web Service	"NOT_IN_PRODUCT_CATALOG and NO_TITLE errors
+Around 2:15 CST today we started receiving the following error message for all of our items we attempt to list through FBA:Value Invalid parameter for parameter item.merchantSku is invalid. Reason: Invalid Items  InvalidItems[ (skuType={Enum::MSKU}, sku=1GA2A7000NVC, reason=NOT_IN_PRODUCT_CATALOG), (skuType={Enum::MSKU}, sku=1GA2A7000NVC, reason=NO_TITLE)].Did something change recently that would cause this error to appear more than normal?  I realize that this error normally means that you don't have the title information for the ASIN and thus cannot create an FBA sticker."
+Amazon Fulfillment Web Service	"Re: NOT_IN_PRODUCT_CATALOG and NO_TITLE errors
+There was a site wide issue which affected catalog information.  This has been resolved, sorry for any inconvenience."
+Amazon Fulfillment Web Service	"Re: NOT_IN_PRODUCT_CATALOG and NO_TITLE errors
+Thanks Mark!  Sorry, I meant to post today and say that everything was back to normal. By the way, are you going to be around for the Amazon seller's conference coming up on July 9th - July 12th?  I'd love to meet you and talk FBA."
+Amazon Fulfillment Web Service	"Re: NOT_IN_PRODUCT_CATALOG and NO_TITLE errors
+Andy:I'd love to chat. I am trying to see if we are arranging any larger FBA - Seller Conference events.  Please ping me at mbg@amazon.com for further details."
+Amazon Fulfillment Web Service	"Re: NOT_IN_PRODUCT_CATALOG and NO_TITLE errors
+Mark:
+
+This error was reported again today by one of our customers who is using Seller Engine Plus to manage FBA shipments:
+
+Preview shipment has failed! Errors:#13#10GetInboundShipmentPreview response: Error code:aws:Client.InvalidParameterValue
+Error string: Value Invalid parameter for parameter UnknownSku is invalid. Reason: Invalid shipment items. InvalidItems (skuType={Enum::MSKU}, sku=49110, reason=NOT_IN_PRODUCT_CATALOG), (skuType={Enum::MSKU}, sku=65895, reason=NOT_IN_PRODUCT_CATALOG). 
+
+Is Amazon working on this?
+
+Thanks,
+Dan
+SellerEngine Software"
+Amazon Fulfillment Web Service	"Re: NOT_IN_PRODUCT_CATALOG and NO_TITLE errors
+Also, another customer reported a different error message: ""insufficientinventorygroups map""
+
+Error received:
+error GetinboundShipmentppreview response:"" error
+code:aws:client.invalidparametervalue error string value for parameter
+is invalid . reason insufficientinventorygroups map:"
+Amazon Fulfillment Web Service	"high influx of NOT_IN_PRODUCT_CATALOG errors in last day
+Hi,
+We've been seeing a very high number of product catalog errors which started occurring in the last day or so.  This occurs when creating inbound shipments and also when creating outbound orders. 
+
+The error when creating an outbound order looks like:
+SOAP::FaultError:Value ItemMissingCatalogData for parameter  is invalid. Reason: 1 error:
+Item with ID 1440526 is missing catalog data
+
+The error when creating an inbound shipment looks like:
+Value Invalid parameter for parameter UnknownSku is invalid. Reason: Invalid shipment items.  InvalidItems (skuType={Enum::MSKU}, sku=829649, reason=NOT_IN_PRODUCT_CATALOG). -- Value Invalid parameter for parameter UnknownSku is invalid. Reason: Invalid shipment items.  InvalidItems (skuType={Enum::MSKU}, sku=829649, reason=NOT_IN_PRODUCT_CATALOG).
+
+Can you guys look into this for us? 
+
+Thanks,
+Chris"
+Amazon Fulfillment Web Service	"timeouts from FBAOutbound
+I'm seeing a high number of timeouts to FBAOutbound service starting around 1:45 p.m. PST.
+
+-Chris"
+Amazon Fulfillment Web Service	"Assign Fulfillment Identifier when the merchant account is not known
+Hi,
+
+I have a work flow were I'd like to:
+
+1) Based on a merchant SKU assign a Fulfillment Identifier
+2) Use the Fulfillment Identifier and create an inbound shipment.
+
+The only wrinkle is that I don't know the merchant account for the inbound shipment until step 2.
+
+Is it possible to generate Fulfillment Identifiers without a merchant and then assign them to a merchant/shipment at a later time?
+
+Thanks,
+Marty"
+Amazon Fulfillment Web Service	"Re: Assign Fulfillment Identifier when the merchant account is not known
+I came here to search information about merchant account. Actually I want to open one merchant account in USA but I don’t have any particular information about it. So, please anyone help me and suggest some information about high risk merchant account.
+
+ Merchant account
+
+Edited by: henrykipson on Aug 5, 2011 1:11 AM"
+Amazon Fulfillment Web Service	"Marketing copy on the Amazon Fulfillment Web Service is misleading
+http://aws.amazon.com/fws/
+
+Outbound Service
+
+""Upload branding information
+Merchants have the option of branding the packing slips on Amazon.com boxes so their customers always know who they are buying from.""
+
+This is not true. The only customized ""branding"" on FBA is a custom message."
+Amazon Fulfillment Web Service	"Amazon FBA Shipment Automation
+1.) This statement does a good job of expressing our concerns:
+
+
+We need an automated way to correctly plan, order, and ship product to the Amazon fulfillment centers.  For those who manage their products through Seller Central, the tools exist, but the manual involvement is prohibitive for sellers with a large number of SKUs or a high volume.  Given the sophistication of the remainder of the FBA interface, this seems like an extremely restrictive omission.
+
+
+2.) We’re looking for software that has the following features;
+
+
+a.)     In order to accurately forecast “coverage needs” we need to know the average sales of an item on an hourly, Daily, 3 day, Weekly and Monthly basis (or Custom range). It needs to forecast how many units we sent, and recommend how many to send back out to FBA based on item sales for a given range of time.
+
+b.)     It would be helpful to know the total sales (from all sellers) of each ASIN item
+
+c.)     Once we have an accurate way to forecast coverage needs we would need the software to have a “minimum in-stock level.”  If this minimum in stock level is breached we want to receive an email alert
+
+d.)     We need a field which notifies us of slow moving items (i.e. fewer than 1 sell per week as an example)
+
+Edited by: BlueKangaroos on Jul 27, 2011 3:16 PM"
+Amazon Fulfillment Web Service	"Re: Amazon FBA Shipment Automation
+We are developing exactly such a software as part of a broader amazon software package .you can visit my website www.sellermarketplace.com or email me at info@sellermarketplace.com.
+The FBA features should be ready in the next few months"
+Amazon Fulfillment Web Service	"Updating Shipping Carrier Name??
+Is there any way to update shipping carrier name for the shipment using API? I have been looking for the information but so far not able to find anything useful in the documentation. Only thing I found relevant in the documenation is a way to get back the carrier code:
+
+http://docs.amazonwebservices.com/fws/1.1/APIReference/index.html?GetFulfillmentOrder.html
+
+Any idea how I can update the carrier code for our shipments on amazon???
+
+Thanks in advance!
+
+Deep"
+Amazon Fulfillment Web Service	"Re: Updating Shipping Carrier Name??
+Did you find a way to post Shipping Carrier to Amazon for an Outbound shipment?
+
+The documentation doesn't talk about such privilages, but documentations are not very much synced, I know that. 
+
+Please tell me if you found a way to post shipping carrier to amazon while posting a shipment request detail.
+
+  thanks,
+  Sameers"
+Amazon Fulfillment Web Service	"Requests randomly failing with ""Forbidden"" 50% of the time.
+We are using REST FWS api and we are noticing that ~50% of the call randomly fail with ""Forbidden""  complaining about our signature. Any ideas why our requests would randomly fail like this.
+
+https://fba-inventory.amazonaws.com/?Action=GetInventorySupply&AWSAccessKeyId=&ltAccess Key Removed>&Signature=VlMwea+So51Tc9Ddx6Ij3eZ7cJY=&Timestamp=2011-07-28T17:40:56Z&Version=2009-07-31&MerchantSKU.1=1
+#<HTTParty::Response:0x6a0bd78 @parsed_response={""ErrorResponse""=>{""Error""=>{""Type""=>""Sender"", ""Code""=>""SignatureDoesNotMatch"", ""Message""=>""The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. Consult the service documentation for details."", ""Detail""=>nil}, ""RequestID""=>""7ffc16b2-d017-4428-a1c1-5b7755bc2fb1"", ""xmlns""=>""http://fba-inventory.amazonaws.com/doc/2009-07-31/""}}, @response=#<Net::HTTPForbidden 403 Forbidden readbody=true>, @headers={""transfer-encoding""=>, ""date""=>, ""server""=>}>
+
+Here is a sample of how we sign our requests
+https://gist.github.com/1112066"
+Amazon Fulfillment Web Service	"Re: Requests randomly failing with ""Forbidden"" 50% of the time.
+hahaha, i noticed that the requests ONLY fail when there is a '+' in the signature"
+Amazon Fulfillment Web Service	"Re: Requests randomly failing with ""Forbidden"" 50% of the time.
+Yup that was it, just used CGI.escape on the signature param and is now working. The random failures now make a little more sense"
+Amazon Fulfillment Web Service	"Error: Merchant is not registered for Basic fulfillment.
+Hi,
+
+I'm getting an error response with the following message when making a Query request to the CreateFulfillmentOrder action:
+
+""Value MerchantNotRegistered for parameter  is invalid. Reason: Merchant is not registered for Basic fulfillment.""
+
+I've read various other threads reporting the same issue:
+
+http://developer.amazonwebservices.com/connect/thread.jspa?messageID=140771
+http://developer.amazonwebservices.com/connect/thread.jspa?messageID=138466
+http://developer.amazonwebservices.com/connect/thread.jspa?messageID=152945
+
+Per the fixes suggested in those threads:  The account whose credentials I'm using to make the request uses the same email address and password to log in to Seller Central and to AWS.  I have created fulfillment shipments (and actually shipped products, though they have not yet arrived).
+
+Can anyone give me a hand?
+
+(For what it's worth, that error message is sort of strange.  It's missing an actual parameter name here: ""Value MerchantNotRegistered for parameter _____ is invalid.""  But that doesn't make much sense, because none of the parameters in my request have ""MerchantNotRegistered as a value.)"
+Amazon Fulfillment Web Service	"Re: Error: Merchant is not registered for Basic fulfillment.
+Please email your access key and your email address to stepchan@amazon.com and I'll take a look"
+Amazon Fulfillment Web Service	"Re: Error: Merchant is not registered for Basic fulfillment.
+Will any body Please answer to the above question"
+Amazon Fulfillment Web Service	"Re: Error: Merchant is not registered for Basic fulfillment.
+I encounted the same problem."
+Amazon Fulfillment Web Service	"Timeouts hitting the Outbound FWS API
+Today I'm getting nothing but timeouts talking to the outbound FWS API, both from my development machine and from server instances halfway across the country.  There haven't been any code changes on my end.  Is anyone else seeing this?
+
+I'm using the SOAP interface via the active_fulfillment ruby gem.
+
+Edited by: masterleep on Jul 25, 2011 5:01 PM"
+Amazon Fulfillment Web Service	"Re: Timeouts hitting the Outbound FWS API
+This is how the socket looks on my end.
+
+Proto Recv-Q Send-Q  Local Address          Foreign Address        (state)
+tcp4       0      0  mydevbox.52835         206-242.amazon.c.https SYN_SENT"
+Amazon Fulfillment Web Service	"Re: Timeouts hitting the Outbound FWS API
+I'm seeing the same thing, starting about 4:50 pm PST and still continuing.
+
+-Chris"
+Amazon Fulfillment Web Service	"Re: Timeouts hitting the Outbound FWS API
+Can't get any requests out either..."
+Amazon Fulfillment Web Service	"Re: Timeouts hitting the Outbound FWS API
+Things are still down as far as I can tell.  So, er, is this an API which just goes down for hours at a time without comment?  Pretty scary."
+Amazon Fulfillment Web Service	"Re: Timeouts hitting the Outbound FWS API
+Outbound FWS was bounced. Please try again and let us know if you still see the problem."
+Amazon Fulfillment Web Service	"Re: Timeouts hitting the Outbound FWS API
+just noticed they dont track this service on their health status dashboard either"
+Amazon Fulfillment Web Service	"Unable to add an item
+Hi.  Total newbie here who can't figure out how to add an item to sell, and if I need multiple accounts (personal account, AWS, Fulfillment).
+
+I want to sell on Amazon using their fulfillment services.  I read that I can add individual items to sell, and then change those items to Fulfillment items once they are listed (maybe I'm wrong).
+
+Anyway, what happens when I try to sell something is:
+
+I go to the page of a product I want to sell (i.e http://www.amazon.com/Collinite%C2%AE-Insulator-Wax-16-oz/dp/B000JK2D06/ref=sr_1_1?ie=UTF8&qid=1311605130&sr=8-1).  
+
+On the right-hand side I click on Sell Yours Here.  I get taken to this URL: https://catalog-retail.amazon.com/abis/syh/DisplayCondition/ref=dp_sdp_sell?_encoding=UTF8&coliid=&qid=1311605130&asin=B000JK2D06&sr=8-1&colid=&ld=AMZDP, and a page which says:
+
+Problem with your Seller Account
+
+You are logged in with your seller account. If you continue, you will be asked to sign in with an account to complete the listing. If you do not have an existing seller account in you will be given the opportunity to create one.
+
+Cancel
+Continue
+
+If I click on Cancel I go back to the item page.  If I click Continue I get taken to https://sellercentral.amazon.com/gp/flex/sign-in-syh.html, and it asks me to sign in.  If I then login with my regular amazon account information I get this message:
+
+Error
+
+Your existing account is incompatible with the service(s) you have chosen. Please register by creating a new account with a different e-mail address and password.
+
+Am I not allowed to use one Amazon account for all services?  Do I need a totally different account for my personal amazon account, my AWS account, my Amazon Seller Account.  I have signed up for, and can login to, AWS with my regular, personal login information.
+
+Thank you for any help."
+Amazon Fulfillment Web Service	"Seller Central account vs. AWS account
+Another newbie question...
+
+The company has set up a Seller Central account and I have a developer account delegated to work with it inside Seller Central.  AWS accounts appear to be something else entirely.  How do I link an AWS account to the correct merchant account inside Seller Central?"
+Amazon Fulfillment Web Service	"Re: Seller Central account vs. AWS account
+Hi,
+
+Thanks for trying FWS AWS out. As discussed in the Getting Started Guide (http://docs.amazonwebservices.com/fws/latest/GettingStartedGuide/), you'll need to sign-up for AWS using the same e-mail address and password as the merchant's user-name and password on Seller Central. It may be best to ask your clients to sign up for the AWS account and share the keys with you. There is no way to link accounts between AWS and Seller Central other than this.
+
+The developer accounts in Seller Central are for the Marketplace Web Services (http://developer.amazonservices.com). There is a version of Fulfillment Web Services available for the Marketplace Web Services as well. This MWS version provides the same functionality as the AWS version, and, in the future will provide additional functionality beyond what the AWS version provides.
+
+If you're just getting started, I'd recommend looking at the MWS version, which can handle delegation, which you have already set up.
+
+Hope this helps."
+Amazon Fulfillment Web Service	"Re: Seller Central account vs. AWS account
+Josh@AWS wrote:
+
+The developer accounts in Seller Central are for the Marketplace Web Services (http://developer.amazonservices.com). There is a version of Fulfillment Web Services available for the Marketplace Web Services as well. This MWS version provides the same functionality as the AWS version, and, in the future will provide additional functionality beyond what the AWS version provides.
+
+
+Unless I'm missing it I don't think it has the: GetFulfillmentIdentifier functionality yet so it's not quite the same.........
+
+Am I wrong??"
+Amazon Fulfillment Web Service	"Amazon Reference Id is not returned in the FWS feeds but it is now required
+Amazon Reference Id is not returned in the FWS feeds but it is now required to ship.  Logging in to Seller Central is a bit of a pain.  Any software solution on the horizon?Thanks - Zoe"
+Amazon Fulfillment Web Service	"Re: Amazon Reference Id is not returned in the FWS feeds but it is now required
+Hello Zoe,I am not sure what you mean by ""FWS Feeds"".  Could you please explain what you are doing and possibly provide some reproduction steps so I can see what you are trying to do?  Also, if you could provide the request/feed you are attempting to submit and also provide what the response of our system is, that would expedite the investigation on our end.Thanks.EricO"
+Amazon Fulfillment Web Service	"Re: Amazon Reference Id is not returned in the FWS feeds but it is now required
+I am also hoping to find how to find the Amazon Reference ID: For inbound FBA shipments, as this ID is required to schedule delivery appointment to fulfillment center.  I can get the data from sellercentral login, but am hoping to get it from api"
+Amazon Fulfillment Web Service	"Generating FNSKU for barcodes
+Is there a formula for generating a FNSKU? It would be more efficient given our warehouse setup to print our own labels (according to the label specs). 
+Our orders are too large to copy and paste and there isn't a way to sort the pdf generated labels. 
+Thanks for any help!"
+Amazon Fulfillment Web Service	"Re: Generating FNSKU for barcodes
+Unfortunately, there is no formula or mechanism for generating these, as they must be mapped in our systems in a way that ensures uniqueness and encodes sufficient information to identify the item.
+
+There is a webservice API for getting the FNSku programmatically for your merchant skus, and you can use that for printing labels.  As part of the FBA Inbound API described here: https://developer.amazonservices.com/gp/mws/api.html/176-8550739-5414824?ie=UTF8&section=inbound&group=fba&version=latest you can use CreateInboundShipmentPlan.  Planned shipment data includes fnsku for each item."
+Amazon Fulfillment Web Service	"Re: Generating FNSKU for barcodes
+If you're looking for a low-tech solution, you can consider using the fnsku information contained in the Fulfillment by Amazon report section in SellerCentral. 
+
+The Amazon Fulfilled Inventory report (AFNInventoryReport) contains the FNSku you need to generate these labels. 
+
+You can also pull this report through MWS.
+
+In case your use case requires it, this also gives you the possibility to setup a system that can generate labels in an environment where there is no constant internet connection available. 
+
+Nicolas"
+Amazon Fulfillment Web Service	"Re: Generating FNSKU for barcodes
+Edfqwefdf Rtfgewrfg wrote:
+Is there a formula for generating a FNSKU? It would be more efficient given our warehouse setup to print our own labels (according to the label specs). 
+Our orders are too large to copy and paste and there isn't a way to sort the pdf generated labels. 
+Thanks for any help!
+
+FYI:
+Actually you should be able to sort. Before you print the labels click on 'Title' in the column header and it will sort by title............
+
+Also I thought I ready somewhere that you could generate FNSKU for books since they typically have the ISBN as the ASIN. Can't seem to find that info now though,
+
+Edited by: oneida_books on Jul 15, 2011 8:27 AM"
+Amazon Fulfillment Web Service	"The dreaded NoSuchVersion error
+Hi,
+
+I'm just starting off with the Amazon Fulfillment Web Service and am struggling to get my first basic call to work.  I'm using the Query interface and hitting GetServiceStatus.  I very often get the No Such Version back, which I suspect may really be the error when the signature is wrong.
+
+
+Is '2007-08-02' the correct version these days?
+Does anyone have sample code that shows a correctly generated signature using a sample API key and secret key?
+
+
+Thank you very much!
+
+For example:
+
+curl ""https://fba-inbound.amazonaws.com/?Action=GetServiceStatus&Version=2007-08-02&Timestamp=2011-07-11T16:14:17-07:00&AWSAccessKeyId=XXX&Signature=YYY""
+
+<?xml version=""1.0""?>
+<ErrorResponse xmlns=""http://fba-inbound.amazonaws.com/doc/2007-08-02/""><Error><Type>Sender</Type><Code>NoSuchVersion</Code><Message>The requested version ( 2007-08-02 ) is not valid.</Message><Detail/></Error><RequestID>a431cc4f-9127-480b-81ec-e1d96f9535a7</RequestID></ErrorResponse>"
+Amazon Fulfillment Web Service	"Re: The dreaded NoSuchVersion error
+I wound up using the active_fulfillment gem rather than hitting the API myself.  It does appear that 2007-08-02 is the correct version for the outbound API.  I think the 'unknown version' error message is wrong and can occur when the AWS account is not enabled for the fulfillment API."
+Amazon Fulfillment Web Service	"Re: The dreaded NoSuchVersion error
+There are 3 FBA APIs: Inbound, Outbound and Inventory. Each FWS API has a different version:
+  Inbound: 2007-05-10
+  Outbound: 2007-08-02
+  Inventory: 2009-07-31
+
+The versions are published in the FWS documentation: http://docs.amazonwebservices.com/fws/1.1/APIReference/
+
+The same functionality is offered through MWS -  the recommended API set. The MWS APIs are published here: https://mws/index.html/. Click the link for the API you want in the APIs & Documentation box.
+
+Currently all three MWS APIs have the same version: 2010-10-01"
+Amazon Fulfillment Web Service	"eCommerce
+Does anyone have a list of hosted eCommerce software's that already have amazon fulfillment api without needing to self code?
+
+Right now I am stuck between Shopify and Amazon Webstore but I want to know what other options are out there.
+
+Thanks,
+Jason"
+Amazon Fulfillment Web Service	"FBA Inbound API: Tracking number and shipment/receiving dates?
+Hi,
+
+   I dont see any way to provide tracking number to Amazon FBA for my shipments. neighter PutInboundShipment nor PutInboundShipmentData. Also, I dont see any reference that Amazon tells us that he received items on XX date. Am  I  missing some documentation or it is by design? Shouldn't customers be aware that their shipment has reached to its destination?
+
+  In, Short, I am missing following things from the API.
+
+   1. Tracking Number (I can write to Amazon)
+   2. Shipped On date (I can write to Amazon)
+   3. Shipment Received date (I expect amazon provide me when it receives items)
+   4. Carrier code I used to Ship items to Amazon (I can write to Amazon)
+
+ an ETA to process it by amazon (after receiving shipment) can be helpful though.
+
+   Thanks
+   Sameers"
+Amazon Fulfillment Web Service	"Re: FBA Inbound API: Tracking number and shipment/receiving dates?
+I am also looking for the same information, and was wondering if anybody has found anything out ."
+Amazon Fulfillment Web Service	"Inbound Fulfillment Shipment - How to update tracking
+I am using the API to create inbound shipments of product going to the fulfillment center.  I see that I can mark status to 'shipped' but I have not found a way to enter the delivering carrier and tracking information. 
+
+I currently log into my amazon seller account to complete the inbound shipment since I have not seen how to add this information via API.
+
+Any suggestions ?
+
+Thanks"
+Amazon Fulfillment Web Service	"Bug in FBA Fulfillment Report wrt quantity capture
+Hi,
+
+We are using fba.
+
+I also retrieve the fulfillment report once a day that is to import the data wrt purchases for fba.
+
+Sometimes a customer makes a purchase of a  quantity of lets say 3.
+
+Instead of retrieving one record with the quantity field set to 3. The report returns 
+
+3 identical records with a quantity of 1.  
+
+The problem is that they are completely identical records ie 
+there isn't one value in the record to distinguish them as being different records.
+
+When I update my database there is no way I can check for duplicates 
+ie lets say I need to run the report again for some reason (Well I'm going to have to create a work-around.)
+
+Isn't this a bug in the FBA Fulfillment report.
+
+Shouldn't it be One Record with the quantity set to 3 instead of 3 identical records with
+a quantity of 1.
+
+David j."
+Amazon Fulfillment Web Service	"Re: Bug in FBA Fulfillment Report wrt quantity capture
+The way the Amazon-Fulfilled Shipment Report works is that each item shipped in a different package gets its own line in the report. Usually, these have subtly different values. Sometimes, especially for large items, 3 identical items in the same order can all ship in different shipments.
+
+If the shipment-id, shipment-item-id, and  tracking-number columns for all three items are the same in the report, please contact TAM, who will be able to get the investigation underway.
+
+TAM can be reached using the form at https://sellercentral.amazon.com/gp/contact-us/contact-amazon-form.html."
+Amazon Fulfillment Web Service	"Re: Bug in FBA Fulfillment Report wrt quantity capture
+I am trying to get  '_GET_AMAZON_FULFILLED_SHIPMENTS_DATA_' report but all efforts are in vain. I am able to get other reports like '_GET_CONVERGED_FLAT_FILE_ORDER
+_REPORT_DATA_'. When i request  '_GET_AMAZON_FULFILLED_SHIPMENTS_DATA_' i will get the request id but i am unable to get the report id to get the actual report. i am using same merchant id for both reports. I also try to use merchant token instead of merchant id for  '_GET_AMAZON_FULFILLED_SHIPMENTS_DATA_', After that i am unable to get the request id. Please update me which merchant id i have to use, And how i will get this. Thanks"
+Amazon Fulfillment Web Service	"Re: Bug in FBA Fulfillment Report wrt quantity capture
+This forum is for discussing the AWS version of the Fulfillment Web Services API and not the Marketplace Web Services. The MWS reporting APIs are discussed at http://www.amazonsellercommunity.com/forums/forum.jspa?forumID=43. Have you tried asking your question there?
+
+Alternatively, you may want to contact the MWS team directly at https://sellercentral.amazon.com/gp/mws/contactus.html."
+Amazon Fulfillment Web Service	"Correct api for post bulk products on amazon
+Hello ,
+
+I am new to this amazon concept and i don't know how to post bulk products on amazon using c# and i searching daily for the solution but i am so confused with all the api documents.I didn't get any solution still.Please provide any links or sample code related this topic...
+
+Thanks In Advance"
+Amazon Fulfillment Web Service	"Amazon Fullfillment API returning Exception
+MarketplaceWebService\Client.phpMarketplaceWebService\Model\RequestReportRequest.phpCaughtException: Access to the resource Merchant M_MILAGROENT_7636275 is not
+a valid merchant is denied. Response Status Code: 403 Error Code:AccessDenied Error Type: Sender Request ID: XXXXXXXXXXXXXXXXXX XML: SenderAccessDeniedAccess to the resource Merchant XXXXXXXXXXX is not a valid merchant is denied.XXXXXXXXXX
+
+Although I am passing a valid merchant Token."
+Amazon Fulfillment Web Service	"Re: Amazon Fullfillment API returning Exception
+This forum is for discussing the AWS version of the Fulfillment Web Services API and not the Marketplace Web Services. The MWS reporting APIs are discussed at http://www.amazonsellercommunity.com/forums/forum.jspa?forumID=43. Have you tried asking your question there?
+
+Alternatively, you may want to contact the MWS team directly at https://sellercentral.amazon.com/gp/mws/contactus.html."
+Amazon Fulfillment Web Service	"other merchant inventory with FWS
+Hi,
+I'm pretty sure the answer to this question is ""no"", but I just wanted to clarify.
+Is there any way to view and order FBA inventory that is being offered on the marketplace from other sellers via the FWS API (or any other API)?
+
+Thanks
+Chris"
+Amazon Fulfillment Web Service	"Re: other merchant inventory with FWS
+Hi,
+
+As far as I know, there is no programmatic way to order other merchants' (or Amazon's) inventory.
+
+The Fulfillment Web Services are offered to help merchants in the Fulfillment By Amazon program manage their business.
+
+Thanks.
+
+-Josh"
+Amazon Fulfillment Web Service	"GetInventorySupply Shows Zero Inventory
+I'm sending a request with GetInventorySupply, but no matter which MerchantSKU I put in the response shows zero inventory.  Also, the response is much less detailed than the response that shows in the Developers Guide.  Strangely, it shows the same response even if I put in an SKU that doesn't exist.  
+
+Parameters are as follows:
+
+Action=GetInventorySupply
+MerchantSKU.1=US-AM001-G
+ResponseGroup=Detailed
+
+And here's the response:
+
+<?xml version=""1.0""?>
+<ns1:GetInventorySupplyResponse xmlns:ns1=""http://fba-inventory.amazonaws.com/doc/2009-07-31/""><ns1:GetInventorySupplyResult><ns1:MerchantSKUSupply><ns1:MerchantSKU>US-AM001-G</ns1:MerchantSKU><ns1:TotalSupplyQuantity>0</ns1:TotalSupplyQuantity><ns1:InStockSupplyQuantity>0</ns1:InStockSupplyQuantity></ns1:MerchantSKUSupply></ns1:GetInventorySupplyResult><ns1:ResponseMetadata><ns1:RequestId>f6618bd7-0d60-4458-ae81-56a745ce957d</ns1:RequestId></ns1:ResponseMetadata></ns1:GetInventorySupplyResponse>"
+Amazon Fulfillment Web Service	"Re: GetInventorySupply Shows Zero Inventory
+It seems that the Access Key you are using is not tied to any merchant account for Selling on Amazon. Thus, we are replying with a default response that you do not have any inventory, no matter what SKU you ask about.
+
+Please remember that, when using the Fulfillment Web Services, your AWS developer account and your Selling on Amazon account must have the same e-mail address and password. Further, in order to use the Fulfillment Web Services, you must also be registered for Fulfillment by Amazon."
+Amazon Fulfillment Web Service	"Re: GetInventorySupply Shows Zero Inventory
+That makes sense.  I'll go back to my account and try to get it sorted out.  Thanks!
+
+Aaron"
+Amazon Fulfillment Web Service	"Re: GetInventorySupply Shows Zero Inventory
+I have the same experience and got good answer after I used my AWS access keys. Now I got good inventory reply using FWS API. However, when I tried to query for any merchant sku that I can find at www.amazon.com, I got 0 reply. Sorry, I am a newbie to FWS. I believe you guys know this as basic. Anyway, example is I input 001588588010 in Amazon website and I get Lego Batman the Videogame & Pure. Using the FWS API, 
+
+$request = new Amazon_FWSInventory_Model_GetInventorySupplyRequest();
+invokeGetInventorySupply($service, $request->withMerchantSKU(""001588588010""));
+
+I got 0.  If I use FBA-001588588010 which is how we name our own SKUs, I got actual inventory count. Does this mean I cannot access info of other vendor inventory? I want to how much stock others also have so I can order from them when my count is 0. Do I need other Amazon web services to accomplish this?"
+Amazon Fulfillment Web Service	"Re: GetInventorySupply Shows Zero Inventory
+You cannot access other vendors' inventory."
+Amazon Fulfillment Web Service	"shipping cost
+I want to get shipping cost. When doing ItemLookup with ShippingCharges as ResponseGroup, it returns null. Any other means?"

@@ -1,0 +1,367 @@
+label	description
+AWS IoT	"Is AWS IoT Core the right choice?
+Hey guys,
+
+I just want to do a simple IoT thing the other way round. What you can find on YouTube etc. are tutorials that setup a Raspberry Pi to send sensor data to the AWS cloud. I want to go the other way round: I have a mobile application and if an event is triggered here (click on a dedicated button), it should trigger an event on the Pi to execute some Python code.
+
+Is AWS IoT Core the right product for it or must I go with API Gateway WebSockets instead? Unfortunately I wasn't able to find a good example online for this (from my point of view) standard IoT scenario.
+
+Thanks a lot for ya help!"
+AWS IoT	"AWSIoTPythonSDK.exception.AWSIoTExceptions.DiscoveryDataNotFoundException
+Hi, Help needed to resolve an error, I am trying to publish values to a topic, using basicdiscovery.py for greengrass.
+
+Greengrass core is installed inside Raspberry Pi.
+
+I have registered two devices to my greengrass group, which are executed using windows machine,as explained  here
+
+https://docs.aws.amazon.com/greengrass/latest/developerguide/device-group.html
+
+when i execute basicdiscovery.py as a publisher,  i have the following error
+
+2019-02-27 11:38:56,771 - AWSIoTPythonSDK.core.greengrass.discovery.providers - DEBUG - Receiving discover response header...
+2019-02-27 11:38:56,883 - AWSIoTPythonSDK.core.greengrass.discovery.providers - DEBUG - Receiving discover response body...
+Error in discovery!
+Type: <class 'AWSIoTPythonSDK.exception.AWSIoTExceptions.DiscoveryDataNotFoundException'>
+Error message: No discovery data found
+
+6/10 retries left
+
+Backing off...
+
+Both my greengrass core device and windows system is connected to the same network,Is this something to do with my resources in thing policy.
+
+Thanks."
+AWS IoT	"Subscribe to shadow events of thing groups / thing types
+Hi.
+
+I am in scenario where I want to subscribe to shadow updates of a group of things.
+For example:
+`$aws/thinggroup/groupName/shadow/update/documents`
+
+This does not work, and I can only use the following:
+
+`$aws/things/+/shadow/update/documents`
+
+Which will subscribe to ALL things, which is not what I want.
+
+Is it possible to subscribe to only a subset of things shadow updates, whether it be thing group, thing type or just possibly a prefix in the thing name (for example, $aws/things/vehicle-*/shadow/update/documents)?
+
+I didn't find a way so far to do that except republishing to another topic, which mean creating a rule and publishing an extra message..."
+AWS IoT	"Connect to AWS Greengrass MQTT Broker without AWS IoT SDK
+Hello everyone,
+we're working on a IoT project trying to connect a Siemens PLC (S7 1200) with Greengrass Core installed on a Raspberry via MQTT. The Siemens PLC has a MQTT Publisher but it seems that it cannot be extended, that means it can be configured only with a specific server endpoint and TLS certificate. Is there any way to directly connect to the Greengrass MQTT Broker without using the AWS IoT SDK? Probably the Siemens MQTT Publisher could work directly publishing messages on a AWS IoT topic, skipping Greengrass, but it's not what we're looking for.
+
+Thank you!"
+AWS IoT	"IoT Publish delayed?
+Hi,
+I am currently developing a solution that will make an intesive use of IoT platform and need basically to publish MQTT messages to thing groups.
+
+Everything seems to work fine, but from time to time messages are taking a lot of time to arrive to my thing, about several minutes. Note that same event is received inmediately on AWS MQTT client if I subscrive on the same group topic.
+
+Is there any way to flush IoT broker?
+Any suggestion?
+
+Thanks,
+Oscar."
+AWS IoT	"Notification of lifecycle events to Lambda within short timeframe
+Hello,
+
+We have a use case where we are required:
+
+1) to be notified of lifecycle events (https://docs.aws.amazon.com/iot/latest/developerguide/life-cycle-events.html#connect-disconnect) at a Lambda function no later than ~20 seconds after the the device subscribes or disconnects.  
+2) to ensure lifecycle events are delivered in the order they occurred.  if necessary, we can rely on the timestamps in the message to perform ordering ourselves, if they are ordered correctly with relation to other events.
+
+Can we rely on delivery of lifecycle events to the Lambda within the above tolerances assuming we have setup the IoT rules correctly?"
+AWS IoT	"Sending SNS using IoT rule with attributes
+Hi,
+
+I'm trying to use a rule to send an SNS notification from IoT, using attributes to filter the topic subscription in SNS.
+
+I've set my SQL in IoT rules as follows:
+SELECT * as Message, ""String"" as Topic.DataType, topic(2) as Topic.StringValue FROM 'myTopic/subTopic/Test'
+
+When I catch the posted message in a seperate topic, I can see that the message being sent to SNS is:
+{""Message"":{""default"":""This is the default Message"",""APNS_SANDBOX"":""{\""aps\"" : { \""alert\"" : \""Test Message\"", \""badge\"" : 0, \""content-available\"" : 1,\""category\"" :\""myCategory\"",\""sound\"" :\""default\""}}""},""Topic"":{""DataType"":""String"",""StringValue"":""12345""}}
+
+If I clear all Subscription Filters in SNS, the message arrives fine. But as soon as I apply the filter, it stops working.
+
+My SNS Topic Subscription Policy is set to:
+{""Topic"" : }
+
+Any ideas what I'm doing wrong?
+
+Edited by: Needlerp on Jul 26, 2018 6:25 AM"
+AWS IoT	"Re: Sending SNS using IoT rule with attributes
+Hi Needlerp,
+
+Did you figure out the problem? If not I'm happy to help. A couple questions first of all:
+
+1) Is your SNS action Message Format set to ""JSON""?
+2) Is your filter {""Topic"" : } complete?
+
+Thanks,
+Brendan"
+AWS IoT	"Re: Sending SNS using IoT rule with attributes
+Thanks. I managed to get this sorted by re-posting to a Lamda script and running the notification from there."
+AWS IoT	"Re: Sending SNS using IoT rule with attributes
+I'm glad you got it working!
+
+Please let us know if you'd like help implementing this natively in the Rules Engine.
+
+Thanks,
+Brendan"
+AWS IoT	"Re: Sending SNS using IoT rule with attributes
+I would definitely like some help implementing it natively in the rules engine! How can I set SNS message attributes without having to use a lambda? Is there an example anywhere?"
+AWS IoT	"How to partition Iot access with Cognito?
+Currently I have the following policy which almost does the trick:
+{
+  ""Version"": ""2012-10-17"",
+  ""Statement"": [
+    {
+      ""Effect"": ""Allow"",
+      ""Action"": \[""iot:Connect""],
+      ""Resource"": \[""arn:aws:iot:eu-west-1:929242459730:client/${iot:ClientId}""]
+    },
+    {
+      ""Effect"": ""Allow"",
+      ""Action"": \[""iot:Subscribe""],
+      ""Resource"": \[""arn:aws:iot:eu-west-1:929242459730:topicfilter/myapp/${cognito-identity.amazonaws.com:sub}/*""]
+    },
+    {
+      ""Effect"": ""Allow"",
+      ""Action"": \[""iot:Receive""],
+      ""Resource"": \[""*""]
+    },
+    {
+      ""Effect"": ""Allow"",
+      ""Action"": \[""iot:Publish""],
+      ""Resource"": \[""arn:aws:iot:eu-west-1:929242459730:topic/myapp/${cognito-identity.amazonaws.com:sub}/*""]
+    }
+  ]
+}
+
+
+but unfortunately I still need to attach every individual user from the identity pool as a principal to this policy. I'm trying to make this universal, so when a new user registers she automatically gets access to communicate with her own things.
+
+Please help."
+AWS IoT	"Re: How to partition Iot access with Cognito?
+Anyone?"
+AWS IoT	"Re: How to partition Iot access with Cognito?
+Hi Rosen
+
+Thnx for reaching out and sorry for the delay in reply.
+
+The policy you gave in the example is a great way to partition access via cognito. Although, you can attach this policy to the pool level(to the role attached to the pool), rather than attaching it to individual cognito users.
+
+That said, if you are using un-authenticated cognito pool you need not attach any policy to individual cognito IDs.
+
+But in case you are using authenticated cognito pool, you still need a policy at individual cognito ID.
+
+We understand your pain point in having to attach this policy to individual cognito IDs(in case of authenticated pool). This is done to give fine grain access control at individual cognito id level. To address the pain point of attaching policy to the individual cognito IDs, we recommend our customers to use AWS Lambda functions. So the flow in this case will be:
+
+1. Cognito pool policy should have permission to call lambda(in addition to your policy)
+2. Device gets credentials from cognito.
+3. Calls lambda using those credentials.
+4. Lambda code retrieves the cognito Id through which lambda was triggered.
+5. Lambda code attaches policy to the cognito Id.
+6. Your device is ready for using AWS IoT now.
+
+Hope this helps.
+
+Thnx
+Ashutosh"
+AWS IoT	"Re: How to partition Iot access with Cognito?
+I'm attempting to build something similar where I have a consumer product communicating with IoT and then end users (people that bought the product) using a mobile app and authenticating via cognito. I have not found a way to give those users access to their product and only there product. 
+
+When you say: ""We understand your pain point in having to attach this policy to individual cognito IDs(in case of authenticated pool). This is done to give fine grain access control at individual cognito id level ....  5. Lambda code attaches policy to the cognito Id"" 
+
+How does that happen? I've been unable to find any SDK documentation that shows how to attach a policy to a cognito Id other than the original one from the authenticated IAM role. I'd like the device to do this by invoking a lambda during the commissioning process where the user is directly connected to it via wifi (to ensure physical access to the product)
+
+Edited by: bennybtl on Aug 7, 2017 12:15 PM"
+AWS IoT	"Re: How to partition Iot access with Cognito?
+@bennybtl,
+I have a similar project. I want to use AWS IoT to be the back-end for an IoT controller and use AWS Cognito for user management. Were you able to find a sutable solution?
+
+Maybe this will help you. It partially solves my problem and I'm hoping for help from AWS or forum to help me figure out the remaining bits.
+
+This is what I have so far:
+1. Created a test ""thing"" based this article: https://docs.aws.amazon.com/iot/latest/developerguide/iot-sdk-setup.html
+2. Created a user Cognito User Pool using the AWS Web Console.
+3. Created 3 test users.
+4. Added an Attribute Key to MyRpi called owner and value that matched the sub of one of the Cognito Users
+5. Created this Policy under AwsIoT -> Secure -> Policies...
+{
+  ""Version"": ""2012-10-17"",
+  ""Statement"": [
+    {
+      ""Effect"": ""Allow"",
+      ""Action"": ""iot:*"",
+      ""Resource"": ""arn:aws:iot:us-east-1:5822116XXXXX:thing/*"",
+      ""Condition"": {
+        ""StringEquals"": {
+          ""cognito-identity.amazonaws.com:sub"": ""${iot:Connection.Thing.Attributes[owner]}""
+        }
+      }
+    }
+  ]
+}
+
+7. Created a test Android app using the Amplify API https://aws-amplify.github.io/docs
+8. The user can log in using the Android App, then tn I attach the policy (above policy called demo-sub-policy)...
+private fun attachPolicy() {
+        val identiyId = AWSMobileClient.getInstance().identityId
+ 
+        val attachPolicyReq = AttachPolicyRequest()
+        attachPolicyReq.policyName = ""demo-sub-policy""
+        attachPolicyReq.target = identiyId
+        val iotAndroidClient = AWSIotClient(AWSMobileClient.getInstance())
+        iotAndroidClient.setRegion(Region.getRegion(""us-east-1""))
+        iotAndroidClient.attachPolicy(attachPolicyReq)
+    }
+
+
+This works! Only the user with the matching sub can connect to the thing and interact with its shadow through the MQTT API. I think I could do something similar for a Thing Group. So a user could own a house full of IoT device. 
+
+However, there is still a problem. I want the owner of a device (or a group of devices) to be able to share access to their things with other users. My first Idea was to create a Cognito User Group and Thing Group for each ""house"", but it appears that you can only have 20 User Groups per Cognito User Pool. That will not scale very well.
+
+The other problem is how to set this up as each user receives and registers their things. I think the AWS API is rich enough to do this on the Android and iOS apps as part of the on-boarding. But I'm nervous about granting too many permissions."
+AWS IoT	"Confusion about device security for IAM access to AWS IoT
+I wish to securely provision devices on AWS IoT core by using self-signed certificates and Just-In_Time_Provisioning.
+
+I have followed the documentation on how to implement this and all is well.
+
+However, when I simply create a ""thing"" via the CLI on AWS IoT core, we can communicate with it without any CA or device certificates registered.  Why is this? This defeats the purpose of using AWS IoT. 
+
+I am using IAM access to AWS however, and I know this is related to having IAM access. 
+
+How do I get normal access to AWS IoT so as to enforce these security requirements of devices needing certificates etc. in order to ex ? I'm confused here."
+AWS IoT	"IOT cell cost side of the problem
+Hi -
+
+I am trying to understand and minimize the cellular cost side of an IOT project, at a very large scale (10K to 30K devices), each one reporting data a few thousand times per month.
+
+Most of the cell-data cost I believe is being driven by how often a TLS Handshake is required
+
+To that end, I have some questions about AWS-IOT that i cannot find anwswers to
+
+I believe all AWS-IOT services are wrapped in TLS, for me - the HANDSHAKE is perhaps the largest item, my data size is very small (1K to 2K bytes per transfer)
+
+Bottom line is this:
+
+    I'm paying for the CellService - I'm not paying AWS for the cost of cell service, but if AWS forces me to do something that might cause my CellService to be an order of magnitude higher, at scale that is a problem - the question has to do with scale - 5 digits of devices, that's a lot of cell data.
+
+Questions:
+
+1) For AWS - what is the average number of bytes for a typical TLS handshake on the AWS-IOT services.
+
+I've seen 6.5K listed for generic HTTPs in general, but I'm asking if there is a better number for AWS
+
+2) Under what conditions does AWS-IOT-TLS generally force an re-handshake?
+
+Yes, I see the MQTT has KEEP alives - and  a timeout of 20 minutes, but ... what about the SSL portion? 
+
+Yes, I can send SSL keep alives ... but at some point it will reject them and require renegotiation
+
+My hunch is there is some limit of total TLS sessions due to RAM consumption, this is combated by putting timeouts on TLS sessions that are not active - and my sessions would be quite for 30 minutes
+
+2) Does AWS-IOS-TLS support ""session resume""
+
+Several posts here on these forms indicate that it does not - that would force a TLS handshake.
+
+https://forums.aws.amazon.com/thread.jspa?threadID=219329  (latest post is Feb-2018)
+
+(edit - Clarified, I am paying for the cell service, I am not paying AWS for the cellular service)
+
+Edited by: duane-sd on Feb 24, 2019 8:56 PM - clarify concern is about the cellular data costs"
+AWS IoT	"Can't find the Jobs Agent in Python
+Hi,
+
+I am trying to remotely update my device using jobs in python.
+I checked the documentation in Node JS , It's working fine but i need to use Python.
+I couldn't find the same ""Jobs Agent"" program in the Python SDK that is used for performing JOB operation such as reboot ,shutdown or update of firmware.
+
+Node JS SDK - https://github.com/aws/aws-iot-device-sdk-js/blob/master/examples/jobs-agent.js
+Python - https://github.com/aws/aws-iot-device-sdk-python/tree/master/samples/jobs
+
+Any info or documentation would be really appreciated !
+Thanks!
+
+Edited by: Doombqr on Feb 24, 2019 7:54 PM
+
+Edited by: Doombqr on Feb 24, 2019 8:02 PM
+More clarifications"
+AWS IoT	"How User in Cognito User Pool create thing and get list of things (Swift)
+Base on  https://github.com/awslabs/aws-sdk-ios-samples , i can be able to register user in user pool, sign in also using swift code. 
+Now i want to know how user can create thing on AWS IOT and attach this thing to user. Next time when user login, they can receive list of things belong to that user and access to Shadow data. 
+Please give me examples with the Swift code. Thank You"
+AWS IoT	"How to get binary data into dynamodb via IoT action
+Hi all,
+
+I am attempting to take binary data received through IoT gateway, into my DynamoDB. I can do this with JSON data, but I seem to run into problems when trying to create the Action to insert the received message into the DynamoDB table. I need to use a bytearray to limit my data usage on the sending side, so I want to move away from JSON. For some background, this is what I have done:
+
+1. Sending bytearray over MQTT to a topic called trendingData
+2. Confirmed that topic is receiving the data by using the AWS IoT test, by subscribing to my topic.
+3. Specifically for the binary data, I have created a DynamoDB table called binaryTable - set the Primary key to id and Binary type. I have not added a sort key. 
+4. Created a Rule query statement: SELECT * FROM 'trendingData'
+5. Selected an action Insert a message into a DynamoDB table
+6. When configuring the action I select binaryTable from the Table name and this results in showing the Hash key as id, the Hash key type as B, and now I need to enter a Hash key value, and this is where I encounter an issue. It seems, no matter what I enter here, when I try to create the action it errors with:
+
+The action failed because the input is not valid. 1 validation error detected: Value 'B' at 'topicRulePayload.actions.2.member.dynamoDB.hashKeyType' failed to satisfy constraint: Member must satisfy enum value set: [NUMBER, STRING].
+
+It seems like no matter what I enter in the Hash key value, I get the same error message. But the error seems to be related to the Hash key type, rather than the hash key value. The B entry (hash key type) is auto-populated based on the table selection and cannot be changed. What am I missing here?
+
+Edit: I can probably just send the data to a Lambda function, and have that pass the result to the DynamoDB. If that is the best way of doing it, then ok. I thought somehow I could skip the Lambda.
+
+Thanks!
+
+Edited by: WillBev on Nov 15, 2018 1:42 AM
+
+Edited by: WillBev on Nov 15, 2018 1:43 AM
+
+Edited by: WillBev on Nov 15, 2018 3:08 AM"
+AWS IoT	"Re: How to get binary data into dynamodb via IoT action
+Thank you for reaching out. Currently we do not support dynamo actions with primary key as a binary type. You should still however be able to send binary payloads to a dynamo table for rules of the form ""select * from 'topic'"". For dynamo action, the payload is deposited into a separate field called _raw. You can then choose the hash key based on a substitution template https://aws.amazon.com/blogs/iot/how-to-use-substitution-templates-in-the-rules-engine-to-enrich-iot-messages/"
+AWS IoT	"403 connecting to IoT websocket using signed url
+Hello,
+
+I've been trying to connect to IoT MQTT in a web browser, so I'm generating a signed URL and connecting with Paho. However, even though I'm generating the signed URL using an IAM role that has the AWSIoTFullAccess policy attached to it (and thus should have access to all IoT operations on all resources!), I get a 403 error whenever I connect (using Paho or wscat). Here is the code I'm using to generate the signed URL:
+
+@APP.route(VERSION_PREFIX + 'signedurl', methods=['GET'])
+def get_signed_url():
+    session = STS.assume_role(RoleArn=IAM_ROLE_ARN,
+            RoleSessionName=str(uuid.uuid4()))['Credentials']
+    endpt = os.getenv('REALTIME_WSS_ENDPT')
+ 
+    t = datetime.datetime.utcnow()
+    amzdate = t.strftime('%Y%m%dT%H%M%SZ')
+    datestamp = t.strftime('%Y%m%d') # Date w/o time, used in credential scope
+ 
+    method = 'GET'
+    protocol = 'wss'
+    uri = '/mqtt'
+    service = 'iotdevicegateway'
+    algorithm = 'AWS-HMAC-SHA256'
+ 
+    credential_scope = f""{datestamp}/us-west-2/{service}/aws4_request""
+    canonical_query = ""X-Amz-Algorithm="" + algorithm
+    canonical_query += ""&X-Amz-Credential="" + urllib.parse.quote_plus(session['AccessKeyId'] + '/' + credential_scope, safe='')
+    canonical_query += ""&X-Amz-Date="" + amzdate
+    canonical_query += ""&X-Amz-Expires=86400""
+    canonical_query += ""&X-Amz-SignedHeaders=host""
+ 
+    canonical_headers = ""host:"" + endpt
+    payload_hash = hashlib.sha256(('').encode('utf-8')).hexdigest()
+    canonical_request = f""{method}\n{uri}\n{canonical_query}\n{canonical_headers}\nhost\n{payload_hash}""
+ 
+    string_to_sign = f""{algorithm}\n{amzdate}\n{credential_scope}\n{hashlib.sha256(canonical_request.encode('utf-8')).hexdigest()}""
+    signing_key = get_signature_key(session['SecretAccessKey'], datestamp, 'us-west-2', service)
+    signature = hmac.new(signing_key, (string_to_sign).encode('utf-8'), hashlib.sha256).hexdigest()
+ 
+    canonical_query += ""&X-Amz-Signature="" + signature
+    canonical_query += ""&X-Amz-Security-Token="" + urllib.parse.quote_plus(session['SessionToken'], safe='')
+    return make_response(f""{protocol}://{endpt}{uri}?{canonical_query}"")
+
+
+I've followed the example of MQTT over WSS as exactly as possible, and my assumed role has all IoT permissions. What am I doing wrong here?"
+AWS IoT	"Why do I have to refresh my browser to see shadow state updates
+We have created a QA and PROD environment in our account. When I switch to these environments, the shadow states of my devices do not automatically update. I have to refresh the browser then navigate back to shadow state to see the updates. Also, shadow activity does not show up. I know the device has connected and updated the shadow state but nothing shows in activity log."

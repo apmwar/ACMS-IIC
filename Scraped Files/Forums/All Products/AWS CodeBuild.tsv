@@ -1,0 +1,1606 @@
+label	description
+AWS CodeBuild	"Unable to delete secondary artifact from project
+In my CodeBuild project I want to delete secondary artifact. I go to Artifacts page, and click Remove artifact next to Artifact 2 (1)
+
+Then i have only primary artifact, so I click Update artifacts (2)
+
+I can see success page, but Secondary artifact is still there (3)
+
+Is it a bug, or am I missing something?
+
+Edited by: ggertz on Feb 22, 2019 7:47 AM"
+AWS CodeBuild	"Re: Unable to delete secondary artifact from project
+Hi,
+
+We've identified the issue and are working on a fix. As a workaround, you could use SDK/CLI to delete secondary artifacts. We will post an update to this thread once the fix is rolled out. Thanks for bringing this to our attention.
+
+Regards,
+Kaixiang"
+AWS CodeBuild	"Re: Unable to delete secondary artifact from project
+This issue should be fixed now. Could you please give it a try?"
+AWS CodeBuild	"Cron Trigger CLI
+I am working on creating our entire CodeBuild environment through the CLI
+It looks like it is not currently possible to create Cron triggers through the CLI and those have to be created via the console?
+If this is correct, is this going to change?"
+AWS CodeBuild	"Re: Cron Trigger CLI
+CodeBuild build triggers are simply CloudWatch event rules.
+
+When creating build triggers through the console, what is actually being created is a CloudWatch event rule. You can create CloudWatch event rules using the CLI, for example:
+
+```
+aws events put-rule \
+    --name run-codebuild \
+    --schedule-expression 'rate(1 hour)' \
+    --role-arn arn:aws:iam::000000000000:role/service-role/AWS_Events_Invoke_CodeBuild_124052220
+
+aws events put-targets \
+    --rule run-codebuild \
+    --targets '
+[
+    {
+        ""Id"": ""some_id"",
+        ""Arn"": ""arn:aws:codebuild:us-east-1:000000000000:project/some-codebuild-project"",
+        ""RoleArn"": ""arn:aws:iam::000000000000:role/service-role/codebuild-some-codebuild-project-service-role""
+    }
+]
+'
+```
+
+If the CW event rule is associated with a CodeBuild project, that event rule will show up under the project's build triggers."
+AWS CodeBuild	"Cannot create project from Bitbucket repo
+Hey guys,
+
+I'm trying to create a project for a Bitbucket repo and it's failing with the message Invalid source: source location must be a valid git location
+
+
+I've successfully created projects for other repos in the same Bitbucket account. The difference with this repo in particular is that its name ends with -git.
+
+Does anyone know if there is some kind of regex in Codebuild side that could be messing with the repo location?
+
+Thanks!"
+AWS CodeBuild	"Re: Cannot create project from Bitbucket repo
+Thanks for reporting this issue. We'll get this fixed soon."
+AWS CodeBuild	"Re: Cannot create project from Bitbucket repo
+@subinataws, do you have news regarding this fix?
+
+Thanks!"
+AWS CodeBuild	"Re: Cannot create project from Bitbucket repo
+Can you please give this a try now?"
+AWS CodeBuild	"Re: Cannot create project from Bitbucket repo
+It's working now. Thanks a lot!"
+AWS CodeBuild	"Private Github Repo through CLI/SDK
+I am trying to figure out how to create a project using a private Github project using the CLI/SDK (Ruby in this case).
+
+Through the Console I am able to use the GitHub account I already linked.
+
+For source I am doing:
+source: { # required
+          type: ""GITHUB"",
+          location: OURGITHUBURL,
+          git_clone_depth: 1,
+          buildspec: ""builder.yml"",
+          auth: {
+            type: ""OAUTH"", # required, accepts OAUTH
+            resource: ""String"",
+          },
+          report_build_status: false,
+          insecure_ssl: false,
+        },
+
+
+In the UI it says ""Public Repository"" when I run this, but it does pull just fine. But I worry that either that is a bug or some other change my break this.
+So I am not stuck, but worried about leaving it in a weird state."
+AWS CodeBuild	"Re: Private Github Repo through CLI/SDK
+Hi,
+
+Thanks for using CodeBuild. This is not a bug. CodeBuild will use the OAuth credential you set up in the console to pull source code if it's a GitHub repo. In the SDK/CLI, there's no difference for public and private. You will always put your source location in the `location` field. However, in the console, there's no good way to tell if the source location is a public one or private one. It's might be a little bit confused sometimes. I will forward your feedback to the service team and see if we could make the console experience better. Please let me know if you have further questions. Thanks.
+
+Regards,
+Kaixiang"
+AWS CodeBuild	"Re: Private Github Repo through CLI/SDK
+Thanks for the reply.
+So that is good to know.
+However is there additional configuration I have to do so the job is triggered automatically with a new push? When I setup a job manually it works if I choose it from the dropdown, but not when I am setting it through the CLI."
+AWS CodeBuild	"Re: Private Github Repo through CLI/SDK
+If you want to trigger builds on push event, you will need to do the following setup.
+
+Create a webhook either through console or API and configure your filter groups to listen on push event only. (otherwise a pull request will also trigger a build, which you may not want to)
+
+https://docs.aws.amazon.com/codebuild/latest/APIReference/API_CreateWebhook.html
+https://docs.aws.amazon.com/codebuild/latest/userguide/sample-github-pull-request.html 
+
+After those two steps your build will be auto triggered when a push is made."
+AWS CodeBuild	"Is it possible to use an encrypted file system with CodeBuild?
+We're finding CodeBuild to be an ideal option for running an ETL orchestration script with steps to run/monitor a Glue job, import resulting files into a destination system, etc. In order to import the files, they must be copied from S3 into the local filesystem. The import tool doesn't know how to access S3 objects directly. These files include sensitive data that must be encrypted at rest in all situations.
+
+Is there any way to have a CodeBuild Ubuntu Docker image use an encrypted file system? Going in I thought that should be easy...just have it mount an encrypted EBS volume...but it's not looking as simple as I'd hoped.
+
+Any thoughts are greatly appreciated!"
+AWS CodeBuild	"Re: Is it possible to use an encrypted file system with CodeBuild?
+You can mount an EFS volume to CodeBuild container (https://docs.aws.amazon.com/codebuild/latest/userguide/sample-efs.html). EFS supports encryption at rest. From your build container you can access the mounted EFS volume securely.
+
+Let us know if that doesn't work for your use case."
+AWS CodeBuild	"Build for CodeBuild fails
+Hello,
+
+My build fails in CodeBuild.  I don't know where to get additional information.  I attached an image of the build output.
+
+Where can I get more information about this error?  What does this error mean?
+
+Here is the error message in the build output:
+COMMAND_EXECUTION_ERROR: Error while executing command: aws cloudformation package --template-file template.yaml --s3-bucket $DeploymentBucketName --output-template-file output.yaml. Reason: exit status 2
+
+buildspec.yaml
+====================================
+version: 0.1
+phases:
+  install:
+    commands:
+      - npm install
+  build:
+    commands:
+      - echo ""Nothing to build here as it's node!""    
+  post_build:
+    commands:
+      - aws cloudformation package --template-file template.yaml 
+                                        --s3-bucket $DeploymentBucketName
+                                        --output-template-file output.yaml
+artifacts:
+  type: zip
+  files:
+    - template.yaml
+    - output.yaml
+
+template.yaml
+====================================
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  HelloWorld:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs6.10
+      CodeUri: ./ 
+      Events:
+        MyTimeApi:
+          Type: Api
+          Properties:
+            Path: / 
+            Method: GET
+
+Thanks,
+-JT
+
+Edited by: jt972 on Feb 19, 2019 8:15 AM"
+AWS CodeBuild	"Re: Build for CodeBuild fails
+Hi,
+
+I'm Kaixiang from AWS CodeBuild team. Can you provide the complete build log? In that way we can better help you diagnose what happened. 
+
+Best,
+Kaixiang"
+AWS CodeBuild	"Re: Build for CodeBuild fails
+It turns out I did not set the DeploymentBucketName env variable."
+AWS CodeBuild	"Re: Build for CodeBuild fails
+Thanks for the update. Good to know that you are unblocked. 
+
+I noticed that you are still using buildspec 0.1. We would strongly recommend using the latest version of buildspec v0.2. Migrating to latest version will ensure you have access to all the latest features in CodeBuild.
+
+https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax"
+AWS CodeBuild	"set -o pipefail doesn't work?
+I'm using image aws/codebuild/docker:17.09.0 in CodeBuild.
+
+As part of a buildspec.yml, I'm trying to use bash's pipefail option, but it's erroring out:
+
+[Container] 2019/02/15 15:07:29 Running command /bin/bash -x
+ [Container] 2019/02/15 15:07:29 Running command set -o pipefail
+/codebuild/output/tmp/script.sh: 4: set: Illegal option -o pipefail
+ [Container] 2019/02/15 15:07:29 Command did not exit successfully set -o pipefail exit status 2
+[Container] 2019/02/15 15:07:29 Phase complete: BUILD Success: false
+[Container] 2019/02/15 15:07:29 Phase context status code: COMMAND_EXECUTION_ERROR Message: Error while executing command: set -o pipefail. Reason: exit status 2
+
+
+Can you tell me why this wouldn't work, and if there are any suggested workarounds?
+
+FWIW, when I download and build this Dockerfile: https://github.com/aws/aws-codebuild-docker-images/tree/master/ubuntu/docker/17.09.0 , set -o pipefail works fine in the local container. It only seems to not-work in the context of CodeBuild.
+
+Thanks in advance.
+
+Edited by: jrobison-sb on Feb 15, 2019 11:41 AM"
+AWS CodeBuild	"Re: set -o pipefail doesn't work?
+Hi,
+
+CodeBuild executes commands using /bin/sh and each command will be executed individually, which means your `/bin/bash -x` will not change the following commands to run in bash. As a workaround, you could put all your bash commands in a file and run it in a single command.
+
+Best,
+Kaixiang"
+AWS CodeBuild	"CodeBuild is not authorized to perform: sts:AssumeRole
+I am trying to switch from creating CodeBuild jobs manually to creating them using the CLI. 
+However I am running into issues doing this.
+Command I am running:
+aws codebuild create-project --name ""PROJECTNAME"" --region ""us-east-1"" --source type=GITHUB,location=""GITHUBURL"",gitCloneDepth=1 --artifacts type=NO_ARTIFACTS --environment type=LINUX_CONTAINER,image=aws/codebuild/docker:18.09.0,computeType=BUILD_GENERAL1_SMALL --service-role SERVICE_ROLE
+
+
+For this the `SERVICE_ROLE` is a role that I am currently using in another CodeBuild job. But when I try to run it from the CLI I am getting:
+An error occurred (InvalidInputException) when calling the CreateProject operation: CodeBuild is not authorized to perform: sts:AssumeRole on [ARNTO_SERVICE_ROLE]
+
+
+I tried adding the permission for `sts:AssumeRole` to that service role, but that did not fix the issue.
+The CLI is using an admin role and should any rights necessary for it to be able to do this."
+AWS CodeBuild	"Re: CodeBuild is not authorized to perform: sts:AssumeRole
+Hi jonwis, I am Yong from AWS CodeBuild team.
+
+Do you still see this error? My suggestion is to follow this troubleshooting guide. https://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-assume-role
+
+If you still see the same error, can you please run the command with debug logging turned on and private message me the entire response payload? I can then help troubleshoot on our side.
+
+aws codebuild --debug create-project ..."
+AWS CodeBuild	"Allow CodeBuild service in Ireland region to access internal GitHub Enterpr
+Hi all,
+
+We have our application code hosted within GitHub Enterprise and this sits behind an on-premise firewall that is managed by another IT team. 
+
+This application code needs to be called by AWS CodeBuild within the eu-west-1 (Ireland) region. Using the AWS documentation (https://aws.amazon.com/blogs/developer/querying-the-public-ip-address-ranges-for-aws/), we have utilised the AWS PowerShell module and ran:
+
+Get-AWSPublicIpAddressRange | Where {$_.Service -like
+""Code*""}
+
+This outputs all the source IpPrefixes that CodeBuild uses with each region. The source IpPrefix we took was:
+
+34.250.63.248/29  Ipv4            eu-west-1      CODEBUILD
+
+Taking into account that these IPs change several times a week, we added this range to the firewall, however CodeBuild still failed on the DOWNLOAD_SOURCE phase stating a network issue. 
+
+We then allowed any on our firewall and the network issue went away, the new error was:
+
+YAML_FILE_ERROR: YAML file does not exist 
+
+Since we don't have a buildspec.yml file, this was expected. We then saw on the logs that AWS came from multiple IPs which were:
+
+52.19.218.84 
+63.34.252.53 
+63.35.64.61    
+
+As per the doc linked above, the IPs changed.
+
+What is the best way we can allow access to AWS CodeBuild since the IPs change? Can we create a physical NAT GW, stick an Elastic IP on, put this in a private subnet and then attach this to a CodeBuild project so it always goes outbound with that Elastic IP?
+
+Kind regards,
+amoncadot"
+AWS CodeBuild	"Re: Allow CodeBuild service in Ireland region to access internal GitHub Enterpr
+Hi amoncadot,
+
+I can confirm that the published ip-range is correct. In eu-west-1, CodeBuild has only 8 public ips: 34.250.63.248 - 34.250.63.255
+
+We CodeBuild do not own the other Amazon ip(s) listed in your post. This could be related to how the on-premise firewall is set up (e.g. proxy)."
+AWS CodeBuild	"YAML location change temporary
+Sirs, on February 7 I realized that the YAML location temporarily changed to:
+
+YAML location is /codebuild/readonly/src/buildspec.yml
+
+On February 8 he returned to:
+
+YAML location is /codebuild/output/srcXXXXXXXXX/src/buildspec.yml
+
+
+It seemed like a symbolic link. Does anyone know what happened?
+Thanks."
+AWS CodeBuild	"Re: YAML location change temporary
+Please don't rely on the explicit path, format, or length of the source directory for your builds in AWS CodeBuild. CodeBuild's source directory is available in $CODEBUILD_SRC_DIR. We would strongly recommend using this pre-configured environment variable instead."
+AWS CodeBuild	"Permission error when trying codebuild local, works in the cloud
+Hi. When trying to run our codebuild project locally, which works fine in the aws service, I am getting the following permission denied errors..
+
+$ docker run -it -v /var/run/docker.sock:/var/run/docker.sock -e ""IMAGE_NAME=ae3d6c1b2d7a"" -e ""ARTIFACTS=/home/user/output"" -e ""SOURCE=/home/user/project"" amazon/aws-codebuild-local:latest
+Removing agent-resources_build_1 ... done
+Removing agent-resources_agent_1 ... done
+Removing network agent-resources_default
+Removing volume agent-resources_source_volume
+Removing volume agent-resources_user_volume
+Creating network ""agent-resources_default"" with the default driver
+Creating volume ""agent-resources_source_volume"" with local driver
+Creating volume ""agent-resources_user_volume"" with local driver
+Creating agent-resources_agent_1 ... done
+Creating agent-resources_build_1 ... done
+Attaching to agent-resources_agent_1, agent-resources_build_1
+agent_1  | touch: cannot touch '/codebuild/output/log': Permission denied
+agent_1  | tail: cannot open '/codebuild/output/log' for reading: No such file or directory
+agent_1  | mkdir: cannot create directory '/codebuild/input/bin': Permission denied
+agent-resources_agent_1 exited with code 1
+Stopping agent-resources_build_1 ... done
+Aborting on container exit...
+
+
+Can anyone help me out here? It looks like the local codebuild service runs a couple of containers, one of which (the agent_1 container) should have a /codebuild/output/ directory which I suspect it does not, however I am not sure if this is supposed to be the mounted directory in my home directory it is having issues with or not.
+
+Thanks
+Matt."
+AWS CodeBuild	"Re: Permission error when trying codebuild local, works in the cloud
+Hi! Could you please tell us more about your environment (OS & Docker version)?"
+AWS CodeBuild	"Re: Permission error when trying codebuild local, works in the cloud
+Sure, I am running linux, CentOS 7. Docker version 1.13.1, build 94f4240/1.13.1
+
+What else do you need to know?
+
+(do you prefer to keep the thread here or on the git issue?)"
+AWS CodeBuild	"Re: Permission error when trying codebuild local, works in the cloud
+Looks like selinux was the issue and needed to provide the correct permission for the container to run and use my hosts files.
+
+Thanks for helping"
+AWS CodeBuild	"CodeBuild BITBUCKET_CLIENT_ERROR when using CodeCommit as source
+Hello,
+
+I am getting the following error during the provisioning phase of building a docker image:
+
+BITBUCKET_CLIENT_ERROR: Unable to refresh BitBucket access token.
+
+I don't understand why it's even referring to BitBucket as I'm using CodeCommit.
+
+Here are sample files:
+
+samba.yaml
+https://www.pastiebin.com/5c60f2f9681dd
+
+Dockerfile
+https://www.pastiebin.com/5c60f3d757d0c
+
+buildspec.yml
+https://www.pastiebin.com/5c60f4c65a045
+
+I am using ap-southeast-2 region.
+
+Any help would be appreciated.
+
+Thanks"
+AWS CodeBuild	"Re: CodeBuild BITBUCKET_CLIENT_ERROR when using CodeCommit as source
+Hi! We have rolled back the changes. Please try again. Thanks!"
+AWS CodeBuild	"Policy is attached to 0 entities
+I'm getting the following error when trying to edit a build, or run it automatically through code pipeline.
+
+""The policy is attached to 0 entities but it must be attached to a single role"".
+
+Google has never heard of it -_-"
+AWS CodeBuild	"Re: Policy is attached to 0 entities
+Hello,
+This is referring to the IAM policy attached to the role you are attempting to use with CodeBuild.  In order for CodeBuild to add permissions to a service role when you create a new project, the policy must only be attached to a single role.  You can see your IAM policies and their attachment count here:
+https://console.aws.amazon.com/iam/home?region=us-west-2#/policies
+The policies edited in the CodeBuild console are prefixed ""CodeBuild"".
+
+If you are selecting an existing role in the CodeBuild console, you uncheck ""Allow AWS CodeBuild to modify this service role so it can be used with this build project"" to prevent CodeBuild from attempting any edits to the policy or role."
+AWS CodeBuild	"Re: Policy is attached to 0 entities
+I have one new policy for CodeBuild which is attached to one role only.
+
+However I am still getting this error."
+AWS CodeBuild	"How to access error log created by codebuild
+codebuild throws an error:
+..
+npm ERR! /root/.npm/_logs/2019-01-29T08_28_03_692Z-debug.log
+...
+How can we access the error log /root/.npm/....debug.log 
+to see more details about the error?"
+AWS CodeBuild	"Re: How to access error log created by codebuild
+Since CodeBuild is using docker containers to run these builds, any file that is generated within that container that is not extracted by the time the build completes is essentially lost.  Here are two suggestions to help you extract those npm logs:
+
+  1. Use the ""Artifacts"" feature of CodeBuild to copy those files into S3.
+
+  2. Use the aws cli s3 sync command to copy those files into s3.  If you go this route you will want to make sure that the role in which your build is executing under has proper access to S3 to be able to view the specified bucket and to put items into that bucket.
+
+
+Example AWS cli command: aws s3 sync ~/.npm/_logs/ s3://myBucket/CodeBuild/logs/"
+AWS CodeBuild	"Re: How to access error log created by codebuild
+Hello Micahb,
+thanks for your reply. I tried to add an artifact to copy my error log to S3. This didn't work out since our codebuild is part of a codepipeline and the error (after filling all required fields nicely;-) was ""Invalid input: secondaryArtifacts are not allowed for CodePipeline projects""
+
+If we want to pursue the second option: At which point in the codebuild (or codepipeline) config do we have to place the aws cli sync command? 
+Cheers
+Armin"
+AWS CodeBuild	"Re: How to access error log created by codebuild
+We added the aws cli command in the buildspec and adjusted the permissions of the buildrole to be able to access a) the S3 bucket and b) the respective directory we wanted the log file to land. Then we could copy the log file.
+Thanks for the support"
+AWS CodeBuild	"How to disable concurrent builds
+I have a webhook to bitbucket, and if someone pushes before the previous build finishes, then we get 2+ concurrent builds. The build process is poorly tolerant of such. Is there a way to disable this feature, and queue up one build to start after the previous one finishes?"
+AWS CodeBuild	"Re: How to disable concurrent builds
+Hello rwdougla,
+
+There is no way to lock down a project to have no concurrent build. It's possible that I could give your account a concurrent build limit of 1, but this would be an account wide setting. 
+
+John"
+AWS CodeBuild	"AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+Hello everyone, please help to understand why we get this issue.
+I'm trying to setup AWS Pipeline, but have error when CodeBuild try to work with containers.
+Full error : 
+Unable to pull customer's container image. AWS CodeBuild is not authorized to perform ecr:BatchGetImage on resource ***repository_name***
+
+I've added permissions  AmazonEC2ContainerRegistryFullAccess with full access to ""ecr"" but still get this error. 
+Please advice.
+Thanks."
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+Hi tolya, Pulling Docker images from ECR for your build environment does not use the service role.  You will need to add permissions for CodeBuild to pull the image in the ECR repository policy.  See this sample for instructions and the specific policy/permissions:
+https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
+
+Edited by: Clare@AWS on Dec 8, 2016 9:12 AM"
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+This confused me greatly. Initially I thought that the service role was the principle, then I thought it must be my IAM user as I was manually launching the build through the console.
+
+Finally I found the page linked by Clare@AWS and added 201349592320 as the principle (for us-east-1) and it's working now.
+
+I really think that the ECR permissions tool should have a menu for these principles."
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+Thanks for the feedback.  I'll pass that along to the ECR team."
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+@Clare@AWS cool, thanks. All working now."
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+@Clare@AWS
+Could you please elaborate on this? My IAM roles for the CloudBuild can successfully run BatchGetImage, but the build fails with the same error as the original question. I've added the CloudBuild role to my repository for all Pull actions and the build still fails from the same error. BUT, if I authorize everybody to pull on the repository, the build succeeds. What am I doing wrong?
+
+Thank you,
+Ben
+
+Edited by: Ben Record on Dec 14, 2016 12:11 PM"
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+Hi Ben, you need to provide access for specific accounts owned by CodeBuild to pull from your repository.  The service role is not used to pull the build's environment image from ECR.
+
+Snippet from this page: https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
+""For Principal, type 201349592320,570169269855,964771811575. (These are the internal AWS account IDs used by AWS CodeBuild to access Amazon ECR repositories in supported AWS regions)."""
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+@Clare@AWS
+
+Thank you for your fast response. I've been working at this all day, and still no luck getting past the CodeBuild DOWNLOAD_SOURCE step because it's giving me an Access Denied error. I've followed the instructions on your link, but still no luck. Here is my policy document for the repository
+
+{
+    ""Version"": ""2008-10-17"",
+    ""Statement"": [
+        {
+            ""Sid"": ""CodeBuild"",
+            ""Effect"": ""Allow"",
+            ""Principal"": {
+                ""AWS"": [
+                    ""arn:aws:iam::570169269855:root"",
+                    ""arn:aws:iam::201349592320:root"",
+                    ""arn:aws:iam::964771811575:root""
+                ]
+            },
+            ""Action"": [
+                ""ecr:GetDownloadUrlForLayer"",
+                ""ecr:BatchGetImage"",
+                ""ecr:BatchCheckLayerAvailability""
+            ]
+        }
+    }
+}
+
+
+My CodeBuild initiator is DcPortalPipeline, my CodePipeline I set up to do all this. Could that be the issue?"
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+Having similar issue when ECR repository is in account different than the CodeBuild.
+
+
+My CodeBuild project is in 856XXX account (and is triggered by a CodePipeline in the same account, if it matters)
+This project has configured Image: 151YYY.dkr.ecr.us-east-1.amazonaws.com/foo:bar
+The image is in 151YYY account and has policy:
+
+{
+    ""Version"": ""2008-10-17"",
+    ""Statement"": [
+        {
+            ""Sid"": ""AllowCodeBuild"",
+            ""Effect"": ""Allow"",
+            ""Principal"": {
+                ""AWS"": [
+                    ""arn:aws:iam::201349592320:root"",
+                    ""arn:aws:iam::856XXX:root""
+                ]
+            },
+            ""Action"": [
+                ""ecr:BatchGetImage"",
+                ""ecr:GetDownloadUrlForLayer"",
+                ""ecr:BatchCheckLayerAvailability""
+            ]
+        }
+    ]
+}
+
+
+The CodeBuild says Unable to pull customer's container image. AWS CodeBuild is not authorized to perform ecr:BatchGetImage on resource 151YYY.dkr.ecr.us-east-1.amazonaws.com/foo:bar
+
+When running CodeBuild in the same account as the ECR (151YYY) then works fine.
+
+I suspect, that the CodeBuild provisioning only invokes something like:
+`aws ecr get-login --region us-east-1 --registry-ids 856XXX`
+ (or whatever is the account you host the CodeBuild project on)
+
+while following would be needed:
+`aws ecr get-login --region us-east-1 --registry-ids 151YYY`
+ (or whatever is in the docker image you specified in the CodeBuild configuration)
+
+Finally, I copied the docker image to a repo in the 856XXX account and CodeBuild ran OK.
+
+@Clare@AWS is it possible to run CodeBuild with image from another AWS account?
+
+Edited by: tszajna0 on Dec 20, 2016 9:53 AM"
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+@tszajna0, we do not currently allow cross-account ECR images for the build environment, but I'll make a note that you would like to do that with CodeBuild.  We'll also update the ""not authorized to perform"" error message to make it more clear for the cross-account case.  Thanks!"
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+@Clare@AWS thanks for the information. Looking forward for the cross account ECR support to be added one day"
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+Hi,
+
+almost one year later, any news about cross-accounts ECR access by CodeBuild ?
+
+Thx"
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+This feature is still not supported. We'll keep this thread posted, when we have an update."
+AWS CodeBuild	"Re: AWS CodeBuild is not authorized to perform ecr:BatchGetImage
+This is now supported in CodeBuild. https://aws.amazon.com/about-aws/whats-new/2019/01/aws-codebuild-now-supports-accessing-cross-account-ecr-images/"
+AWS CodeBuild	"Windows images fails to provision - Internal Service Error
+Build ID: BackEndBuild:9241ab77-307c-4673-a2c4-c9ada5d3aee0
+Phase: PROVISIONING 
+Fault: Internal Service Error: CodeBuild is experiencing issues
+
+I'm trying to use CodeBuild with a customer image in my ECR. I have two images, one deriving FROM microsoft/dotnet-framework:4.7.1-runtime. The other FROM microsoft/dotnet-framework:4.7.2-runtime. The image using 4.7.1 builds fine without issues (see BackEndBuild:df4c6e16-54b7-459a-80a2-9c5dc867170c). However, the 4.7.2 fails with the Internal Service Error. The image works fine in my own docker environment, so I'm not sure why CodeBuild can't use it."
+AWS CodeBuild	"Re: Windows images fails to provision - Internal Service Error
+Hi,
+Is there any other difference between these two images?
+Thanks
+Xin"
+AWS CodeBuild	"Re: Windows images fails to provision - Internal Service Error
+Thanks. Yes, there's some differences. I will try and narrow down the problematic command. Is there a better way to debug? Logs or something?"
+AWS CodeBuild	"Re: Windows images fails to provision - Internal Service Error
+Thanks XinWataws. I built my new docker image using Windows 2019 (the original was built on Windows 2016), which is incompatible. After building on 2016, it worked."
+AWS CodeBuild	"Unable to use cross-account ECR image
+Hi there,
+
+We are trying to use the docker images we have in other account.
+The image repository has permissions for everyone but I think we are getting this error because CodeBuild also needs permissions to access ECS.
+
+Got this policy from AWS website:
+
+{
+  ""Version"": ""2012-10-17"",
+  ""Statement"": [
+    {
+      ""Sid"": ""CodeBuildAccess"",
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""Service"": ""codebuild.amazonaws.com""  
+      },
+      ""Action"": [
+        ""ecr:GetDownloadUrlForLayer"",
+        ""ecr:BatchGetImage"",
+        ""ecr:BatchCheckLayerAvailability""
+      ]
+    }
+  ]
+} 
+
+
+Even adding this policy is not working.
+Could someone give me a hand?
+
+Thank you in advance!"
+AWS CodeBuild	"Re: Unable to use cross-account ECR image
+Hello, CodeBuild does not support using an ECR image in a different account as the build environment image.  I've made a note internally that you would like this feature."
+AWS CodeBuild	"Re: Unable to use cross-account ECR image
+I would also be interested in this feature."
+AWS CodeBuild	"Re: Unable to use cross-account ECR image
+Hi Clare@AWS, 
+
+Thank you for your response.
+I think this is a needed feature because having the same docker images in all the accounts you can have is a mess to maintain.
+Do you know an idea of when this feature could be implemented? 1 month, 1 year, 2 years?
+
+Thank you!"
+AWS CodeBuild	"Re: Unable to use cross-account ECR image
+We don't have a definite timeline to share. We'll keep this thread posted, when we have an update."
+AWS CodeBuild	"Re: Unable to use cross-account ECR image
++1 to this feature"
+AWS CodeBuild	"Re: Unable to use cross-account ECR image
++1
+Any news on this feature?"
+AWS CodeBuild	"Re: Unable to use cross-account ECR image
+Thanks for checking in. We'll keep this thread posted when we have an update."
+AWS CodeBuild	"Re: Unable to use cross-account ECR image
+CodeBuild now supports cross-account ECR images: https://aws.amazon.com/about-aws/whats-new/2019/01/aws-codebuild-now-supports-accessing-cross-account-ecr-images/"
+AWS CodeBuild	"build does not post a status to GitHub
+I am having an issue where the webhook configured between my GitHub private repository (configured as a GitHub Enterprise account) and AWS CodeBuild does not send any status information on the start, success or failure of the the build configuration. 
+
+I have clicked the checkbox, ""Report build statuses to source provider when your builds start and finish"" (unclicked run, then clicked again too). My webhook on the GitHub side is configured to ""Send me everything"".
+
+I am all out of ideas."
+AWS CodeBuild	"Re: build does not post a status to GitHub
+Could you please clarify what you meant by: ""GitHub private repository (configured as a GitHub Enterprise account)"". 
+
+Is your source repository GitHub.com or GitHub Enterprise (GHE)?"
+AWS CodeBuild	"Docker Images Provided by AWS CodeBuild for ubuntu/dot-net/core-2.2
+Hi... I'm very new to CodeBuild but we've just migrated to dotnetcore 2.2 but our CodeBuild pipeline is failing and we can't find an updated dotnetcore 2.2 docker image? Does anyone know when might be provided."
+AWS CodeBuild	"Re: Docker Images Provided by AWS CodeBuild for ubuntu/dot-net/core-2.2
+Hi,
+You can build your own build server to custom your packages based on your requirement.
+
+Bellow is docker image you can build it and push to ECR. At CodeBuild set it to your build image.
+
+Refer docker file at here 
+https://github.com/aws/aws-codebuild-docker-images/tree/master/ubuntu/docker
+
+Hope this help"
+AWS CodeBuild	"Re: Docker Images Provided by AWS CodeBuild for ubuntu/dot-net/core-2.2
+Thanks for the feature request. We don't support .NET Core 2.2 yet, but will add support for this runtime in a future release. In the meantime, you may use a custom image from Amazon ECR or DockerHub for your build needs."
+AWS CodeBuild	"Code build(with Jenkins provider) fails after exceeding time limit
+Hello, Here is the aws codepipeline i built
+
+Codecommit --> Codebuild(Jenkins)  --> CodeDeploy
+
+The pipeline fails at Codebuild stage once its exceeds its 1 hour time limit. Not sure what's going wrong in code build. is issue with connecting jenkins server or post connectivity issue with building image ?
+Where can i check the logs for this. i didn't see anything in cloudwatch and also i have to wait for 1 hr even if i do any small change as code build runs for an hour and then it fails.
+
+Appreiate any help regarding this."
+AWS CodeBuild	"Re: Code build(with Jenkins provider) fails after exceeding time limit
+It appears that you are running a Windows build and trying to accessing docker during your build, which is failing. Note that privileged mode is not supported for Windows in CodeBuild, so any docker command will fail."
+AWS CodeBuild	"MSB3202 error in container (Project not found)
+I'm using a custom Docker image to build a .NET Framework app using CodeBuild. The solution builds locally with no errors but fails to build in the container due to an MSB3202 error indicating that a specific .csproj cannot be found. I've set the MSBuild verbosity to diagnostic level and can see that the project GUID and path are resolved correctly, yet the error still occurs. The attached screenshots show the MSBuild output. I have tried a number of things and analyzed the .metaproj, but am not able to understand why MSBuild can't find the project (and only this one) when it build locally with no problems. This is a blocking issue and any help is greatly appreciated. I can provide any additional details if necessary.
+
+Edited by: wdc on Jan 8, 2019 4:38 PM"
+AWS CodeBuild	"NodeJS runtime no longer recognises build tools such as gulp or cross-env
+This has only started happening recently (either today or yesterday).
+
+In my buildspec.yml, I have a single install npm install
+ and a single build command  npm run build:prod
+ which runs this script from package.json cross-env NODE_ENV=production gulp build
+
+
+This has been building fine until today when I made more changes to the project, and now I'm getting errors such as > cross-env NODE_ENV=production gulp build
+sh: 1: cross-env: not found
+npm ERR! file sh
+npm ERR! code ELIFECYCLE
+npm ERR! errno ENOENT
+npm ERR! syscall spawn
+npm ERR! my-webapp@1.0.0 build:prod: `cross-env NODE_ENV=production gulp build`
+npm ERR! spawn ENOENT
+
+
+I've tried removing the usage of cross-env by changing the build:prod script in package.json to the same error, this time with gulp:
+> gulp build:prod
+sh: 1: gulp: not found
+npm ERR! file sh
+npm ERR! code ELIFECYCLE
+npm ERR! errno ENOENT
+npm ERR! syscall spawn
+npm ERR! my-webapp@1.0.0 build:prod: `gulp build:prod`
+npm ERR! spawn ENOENT
+npm ERR!
+npm ERR! Failed at the my-webapp@1.0.0 build:prod script.
+
+
+I tried retrying the last successful build by starting a build at the last known working commit (currently deployed to production) and the same build error happened.
+
+I also tried switching to a different build environment image from aws/codebuild/nodejs:10.14.1 to any of the 8.11.0 and still the same error.
+
+Has anyone experienced this with CodeBuild recently? My build still succeeds locally so I'm not sure what to do next."
+AWS CodeBuild	"Re: NodeJS runtime no longer recognises build tools such as gulp or cross-env
+I added environment variable NODE_ENV=production which causes npm install to ignore devDependencies.
+
+Fixed by changing the install command to env -u NODE_ENV npm install."
+AWS CodeBuild	"How to build a Visual Basic 6 project from CodeBuild?
+I have a classic Visual Basic (VB6) project in CodeCommit. I want to build this project from CodeBuild and would like to execute command line build Visual Basic Compiler program as below:
+
+vbc.exe MyProject.vbp
+
+Under CodeBuild I could not find any Runtime for Visual Basic 6. The other way suggested is to install vbc.exe from buidspec.yml.
+
+I want to know whether I need to bundle this vbc.exe in the .zip artifact or put it in S3 bucket and then install it from buidspec.yml."
+AWS CodeBuild	"buildspec using sed with environment variable replacement
+I have a buildspec file with a sed command step like below:
+
+sed -i ""s/localhost/$NEW_URL/g""
+
+
+When it is ran buildspec returns:
+sed: -e expression #1, char 20: unknown option to 's'
+
+
+When I run the sed command locally it works.  Additionally, running the command in the aws supported environment image the command runs as expected and when running the command in the aws supported codebuild image the command runs as expected.  This leads me to suspect that maybe something is going on in the actual docker-compose process that's disrupting the ability to interpret the environment variable properly.
+Finally, when the dollar sign is removed from the variable, the command runs as expected ( not replacing the string with the value of the environment variable).  Interestingly when you replace the command with something like this:
+sed -i ""s/localhost/${ echo foo )/g""
+
+the command will successfully run as well.
+
+Echoing the environment variable in a single step works as expected:
+echo $NEW_URL
+
+
+Any suggestions to why the environment variable is not getting interpreted and replacing the the string with the environment variable's value?"
+AWS CodeBuild	"Re: buildspec using sed with environment variable replacement
+Hello mikeblankeney, 
+
+I am sorry you are running into issues with the sed command in CodeBuild.  I have attempted to reproduce the issue that you have posted with an extremetly simplified buildspec.
+
+  build:
+    commands:
+      - touch testFile01.txt
+      - echo ""Sed test content, VALUE = oldval"" | tee -a testFile01.txt
+      - cat testFile01.txt
+      - export TESTVAR01=""val1""
+      - sed -i ""s/oldval/$TESTVAR01/g"" testFile01.txt
+      - cat testFile01.txt
+
+
+Unfortunately the commands above do result in the expected behavior with the environment variable being used successfully.  Could you provide some additional information about your usage so that I can better understand the issue.
+
+Are you using an image provided by CodeBuild?
+
+If yes, which image are you using with your project?
+
+Are you replacing the contents of a file (like the example in this post)?"
+AWS CodeBuild	"ContainerDefinition with CodeBuild
+Is there any way to pass a ContainerDefinition to the codebuild custom docker image? 
+
+Its currently set to nofiles 1024 which I assume is causing an issue ""exec(): Unable to fork"""
+AWS CodeBuild	"Re: ContainerDefinition with CodeBuild
+Thanks for the feature request. Currently, we do not have support for setting the ulimits for the container."
+AWS CodeBuild	"Is it possible to stop current builds when new commits trigger new builds?
+Is it possible to terminate any in-progress builds launched via a bitbucket web hook when new commits to the same branch in the repository trigger new builds? I haven't been able to find anything referencing this.
+
+If not, it would be a nice feature to prevent wasting resources/funds (and potential race conditions if there are tasks happening in post-build, such as pushing a docker image to ECR) when building the out-of-date versions.
+
+Thanks.
+
+Edited by: mattaustincomau on Dec 16, 2018 7:14 PM
+
+Edited by: mattaustincomau on Dec 16, 2018 7:16 PM"
+AWS CodeBuild	"Re: Is it possible to stop current builds when new commits trigger new builds?
+Thanks for the feature request. We don't have native support for skipping in-progress build when a new build is triggered."
+AWS CodeBuild	"Docker custom build image failed
+Hello,
+
+I created own Dockerfile and hosted to Amazon ECR.
+From buildspec, the command start dockerd deamon could not work, then it raised below error
+nohup /usr/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
+
+
+I tried as follow environment:
+・ Used default docker image from codebuild : worked
+・ Used own docker image : Failed (check below log)
+・ Used amazon's dockerfile from github (https://github.com/aws/aws-codebuild-docker-images/blob/master/ubuntu/docker/17.09.0/Dockerfile ) : Failed as the same error 
+
+My own Dockerfile relied on 
+FROM microsoft/dotnet:2.1-sdk-stretch
+
+it was error cause of OS kernel lack of module installed..
+But why amazon's dockerfile from github also failed? then built-in docker from codebuild worked well.
+
+I would like to build own Dockerfile to do customize to build the project.
+
+Here is detail of log from codebuild:
+https://forums.aws.amazon.com/ 2018/12/12 02:53:30 Running command nohup /usr/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
+https://forums.aws.amazon.com/ 2018/12/12 02:53:30 Running command timeout -t 15 sh -c ""until docker info; do echo .; sleep 1; done""
+timeout: invalid option -- 't'
+Try 'timeout --help' for more information.
+https://forums.aws.amazon.com/ 2018/12/12 02:53:30 Command did not exit successfully timeout -t 15 sh -c ""until docker info; do echo .; sleep 1; done"" exit status 125
+https://forums.aws.amazon.com/ 2018/12/12 02:53:30 Phase complete: INSTALL Success: false
+https://forums.aws.amazon.com/ 2018/12/12 02:53:30 Phase context status code: COMMAND_EXECUTION_ERROR Message: Error while executing command: timeout -t 15 sh -c ""until docker info; do echo .; sleep 1; done"". Reason: exit status 125
+time=""2018-12-12T02:53:30.825951870Z"" level=warning msg=""[!] DON'T BIND ON ANY IP ADDRESS WITHOUT setting --tlsverify IF YOU DON'T KNOW WHAT YOU'RE DOING [!]""
+time=""2018-12-12T02:53:30.829675201Z"" level=info msg=""libcontainerd: started new containerd process"" pid=32
+time=""2018-12-12T02:53:30.829737642Z"" level=info msg=""parsed scheme: \""unix\"""" module=grpc
+time=""2018-12-12T02:53:30.829756572Z"" level=info msg=""scheme \""unix\"" not registered, fallback to default scheme"" module=grpc
+time=""2018-12-12T02:53:30.830192602Z"" level=info msg=""ccResolverWrapper: sending new addresses to cc: {unix:///var/run/docker/containerd/containerd.sock 0 <nil>}"" module=grpc
+time=""2018-12-12T02:53:30.830215470Z"" level=info msg=""ClientConn switching balancer to \""pick_first\"""" module=grpc
+time=""2018-12-12T02:53:30.830270159Z"" level=info msg=""pickfirstBalancer: HandleSubConnStateChange: 0xc420163f10, CONNECTING"" module=grpc
+time=""2018-12-12T02:53:31.124830284Z"" level=info msg=""starting containerd"" revision=c4446665cb9c30056f4998ed953e6d4ff22c7c39 version=1.2.0
+time=""2018-12-12T02:53:31.125562219Z"" level=info msg=""loading plugin ""io.containerd.content.v1.content""..."" type=io.containerd.content.v1
+time=""2018-12-12T02:53:31.125628636Z"" level=info msg=""loading plugin ""io.containerd.snapshotter.v1.btrfs""..."" type=io.containerd.snapshotter.v1
+time=""2018-12-12T02:53:31.125772865Z"" level=warning msg=""failed to load plugin io.containerd.snapshotter.v1.btrfs"" error=""path /var/lib/docker/containerd/daemon/io.containerd.snapshotter.v1.btrfs must be a btrfs filesystem to be used with the btrfs snapshotter""
+time=""2018-12-12T02:53:31.125790851Z"" level=info msg=""loading plugin ""io.containerd.snapshotter.v1.aufs""..."" type=io.containerd.snapshotter.v1
+time=""2018-12-12T02:53:31.129457660Z"" level=warning msg=""failed to load plugin io.containerd.snapshotter.v1.aufs"" error=""modprobe aufs failed: ""modprobe: ERROR: ../libkmod/libkmod.c:586 kmod_search_moddep() could not open moddep file '/lib/modules/4.14.77-70.59.amzn1.x86_64/modules.dep.bin'\nmodprobe: FATAL: Module aufs not found in directory /lib/modules/4.14.77-70.59.amzn1.x86_64\n"": exit status 1""
+
+Regards,
+
+Edited by: thanh on Dec 12, 2018 1:55 PM
+
+Edited by: thanh on Dec 12, 2018 1:56 PM"
+AWS CodeBuild	"Re: Docker custom build image failed
+Try the command as mentioned in https://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker-custom-image.html
+
+""nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&""
+
+Also, looks like your ""timeout -t"" command did not exit properly. Try ""timeout 15 sh -c ""until docker info; do echo .; sleep 1; done"""" instead. Note that your custom image will need to have Docker available in it (e.g.: docker:dind).
+
+Hope that helps."
+AWS CodeBuild	"Dependency Caching Breaking Ruby Builds with Git Based Dependencies
+Hello,
+We were forced to disable dependency caching for one of our Ruby based projects because the cache was not including files necessary for it to run. This only happens for Ruby dependencies that point at Git endpoints (rather than Gems).  The underlying cause appears to be that the cache does not include specific git directories for these dependencies.  It is unclear if this is the expected behavior or not.
+
+Steps to Reproduce:
+1) Create a ruby based application with a Gem file that points to a Git based dependency.  Include a buildspec.yml which installs the Ruby dependencies via Bundler, and enable caching on the directory containing the dependencies.  I have an example here:  https://github.com/PrimaryKids/codebuild-ruby-cache-issue 
+2) Perform at least one build so that the cache file is loaded to S3.  I did this with a whitespace only change in a pull request here: https://github.com/PrimaryKids/codebuild-ruby-cache-issue/pull/1
+3) Once you've confirmed that the cache exists on S3, create a pull request which modifies the projects Gemfile and adds a new dependency which is not presently installed locally or in our cached dependencies.  I have an example here: https://github.com/PrimaryKids/codebuild-ruby-cache-issue/pull/2
+
+Note that subsequent builds that do not modify the Gemfile are able to successfully run. It is only when the Gemfile is modified that this behavior occurs.
+
+The expected result of this is that the `bundle install` command succeeds and installs the new dependency.  Instead though, it fails with the following error:
+Fetching https://github.com/mperham/sidekiq
+warning: no common commits
+fatal: '/codebuild/output/src732545318/src/github.com/PrimaryKids/codebuild-ruby-cache-issue/vendor/bundle/ruby/2.2.0/cache/bundler/git/sidekiq-2c126bb31030b2910e9979f201c9e6615f68d938' does not appear to be a git repository
+fatal: Could not read from remote repository.
+ 
+Please make sure you have the correct access rights
+and the repository exists.
+ 
+Retrying `git fetch --force --quiet --tags ""/codebuild/output/src732545318/src/github.com/PrimaryKids/codebuild-ruby-cache-issue/vendor/bundle/ruby/2.2.0/cache/bundler/git/sidekiq-2c126bb31030b2910e9979f201c9e6615f68d938""` due to error (2/4): Bundler::Source::Git::GitCommandError Git error: command `git fetch --force --quiet --tags ""/codebuild/output/src732545318/src/github.com/PrimaryKids/codebuild-ruby-cache-issue/vendor/bundle/ruby/2.2.0/cache/bundler/git/sidekiq-2c126bb31030b2910e9979f201c9e6615f68d938""` in directory /codebuild/output/src732545318/src/github.com/PrimaryKids/codebuild-ruby-cache-issue/vendor/bundle/ruby/2.2.0/bundler/gems/sidekiq-6e18326f69ad has failed.
+If this error persists you could try removing the cache directory '/codebuild/output/src732545318/src/github.com/PrimaryKids/codebuild-ruby-cache-issue/vendor/bundle/ruby/2.2.0/cache/bundler/git/sidekiq-2c126bb31030b2910e9979f201c9e6615f68d938'fatal: '/codebuild/output/src732545318/src/github.com/PrimaryKids/codebuild-ruby-cache-issue/vendor/bundle/ruby/2.2.0/cache/bundler/git/sidekiq-2c126bb31030b2910e9979f201c9e6615f68d938' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+
+To debug this, I added a command to list the contents of:
+vendor/bundle/ruby/2.2.0/cache/bundler/git/sidekiq-2c126bb31030b2910e9979f201c9e6615f68d938:
+total 36K
+-rw-r--r-- 1 root root   23 Aug 17 00:33 HEAD
+-rw-r--r-- 1 root root  126 Aug 17 00:33 config
+-rw-r--r-- 1 root root   73 Aug 17 00:33 description
+drwxr-xr-x 2 root root 4.0K Aug 17 00:47 hooks
+drwxr-xr-x 2 root root 4.0K Aug 17 00:47 info
+drwxr-xr-x 3 root root 4.0K Aug 17 00:47 objects
+-rw-r--r-- 1 root root 9.7K Aug 17 00:33 packed-refs
+
+
+Then, to compare this, I listed the contents of this directory on a fresh install (by deleting the cache before running `bundle install`).  This is implemented here: https://github.com/PrimaryKids/codebuild-ruby-cache-issue/pull/3
+
+This contents of the directory in question have directories which aren’t provided by the CodeBuild cache:
+total 44K
+-rw-r--r-- 1 root root   23 Aug 17 00:53 HEAD
+drwxr-xr-x 2 root root 4.0K Aug 17 00:53 branches
+-rw-r--r-- 1 root root  126 Aug 17 00:53 config
+-rw-r--r-- 1 root root   73 Aug 17 00:53 description
+drwxr-xr-x 2 root root 4.0K Aug 17 00:53 hooks
+drwxr-xr-x 2 root root 4.0K Aug 17 00:53 info
+drwxr-xr-x 4 root root 4.0K Aug 17 00:53 objects
+-rw-r--r-- 1 root root 9.7K Aug 17 00:53 packed-refs
+drwxr-xr-x 4 root root 4.0K Aug 17 00:53 refs
+
+
+Specifically the ‘branches’ and ‘refs’ directories are missing. It appears as though these directories are not being included in the CodeBuild cache.  Is this expected behavior?  I haven’t been able to find any indication of this in the CodeBuild documentation."
+AWS CodeBuild	"Re: Dependency Caching Breaking Ruby Builds with Git Based Dependencies
+Thanks for reporting the issue and providing the steps to recreate this issue. We'll get back to you once we have a fix."
+AWS CodeBuild	"Re: Dependency Caching Breaking Ruby Builds with Git Based Dependencies
+Could you please test this again? We pushed an update to fix for this issue recently."
+AWS CodeBuild	"Passing credentials to Docker in Docker
+I am using the aws/codebuild/docker:18.09.0 image in CodeBuild
+
+I want to be able to use our own internal docker based tool for consistency.
+I can run the image with little issue, but I am struggling with how to handle the aws credentials. I need to be able to pass these into the container.
+
+When we run this tool locally, we just mount the ~/.aws directory into the container.
+However it seems like CodeBuild does not store the credentials there, and I can't figure out what I need to mount instead.
+Or if there is another solution.
+
+Not sure if it matters, but I am posting this from a different AWS Account than I am doing the above work with. Since my personal AWS account is already setup for the forums.
+
+Edited by: ninjonxb on Dec 14, 2018 7:51 AM"
+AWS CodeBuild	"Re: Passing credentials to Docker in Docker
+Does the steps in https://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-versions help?"
+AWS CodeBuild	"Feature request: Allow access to webhook payload in CodeBuild
+Hi, I am not sure why  https://forums.aws.amazon.com/thread.jspa?messageID=832202&#832202  was locked, as it was not answered. Is this feature implemented now? If not I would like to request it.
+
+I would just like to add this is a gigantic feature for us. We'd like to drive our infrastructure from a set of scripts that live in an infrastructure repo. If we could just access the github webhook payload, we could know which scripts are new, modified, or removed - and then call the appropriate action on the cloudformation stack (create, update or delete). 
+
+Without access to the webhook payload this simple task becomes a lot more complicated and open to failure. 
+
+Thanks a lot,
+Matt"
+AWS CodeBuild	"Re: Feature request: Allow access to webhook payload in CodeBuild
+We have added this feature request to our backlog. Don't have an ETA to share on when this feature would be available. However, we'll update the thread(s), when this feature becomes available."
+AWS CodeBuild	"Feature request: BUILD_GENERAL1_XLARGE
+Hi, I've been trying to build my main work project with CodeBuild recently and it was running out of memory with a BUILD_GENERAL1_LARGE. It's a large project and does a lot in parallel; in order to make it work with CodeBuild I've had to make it do a bunch of large steps sequentially at the beginning which is time consuming.
+
+Please Amazonian Gods, can you consider adding a new BUILD_GENERAL1_XLARGE instance type with 31GB RAM and 16 vCPUs?"
+AWS CodeBuild	"Re: Feature request: BUILD_GENERAL1_XLARGE
+Thank you for this feature request, I have passed it to the team for further review. Your feedback is very much appreciated."
+AWS CodeBuild	"Chrome Headless in CodeBuild Linux fails to render elements -- works local
+I have a webpage that requires Google Authentication before proceeding to an angular web page, and I've built some very basic end-to-end tests, which work like a charm in Linux with Chrome Headless:
+1. Finds the username field
+2. Inputs the proper email address, and clicks next
+3. Enters the password to log in
+4. Once it passes Google Authentication, it verifies the title of the page is ""Expense""
+Here's the final message I get in the Terminal: Executed 3 of 3 specs SUCCESS in 46 secs.
+
+In AWS CodeBuild, though, we are ALSO using a Linux container, and that fails every single time.  
+Here's the first error:
+...
+Jasmine started
+1 - Finding the username field
+2 - Inputting the proper test email address
+0 h1 tags identified
+ Expense App E2E Initial Test Suite
+ index page for Expense should work just fine
+ ·[31m✗ should sign in correctly with test user·[39m
+ ·[31m- ·[39m·[31mFailed: No element found using locator: By(css selector, *)·[39m
+ at elementArrayFinder.getWebElements.then (/codebuild/output/src609592849/src/node_modules/protractor/built/element.js:814:27)
+
+Here's the setup info in protractor.conf.js:
+  capabilities: {
+    'browserName': 'chrome',
+    chromeOptions: {
+      args: 
+    }
+  },
+  directConnect: true,  // Test scripts communicate directly with Chrome Driver, so they start up and run faster
+
+From the package.json, I'm using:
+    ""e2e"": ""ng e2e --port 4200"",
+
+From the buildspec-test.yml, I have the following post_build command:
+
+npm run e2e
+
+
+Why does Chrome Headless find my webpage on http://localhost:4200 without issue on my local Linux instance, but fails to find it in AWS CodeBuild when they BOTH run Ubuntu Linux? Local version: Ubuntu 18.04.1 LTS AWS CodeBuild version: Ubuntu 14.04.5 LTS (Trusty)
+Please let me know, and thanks in advance!
+
+Sincerely,
+
+Patrick Walters"
+AWS CodeBuild	"Dettached mode in git repository for branch source version builds
+I've created a CodeCommit project with just a buildspec.xml file. This CodeCommit repository follows gitflow structure.
+
+buildspec.xml contains the following lines:
+
+version: 0.1
+ 
+phases:
+  install:
+    commands:
+      - echo Commands
+  build:
+    commands:
+      - echo Build started
+      - echo $CODEBUILD_SOURCE_VERSION
+      - git --version
+      - git checkout $CODEBUILD_SOURCE_VERSION
+      - git branch -r
+      - git branch --list
+      - git status
+      - echo $CODEBUILD_INITIATOR
+      - echo $CODEBUILD_BUILD_ARN
+      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo $CODEBUILD_SOURCE_REPO_URL
+      - echo $CODEBUILD_SOURCE_VERSION
+      - echo $CODEBUILD_SRC_DIR
+  post_build:
+    commands:
+      - echo Build completed
+ 
+
+
+After that, I created a codebuild project to build this CodeCommit source. I then executed the build with two different ""source-version"" parameters.
+
+Execution 1: aws codebuild start-build --project-name=""hivelog-sample"" --source-version=""develop""
+...
+[Container] 2018/06/08 19:13:47 Entering phase BUILD
+[Container] 2018/06/08 19:13:47 Running command echo Build started
+Build started
+ 
+[Container] 2018/06/08 19:13:47 Running command echo $CODEBUILD_SOURCE_VERSION
+develop
+ 
+[Container] 2018/06/08 19:13:47 Running command git --version
+git version 1.9.1
+ 
+[Container] 2018/06/08 19:13:47 Running command git checkout $CODEBUILD_SOURCE_VERSION
+HEAD is now at efcb0b3... Ajustes nos build
+ 
+[Container] 2018/06/08 19:13:47 Running command git branch -r
+  origin/develop
+  origin/master
+ 
+[Container] 2018/06/08 19:13:47 Running command git branch --list
+* (no branch)
+ 
+[Container] 2018/06/08 19:13:47 Running command git status
+Not currently on any branch.
+nothing to commit, working directory clean
+...
+
+
+Execution 2: aws codebuild start-build --project-name=""hivelog-sample"" --source-version=""""
+[Container] 2018/06/08 19:15:41 Entering phase BUILD
+[Container] 2018/06/08 19:15:41 Running command echo Build started
+Build started
+ 
+[Container] 2018/06/08 19:15:41 Running command echo $CODEBUILD_SOURCE_VERSION
+ 
+ 
+[Container] 2018/06/08 19:15:41 Running command git --version
+git version 1.9.1
+ 
+[Container] 2018/06/08 19:15:41 Running command git checkout $CODEBUILD_SOURCE_VERSION
+ 
+[Container] 2018/06/08 19:15:41 Running command git branch -r
+  origin/develop
+  origin/master
+ 
+[Container] 2018/06/08 19:15:41 Running command git branch --list
+* develop
+ 
+[Container] 2018/06/08 19:15:41 Running command git status
+On branch develop
+nothing to commit, working directory clean
+
+
+As we can see in git branch --list result, when the source-version is specified, the git repository is in dettached and the develop branch is not present in local repository. 
+
+Execution 1
+[Container] 2018/06/08 19:13:47 Running command git branch --list
+* (no branch)
+
+Execution 2
+[Container] 2018/06/08 19:15:41 Running command git branch --list
+* develop
+
+
+This issue impacts all builds that execute maven release lifecycle, as its impossible to commit pom.xml changes do the right branch.
+
+Any solution to this issue?"
+AWS CodeBuild	"Re: Dettached mode in git repository for branch source version builds
+Hi.
+As far as understood you are creating a build from a specific branch. Did you find a solution? I'm running in the same issue...
+Thanks,
+Walter"
+AWS CodeBuild	"CLIENT_ERROR: unable to install any of the provided certificates for primar
+configure codebuild to have source code is Github enterprises. I have generate the personal access key in Github and paste into codebuild
+When start build is is failing at Download_Source and giving this error 
+CLIENT_ERROR: unable to install any of the provided certificates for primary source
+
+ Any one has experience the same? Please help if u know the solution 
+Best regard"
+AWS CodeBuild	"Re: CLIENT_ERROR: unable to install any of the provided certificates for primar
+AWS CodeBuild uses the certificate to make a trusted SSL connection to the repository. You can download your certificate from GitHub Enterprise and upload to S3. 
+
+You can also select ""Enable insecure SSL"" in console, or set insecure-ssl to true. We recommend that you use ""Enable insecure SSL"" for testing only. It should not be used in a production environment. 
+
+Please refer to https://docs.aws.amazon.com/codebuild/latest/userguide/sample-github-enterprise.html
+
+Edited by: ziweiataws on Nov 26, 2018 4:18 PM
+
+Edited by: ziweiataws on Nov 26, 2018 4:19 PM"
+AWS CodeBuild	"Can't figure out how to use parameter-store (Systems Manager Parameters)
+I'm very confused on what the key-value pairs in the parameter-store section define. In particular, how do I reference a particular parameter in the build section? In my use case, I want to write secret values to a config file before building a docker image.
+
+For example, imagine I store a secret value called ""stored_secret"". How do I complete the following codebuild script to echo the value of ""stored_secret""?
+
+version: 0.2
+ 
+env:
+  parameter-store:
+    MY_SECRET: stored_secret
+ 
+phases:
+  build:
+    commands:
+      - echo ???
+
+
+Can 
+Thanks for any help!"
+AWS CodeBuild	"Re: Can't figure out how to use parameter-store (Systems Manager Parameters)
+Here's a sample buildspec from GitHub that uses parameter-store well: https://github.com/OpenWhere/go-mongo-backup/blob/develop/buildspec.yml
+
+Once you store the secret in parameter store, you can reference the parameter name that holds that secret in your buildspec (e.g.: ""${MY_SECRET}""). Note that ""MY_SECRET"" refers to the parameter, and not the stored secret itself."
+AWS CodeBuild	"Re: Can't figure out how to use parameter-store (Systems Manager Parameters)
+Thank you for the pointer. So when I declare a parameter, it shows up as an environment variable with that name? In that case, does the ""value"" field serve any purpose?"
+AWS CodeBuild	"Re: Can't figure out how to use parameter-store (Systems Manager Parameters)
+Hi m4dc4p,
+
+The `parameter-store` section is a set of key/value pairs. The ""key"" is the name of the environment variable that will be exposed. The ""value"" is the name of the secret to decrypt.
+
+In your example, you would use: echo $MY_SECRET"
+AWS CodeBuild	"CodeBuild docker build is slow
+I'm using CodeBuild (via CodePipeline) to build a docker container. It works fine, but it's a lot slower than we'd like it to be. I'm aware of the need to `docker pull` my most recently built image, so that I can use it to `--cache-from`, and that does help. But there are inevitably parts of the build which can't be cached by Docker layer caching. After all, the reason I'm building a container at all is because of changes in my application.
+
+More specifically, seemingly trivial aspects of building the container take way longer than I would expect. `RUN rm -f /etc/nginx/sites-enabled/default` takes 10s. `COPY nginx.conf /etc/nginx/nginx.conf` takes another 10s. I would expect those to take under 1s each. Why is CodeBuild so slow?
+
+I've already bumped up to BUILD_GENERAL1_LARGE, mostly without any increase in speed, if it matters. And I'm using aws/codebuild/docker:17.09.0, just for reference."
+AWS CodeBuild	"Re: CodeBuild docker build is slow
+There isn't a native support for this feature in CodeBuild today. You may choose to save the intermediate layers to Amazon ECR, as explained in https://github.com/aws/aws-codebuild-docker-images/issues/26#issuecomment-370177343"
+AWS CodeBuild	"Re: CodeBuild docker build is slow
+Thanks for your reply, subinataws .
+
+I understand that there isn't currently support for Docker layer caching native to CodeBuild. And as I mentioned, I'm already using `docker pull` and `--cache-from` to reuse those layers. And that does help, but that's not what I'm asking about.
+
+I'm asking about why CodeBuild is so slow for things which aren't cached by Docker. Eg. in the example I posted previously, `COPY nginx.conf /etc/nginx/`, uncached, would take 10s. Why is a simple file copy a 10s operation?"
+AWS CodeBuild	"Re: CodeBuild docker build is slow
+I don't have a good answer for why that step took 10s. Can you share your buildspec and Dockerfile that you were building? You can pass that along through AWS support or send as personal message to me.
+
+CodeBuild images are available as Dockerfiles in https://github.com/aws/aws-codebuild-docker-images. You may try to run this build locally using CodeBuild local (https://github.com/aws/aws-codebuild-docker-images/tree/master/local_builds) to see if you face the same issue."
+AWS CodeBuild	"Re: CodeBuild docker build is slow
+as an FYI I see the same issues, just regular file copies take forever.  Seems to have gotten worse in the last year.  I'm thinking perhaps it's due to the old versions of docker/ubuntu in the AWS docker image along with it using overlap FS instead of overlay2.  Perhaps triggered by move to Linux 2? Would be interesting trying with a more modern base image.
+
+another question is the IOPS that codebuild has available."
+AWS CodeBuild	"[CODEBUILD - NODEJS] can't resolve javascript modules
+Hello,
+
+Container: Node 10+ latest or Node 8.11+ both versions are working locally
+
+I'm trying to build a react project, using react-scripts but I'm a little bit confuse. I did a review in everything, permissions, paths, etc...everything looks fine.
+Locally it builds (I'm using AWS dockerfile), but running from AWS it fails.
+I've attached two images to see the logs.
+Does anyone here have any advice ?
+
+Thanks in advance!
+
+Edited by: andreff on Nov 14, 2018 3:19 AM"
+AWS CodeBuild	"CodeBuiild Docker: Attaching a volume in DinD container
+Below is an issue only on local builds! (https://aws.amazon.com/jp/blogs/devops/announcing-local-build-support-for-aws-codebuild/)
+I could attach a volume in actual CodeBuild service.
+
+
+You usually need to specify host's path as the first field of -v/--volume option like:
+$ docker run --rm -v ${PWD}:/myapp alpine ls /myapp
+
+where ${PWD} is the host's path and /myapp is the path where the directory is mounted in the container.  The same rule applies to DinD container.
+
+The problem here is: the host's path is unknown in CodeBuild environment.
+Suppose you have rails and db containers and rails interacts with db to run tests.  Here I try to use docker-compose to set up those containers, and to utilize caching mechanism of CodeBuild for such as bundle install and rails assets:precompile, I want to mount a volume to work on.  But specifying parent container's path doesn't work.
+
+Alternative is that you build ""hosting container"" with rails and docker (dind), set up db container, and run rails test against it, but it seems that db container is in different network and unreachable.
+
+A couple of more things I can think of is:
+. to build an all-in-one container with rails and db, which is not that smart.  
+. to use s3 to store/restore cache, yeah I can do it if absolutely needed, but extra work.
+
+If anyone can provide suggestions of how to solve this, it would be appreciated."
+AWS CodeBuild	"Re: CodeBuiild Docker: Attaching a volume in DinD container
+This is not supported today. You may track this in https://github.com/aws/aws-codebuild-docker-images/issues/76. We consider this more of a feature request for CodeBuild local. 
+
+We don't have any suggested workarounds at this time."
+AWS CodeBuild	"Error:  The specified log stream does not exist.
+About a week ago I took a working codestar pipeline and moved it into a VPC.  Since then it has not logged anything to Cloudwatch Logs, across a few dozen builds.
+
+The job role has plenty of permissions on Logs:
+              - Sid: WriteLogsPermissions
+                Effect: ""Allow""
+                Action:
+                  - ""logs:CreateLogGroup""
+                  - ""logs:CreateLogStream""
+                  - ""logs:PutLogEvents""
+                Resource:
+                  - ""*""
+
+There is nothing in the VPC flow logs for most runs, but one run did log rejects for incoming traffic on high ports, for example:
+2 006848496440 eni-00c5ff4d9cf30c158 185.197.74.7 172.31.6.69 55188 40354 6 1 40 1538002483 1538002520 REJECT OK
+
+The job itself is also failing, presumably running a WGET to Maven, though without logs it is hard to say for sure:
+wget ""https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz""
+
+I've attached the CFN template that creates everything.
+
+Any suggestions are appreciated,"
+AWS CodeBuild	"Re: Error:  The specified log stream does not exist.
+Just for reference, commenting out the VpcConfig of codebuild (lines 334 to 340 of the template) results in Cloudwatch logs working."
+AWS CodeBuild	"Re: Error:  The specified log stream does not exist.
+The Codebuild VPC page goes on and on with things like the CLI commands for finding your VPC Id. Buried at the end of best practices is the detail I was missing:
+
+When you set up your AWS CodeBuild projects to access your VPC, choose private subnets only.https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
+
+By which they mean, codebuild will only work in a private subnet with NAT.  
+
+Moving my codebuild into a private subnet from a public subnet fixed my error."
+AWS CodeBuild	"Re: Error:  The specified log stream does not exist.
+When using a CodeBuild project with the optional VPC configuration, you will either need to have the relevant AWS service's PrivateLink (in your case here, it is CloudWatch logs) available in your VPC subnet or have routes to the internet (needs NAT gateway).
+
+We have brought it to the top of the best practices section. Let us know if you have any more suggestions."
+AWS CodeBuild	"codebuild console update changed s3 build artifact linking
+After the recent update, when clicking View Artifacts in the console, it takes you to the last file that was uploaded as a part of the artifacts, rather than the base directory as it had previously."
+AWS CodeBuild	"Is git+ssh supported within codebuild?
+Hi,
+
+I'm trying to test AWS CodeBuild for my environment but I'm currently facing some issues while trying to build my app.
+
+My app is python based and is kept in a private repo at github.com, I've successfully added/linked the repository with aws.codebuild.com, however within my code (requirements.txt) I have something like this:
+
+PySimpleSOAP==1.10
+git+ssh://git@github.com/myprivaterepo/apns-client.git
+
+and although I'm copying the private ssh key to /root/.ssh/id_rsa from a restricted s3 bucket, when I start the build it fails with this:
+
+ssh: connect to host github.com port 22: Connection timed out
+fatal: Could not read from remote repository.
+
+I've added a private subnet within my VPC that has a NAT instance, but maybe git+ssh is not supported from CodeBuild?
+
+This step gets invoked through the following line within my buildspec.yml file:
+
+phases:
+  pre_build:
+    commands:
+      - echo Entered the pre_build phase
+      - aws s3 cp s3://<my-private-bucket>/id_rsa /root/.ssh/id_rsa
+      - chmod 0600 /root/.ssh/id_rsa
+      - pip install -r requirements.txt
+
+Any hints on this?
+
+Thanks in advance."
+AWS CodeBuild	"Re: Is git+ssh supported within codebuild?
+Hi Joel,
+It sounds like you might have something in your VPC that is blocking port 22, like security groups or VPC ACLs.   I was able to run the following commands in a build outside of a VPC, and successfully got a response from GitHub (permission denied since this is not a registered key):
+       - apt-get update
+       - apt-get -y install ssh
+       - ssh-keygen -f $HOME/.ssh/id_rsa -t rsa -N ''
+       - ssh -o StrictHostKeyChecking=no -T -vvv git@ssh.github.com
+
+By the time your ssh command runs, CodeBuild has already downloaded the source code for your project from GitHub over HTTPS, so there is definitely connectivity over 443 to GitHub.  You might try switching to the 443 port for SSH:
+https://help.github.com/articles/using-ssh-over-the-https-port/
+
+Hope that helps!"
+AWS CodeBuild	"Re: Is git+ssh supported within codebuild?
+I found this article to be helpful: https://adrianhesketh.com/2018/05/02/go-private-repositories-and-aws-codebuild/ Its project is in GO. But you can generalize it to other languages. For instance, where it talks about ""go get"", that is ""pip install -r requirements.txt"" for my Django project.
+
+If you don't want to go through the trouble of dealing with SSH keys, you can use github's personal access tokens. See the accepted answer in https://stackoverflow.com/questions/18886729/fatal-could-not-read-username-for-https-github-com-no-such-device-or-addre. For instance, my Django project's requirements.txt has this line: -e git+https://<oauthtoken>@github.com/<user>/<repo>.git#egg=<repo>
+
+
+Edited by: nanzhong on Oct 16, 2018 4:26 PM"
+AWS CodeBuild	"Search filter for CodeBuild
+We have over 1000 build jobs and not having a search filter is a major pain point. 
+
+Are there plans to have this feature out soon?
+
+Thanks"
+AWS CodeBuild	"Re: Search filter for CodeBuild
+Yes, we need to support search filters in CodeBuild. No timelines to share, but it is on our backlog."
+AWS CodeBuild	"CodeBuild is experiencing issues - When using Docker Containers - No Logs
+Hi, 
+
+I'm trying to configure a Code Build to use my own container but during the ""PROVISIONING"" phase and after 1 hour I received a ""CodeBuild is experiencing issues"". There is no more detail about it, no cloud watch logs.
+I followed this example https://aws.amazon.com/blogs/devops/extending-aws-codebuild-with-custom-build-environments-for-the-net-framework/ to test it but didn't work.
+
+Any help?  Thanks in advance."
+AWS CodeBuild	"Upload a zip without re-zipping
+My .NET compiler will output a zip with the exact required structure for an Elastic Beanstalk instance by executing this command in the buildspec.yml   (I am building with a docker container with .NET added to it)
+
+msbuild C:\Src\myProject.csproj  /p:Configuration=Release /t:Package /p:DeployIisAppPath=""Default Web Site""
+
+Is there a way of uploading the resulting zip via the buildspec.yml without zipping an already zipped file? An artifact section, such as the following, always zips any file, even if you don't want it zipped.
+
+artifacts:
+files:
+- C:\Src\myProject\obj\Release\Package\MyProject.Web.zip"
+AWS CodeBuild	"Re: Upload a zip without re-zipping
+You can set the packaging type as NONE. https://docs.aws.amazon.com/codebuild/latest/APIReference/API_ProjectArtifacts.html#CodeBuild-Type-ProjectArtifacts-packaging"
+AWS CodeBuild	"Re: Upload a zip without re-zipping
+I tried that. I set the Artifacts packaging to None in the build project settings.  It still adds the zip that I want to upload to S3 into another zip container.  I am guessing that is the default behavior of these lines in the buildspec.yml. 
+
+artifacts:
+files:
+- C:\Src\MyWebProject\obj\Release\Package\MyWebProject.zip
+
+I fear I have to install the  AWS SDK on my build server and upload to S3.  
+
+Edited by: BillMcKnight on Sep 20, 2018 9:17 AM"
+AWS CodeBuild	"Re: Upload a zip without re-zipping
+Unfortunately it seems there has been no progress in being able to skip zipping an artifact in a code pipeline, as this thread shows:  https://forums.aws.amazon.com/thread.jspa?threadID=247585
+
+In that thread, the CodeBuild team member even says: ""Hi Bradley, I'm from the CodeBuild team. You are correct: CodePipeline-triggered builds will always use the 'zip' packaging, overriding the packaging type selected in your CodeBuild project. Can you describe your use case for creating the zip yourself?""
+
+A use-case for this is a standard .NET web application deployed to Elastic beanstalk which must be packaged in a certain way--a way that is most easily achieved by packaging (i.e. zipping) it in the build command step.
+
+Does anyone else have any alternatives?
+
+Edited by: BillMcKnight on Sep 21, 2018 12:05 PM"
+AWS CodeBuild	"Re: Upload a zip without re-zipping
+Have you tried creating the ZIP's contents as a directory instead, and then putting that directory into the artifacts section of the buildspec.yml? This should avoid the double-ZIP issue."
+AWS CodeBuild	"Re: Upload a zip without re-zipping
+This would be possible, if after executing the following command  (which is needed to generate all the correct files and paths in the zip)
+
+msbuild C:\Src\myProject.csproj /p:Configuration=Release /t:Package /p:DeployIisAppPath=""Default Web Site""
+
+I would unzip the contents into the artifacts directory.  But I really was hoping that I wouldn't have to unzip the package and then allow the upload process to re-zip it.  This seems to be a really undesirable hack to get around a constraint which is too restrictive.   It would have been better if setting the package to none, did really skip the zipping operation."
+AWS CodeBuild	"Re: Upload a zip without re-zipping
+Maybe there's a better way, but what I did that worked is unzip the package created in the build step and let the normal artifact upload process re-zip it.  My build server is .NET  and has PowerShell on it.  Here's how the buildspec.yml looks, in case anyone is interested
+
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+     - New-Item -ItemType Junction -Path C:\Src -Value $Env:CODEBUILD_SRC_DIR
+     - cd C:\Src  
+     - nuget.exe restore
+  build:
+    commands:
+     - msbuild C:\Src\MyProject\MyProjec.csproj  /p:Configuration=Release /t:Package /p:DeployIisAppPath=""Default Web Site""
+  post_build:
+    commands:
+     - New-Item -ItemType directory -Path C:\Src\Artifact
+     - Expand-Archive C:\Src\MyProject\obj\Release\Package\Siemens.DisasterProtection.Web.zip -DestinationPath C:\Src\Artifact\
+
+artifacts:
+   files:
+     - '**/*'
+   base-directory: 'C:\Src\Artifact\'"
+AWS CodeBuild	"Unable to download cache. File exists
+I'm trying to cache a directory (actually a conda environment) in CodeBuild. In the docker image that I'm using for my builds, it starts with a small environment with only a few packages installed, then at the start of the build I install some more packages needed for the build. Finally, I try to cache the entire environment so that the next build won't have to manually download and install those packages again.
+
+However, in the next build, when I try to restore the cache, I get the following error:
+Unable to download cache: symlink /opt/conda/pkgs/sqlite-3.13.0-0/lib/libsqlite3.so.0.8.6 /opt/conda/pkgs/sqlite-3.13.0-0/lib/libsqlite3.so.0: file exists
+
+
+At this point, CodeBuild stops unpacking the cache, and I get no build speedup, because the cache isn't being used. However, I don't actually care that these files already exist on the filesystem. I want to cache to unpack over the top of them.
+
+Is there any way to force the cache to unpack, despite conflicts? Or perhaps a way to ignore collisions and just continue unpacking the cache anyway?"
+AWS CodeBuild	"Re: Unable to download cache. File exists
+Thanks for the feature suggestion, I've filed it for further investigation."
+AWS CodeBuild	"Cannot start child process in node
+Here's the error I'm getting:
+
+
+spawning child process with args: cmd /c node test
+events.js:167
+      throw er; // Unhandled 'error' event
+      ^
+ 
+Error: spawn cmd ENOENT
+    at Process.ChildProcess._handle.onexit (internal/child_process.js:227:19)
+    at onErrorNT (internal/child_process.js:404:16)
+    at process._tickCallback (internal/process/next_tick.js:63:19)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:721:11)
+    at startup (internal/bootstrap/node.js:228:19)
+    at bootstrapNodeJSCore (internal/bootstrap/node.js:576:3)
+Emitted 'error' event at:
+    at Process.ChildProcess._handle.onexit (internal/child_process.js:233:12)
+    at onErrorNT (internal/child_process.js:404:16)
+    [... lines matching original stack trace ...]
+    at bootstrapNodeJSCore (internal/bootstrap/node.js:576:3)
+ 
+[Container] 2018/09/23 20:20:45 Command did not exit successfully node index exit status 1
+[Container] 2018/09/23 20:20:45 Phase complete: BUILD Success: false
+[Container] 2018/09/23 20:20:45 Phase context status code: COMMAND_EXECUTION_ERROR Message: Error while executing command: node index. Reason: exit status 1
+
+
+Here's my buildspec.yml file:
+
+version: 0.2
+ 
+phases:
+  pre_build:
+    commands:
+      - cd 2018-09-23-CodeBuildChildProcessError
+  build:
+    commands:
+      - node index
+
+
+Here's index.js:
+
+const { spawn } = require('child_process');
+ 
+const args = ['/c', 'node test'];
+console.log('spawning child process with args: cmd ' + args.join(' '));
+const child = spawn('cmd', args);
+ 
+child.stdout.setEncoding('utf8');
+child.stdout.on('data', (chunk) => {
+    process.stdout.write(chunk);
+});
+    
+child.on('close', (code) => {
+    console.log(`child process exited with code $
+`);
+}); 
+
+{code}
+
+This is stored here: https://github.com/JaredMathis/Sandboxes
+
+I'm using Current image: aws/codebuild/nodejs:10.1.0"
+AWS CodeBuild	"Re: Cannot start child process in node
+As a workaround, I can use exec
+ instead of spawn
+: https://github.com/JaredMathis/Sandboxes/blob/master/2018-09-23-CodeBuildChildProcessError/index2.js"
+AWS CodeBuild	"Build badges not updating
+Hi,
+
+I've enabled badges on several CodeBuild projects, but they don't seem to be updating. The projects in question have run successfully, but the badge URLs continue to resolve to ""Unknown"".
+
+From the web console and the CLI, I've verified that the badges are enabled and have plausible looking URLs.
+
+Is there anything else I should investigate?
+
+Thanks,
+John"
+AWS CodeBuild	"Re: Build badges not updating
+Our build badges are branch-based. The one you copied from the console is for the master branch--can you try specifying another branch if you haven't built on the master branch? You can do this by replacing ""&branch=master"" with ""&branch=branch"" in the request URL."
+AWS CodeBuild	"Re: Build badges not updating
+The CodeBuild projects in question are being trigger from a CodePipeline pipeline, so their `Source Type` is set to `CODEPIPELINE`. The source stage of the pipeline is triggered from the master branch of a CodeCommit repository.
+
+Is it even possible to get a working build badge with this configuration?"
+AWS CodeBuild	"Re: Build badges not updating
+This isn't actually possible because CodeBuild doesn't have the .git directory for CodePipeline builds. I'll add this as a feature request--thanks for your feedback."
+AWS CodeBuild	"Re: Build badges not updating
+I have a CodeBuild project that has successfully built the master branch several times, but the Badge URL for the project continues to redirect to the unknown.svg URL.
+
+I have attached a screenshot of the build details showing that the build did indeed use ""master"" as the source version, and that the build succeeded.
+
+The URL I used was:
+https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB08**************6MX0%3D&branch=master
+and it did a 302 redirect to:
+https://s3-us-west-2.amazonaws.com/codefactory-us-west-2-prod-default-build-badges/unknown.svg
+
+Not having working badges really hampers the code-review process.
+
+Edited by: justinS37 on May 24, 2018 2:19 PM"
+AWS CodeBuild	"Re: Build badges not updating
+Thanks for letting us know--this is definitely not expected behavior. Would you mind sending me your project ARN in a private message?"
+AWS CodeBuild	"Re: Build badges not updating
+Confirm Build Badges are not updating for CodePipeline builds. Triggering build via CodeBuild updates the badge as designed.
+
+Any update on the status of this issue?
+
+Edited by: Amazon Customer on Sep 11, 2018 5:55 PM"
+AWS CodeBuild	"Re: Build badges not updating
+Build badges aren't supported for builds triggered through CodePipeline. CodeBuild needs the .git directory to show the appropriate build badge for the builds. Underlying issue can be tracked @ https://forums.aws.amazon.com/thread.jspa?threadID=251732."
+AWS CodeBuild	"ng e2e works on local machine, but not CloudBuild
+tl;dr:
+
+angular e2e test works on my local machine, but not with codebuild.
+
+Minimal reproducible source code: https://github.com/JaredMathis/Sandboxes/tree/master/2018-09-15-CodeBuildChromeError/my-app
+
+I get this error:
+
+[20:49:14] E/launcher - unknown error: Chrome failed to start: crashed
+  (unknown error: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location C:\Program Files (x86)\Google\Chrome\Application\chrome.exe is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+
+
+details:
+
+I ran:
+
+npm install -g @angular/cli
+ng new my-app
+cd my-app
+npm install
+ng e2e
+
+
+And a test passes.
+
+Here's my ""buildspec"" file:
+
+version: 0.2
+ 
+phases:
+  install:
+    commands:
+      - choco install googlechrome -y
+      - npm install -g @angular/cli
+  pre_build:
+    commands:
+      - cd 2018-09-15-CodeBuildChromeError\my-app
+      - npm install
+  build:
+    commands:
+      - echo Build started on `date`
+      - ng e2e
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+
+Here's my CodeBuild settings:
+
+image: aws/codebuild/windows-base:1.0
+
+Here's a fuller console output:
+
+[Container] 2018/09/15 20:48:55 Running command ng e2e
+Your global Angular CLI version (6.2.2) is greater than your local
+version (6.1.5). The local Angular CLI version is used.
+ 
+To disable this warning use ""ng config -g cli.warnings.versionMismatch false"".
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+ 
+Date: 2018-09-15T20:49:07.966Z
+Hash: 50d2962d4545a1d11f9e
+Time: 6589ms
+chunk {main} main.js, main.js.map (main) 10.8 kB [initial] [rendered]
+chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 227 kB [initial] [rendered]
+chunk {runtime} runtime.js, runtime.js.map (runtime) 5.22 kB [entry] [rendered]
+chunk {styles} styles.js, styles.js.map (styles) 15.7 kB [initial] [rendered]
+chunk {vendor} vendor.js, vendor.js.map (vendor) 3.27 MB [initial] [rendered]
+[20:49:08] I/file_manager - creating folder C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\protractor\node_modules\webdriver-manager\selenium
+[20:49:08] I/config_source - curl -oC:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\protractor\node_modules\webdriver-manager\selenium\chrome-response.xml https://chromedriver.storage.googleapis.com/
+[34mi[39m [90m｢wdm｣[39m: Compiled successfully.
+[20:49:11] I/downloader - curl -oC:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\protractor\node_modules\webdriver-manager\selenium/chromedriver_2.42.zip https://chromedriver.storage.googleapis.com/2.42/chromedriver_win32.zip
+[20:49:11] I/update - chromedriver: unzipping chromedriver_2.42.zip
+[20:49:12] I/launcher - Running 1 instances of WebDriver
+[20:49:12] I/direct - Using ChromeDriver directly...
+[20:49:14] E/launcher - unknown error: Chrome failed to start: crashed
+  (unknown error: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location C:\Program Files (x86)\Google\Chrome\Application\chrome.exe is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+  (Driver info: chromedriver=2.42.591088 (7b2b2dca23cca0862f674758c9a3933e685c27d5),platform=Windows NT 10.0.14393 x86_64)
+[20:49:14] E/launcher - WebDriverError: unknown error: Chrome failed to start: crashed
+  (unknown error: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location C:\Program Files (x86)\Google\Chrome\Application\chrome.exe is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+  (Driver info: chromedriver=2.42.591088 (7b2b2dca23cca0862f674758c9a3933e685c27d5),platform=Windows NT 10.0.14393 x86_64)
+    at Object.checkLegacyResponse (C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\selenium-webdriver\lib\error.js:546:15)
+    at parseHttpResponse (C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\selenium-webdriver\lib\http.js:509:13)
+    at doSend.then.response (C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\selenium-webdriver\lib\http.js:441:30)
+    at <anonymous>
+    at process._tickCallback (internal/process/next_tick.js:182:7)
+From: Task: WebDriver.createSession()
+    at Function.createSession (C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\selenium-webdriver\lib\webdriver.js:769:24)
+    at Function.createSession (C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\selenium-webdriver\chrome.js:761:15)
+    at Direct.getNewDriver (C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\protractor\built\driverProviders\direct.js:77:33)
+    at Runner.createBrowser (C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\protractor\built\runner.js:195:43)
+    at q.then.then (C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\protractor\built\runner.js:339:29)
+    at _fulfilled (C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\q\q.js:834:54)
+    at self.promiseDispatch.done (C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\q\q.js:863:30)
+    at Promise.promise.promiseDispatch (C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\q\q.js:796:13)
+    at C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\q\q.js:556:49
+    at runSingle (C:\codebuild\tmp\src701131479\src\github.com\JaredMathis\Sandboxes\2018-09-15-CodeBuildChromeError\my-app\node_modules\q\q.js:137:13)
+[20:49:14] E/launcher - Process exited with error code 199
+An unexpected error occurred: undefined
+ 
+[Container] 2018/09/15 20:49:15 Command did not exit successfully ng e2e exit status 1
+[Container] 2018/09/15 20:49:18 Phase complete: BUILD Success: false
+[Container] 2018/09/15 20:49:18 Phase context status code: COMMAND_EXECUTION_ERROR Message: Error while executing command: ng e2e. Reason: exit status 1
+
+
+Edited by: JaredMathis on Sep 15, 2018 2:04 PM"
+AWS CodeBuild	"Re: ng e2e works on local machine, but not CloudBuild
+This explains how to do it:
+
+https://github.com/avatsaev/angular-chrome-headless-docker
+
+Use Chrome Headless.  In protractor.config:
+
+  capabilities: {
+    'browserName': 'chrome',
+    'chromeOptions': {
+      'args': ['--no-sandbox', '--headless', '--window-size=1024,768']
+    }
+  },
+
+
+In CodeBuild, specify avatsaev/angular-chrome-headless as the Current image.
+
+Edited by: JaredMathis on Sep 16, 2018 11:37 AM"
+AWS CodeBuild	"CODEBUILD_SOURCE_VERSION not populating with GitHub Tag/Branch WebHook
+I'm trying to use the CODEBUILD_SOURCE_VERSION environment variable as described here [1], but it seems it's not working as described:
+
+CODEBUILD_SOURCE_VERSION: For Amazon S3, the version ID associated with the input artifact. For AWS CodeCommit, the commit ID or branch name associated with the version of the source code to be built. For GitHub, the commit ID, branch name, or tag name associated with the version of the source code to be built. 
+
+I'm using CodeBuild without CodePipeline and using a GitHub tag push => webhook to trigger my CodeBuild.  When I look at the CODEBUILD_SOURCE_VERSION Environment Variable while running, the only thing it will ever show is the git commit hash.  
+
+Sure, there are ways to derive an associated tag with the current commit, but those start to fall apart if there are multiple tags on the same commit.  Same thing happens when different branches of code catch up with each other
+
+How can I get the branch/tag that triggered the CodeBuild job?  Alternately, how can I get the GitHub WebHook data so I can parse it out myself?
+
+[1] https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html"
+AWS CodeBuild	"Re: CODEBUILD_SOURCE_VERSION not populating with GitHub Tag/Branch WebHook
++1, this is included in most build services"
+AWS CodeBuild	"Re: CODEBUILD_SOURCE_VERSION not populating with GitHub Tag/Branch WebHook
+Thanks for reporting this. We'll get this addressed in a future release. No ETA to share though."
+AWS CodeBuild	"Re: CODEBUILD_SOURCE_VERSION not populating with GitHub Tag/Branch WebHook
+It looks like there is some work being done on this now...  I'm seeing some inconsistent results on my ""CODEBUILD_SOURCE_VERSION"" variable.  As of 3 hours ago, builds of mine started failing.  Upon inspection, it seems that each push to a PR Branch is sending 2 webhook builds.  One for ""pr/XX"", and one for ""<commit-hash>"".  I was using the commit hash as provided in the CB_S_V variable, but I suppose I'll have to get it straight from the local git repository until the API settles down..."
+AWS CodeBuild	"Re: CODEBUILD_SOURCE_VERSION not populating with GitHub Tag/Branch WebHook
+I am also experiencing this problem, is there any ETA?
+
+When printing the environment variable CODEBUILD_SOURCE_VERSION
+ i will get the git commit id.
+
+with the help of the id i can run 
+git branch -a --contains <commit-id>
+
+
+to get the branch name, but i am not 100% sure that the information that ill get will always be the expected branch.
+
+GitHub WebHooks sends a lot of meta data, i'am sure there must be a way to display the branch that was triggered.
+
+Having a ongoing discussion about this is https://github.com/pvdlg/env-ci/pull/44
+
+Edited by: stefan-karlsson on Jul 20, 2018 8:25 AM"
+AWS CodeBuild	"Re: CODEBUILD_SOURCE_VERSION not populating with GitHub Tag/Branch WebHook
+@subinataws any word on this?  It's been 6 months of silence"
+AWS CodeBuild	"Re: CODEBUILD_SOURCE_VERSION not populating with GitHub Tag/Branch WebHook
+Thanks for checking back on this. We are aware of this feature gap, but do not have an ETA on when this will be implemented. We'll keep this thread posted."

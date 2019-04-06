@@ -1,0 +1,367 @@
+label	description
+Amazon GameLift	"Anyway to speed up Fleet Activation?
+Typically when spinning up a new fleet in gamelift, it takes about 15 minutes before it becomes ""ACTIVE"". Seems to sit on ""NEW"" for about 1 minute, then ""DOWNLOADING"" for about 3 minutes (even though the zip is only 1MB) then ""VALIDATING"" for 2 minutes, then ""ACTIVATING"" for about 9 minutes... Is there anyway to speed that up? Less concurrent processes maybe (I'm using 20 at the moment) or higher max concurrent game session activations? (I'm doing 5 at the moment)."
+Amazon GameLift	"Mono C# GameLift server on Amazon Linux instances?
+Would rather not deploy to windows instances if I can help it. Have a game server that is written in C# and works well with Mono on linux, but the command line for invoking it is ""mono GameService.exe"", which doesn't work with how gamelift enforces ""/local/game/"" as the prefix. Is there a way to get this working?"
+Amazon GameLift	"Re: Mono C# GameLift server on Amazon Linux instances?
+I was able to get this working by installing the mono-complete rpm in an install script, creating a symlink to mono in the /usr/local/game folder, and then calling mono as the launch path and the exe as the argument. works great!"
+Amazon GameLift	"[PLUGIN] unreal engine aws Game Lift Client / Server Blueprint Plugin
+For those who use gamelift on the unreal engine.
+
+https://forums.unrealengine.com/community/community-content-tools-and-tutorials/1585349-aws-game-lift-client-server-blueprint-plugin-with-blueprint-support
+
+Edited by: wukakuki on Feb 17, 2019 1:13 AM"
+Amazon GameLift	"FlexMatch Matchmaking times out
+Hey there, I am using GameLift with Unreal, and I set up the FlexMatch system exactly as it is described in the docs. ​
+
+I have a queue on eu-central-1, which has a fleet linked to running at us-west-2. To that, I got a matchmaker ruleset and configuration on eu-central-1. The configuration uses the queue.
+
+I integrated everything in my client and server, but if I start my matchmaking, it's at SEARCHING for 60 seconds (my matchmaking timeout I defined in the configuration), and then returns TIMED_OUT, even though the fleet has one instance up. I also tried to create a new session through the queue using start-game-session-placement from the AWS CLI. That did create a new session successfully on my server too, but the matchmaking won't simply find that.
+
+Help is greatly appreciated"
+Amazon GameLift	"Run Lumberyard on AMZ Workspaces?
+Has anyone been able to run Lumberyard on Workspaces?
+
+I'm working with my son to start game programming and want to use workspaces, so as not to buy a new machine.
+
+Thanks in advance
+Richard"
+Amazon GameLift	"Issue: GameLiftLocal returns incomplete data for DescribeGameSessions
+Calling describe-game-sessions to GameLiftLocal returns a data object resembling this:
+
+{ GameSessionId: 'd8bc1640-0539-11e8-b345-d78bed63c5ff',
+       FleetId: 'fleet-abcd-1234-debugmode',
+       MaximumPlayerSessionCount: 3,
+       Status: 'ACTIVE',
+       IpAddress: '127.0.0.1',
+       Port: 7777 }
+
+Which is missing certain data fields from the GameSession object. The important data I'm missing is: CurrentPlayerSessionCount
+ which would be helpful for testing adding players to existing sessions with open player slots.
+
+Edited by: jeffchamberlain on Jan 29, 2018 3:17 PM"
+Amazon GameLift	"How to teminate ""Activating"" fleets
+Hi! Can you terminate a fleet in ""activating"" state? I've tried almost everything with AWS CLI. Delete-fleet it does not work because ""from ACTIVATING to DELETING is not a valid transition"", changed the capacity to 0 but I still have a instance on ""PENDING"" and even tho I removed the build, the fleet keeps sending ""Server started correctly but did not call InitSDK() in the GameLift Server SDK within 5 minutes"" events.
+
+I guess I could just launch another fleet with the new build but I guess that new fleet is ""out"" of the free tier.
+
+Thanks in advance!"
+Amazon GameLift	"Re: How to teminate ""Activating"" fleets
+Sorry, at this time you can't delete a fleet which is still activating, you will need to wait until the fleet transitions to ACTIVE or FAILED before you can delete it.
+
+As far as exceeding the free tier by having parallel instances running, the free tier is actually calculated by the total number of hours of the free tier instance type used.  That is currently 125 free hours of the c3.large.gamelift instance type.  It doesn't matter if you run one of those instances for 125 hours, or 125 for 1 hour.  If you don't exceed the total hours, you should still stay within the free tier.
+
+Finally, the primary GameLift user forum is located on the GameDev site, where you'll find a more active community for future questions:
+https://gamedev.amazon.com/forums/spaces/123/gamelift-discussion.html"
+Amazon GameLift	"Re: How to teminate ""Activating"" fleets
+I got same problem with ""Activating"" status
+
+Currently I'm using Free Tier to evaluate GameLift, but when I try to launch second instance I got error
+An error occurred (LimitExceededException) when calling the CreateFleet operation: Current limit of instance type of c4.large have been reached.
+
+
+Same problem was addressed here:
+https://gamedev.amazon.com/forums/questions/64377/strangeness-with-current-limit-of-instance-has-bee.html
+
+Please, help.
+It take up to 8 hours until stuck fleet could be terminated"
+Amazon GameLift	"Fleet stuck on ""Activating"" for 4 hours.
+I created a fleet and messed up when I entered the launch parameters. The fleet is now stuck in ""activating"" and I can't delete it until it times out. 
+
+From what I've found it should time out after ~1h45m, but it has been much longer than that now. 
+https://gamedev.amazon.com/forums/questions/28804/gamelift-fleet-hangs-on-activating-status-how-to-d.html
+
+Could it have something to do with me deleting the build it was created on?
+
+Because I'm still trying out the service and not paying for anything yet I'm limited to one fleet. So this issue stops me from continuing with development.
+
+If you could delete it manually it would be great!
+Fleet ID: fleet-5dbd16cd-c94b-4527-a55b-97d5523e936d
+
+Any help is appreciated,
+Thank you"
+Amazon GameLift	"Steam + Amazon GameLift Integration
+Hello, 
+
+We're currently developing a game where:
+
+the game is in Unreal Engine 4.17
+the game uses the Steam online subsystem
+we want to use GameLift to manage player sessions, games and matchmaking
+
+
+We would like to ask, what is the actual (step-by-step) flow for integrating GameLift with a Steam online subsystem?
+
+We see that Disc Jam has achieved this goal: http://steamcommunity.com/games/415880/announcements/detail/2906362192348502566
+
+Basically, we want to do the same with our game.
+
+Also, an additional question:
+
+After the game client sends a requests to GameLift such as lobby creation, player session creation or joining, is there anyway to communicate additional info back to the client once it responds?
+
+Edited by: Pao on Sep 18, 2017 5:03 AM
+
+Edited by: Pao on Sep 18, 2017 5:03 AM"
+Amazon GameLift	"how to update SDK for unreal engine 4.17
+My Unreal Project has just migrated into from 4.16 to 4.17.
+
+When i started up my project, it said the SDK is not supported in UE 4.17
+
+I'd like to fix it myself, but i couldn'd find a place working on a version of Unreal Engine in the source of GameLiftSDK.
+
+Edited by: gawoon on Sep 18, 2017 2:06 AM
+
+Edited by: gawoon on Sep 18, 2017 2:07 AM"
+Amazon GameLift	"a game session keep activating when i got failed ticket.
+my game session keeps activating and i really want to know why this happend and how can i fix it.
+Do i need to care about this or just ignore a activating game session?
+if i ignore, i have to scale up more instances for starting new game sessions.
+
+as i know, the charge will be after the game session is active. am i right?
+nobody use gamelift now? it's cool stuff but i cannot find any reference on google and this forum. i really need a help.
+i'm trying to integrated gamelift with unreal engine 4 dedicated server.
+
+""
+Activating
+test-flexmatch2
+arn:aws:gamelift:ap-northeast-2::gamesession/fleet-ef888de6-b84a-4a04-9bae-1677a579ce88/99883ff9-aa0c-4282-9ca0-047d86a1a793
+13.124.251.36
+7777
+0 of 2
+00d 00h 15m 27s
+2017-09-13 15:15:27 UTC+0900
+""
+
+I got the failed ticket from gamelift flexmatch.
+
+
+{
+			""TicketId"": ""ticket-test-878"",
+			""ConfigurationName"": ""test-flexmatch2"",
+			""Status"": ""FAILED"",
+			""StatusReason"": ""UNEXPECTED_ERROR"",
+			""StatusMessage"": ""An unexpected error was encountered during match placing."",
+			""StartTime"": ""2017-09-13T06:14:46.798Z"",
+			""EndTime"": ""2017-09-13T06:16:20.222Z"",
+			""Players"": [
+				{
+					""PlayerId"": ""player-9"",
+					""PlayerAttributes"": {
+						""elo"": {
+							""N"": 10
+						}
+					}
+				}
+			]
+		},
+		{
+			""TicketId"": ""ticket-test-879"",
+			""ConfigurationName"": ""test-flexmatch2"",
+			""Status"": ""FAILED"",
+			""StatusReason"": ""UNEXPECTED_ERROR"",
+			""StatusMessage"": ""An unexpected error was encountered during match placing."",
+			""StartTime"": ""2017-09-13T06:14:46.773Z"",
+			""EndTime"": ""2017-09-13T06:16:20.146Z"",
+			""Players"": [
+				{
+					""PlayerId"": ""player-10"",
+					""PlayerAttributes"": {
+						""elo"": {
+							""N"": 10
+						}
+					}
+				}
+			]
+		}
+
+Edited by: gawoon on Sep 12, 2017 11:35 PM
+
+Edited by: gawoon on Sep 12, 2017 11:35 PM"
+Amazon GameLift	"cannot use gamelift's flexmatch features in aws lambda
+i'm trying to use 'startMatchmaking' function on aws lambda.
+but the error says no function there. any help plz
+
+https://aws.amazon.com/ko/blogs/gamedev/fitting-the-pattern-serverless-custom-matchmaking-with-amazon-gamelift/
+
+in my guess, if i want to make a serverless matchmaker, aws lambda should support aws gamelift sdk. if my approach has a problem or is wrong, just let me know.
+
+here is my lambda code written by node.js 6.2
+
+""""""
+// configuring the SDK
+var AWS = require('aws-sdk');
+var gamelift = new AWS.GameLift({apiVersion: '2015-10-01'});
+gamelift.startMatchmaking(params, function(err,data){
+if(err) {
+callback(err, err.stack);
+} else {
+callback(null, 'Hello from Lambda');
+}
+});
+""""""
+i got the error no function. i can use listBuilds function.
+
+""
+START RequestId: c8247495-9766-11e7-9b58-dbfc4d63765c Version: $LATEST
+2017-09-12T03:02:16.355Z	c8247495-9766-11e7-9b58-dbfc4d63765c	TypeError: gamelift.startMatchmaking is not a function
+at exports.handler (/var/task/index.js:41:14)
+END RequestId: c8247495-9766-11e7-9b58-dbfc4d63765c
+REPORT RequestId: c8247495-9766-11e7-9b58-dbfc4d63765c	Duration: 237.03 ms	Billed Duration: 300 ms Memory Size: 128 MB	Max Memory Used: 30 MB	
+RequestId: c8247495-9766-11e7-9b58-dbfc4d63765c Process exited before completing request
+""
+
+Edited by: gawoon on Sep 12, 2017 10:43 PM
+
+Edited by: gawoon on Sep 12, 2017 10:44 PM"
+Amazon GameLift	"my tickets don't be changed from 'PLACING' to 'COMPLETED' in flexmatch
+yesterday, i made a match by flexmatch.  and i got the msg using 'describeMatchmaking' method.
+
+""    { TicketId: 'ticket-test-3004',
+       ConfigurationName: 'test-flexmatch',
+       Status: 'COMPLETED',
+       StartTime: 2017-09-12T07:58:19.335Z,
+       EndTime: 2017-09-12T07:58:21.912Z,
+       Players: https://forums.aws.amazon.com/,
+       GameSessionConnectionInfo: https://forums.aws.amazon.com/ },
+     { TicketId: 'ticket-test-3005',
+       ConfigurationName: 'test-flexmatch',
+       Status: 'COMPLETED',
+       StartTime: 2017-09-12T07:58:19.327Z,
+       EndTime: 2017-09-12T07:58:21.912Z,
+       Players: https://forums.aws.amazon.com/,
+       GameSessionConnectionInfo: https://forums.aws.amazon.com/ },
+""
+
+i didn't actually make a client connect to the dedicated server. so my gamesession was active at that time and i didn't complete my game session properly. anyway after seeing the matching is completed, i terminated my fleet because i want to use on free tier not paying at this stage.
+
+today, i'm trying to make a match as same as i did yesterday but it doesn't work.
+my tickets don't be changed from 'PLACING' to 'COMPLETED' in flexmatch.
+
+i assumed that my yesterday game session is still alive and it blocks to place a new game session into a available fleet.
+
+anybody have some issue with this?"
+Amazon GameLift	"Re: my tickets don't be changed from 'PLACING' to 'COMPLETED' in flexmatch
+the problem comes from the fleet.
+
+in the events tab, i got the error message like this after chaning my scaling policy.
+
+2017-09-13 13:10:55 UTC+0900
+SERVER_PROCESS_FORCE_TERMINATED
+Server process did not cleanly exit within 30 seconds of OnProcessTerminate(), exitCode(-1), launchPath(C:\game\MatchMaker\Binaries\Win64\MatchMakerServer-Win64-Shipping.exe), arguments(-log), instanceId(i-*********), publicIP(**.**.**.**), gameSessionId(none)
+
+my fleet has an issue with running my dedicated server but the status of fleet seems active.
+
+so, i create another fleet and it works now.
+
+Edited by: gawoon on Sep 12, 2017 10:42 PM"
+Amazon GameLift	"GameLift + Cognito - ""The security token included in the request is invalid
+I'm having issues accessing GameLift using an access key, secret key and session token retrieved from Cognito. This is what I have:
+
+Cognito
+
+Federated Identity with an identity pool
+The identity pool has both an Authenticated Role and an Unauthenticated Role assigned
+The ""Enable access to unauthenticated identities"" is checked
+
+
+IAM
+
+The Unauthenticated Role mentioned above has an Inline policy and a Managed Policy attached
+The Inline Policy allows mobileanalytics:PutEvents and cognito-sync:*
+The Managed Policy allows gamelift:CreateGameSession, gamelift:DescribeGameSessions, gamelift:SearchGameSessions, gamelift:CreatePlayerSession, gamelift:ListAliases
+
+
+GameLift
+
+I can access GameLift services from a User with the Managed Policy mentioned above attached to DescribeGameSessions etc
+When I do GetId with the identity pool mentioned above and then use the access key, secret key and token received from Cognito when doing the same GameLift calls I get ""The security token included in the request is invalid""
+
+
+Implementation Details
+
+I use a language and game engine not supported by Amazon which means that I've had to roll my own code for all of the requests. As I wrote above, the code works for an access key and secret key connected to an IAM user so it should be ok. The code also passes the whole Signature Version 4 test suite (http://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html).
+
+
+I understand that you cannot give support on the code itself, but I'm hoping that you can give general advice and at least let me know if the above mentioned setup with Cognito, Federated Identities, Unauthenticated User and GameLift should work or not."
+Amazon GameLift	"FlexMatch match acceptance doesn't work
+Hello!
+We are very excited about new GameLift service named FlexMatch and we are evaluating it now doing some experiments with aws cli (version 1.11.142).
+First problem I've got is strange behavior of matchmaking with enabled player acceptance.
+I'm using simple ruleset for testing purposes:
+{
+    ""name"": ""simple-ruleset"",
+    ""ruleLanguageVersion"": ""1.0"",
+    ""playerAttributes"": [{
+        ""name"": ""rating"",
+        ""type"": ""number""
+    }],
+    ""teams"": [{
+        ""name"": ""gang"",
+        ""maxPlayers"": 1,
+        ""minPlayers"": 1
+    },{
+        ""name"": ""swat"",
+        ""maxPlayers"": 1,
+        ""minPlayers"": 1
+    }],
+    ""rules"": [],
+    ""expansions"": []
+}
+
+Matchmaking configuration has 60 seconds timeout for matchmaking and 20 seconds timeout for acceptance.
+Also I've set notifications using SNS topic.
+Then I make two start-matchmaking calls using aws cli, by describe-matchmaking and message from SNS I see that these tickets have changed status to ""REQUIRES_ACCEPTANCE"".
+So everything was fine until now. But now neither accept-match requests or acceptance timeout don't change the status of these tickets. So these tickets just hang forever.
+That's the list of notifications I've got by SNS during this experiment:
+{""version"":""0"",""id"":""34e108b7-83d0-4f35-81e5-230f64429d32"",""detail-type"":""GameLift Matchmaking Event"",""source"":""aws.gamelift"",""account"":""620864823094"",""time"":""2017-08-30T12:07:56.916Z"",""region"":""us-west-2"",""resources"":[""arn:aws:gamelift:us-west-2:620864823094:matchmakingconfiguration/simple-rules""],""detail"":{""tickets"":[{""ticketId"":""26"",""startTime"":""2017-08-30T12:07:56.890Z"",""players"":[{""playerId"":""Hinidu26""}]}],""estimatedWaitMillis"":8,""type"":""MatchmakingSearching"",""gameSessionInfo"":{""players"":[{""playerId"":""Hinidu26""}]}}}
+
+{""version"":""0"",""id"":""cdd52c82-4cac-4c11-b7c0-655ca3ab6164"",""detail-type"":""GameLift Matchmaking Event"",""source"":""aws.gamelift"",""account"":""620864823094"",""time"":""2017-08-30T12:08:37.895Z"",""region"":""us-west-2"",""resources"":[""arn:aws:gamelift:us-west-2:620864823094:matchmakingconfiguration/simple-rules""],""detail"":{""tickets"":[{""ticketId"":""27"",""startTime"":""2017-08-30T12:08:37.868Z"",""players"":[{""playerId"":""Hinidu27""}]}],""estimatedWaitMillis"":""NOT_AVAILABLE"",""type"":""MatchmakingSearching"",""gameSessionInfo"":{""players"":[{""playerId"":""Hinidu27""}]}}}
+
+{""version"":""0"",""id"":""604e8d22-d174-42b0-854c-3b281cd60dd6"",""detail-type"":""GameLift Matchmaking Event"",""source"":""aws.gamelift"",""account"":""620864823094"",""time"":""2017-08-30T12:08:38.102Z"",""region"":""us-west-2"",""resources"":[""arn:aws:gamelift:us-west-2:620864823094:matchmakingconfiguration/simple-rules""],""detail"":{""tickets"":[{""ticketId"":""26"",""startTime"":""2017-08-30T12:07:56.890Z"",""players"":[{""playerId"":""Hinidu26"",""team"":""gang""}]},{""ticketId"":""27"",""startTime"":""2017-08-30T12:08:37.868Z"",""players"":[{""playerId"":""Hinidu27"",""team"":""swat""}]}],""acceptanceTimeout"":20,""ruleEvaluationMetrics"":[],""acceptanceRequired"":true,""type"":""PotentialMatchCreated"",""gameSessionInfo"":{""players"":[{""playerId"":""Hinidu26"",""team"":""gang""},{""playerId"":""Hinidu27"",""team"":""swat""}]},""matchId"":""bf93744d-17e7-42f2-bf1f-03b4a2dd3f53""}}
+
+So it really looks like a bug - I don't see what I can do wrong in this simple scenario to cause such weird behavior.
+
+Thank you in advance!"
+Amazon GameLift	"High level DLC solution for mobile game using Unity
+I am learning what it is going to take to support down-loadable content in my mobile game. And I'm looking for some guidance to ensure I am doing this right.
+
+My high level understanding of what I need to do is this:
+
+1. Use S3 to store my downloadable content files (in my case, Asset Bundles).
+2. Write my game code to be able to download those asset bundles using Unity's UnityWebRequest functionality.
+
+My real question is, my data is purely just content--all sensitive stuff like player progress. Financial stuff, etc, I am planning on using Playfab back end services. So, if I put all my DLC on S3 and just had my game download it through simple URL downloads, is the s3 server going to handle huge volumes of download. Let's be optimistic, say I get 10,000 users a day hitting the server, is this abusing the way the S3 system was intended to be used. Is there a better option?
+
+Any guidance would be appreciated. Thanks in advance."
+Amazon GameLift	"C# server development using dotnet core and Amazon.GameLift.Server
+Has anyone successfully built the GameLift SDK **SERVER** sources for dotnet core?
+
+Www.nuget.org has the package AWSSDK.GameLift which is a dotnet core library containing Amazon.GameLift for building clients but the nuget library does not contain Amazon.GameLift.Server for building game servers.   
+
+I'm experimenting with how to build a dotnet core library of Amazon.GameLift.Server from source, but this is made complicated because I'm building on OS/X using vsCode, so all the Visual Studio .sln and .csproj files included in the source for building NET35 and NET45 are useless to me.
+
+Thoughts?"
+Amazon GameLift	"Re: C# server development using dotnet core and Amazon.GameLift.Server
+I don't have an answer for you on this question, but the primary GameLift user forum is located on the GameDev site.  If you re-post this question there, you'll find a larger community who might be able to help you on this.
+https://gamedev.amazon.com/forums/spaces/123/gamelift-discussion.html"
+Amazon GameLift	"Feature Request : How can i create a session based game?
+Hi,
+This is really exciting new service provided by amazon web service, But why cannot i create a new game on this service? I don't have a game pre-built session based game.
+Is there a way to create a new game,please Help.
+
+Thank You!!
+
+Regards,
+Ashutosh,
+Researching on AWS."
+Amazon GameLift	"Re: Feature Request : How can i create a session based game?
+Hi,
+Answering my own question, we can use AWS Lumberyard service to develop games.
+
+
+
+Thank You!!
+
+Regards,
+Ashutosh."

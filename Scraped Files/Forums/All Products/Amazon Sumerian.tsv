@@ -1,0 +1,669 @@
+label	description
+Amazon Sumerian	"Wrong push
+sorry for push this wrong message.
+
+How should I delete this?
+
+Edited by: CYL on Jan 28, 2019 1:01 AM"
+Amazon Sumerian	"File import error
+Hi, this error will happen when I am trying to import my ""FBX"" file to Amazon Sumerian.
+
+Here is the error message:
+Segment Scale Compensate nodes found in ""Filename"" are not supported in Sumerian and may lead to unexpected scaling results. This import was aborted. Please disable this inheritance attribute from the following nodes and re-import: FirstBone, SecondBone, ...., LastBone.
+
+But it doesn't happen on the other development platform, e.g. Unity or  Unreal Engine. 
+
+Is ""disable this inheritance attribute from the following nodes and re-import"" the only way to fix this problem?
+
+Thanks.
+
+Edited by: CCL on Jan 27, 2019 7:56 PM"
+Amazon Sumerian	"Marker Based AR in Sumerian
+Hi,
+
+I want to make an Augmented Reality application using Sumerian. But having trouble about how to add a marker entity to the scene. I can only found some official tutorials about using Sumerian for Augmented Reality that uses ARCore & ARKit (markerless).
+
+Does marker based Augmented Reality currently not supported by Sumerian? 
+Thank you in advance."
+Amazon Sumerian	"Running AR on the Browser
+Hi, I just created a simple AR App. Building it with Xcode works fine. But i am truly interested in running it on the browser. I have tried with the recommended Browser Apps, FireFox and Chrome (on my ipad pro ), but i get a black screen (camera probably not working). On both browser i still get the ""not fully compatible browser"" warning message. But those are the last versions on the app store. 
+
+Is it possible to run Sumerian AR apps on the browser, if yes what i am doing wrong?
+
+this is my scene
+
+https://us-west-2.sumerian.aws/e02048f665e342dc844faa38ee7e5474.scene"
+Amazon Sumerian	"Re: Running AR on the Browser
+Hi MouseOverU, thanks for your question. AR support is limited to scenes launched from within the mobile apps - it’s currently not possible to access the device’s AR APIs from mobile browsers. From your question and what I think you are asking, support would become available with WebXR when that’s implemented in browsers."
+Amazon Sumerian	"Re: Running AR on the Browser
+Thanks for the info!"
+Amazon Sumerian	"Re: Running AR on the Browser
+Hi!
+aftre some months....
+8th Wall  (https://8thwall.com/) runs on Amazon sumerian, and they offer now AR on the web, and itworks pretty fine. Is it now possible to develope Web Apps with Amazon Sumerian?
+
+thanks!"
+Amazon Sumerian	"Queries on Sumerian AR Capabilities
+Hi,
+I had a couple of questions on AR capabilities provided by Sumerian.
+
+1. Do the AR apps created on Sumerian run from browsers?
+2. Does Sumerian provide feature for AR Image Recognition. If yes, is the recognition done on device or on cloud. Also is there a tutorial on this?
+
+--Abhishek"
+Amazon Sumerian	"Removing/Replacing the AWS Logo
+Is it possible to remove/replace the AWS logo when Sumerian loads?"
+Amazon Sumerian	"Re: Removing/Replacing the AWS Logo
+Currently, to replace the AWS logo and customize the look and feel of your scene, you have to use the new publish via Amplify workflow. 
+
+For more information on publishing and getting started with Amplify, check out the AWS Amplify Quickstart Guide: https://docs.sumerian.amazonaws.com/articles/amplify-quickstart/"
+Amazon Sumerian	"Colors Overexposed
+I import to Sumerian from ArchiCAD using Twinmotion FBX files. 
+
+https://eu-west-2.sumerian.aws/15dacd907e3c4692bb4ac8fe9bdc48dd.scene
+
+I see that it's very overexposed, things that doesn't have a texture and only color. Is it supposed to be like this? I have to use textures?
+
+Also, floor texture is missing, but I see it underneath it. It seems there is some normals problems here. 
+
+I've tried to show the normals inside Sumerian, but it seems to treat the whole object, which is a big room, as one. Can I select individual surfaces and show their normals?"
+Amazon Sumerian	"Re: Colors Overexposed
+I would try exporting a simpler object first and verifying your particular export settings are correct.  It sounds like when you export you are creating a single poly for the room.  I'm not sure why the textures aren't appearing correctly.  Can you post a sample file so we can take a look?"
+Amazon Sumerian	"Is Sumerian Dead?
+This forum seems very low activity; are there any other places with activity? I found several subreddits, but they're equally dead"
+Amazon Sumerian	"Re: Is Sumerian Dead?
+Hi famadorian,
+
+While we do check the AWS forums, we have a more active community on Slack.  Please join us at https://amazonsumerian.slack.com/"
+Amazon Sumerian	"Re: Is Sumerian Dead?
+Please join us in Slack:  https://amazonsumerian.slack.com/"
+Amazon Sumerian	"Re: Is Sumerian Dead?
+Hi, James and thank you. 
+
+It says: 
+
+Contact the workspace administrator for an invitation"
+Amazon Sumerian	"Re: Is Sumerian Dead?
+So I need an invitation here?"
+Amazon Sumerian	"Re: Is Sumerian Dead?
+The slack channel is really active. You shouldn't need an invitation, you should just be able to join via the slack channel link. If it isn't working for you let me know and I can send you a invite."
+Amazon Sumerian	"Re: Is Sumerian Dead?
+Thank you.
+
+Please send an invite, cause it's not working for me."
+Amazon Sumerian	"Re: Is Sumerian Dead?
+Apologies, the link to join is http://slack.sumerian.world/ its available in the help drop down inside the editor. You shouldn't require an invite if you use the above link."
+Amazon Sumerian	"Navigation
+When I'm inside Sumerian, I seem to zoom in from infinity. Is it not possible to rotate around the point in space where you actually think you are, instead of from afar?
+
+I can't see anything here:
+
+https://docs.aws.amazon.com/sumerian/latest/userguide/editor-shortcuts.html
+
+I'm having problems rotating inside a room, cause when I try to rotate, my view leaves the room."
+Amazon Sumerian	"Re: Navigation
+The origin point of the object may be offset from the object. Before exporting from a 3D package, you should put the object close to 0,0,0 and freeze transforms in your 3D editor, THEN try exporting/importing.  Once in the editor you should be able to select the entity in the left hand entity panel and press 'f' to focus the camera on that entity."
+Amazon Sumerian	"Unable to start/stop WebVR System: VR Camera Rig Entity not found
+I had everything working, then suddenly it displays the message when I enter the environment:
+
+https://eu-west-2.sumerian.aws/15dacd907e3c4692bb4ac8fe9bdc48dd.scene
+
+Unable to start/stop WebVR System: VR Camera Rig Entity not found
+
+I can't say I've changed anything and I got the VRCameraRig in Entities and looks good. 
+
+Is there any way I can troubleshoot this? I can't get the message on my desktop, since my Chrome doesn't support WebVR. I see the message in my headset, Mirage Solo."
+Amazon Sumerian	"Re: Unable to start/stop WebVR System: VR Camera Rig Entity not found
+I created a new scene and everything works OK, so I probably did something, but I'm not sure how I can troubleshoot it. Probably just leave it until I'm a little more familiar with it."
+Amazon Sumerian	"Re: Unable to start/stop WebVR System: VR Camera Rig Entity not found
+Now it has happened again. Is this a bug or is it me that screws up. Now I have to create a new scene again, cause the Camera Rig Entity is there."
+Amazon Sumerian	"Re: Unable to start/stop WebVR System: VR Camera Rig Entity not found
+For the VR Camera Rig entity in your scene do you have the ""CurrentVRCameraRig"" checked?"
+Amazon Sumerian	"Show/Hide action
+Hi,
+i was trying to add an action in my behaviour to show/hide an entity.
+I added the show action but i cannot find a way to link that action to a precise entity.
+Any help would be appreciated.
+
+Thanks!"
+Amazon Sumerian	"Re: Show/Hide action
+It depends on the use case.  Typically, in the behavior editor, you add an action labeled 'emit' and type a message.  Then in your target enity's behavior editor, you can use the action labeled 'listen' and type the same message.  If your emit message and listening message are the same, the target entity will be able to execute functions connected to the 'listen' node."
+Amazon Sumerian	"Re: Show/Hide action
+Salvatore,
+
+Let us know if AWS-Chaps' suggestions worked for you."
+Amazon Sumerian	"Page becoming unresponsive when trying to add a host to a scene.
+Hi All,
+
+When trying to add any host to a scene, the page is becoming unresponsive and not able to open the scene again.
+
+Kindly help on this.
+
+Edited by: PavithraS on Aug 29, 2018 9:28 PM"
+Amazon Sumerian	"Re: Page becoming unresponsive when trying to add a host to a scene.
+PavithraS,
+
+Sorry to hear about that situation.  I'm not seeing this happen when I create a new scene and import a host.  Can you help me with the following:
+
+1.  Are you still seeing this issue?  
+2.  Are there any errors being displayed in the console?
+3.  Which browser and OS are you developing on?"
+Amazon Sumerian	"Import Formats
+Are there any more modern formats than OBJ? OBJ doesn't seem to have units and any sense of direction, cause when I import it's rotated 90 degrees and is 10 times bigger than everything else. Also, it's totally white, so no textures are included in the OBJ file; they're in a separate file. When I try to export to FBX from ArchiCAD, it crashes. 
+
+How about something more modern? Isn't collada supposed to be a modern interchange format?"
+Amazon Sumerian	"Re: Import Formats
+Hi famadorian,
+When importing an OBJ, you can drag the textures alongside the OBJ file so that they get imported at the same time.  FBX is also a common format for content creators, so you may explore some other tools besides ArchiCAD.  As for the scaling and rotation, I suggest you either investigate the unit scale (in Sumerian, we're at 1 unit = 1 meter).  You can either adjust this at the export step or simply adjust the Transform component to scale down to .1 and rotate 90 degrees."
+Amazon Sumerian	"Chrome Dev has stopped (WebVR on Mirage solo)
+No matter which I try on this page:
+
+https://experiments.withgoogle.com/collection/webvr
+
+, Chrome Dev just quits after a few seconds.
+
+I'm using Mirage Solo.
+
+Is there some other browser or version I should be using?"
+Amazon Sumerian	"Re: Chrome Dev has stopped (WebVR on Mirage solo)
+famadorian,
+
+I'm afraid I can't diagnose the issue with Chrome Dev and Google's VR examples.  Can you confirm that the latest version of Chrome is working for you?  Are there any Sumerian-specific issues we can help you with?"
+Amazon Sumerian	"State machine in virtual concierge
+Hello,
+
+I followed the tutorial in the post, https://docs.sumerian.amazonaws.com/articles/virtual-concierge/ and seemed NOT to find the state machine (referred to under section 'Import the Host', point #3) which is supposed to have been bundled with the pack. Am I missing anything?
+
+And a big note of THANKS to the Sumerian team to make this available.
+
+regards,
+Rajesh."
+Amazon Sumerian	"Re: State machine in virtual concierge
+I was looking at the wrong place, the place to look is in the entities panel on the left bottom in the Sumerian console"
+Amazon Sumerian	"VR Glitch
+Hi, when previewing the VR mode in the editor sometimes it looks fine, but when viewing the published scene on windows or mobile it's always glitchy and doesn't appear to be moving the camera.
+
+Also, the editor often gets stuck on Unsaved Changes Pending and won't save.
+Does anyone have any advice? Thanks
+
+Link: https://drive.google.com/open?id=15FQFhn_M2EP2rJNW1eLRaNJie7PPo6uM"
+Amazon Sumerian	"Re: VR Glitch
+Hi,
+Do you mind to provide the link of published scene? did you see any error in the browser console?
+
+Can you also let us know what OS/Browser versions/VR device you are using?
+
+Thanks!
+
+Yuan"
+Amazon Sumerian	"Re: VR Glitch
+I'm using Chrome 66 on a daydream compatible Android device and HTC Vive in Chrome 67 on windows 10.
+I get this as an error: ""Uncaught TypeError: Cannot read property 'remove' of null
+    at installed.js:1""
+
+Here's the scene
+Link: https://ap-southeast-2.sumerian.aws/14BexZMoP1gqvSbLZSfYigjUvfcXkroScK0f.scene/"
+Amazon Sumerian	"Re: VR Glitch
+I am unable to open the published scene you attached any more. Do you mind to re-publish it and update the url?"
+Amazon Sumerian	"Re: VR Glitch
+Sorry about that here it is 
+Link: https://ap-southeast-2.sumerian.aws/94608402fe45410698cba02e4c65ac0d.scene
+
+It might have something to do with all the files of the CoreVR asset not importing properly because some of the times I've brought it in the HMD camera isn't visible.
+But I've tried reimporting it many times and the problem still persists, thanks."
+Amazon Sumerian	"Re: VR Glitch
+ricebukett@
+
+Apologies for the delay. 
+
+I am currently looking into the ticket and will get back to you with an update soon."
+Amazon Sumerian	"Re: VR Glitch
+Do you still get the same error with installed.js ? I am not able to reproduce it. 
+I direct messaged you to request permission to copy the scene and debug it on our side."
+Amazon Sumerian	"Re: VR Glitch
+I no longer get any errors including the installed.js error on my main computer but the problem still persists on my pc and mobile and when trying it on my laptop and another computer it crashes and has different errors such as TypeError: e.destroy is not a function and frame buffer is unsupported.
+
+But I'm having difficulty using the editor the problems are the scene will often stop auto-saving and won't do anything when I drag in the core VR  and an invalid property error when I try to delete things so I think it must be something up with my scene."
+Amazon Sumerian	"Re: VR Glitch
+TypeError: e.destroy usually happens when WebGL or chrome crashes. This usually happens when the laptop/ machine does not have enough resource to render the scene. Usually this error is accompanied by :1 WebGL: CONTEXT_LOST_WEBGL: loseContext: context lost 
+
+
+We will dive deep into the auto save issue and give you an update."
+Amazon Sumerian	"Re: VR Glitch
+Hi ricebukett,
+
+It appears that your scene has some very large assets that are causing issues with the graphics drivers on some of the devices you're trying to use.
+
+• Your Default Pack contains several textures that are large and irregularly shaped, such as Autoshop Floor Lifts 02.jpg(5376 x 2688 resolution). They aren't being used in the scene, but they may be contributing to the autosave problem you're experiencing. Hovering over the Default Pack and clicking the broom icon to remove unused dependencies will delete these textures.
+• Your ""shop design"" and ""Walls"" packs each contain a texture atlas called CubeSurface_Color (10,000 x 10,000 resolution). We recommend using texture sizes that are as small as possible. Textures above 2048 x 2048 resolution can cause crashes and unpredictable behavior on many platforms.
+• The scene is rendering a total of 1.8 million triangles over 376 draw calls. We recommend limiting draw calls to 100-200 if you're targeting low-end mobile devices. Though we have no recommended limit for poly count 1.8 million is on the high end, so you may see better performance if you reduce the triangle density of your meshes.
+• There are 12 lights in your scene. Reducing the number of lights will reduce the size of shader programs and may improve compatibility across platforms.
+
+You can find a list of best practices in the Sumerian Scene Optimization tutorial: https://docs.sumerian.amazonaws.com/tutorials/create/expert/sumerian-scene-optimization/"
+Amazon Sumerian	"VR is stuck at Start (On AWS SDK Ready)
+I worked along with the tutorial 'Using the Dialogue Component and Amazon Lex to Build a Chatbot' and performed every step diligently, but when I play the scene I always have my Start (On AWS SDK Ready) state highlighted and it doesn't move beyond that. I also checked the Twitch video tutorial around the exercise, but there 'Wait for Input' state gets highlighted automatically after the Start state is processed and then user is able to interact. I have created and properly saved my cognito pool id, but it doesn't seem to work. Please help.
+
+Edited by: TanG on Aug 6, 2018 5:54 AM"
+Amazon Sumerian	"Re: VR is stuck at Start (On AWS SDK Ready)
+Hi TanG, the issue could be either from the Cognito Pool ID or the state machine - could you double check to make sure you're using a valid Cognito Pool ID? If you use another Cognito Pool ID, can the state machine action move onto the next state? Also, could you send us screenshots of your State Machine setup?"
+Amazon Sumerian	"Colliders in ""Physics Part"" tutorial
+For any reason I don't know, the colliders in the ""Physics Part"" tutorial are working differently to what I would expect, in my own test but also in the ""scene"" to illustrate the example at the beginning of the tutorial, in the document: 
+https://docs.sumerian.amazonaws.com/tutorials/create/beginner/physics-part-1/
+
+I would expect to see the ball gliding on the ground, exactly over the surface, but what I can see is the ball moving over an imaginary floor, parallel to the real one, some units below (in the Y direction). I can change this by increasing the Y half extend parameter (to somehing like 5 instead 0.5) of the floor, but then also with problems with the flippers. It doesn't seems the right solution.
+
+I'm working with the last version of Firefox (61.0.01). I've tried to check it in IE Explorer 11 and Chrome, but without success.
+
+Please, is a problem of my browser (given that the problem is also in the example at the beginning of the tutorial), or the parameters in the tutorial? something missing?any clue? 
+
+Thanks in advance!"
+Amazon Sumerian	"Re: Colliders in ""Physics Part"" tutorial
+Answered in Amazon Sumerian Slack:
+
+ AWS-runping wrote:
+There is currently a known issue with scaled sphere collider. You may want to change the scale of the sphere back to 1,1,1 and have a try.
+
+Link: https://amazonsumerian.slack.com/messages/C8AR6KC00/convo/C8AR6KC00-1531987438.000254/"
+Amazon Sumerian	"Tap to record audio via Lex works in Sumerian not in mobile app
+I'm having issues interacting with a 3D object on a mobile app using ARCore and AWS Sumerian. Even when tapping the object on the mobile app, the 3D object does not respond. My phone is on the compatible ARCore phone list.
+
+I've built my AWS Sumerian host and published it which uses tap to record audio to elicit a response via Lex and Lambda which works fine within AWS. Basically, it's a modified version of this URL here. https://docs.sumerian.amazonaws.com/tutorials/create/intermediate/augmented-reality-using-sumerian-arcore/
+
+I've used the sample ARCore code here via Android Studio. 
+https://github.com/aws-samples/amazon-sumerian-arcore-starter-app
+
+I've modified the Manifests.xml in Android Studio to include audio recording and confirmed that the phone allows mic input also. I haven't updated the MainActivity file however.
+
+https://stackoverflow.com/questions/40236925/allowing-microphone-accesspermission-in-webview-android-studio-java
+
+It appears in another thread that tap to interact with existing objects should work by default for Unity and doesn't concern ARCore. I'm wondering whether this is the case for AWS Sumerian also?
+
+I've Google searched high and low, but no info was found, so any help with this will be much appreciated!"
+Amazon Sumerian	"Re: Tap to record audio via Lex works in Sumerian not in mobile app
+Hi krystale,
+
+Apologies for the delayed response. We have recently resolved some bugs in our dialogue component implementation, one of which prevented audio recording on Safari. 
+
+Can you try republishing the scene and confirming if this is still an ongoing issue?"
+Amazon Sumerian	"Create a VR app
+Hi 
+Does Sumerian offer the same type of development environment and games engine as Unreal 4? I am looking to create a simple demo using point and click, some off the shelf CGI graphics that I have found in the Unreal library and some 360 video. 
+
+thanks for your help
+Nick"
+Amazon Sumerian	"Load Avatar
+How can I use my own Avatar in Sumerian, with my gestures and Lipsync."
+Amazon Sumerian	"Re: Load Avatar
+Hi Alex,
+
+Currently, we do not support custom Host(Avatar) nor custom gestures/Lipsync. 
+
+Runping"
+Amazon Sumerian	"Grabbing the mouse position
+I am trying to create functionality that will allow me to click and drag an object. 
+
+I was wondering if it is possible for me to get the mouse position in world space and set the position of the object to the mouse's position while the mouse is held down.
+
+I would appreciate any help. Thanks."
+Amazon Sumerian	"Re: Grabbing the mouse position
+Hi @jbutler05,
+I think you can set it up by using State Machine Component with Transform Actions and Mouse Actions. See the tutorial for State Machine for details: https://docs.aws.amazon.com/sumerian/latest/userguide/sumerian-statemachines.html
+
+
+Yuan
+
+
+Edited by: Yuan-aws on Jun 6, 2018 5:55 PM"
+Amazon Sumerian	"Troubleshoot: Youtube video not visible after publishing
+I've created the tv tutorial as demonstrated here: https://docs.sumerian.amazonaws.com/tutorials/create/getting-started/interactive-tv/index.html
+
+I substituted my own youtube links. Everything looks great in play mode, but when I publish and view the link I can only hear the audio of the youtube video. The ""tv screen"" in the room remains black. All other functionality works as described. Any ideas on what the issue is? All development and viewing is being done in Chrome."
+Amazon Sumerian	"Re: Troubleshoot: Youtube video not visible after publishing
+Hi @cgdata. Do you have 'Enable Alpha Blending for WebGL' checked in the publish dialog when publishing? It is the last step of the tutorial."
+Amazon Sumerian	"Users with dynamic AWS Roles
+An example of a dynamic AWS role is a randomly generated number attached to a user's role every time the user logs in. 
+What is the experience for users with the dynamic role?"
+Amazon Sumerian	"Re: Users with dynamic AWS Roles
+A user with dynamic roles gets a new-user experience every time they log in with a new role and cannot get back to their saved work in their other roles. It is because Sumerian currently treats a new role as a new user."
+Amazon Sumerian	"Amazon Sumerian now Generally Available
+AWS announces the General Availability of Amazon Sumerian, a managed service that allows developers to create and publish augmented reality (AR), virtual reality (VR) and 3D applications quickly and easily without requiring any specialized programming or 3D graphics expertise.
+
+Amazon Sumerian provides an integrated development environment (IDE), editor, asset library, APIs, and virtual characters, called Sumerian Hosts, for the design, development, and deployment of applications. Apps created using Sumerian are published in a compatible browser which enables a developer to “create once and publish widely.” Scenes can be viewed on compatible VR headsets (HTC Vive, HTC Vive Pro, and Oculus Rift), AR compatible iOS and Android mobile devices, laptops, and digital signage.
+
+For a complete list of regions where Amazon Sumerian is offered, please see the AWS regions table https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/. To get started, visit the Amazon Sumerian website at https://aws.amazon.com/sumerian and review our Tutorials and Documentation pages at  https://aws.amazon.com/sumerian/getting-started/.
+
+Edited by: awsbenm on May 15, 2018 10:36 AM"
+Amazon Sumerian	"Wrong push
+sorry for push this wrong message.
+
+How should I delete this?
+
+Edited by: CYL on Jan 28, 2019 1:01 AM"
+Amazon Sumerian	"File import error
+Hi, this error will happen when I am trying to import my ""FBX"" file to Amazon Sumerian.
+
+Here is the error message:
+Segment Scale Compensate nodes found in ""Filename"" are not supported in Sumerian and may lead to unexpected scaling results. This import was aborted. Please disable this inheritance attribute from the following nodes and re-import: FirstBone, SecondBone, ...., LastBone.
+
+But it doesn't happen on the other development platform, e.g. Unity or  Unreal Engine. 
+
+Is ""disable this inheritance attribute from the following nodes and re-import"" the only way to fix this problem?
+
+Thanks.
+
+Edited by: CCL on Jan 27, 2019 7:56 PM"
+Amazon Sumerian	"Marker Based AR in Sumerian
+Hi,
+
+I want to make an Augmented Reality application using Sumerian. But having trouble about how to add a marker entity to the scene. I can only found some official tutorials about using Sumerian for Augmented Reality that uses ARCore & ARKit (markerless).
+
+Does marker based Augmented Reality currently not supported by Sumerian? 
+Thank you in advance."
+Amazon Sumerian	"Running AR on the Browser
+Hi, I just created a simple AR App. Building it with Xcode works fine. But i am truly interested in running it on the browser. I have tried with the recommended Browser Apps, FireFox and Chrome (on my ipad pro ), but i get a black screen (camera probably not working). On both browser i still get the ""not fully compatible browser"" warning message. But those are the last versions on the app store. 
+
+Is it possible to run Sumerian AR apps on the browser, if yes what i am doing wrong?
+
+this is my scene
+
+https://us-west-2.sumerian.aws/e02048f665e342dc844faa38ee7e5474.scene"
+Amazon Sumerian	"Re: Running AR on the Browser
+Hi MouseOverU, thanks for your question. AR support is limited to scenes launched from within the mobile apps - it’s currently not possible to access the device’s AR APIs from mobile browsers. From your question and what I think you are asking, support would become available with WebXR when that’s implemented in browsers."
+Amazon Sumerian	"Re: Running AR on the Browser
+Thanks for the info!"
+Amazon Sumerian	"Re: Running AR on the Browser
+Hi!
+aftre some months....
+8th Wall  (https://8thwall.com/) runs on Amazon sumerian, and they offer now AR on the web, and itworks pretty fine. Is it now possible to develope Web Apps with Amazon Sumerian?
+
+thanks!"
+Amazon Sumerian	"Queries on Sumerian AR Capabilities
+Hi,
+I had a couple of questions on AR capabilities provided by Sumerian.
+
+1. Do the AR apps created on Sumerian run from browsers?
+2. Does Sumerian provide feature for AR Image Recognition. If yes, is the recognition done on device or on cloud. Also is there a tutorial on this?
+
+--Abhishek"
+Amazon Sumerian	"Removing/Replacing the AWS Logo
+Is it possible to remove/replace the AWS logo when Sumerian loads?"
+Amazon Sumerian	"Re: Removing/Replacing the AWS Logo
+Currently, to replace the AWS logo and customize the look and feel of your scene, you have to use the new publish via Amplify workflow. 
+
+For more information on publishing and getting started with Amplify, check out the AWS Amplify Quickstart Guide: https://docs.sumerian.amazonaws.com/articles/amplify-quickstart/"
+Amazon Sumerian	"Colors Overexposed
+I import to Sumerian from ArchiCAD using Twinmotion FBX files. 
+
+https://eu-west-2.sumerian.aws/15dacd907e3c4692bb4ac8fe9bdc48dd.scene
+
+I see that it's very overexposed, things that doesn't have a texture and only color. Is it supposed to be like this? I have to use textures?
+
+Also, floor texture is missing, but I see it underneath it. It seems there is some normals problems here. 
+
+I've tried to show the normals inside Sumerian, but it seems to treat the whole object, which is a big room, as one. Can I select individual surfaces and show their normals?"
+Amazon Sumerian	"Re: Colors Overexposed
+I would try exporting a simpler object first and verifying your particular export settings are correct.  It sounds like when you export you are creating a single poly for the room.  I'm not sure why the textures aren't appearing correctly.  Can you post a sample file so we can take a look?"
+Amazon Sumerian	"Is Sumerian Dead?
+This forum seems very low activity; are there any other places with activity? I found several subreddits, but they're equally dead"
+Amazon Sumerian	"Re: Is Sumerian Dead?
+Hi famadorian,
+
+While we do check the AWS forums, we have a more active community on Slack.  Please join us at https://amazonsumerian.slack.com/"
+Amazon Sumerian	"Re: Is Sumerian Dead?
+Please join us in Slack:  https://amazonsumerian.slack.com/"
+Amazon Sumerian	"Re: Is Sumerian Dead?
+Hi, James and thank you. 
+
+It says: 
+
+Contact the workspace administrator for an invitation"
+Amazon Sumerian	"Re: Is Sumerian Dead?
+So I need an invitation here?"
+Amazon Sumerian	"Re: Is Sumerian Dead?
+The slack channel is really active. You shouldn't need an invitation, you should just be able to join via the slack channel link. If it isn't working for you let me know and I can send you a invite."
+Amazon Sumerian	"Re: Is Sumerian Dead?
+Thank you.
+
+Please send an invite, cause it's not working for me."
+Amazon Sumerian	"Re: Is Sumerian Dead?
+Apologies, the link to join is http://slack.sumerian.world/ its available in the help drop down inside the editor. You shouldn't require an invite if you use the above link."
+Amazon Sumerian	"Navigation
+When I'm inside Sumerian, I seem to zoom in from infinity. Is it not possible to rotate around the point in space where you actually think you are, instead of from afar?
+
+I can't see anything here:
+
+https://docs.aws.amazon.com/sumerian/latest/userguide/editor-shortcuts.html
+
+I'm having problems rotating inside a room, cause when I try to rotate, my view leaves the room."
+Amazon Sumerian	"Re: Navigation
+The origin point of the object may be offset from the object. Before exporting from a 3D package, you should put the object close to 0,0,0 and freeze transforms in your 3D editor, THEN try exporting/importing.  Once in the editor you should be able to select the entity in the left hand entity panel and press 'f' to focus the camera on that entity."
+Amazon Sumerian	"Unable to start/stop WebVR System: VR Camera Rig Entity not found
+I had everything working, then suddenly it displays the message when I enter the environment:
+
+https://eu-west-2.sumerian.aws/15dacd907e3c4692bb4ac8fe9bdc48dd.scene
+
+Unable to start/stop WebVR System: VR Camera Rig Entity not found
+
+I can't say I've changed anything and I got the VRCameraRig in Entities and looks good. 
+
+Is there any way I can troubleshoot this? I can't get the message on my desktop, since my Chrome doesn't support WebVR. I see the message in my headset, Mirage Solo."
+Amazon Sumerian	"Re: Unable to start/stop WebVR System: VR Camera Rig Entity not found
+I created a new scene and everything works OK, so I probably did something, but I'm not sure how I can troubleshoot it. Probably just leave it until I'm a little more familiar with it."
+Amazon Sumerian	"Re: Unable to start/stop WebVR System: VR Camera Rig Entity not found
+Now it has happened again. Is this a bug or is it me that screws up. Now I have to create a new scene again, cause the Camera Rig Entity is there."
+Amazon Sumerian	"Re: Unable to start/stop WebVR System: VR Camera Rig Entity not found
+For the VR Camera Rig entity in your scene do you have the ""CurrentVRCameraRig"" checked?"
+Amazon Sumerian	"Show/Hide action
+Hi,
+i was trying to add an action in my behaviour to show/hide an entity.
+I added the show action but i cannot find a way to link that action to a precise entity.
+Any help would be appreciated.
+
+Thanks!"
+Amazon Sumerian	"Re: Show/Hide action
+It depends on the use case.  Typically, in the behavior editor, you add an action labeled 'emit' and type a message.  Then in your target enity's behavior editor, you can use the action labeled 'listen' and type the same message.  If your emit message and listening message are the same, the target entity will be able to execute functions connected to the 'listen' node."
+Amazon Sumerian	"Re: Show/Hide action
+Salvatore,
+
+Let us know if AWS-Chaps' suggestions worked for you."
+Amazon Sumerian	"Page becoming unresponsive when trying to add a host to a scene.
+Hi All,
+
+When trying to add any host to a scene, the page is becoming unresponsive and not able to open the scene again.
+
+Kindly help on this.
+
+Edited by: PavithraS on Aug 29, 2018 9:28 PM"
+Amazon Sumerian	"Re: Page becoming unresponsive when trying to add a host to a scene.
+PavithraS,
+
+Sorry to hear about that situation.  I'm not seeing this happen when I create a new scene and import a host.  Can you help me with the following:
+
+1.  Are you still seeing this issue?  
+2.  Are there any errors being displayed in the console?
+3.  Which browser and OS are you developing on?"
+Amazon Sumerian	"Import Formats
+Are there any more modern formats than OBJ? OBJ doesn't seem to have units and any sense of direction, cause when I import it's rotated 90 degrees and is 10 times bigger than everything else. Also, it's totally white, so no textures are included in the OBJ file; they're in a separate file. When I try to export to FBX from ArchiCAD, it crashes. 
+
+How about something more modern? Isn't collada supposed to be a modern interchange format?"
+Amazon Sumerian	"Re: Import Formats
+Hi famadorian,
+When importing an OBJ, you can drag the textures alongside the OBJ file so that they get imported at the same time.  FBX is also a common format for content creators, so you may explore some other tools besides ArchiCAD.  As for the scaling and rotation, I suggest you either investigate the unit scale (in Sumerian, we're at 1 unit = 1 meter).  You can either adjust this at the export step or simply adjust the Transform component to scale down to .1 and rotate 90 degrees."
+Amazon Sumerian	"Chrome Dev has stopped (WebVR on Mirage solo)
+No matter which I try on this page:
+
+https://experiments.withgoogle.com/collection/webvr
+
+, Chrome Dev just quits after a few seconds.
+
+I'm using Mirage Solo.
+
+Is there some other browser or version I should be using?"
+Amazon Sumerian	"Re: Chrome Dev has stopped (WebVR on Mirage solo)
+famadorian,
+
+I'm afraid I can't diagnose the issue with Chrome Dev and Google's VR examples.  Can you confirm that the latest version of Chrome is working for you?  Are there any Sumerian-specific issues we can help you with?"
+Amazon Sumerian	"State machine in virtual concierge
+Hello,
+
+I followed the tutorial in the post, https://docs.sumerian.amazonaws.com/articles/virtual-concierge/ and seemed NOT to find the state machine (referred to under section 'Import the Host', point #3) which is supposed to have been bundled with the pack. Am I missing anything?
+
+And a big note of THANKS to the Sumerian team to make this available.
+
+regards,
+Rajesh."
+Amazon Sumerian	"Re: State machine in virtual concierge
+I was looking at the wrong place, the place to look is in the entities panel on the left bottom in the Sumerian console"
+Amazon Sumerian	"VR Glitch
+Hi, when previewing the VR mode in the editor sometimes it looks fine, but when viewing the published scene on windows or mobile it's always glitchy and doesn't appear to be moving the camera.
+
+Also, the editor often gets stuck on Unsaved Changes Pending and won't save.
+Does anyone have any advice? Thanks
+
+Link: https://drive.google.com/open?id=15FQFhn_M2EP2rJNW1eLRaNJie7PPo6uM"
+Amazon Sumerian	"Re: VR Glitch
+Hi,
+Do you mind to provide the link of published scene? did you see any error in the browser console?
+
+Can you also let us know what OS/Browser versions/VR device you are using?
+
+Thanks!
+
+Yuan"
+Amazon Sumerian	"Re: VR Glitch
+I'm using Chrome 66 on a daydream compatible Android device and HTC Vive in Chrome 67 on windows 10.
+I get this as an error: ""Uncaught TypeError: Cannot read property 'remove' of null
+    at installed.js:1""
+
+Here's the scene
+Link: https://ap-southeast-2.sumerian.aws/14BexZMoP1gqvSbLZSfYigjUvfcXkroScK0f.scene/"
+Amazon Sumerian	"Re: VR Glitch
+I am unable to open the published scene you attached any more. Do you mind to re-publish it and update the url?"
+Amazon Sumerian	"Re: VR Glitch
+Sorry about that here it is 
+Link: https://ap-southeast-2.sumerian.aws/94608402fe45410698cba02e4c65ac0d.scene
+
+It might have something to do with all the files of the CoreVR asset not importing properly because some of the times I've brought it in the HMD camera isn't visible.
+But I've tried reimporting it many times and the problem still persists, thanks."
+Amazon Sumerian	"Re: VR Glitch
+ricebukett@
+
+Apologies for the delay. 
+
+I am currently looking into the ticket and will get back to you with an update soon."
+Amazon Sumerian	"Re: VR Glitch
+Do you still get the same error with installed.js ? I am not able to reproduce it. 
+I direct messaged you to request permission to copy the scene and debug it on our side."
+Amazon Sumerian	"Re: VR Glitch
+I no longer get any errors including the installed.js error on my main computer but the problem still persists on my pc and mobile and when trying it on my laptop and another computer it crashes and has different errors such as TypeError: e.destroy is not a function and frame buffer is unsupported.
+
+But I'm having difficulty using the editor the problems are the scene will often stop auto-saving and won't do anything when I drag in the core VR  and an invalid property error when I try to delete things so I think it must be something up with my scene."
+Amazon Sumerian	"Re: VR Glitch
+TypeError: e.destroy usually happens when WebGL or chrome crashes. This usually happens when the laptop/ machine does not have enough resource to render the scene. Usually this error is accompanied by :1 WebGL: CONTEXT_LOST_WEBGL: loseContext: context lost 
+
+
+We will dive deep into the auto save issue and give you an update."
+Amazon Sumerian	"Re: VR Glitch
+Hi ricebukett,
+
+It appears that your scene has some very large assets that are causing issues with the graphics drivers on some of the devices you're trying to use.
+
+• Your Default Pack contains several textures that are large and irregularly shaped, such as Autoshop Floor Lifts 02.jpg(5376 x 2688 resolution). They aren't being used in the scene, but they may be contributing to the autosave problem you're experiencing. Hovering over the Default Pack and clicking the broom icon to remove unused dependencies will delete these textures.
+• Your ""shop design"" and ""Walls"" packs each contain a texture atlas called CubeSurface_Color (10,000 x 10,000 resolution). We recommend using texture sizes that are as small as possible. Textures above 2048 x 2048 resolution can cause crashes and unpredictable behavior on many platforms.
+• The scene is rendering a total of 1.8 million triangles over 376 draw calls. We recommend limiting draw calls to 100-200 if you're targeting low-end mobile devices. Though we have no recommended limit for poly count 1.8 million is on the high end, so you may see better performance if you reduce the triangle density of your meshes.
+• There are 12 lights in your scene. Reducing the number of lights will reduce the size of shader programs and may improve compatibility across platforms.
+
+You can find a list of best practices in the Sumerian Scene Optimization tutorial: https://docs.sumerian.amazonaws.com/tutorials/create/expert/sumerian-scene-optimization/"
+Amazon Sumerian	"VR is stuck at Start (On AWS SDK Ready)
+I worked along with the tutorial 'Using the Dialogue Component and Amazon Lex to Build a Chatbot' and performed every step diligently, but when I play the scene I always have my Start (On AWS SDK Ready) state highlighted and it doesn't move beyond that. I also checked the Twitch video tutorial around the exercise, but there 'Wait for Input' state gets highlighted automatically after the Start state is processed and then user is able to interact. I have created and properly saved my cognito pool id, but it doesn't seem to work. Please help.
+
+Edited by: TanG on Aug 6, 2018 5:54 AM"
+Amazon Sumerian	"Re: VR is stuck at Start (On AWS SDK Ready)
+Hi TanG, the issue could be either from the Cognito Pool ID or the state machine - could you double check to make sure you're using a valid Cognito Pool ID? If you use another Cognito Pool ID, can the state machine action move onto the next state? Also, could you send us screenshots of your State Machine setup?"
+Amazon Sumerian	"Colliders in ""Physics Part"" tutorial
+For any reason I don't know, the colliders in the ""Physics Part"" tutorial are working differently to what I would expect, in my own test but also in the ""scene"" to illustrate the example at the beginning of the tutorial, in the document: 
+https://docs.sumerian.amazonaws.com/tutorials/create/beginner/physics-part-1/
+
+I would expect to see the ball gliding on the ground, exactly over the surface, but what I can see is the ball moving over an imaginary floor, parallel to the real one, some units below (in the Y direction). I can change this by increasing the Y half extend parameter (to somehing like 5 instead 0.5) of the floor, but then also with problems with the flippers. It doesn't seems the right solution.
+
+I'm working with the last version of Firefox (61.0.01). I've tried to check it in IE Explorer 11 and Chrome, but without success.
+
+Please, is a problem of my browser (given that the problem is also in the example at the beginning of the tutorial), or the parameters in the tutorial? something missing?any clue? 
+
+Thanks in advance!"
+Amazon Sumerian	"Re: Colliders in ""Physics Part"" tutorial
+Answered in Amazon Sumerian Slack:
+
+ AWS-runping wrote:
+There is currently a known issue with scaled sphere collider. You may want to change the scale of the sphere back to 1,1,1 and have a try.
+
+Link: https://amazonsumerian.slack.com/messages/C8AR6KC00/convo/C8AR6KC00-1531987438.000254/"
+Amazon Sumerian	"Tap to record audio via Lex works in Sumerian not in mobile app
+I'm having issues interacting with a 3D object on a mobile app using ARCore and AWS Sumerian. Even when tapping the object on the mobile app, the 3D object does not respond. My phone is on the compatible ARCore phone list.
+
+I've built my AWS Sumerian host and published it which uses tap to record audio to elicit a response via Lex and Lambda which works fine within AWS. Basically, it's a modified version of this URL here. https://docs.sumerian.amazonaws.com/tutorials/create/intermediate/augmented-reality-using-sumerian-arcore/
+
+I've used the sample ARCore code here via Android Studio. 
+https://github.com/aws-samples/amazon-sumerian-arcore-starter-app
+
+I've modified the Manifests.xml in Android Studio to include audio recording and confirmed that the phone allows mic input also. I haven't updated the MainActivity file however.
+
+https://stackoverflow.com/questions/40236925/allowing-microphone-accesspermission-in-webview-android-studio-java
+
+It appears in another thread that tap to interact with existing objects should work by default for Unity and doesn't concern ARCore. I'm wondering whether this is the case for AWS Sumerian also?
+
+I've Google searched high and low, but no info was found, so any help with this will be much appreciated!"
+Amazon Sumerian	"Re: Tap to record audio via Lex works in Sumerian not in mobile app
+Hi krystale,
+
+Apologies for the delayed response. We have recently resolved some bugs in our dialogue component implementation, one of which prevented audio recording on Safari. 
+
+Can you try republishing the scene and confirming if this is still an ongoing issue?"
+Amazon Sumerian	"Create a VR app
+Hi 
+Does Sumerian offer the same type of development environment and games engine as Unreal 4? I am looking to create a simple demo using point and click, some off the shelf CGI graphics that I have found in the Unreal library and some 360 video. 
+
+thanks for your help
+Nick"
+Amazon Sumerian	"Load Avatar
+How can I use my own Avatar in Sumerian, with my gestures and Lipsync."
+Amazon Sumerian	"Re: Load Avatar
+Hi Alex,
+
+Currently, we do not support custom Host(Avatar) nor custom gestures/Lipsync. 
+
+Runping"
+Amazon Sumerian	"Grabbing the mouse position
+I am trying to create functionality that will allow me to click and drag an object. 
+
+I was wondering if it is possible for me to get the mouse position in world space and set the position of the object to the mouse's position while the mouse is held down.
+
+I would appreciate any help. Thanks."
+Amazon Sumerian	"Re: Grabbing the mouse position
+Hi @jbutler05,
+I think you can set it up by using State Machine Component with Transform Actions and Mouse Actions. See the tutorial for State Machine for details: https://docs.aws.amazon.com/sumerian/latest/userguide/sumerian-statemachines.html
+
+
+Yuan
+
+
+Edited by: Yuan-aws on Jun 6, 2018 5:55 PM"
+Amazon Sumerian	"Troubleshoot: Youtube video not visible after publishing
+I've created the tv tutorial as demonstrated here: https://docs.sumerian.amazonaws.com/tutorials/create/getting-started/interactive-tv/index.html
+
+I substituted my own youtube links. Everything looks great in play mode, but when I publish and view the link I can only hear the audio of the youtube video. The ""tv screen"" in the room remains black. All other functionality works as described. Any ideas on what the issue is? All development and viewing is being done in Chrome."
+Amazon Sumerian	"Re: Troubleshoot: Youtube video not visible after publishing
+Hi @cgdata. Do you have 'Enable Alpha Blending for WebGL' checked in the publish dialog when publishing? It is the last step of the tutorial."
+Amazon Sumerian	"Users with dynamic AWS Roles
+An example of a dynamic AWS role is a randomly generated number attached to a user's role every time the user logs in. 
+What is the experience for users with the dynamic role?"
+Amazon Sumerian	"Re: Users with dynamic AWS Roles
+A user with dynamic roles gets a new-user experience every time they log in with a new role and cannot get back to their saved work in their other roles. It is because Sumerian currently treats a new role as a new user."
+Amazon Sumerian	"Amazon Sumerian now Generally Available
+AWS announces the General Availability of Amazon Sumerian, a managed service that allows developers to create and publish augmented reality (AR), virtual reality (VR) and 3D applications quickly and easily without requiring any specialized programming or 3D graphics expertise.
+
+Amazon Sumerian provides an integrated development environment (IDE), editor, asset library, APIs, and virtual characters, called Sumerian Hosts, for the design, development, and deployment of applications. Apps created using Sumerian are published in a compatible browser which enables a developer to “create once and publish widely.” Scenes can be viewed on compatible VR headsets (HTC Vive, HTC Vive Pro, and Oculus Rift), AR compatible iOS and Android mobile devices, laptops, and digital signage.
+
+For a complete list of regions where Amazon Sumerian is offered, please see the AWS regions table https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/. To get started, visit the Amazon Sumerian website at https://aws.amazon.com/sumerian and review our Tutorials and Documentation pages at  https://aws.amazon.com/sumerian/getting-started/.
+
+Edited by: awsbenm on May 15, 2018 10:36 AM"

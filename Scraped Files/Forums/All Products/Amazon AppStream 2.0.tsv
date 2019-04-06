@@ -1,0 +1,1275 @@
+label	description
+Amazon AppStream 2.0	"No emails coming from Appstream
+Everything was working great until today, noone is able to receive emails from Appstream, several users on different domains. I checked my account by resending the email about stack assignment, which was working before, but now I also dont get the emails. 
+Im not sure how to troubleshoot an Amazon service that worked until recently, seems like the emailing is all done under the hood. Any suggestions other than opening a Support case (did that and am waiting)? TIA...
+
+Edited by: chrisg-florida on Feb 25, 2019 11:41 AM"
+Amazon AppStream 2.0	"My Files Displays Wrong Times
+For me,
+When I go to My Files, the file times are wrong.
+I think this got broken when Regional settings were implemented.
+The used to be correct even though the files when view for Windows Explorer were showing non-localized dates.
+So -- likes we may have fixed something that was broken and broke something that was working.
+Alas, the perils of software development.
+Assume this will be fixed pretty soon.
+Paul"
+Amazon AppStream 2.0	"File and Folder Names Upcased Sometimes
+Wonder if anyone else has experienced upcasing of file and folder names.
+
+My apps are MS Windows Explorer and MS Visio.
+
+This is not happening all the time but may be consistent during a session.
+Logging out and back in may fix the problem, but not always.
+It appears to have improved with last release, but is still there.  May have been fixed for MS Windows Explorer.
+
+For MS Windows Explorer, both folder and file names are upcased and I think, but am not positive, that all of them are or none of them are.
+
+For MS Visio, symptom is that while the filename is mixed case it appears upcased in the Visio window shown in the filename at the top of the window.  I am running VB within Visio and I think the VB API returns upcased file and path names.  I'm pretty sure that if the filename appears correct, the API will also return correct file and path.
+
+My workaround is to keep logging out/in until it works.  Pretty painful.
+
+I can't yet provide an always fails scenario.
+
+Anybody have any thoughts.
+
+Thanks.
+
+Paul"
+Amazon AppStream 2.0	"7 Minute Fleet Outage When InUseCapacity goes to 0
+I am using default settings is setting up fleet.
+Running along fine with ActualCapacity and InUseCapacity = 1.
+On logout of the one active session both ActualCapacity and InUseCapacity go to 0.
+On logout shouldn't ActualCapacity stay at 1?
+There is a 7 minute delay before ActualCapacity goes to 1 and I can login again.
+Anyone else experiencing something similar and is there a fix.
+Especially frustrating since this means after last user logs out no one can login for 7 minutes.
+Thanks.
+Paul"
+Amazon AppStream 2.0	"Re: 7 Minute Fleet Outage When InUseCapacity goes to 0
+Hi PaulV45 -
+
+Each AppStream instance is dedicated to a single user. At the end of their streaming session, the streaming instance is terminated. If the scaling policies and fleet size stipulate it, a new streaming instance will then be provisioned. Depending on the size and contents of your image, it can take a few minutes to create the new instance and make it available.
+
+In your case, since your fleet size is set to 1 instance, ActualCapacity will go to 0 as there are no remaining usable instances available. After a few minutes (7 minutes for your image), a new instance is made available.
+
+You can mitigate this gap by using a scale-out policy such that when capacity utilization is >= 100%, a new instance is created. Please keep in mind you are charged for running instances. If you use an on demand fleet, the unused instances are charged at a lower stopped instance rate until it is powered on for a user to stream from.
+
+Hope this helps.
+
+Murali"
+Amazon AppStream 2.0	"Re: 7 Minute Fleet Outage When InUseCapacity goes to 0
+Hi Murali,
+
+Thanks for explanation.  While I'm not quite sure I got it all, I submit there is case that in fact is not handled properly.  Here's are two scenarios.
+
+Normal:
+
+Start point -- running along with ActualCapacity=1, InUseCapacity=0.
+User logs in in -- ActualCapacity=1, InUseCapacity=1.
+Scaling kicks in -- ActualCapacity=3, InUseCapacity=1.
+User logs out -- Actual Capacity=3, InUseCapacity=0.
+After a while scaling takes to ActualCapacity=1
+Now back at start point -- ActualCapacity=1, InUseCapacity=0.
+
+Life is wonderful!
+
+Problem: 
+
+Start point -- running along with ActualCapacity=1, InUseCapacity=0.
+User logs in in -- ActualCapacity=1, InUseCapacity=1.
+User logs out before scaling kicks in.
+
+
+
+
+
+Should take to ActualCapacity=1, InUseCapacity=0. (i.e. back to start point)
+Actually takes to ActualCapacity=0, InUseCapacity=0 and 7 minute delay before anyone can login.
+
+
+
+
+
+
+
+The end result is a pretty ugly UX particularly when a demo situation
+
+Attached is a screenshot which while your explanation may cover,  I'm hoping the team finds difficult to call ""works as desired.""
+
+Thanks for looking at this with me.
+
+Paul"
+Amazon AppStream 2.0	"Safari / Webkit support
+Hi,
+
+Are the plans for Safari/Webkit support? As Safari is widely used on macOS and supports HTML5 pretty well, I was a bit surprised it didn't work when I tested it.
+We want to use AppStream 2.0 through a custom app in macOS using the built in webkit engine, so just using Chrome or Firefox isn't that trivial.
+
+Regards,
+Jarle"
+Amazon AppStream 2.0	"Re: Safari / Webkit support
+Hi Jarle - Safari support for AppStream 2.0 is on our roadmap. I will update you on this thread once the feature is available.
+
+Thanks,
+Sahil"
+Amazon AppStream 2.0	"Re: Safari / Webkit support
+Hi Sahil,
+
+Is there any update on support for Safari browsers on Apple devices? I too was surprised that Safari was not supported. We have been following the updates to AppStream 2 and experimenting with it since we discovered it at the end of last year and are very impressed so far. However, we have a huge number of Mac users around the world. It would be great not to have to inform them they need to download Chrome or Firefox.
+
+Also, I was hoping there was a way to access the service on tablets and was informed about the Amazon AppStream Basic Client by an Amazon employee. However, this appears to be only applicable for AppStream 1 (I notice it was last updated in 2015, so before AppStream 2) and does not work when I have tried it on an iPad and iPhone. It just says 'connecting' against a black screen. Is there another option?
+
+Thanks,
+
+Alex"
+Amazon AppStream 2.0	"Re: Safari / Webkit support
+From: 
+https://aws.amazon.com/appstream2/
+""Amazon AppStream 2.0 is a fully managed, secure application streaming service that allows you to stream desktop applications from AWS to any device running a web browser, without rewriting them.""
+
+any device running a web browser
+
+Please advise any browser that runs on iOS on an iPad that is supported by AppStream 2.0
+
+Thanks, Virginia"
+Amazon AppStream 2.0	"Re: Safari / Webkit support
+Hi Virginia,
+
+I'm afraid that's not the case. I have tried Safari, Firefox and Chrome on an iPad and get this message:
+
+Your browser is not supported
+The internet browser you are using is not supported by Amazon AppStream 2.0. you can use the latest version of Mozilla Firefox, Google Chrome, Microsoft Internet Explorer, or Microsoft Edge.
+
+I have the latest updates for FireFox (iOS version 9.3) and Chrome (version 62.3202.70) released 26th October 2017 and the iPad is up to date.
+
+Regards
+
+Alex"
+Amazon AppStream 2.0	"Re: Safari / Webkit support
+Yes, I have tried 11 different HTML5 browsers on iOS and, of course, none of them are supported.
+
+I want to bump this up as it would be preferable if Amazon did not make false claims, or provided some update as to the progress of an implementation for 'all devices'.
+
+Cheers, V."
+Amazon AppStream 2.0	"Re: Safari / Webkit support
+Looks like there is some inconsistency in the documentation https://aws.amazon.com/appstream2/faqs/#platform_support"
+Amazon AppStream 2.0	"Re: Safari / Webkit support
+How is this progressing? Still ""on the roadmap""?"
+Amazon AppStream 2.0	"Re: Safari / Webkit support
+Hi WineyGuy -
+
+AppStream 2.0 supports Safari on Mac OS X for desktop devices. You can stream your application using that browser.
+
+Thanks,
+Murali"
+Amazon AppStream 2.0	"Re: Safari / Webkit support
+awsMuraliR wrote:for desktop devices
+What about iPads?"
+Amazon AppStream 2.0	"Re: Safari / Webkit support
+Murali, 
+WineyGuy was asking about iOS and not OSX. I too am interested when mobile devices running iOS will be supported.
+Thanks!"
+Amazon AppStream 2.0	"Re: Safari / Webkit support
+Support for iOS devices is in our backlog. However we don't have a launch timeline to share at this point."
+Amazon AppStream 2.0	"Re: Safari / Webkit support
+Any update on this?
+
+Is there any browser that will work with Appstream 2.0 on android/ios phones and/or tablets?
+
+Regardless, the error message that's given by Appstream on mobile devices needs to be adjusted.  
+
+The error gives false hope."
+Amazon AppStream 2.0	"Run Tableau Registration/Activation Script in Image Instance before Launch
+Hello,
+
+I have a brief script that will run and register Tableau in the registry (using both .bat files and a PowerShell Script) and also activate a license key for Tableau ahead of time for the user. These commands are run through a script run on startup and shutdown, like shown in this thread: https://forums.aws.amazon.com/thread.jspa?threadID=261492.
+
+Although it is clear that my script is successfully making edits to the registry ahead of time, my script still only partially works. First of all, it includes commands to activate a product key on Tableau, which it doesn't do. Secondly, part of the script launches the program, which it also doesn't do.
+
+It would seem that the script is doing all commands not associated with Tableau, is there any way to make this work? Could it be that the script can't see the directory Tableau.exe is in an image instance?
+
+For reference, this is an example of a command that doesn't work:
+""C:\Program Files\Tableau\Tableau 2018.3\bin\tableau.exe"" -register 
+
+If so, where would I need to store the executable to make it accessible to a script?
+
+Thank you,
+dluk
+
+Edited by: dluk on Dec 6, 2018 8:41 AM"
+Amazon AppStream 2.0	"Re: Run Tableau Registration/Activation Script in Image Instance before Launch
+Update:
+
+I tried moving the entire directory containing Tableau.exe into the folder where the scripts are stored and ran from, and it still doesn't work.
+
+It is also possible that the registry has already been edited from previous sessions and that the scripts are not running whatsoever, but I can't entirely be sure.
+
+Making an image of the scripts works to run the Tableau commands, but will create other error when working with activating Tableau.
+
+Edit:
+The script is not editing the registry or activating Tableau, it would appear that the startup scripts are not doing anything.
+
+Edited by: dluk on Dec 10, 2018 6:42 AM"
+Amazon AppStream 2.0	"Re: Run Tableau Registration/Activation Script in Image Instance before Launch
+What I have tried so far:
+
+Creating policies by running""gpedit.msc"" as well as setting the policy to wait for network connection, as explained here: https://forums.aws.amazon.com/thread.jspa?threadID=261492&tstart=0
+
+I have also tried using the task scheduler for this, and have created basic tasks on both when the computer starts and when I login, as well as a task for when the instance stops. I followed this documentation: https://www.thewindowsclub.com/how-to-schedule-batch-file-run-automatically-windows-7
+
+Both these things do not run my script and produce zero results. Nothing changes the entire time, and Tableau starts just as it normally would with an empty registry and with the trial license.
+
+I don't know of any other way to automate running batch files in AppStream, and am clean out of ideas."
+Amazon AppStream 2.0	"Re: Run Tableau Registration/Activation Script in Image Instance before Launch
+I was able to successfully make an image of the script and it still doesn't behave as expected.
+
+Is there a recommended way to run script and batch files in AppStream?"
+Amazon AppStream 2.0	"Re: Run Tableau Registration/Activation Script in Image Instance before Launch
+Hi dluk -
+
+Please take a look at the session scripts feature: https://docs.aws.amazon.com/appstream2/latest/developerguide/use-session-scripts.html. It enables you to execute a script before the user's streaming session begins, and/or after it has ended.
+
+Hope that helps.
+
+Murali"
+Amazon AppStream 2.0	"Running as Administrator in Image Instance
+Hello,
+
+I am currently running into an issue with AppStream where I am trying to figure out how to write batch/powershell scripts in AppStream to automate the process of licensing Tableau.
+https://forums.aws.amazon.com/message.jspa?messageID=880380#880380
+
+Right now I am trying to provide license data to Tableau support to understand why licensing command supported by Tableau don't work in AppStream. This data is stored in a file called LicResults.txt, and is not view-able or editable without admin permission. I am trying to copy this file to the S3 bucket, but am running into issues where it won't allow me to copy the file. Tableau support suggests simply ""right click and run the batch file as an administrator"" however, this does not seem possible in the image instance.
+
+I have run into a similar problem previously where it has been difficult to execute administrator permission in an instance with editing the registry.
+https://forums.aws.amazon.com/message.jspa?messageID=878316#878316
+
+This time I have tried writing a script file that is stored in the Windows file path and making an image of said script, based on this:
+https://stackoverflow.com/questions/18044842/how-to-start-a-program-with-admin-privileges-in-a-batch-file
+
+As well as using powershell -Command ""Start-Process cmd -Verb RunAs"". https://stackoverflow.com/questions/19098101/how-to-open-an-elevated-cmd-using-command-line-for-windows
+
+Attached are the screenshots of the instance not being able to run my script because of access issues. I don't know how I can copy this file without having admin permission in an instance?
+
+Thanks,
+dluk"
+Amazon AppStream 2.0	"Re: Running as Administrator in Image Instance
+Hi dluk -
+
+We recently launched the session scripts capability that enables you to run a script in the system context. In your scenario, it may be helpful to run it as a session termination script.
+
+You can learn more about the feature here: https://docs.aws.amazon.com/appstream2/latest/developerguide/use-session-scripts.html"
+Amazon AppStream 2.0	"Image Builder - Error! An error occurred. If you continue to see. . .
+Hello AWS AppStream community,
+
+I've been trying to add a visual studio application (A simple windows form) to the AppStream Image Builder.
+
+The application runs fine and has been launched/tested/optimized as template and test users. However, on step #6 Review, when clicking Disconnect and Create Image, I routinely get the attached error message.
+
+I suspect the application may require .NET Framework 3.5, not included by default in Windows Server 2012 R2.
+
+Has anyone experienced this problem before or know what to do about it?
+
+Thanks very much,
+-Jake B."
+Amazon AppStream 2.0	"Re: Image Builder - Error! An error occurred. If you continue to see. . .
+Hi Jake!
+
+Are you still having issues with Visual Studio and the AppStream Image Builder? If so can you PM me your Account ID, region and Image Builder name so we can look into it further?
+
+Ali"
+Amazon AppStream 2.0	"Common options to get MS Office activated inside AppStream
+Hi all, 
+
+Looking for advice / real use case examples for activation of MS Office inside AppStream. What is common options might be available and in which way to start research?
+For particular case I have usage pattern very similar to how ""Try AppStream"" offer looks like from AWS. We have to temporary provide concurrent access to the same Fleet for ~100 external clients (our application uses Word and Excel as reporting tool)."
+Amazon AppStream 2.0	"Re: Common options to get MS Office activated inside AppStream
+Hello,
+
+I'm also interested in the common options for running MS Office inside AppStream.
+
+We're planning on moving our desktop app into the cloud and making it available to our clients using AppStream. Our application is tightly integrated with MS Office so we need to know if this is possible.
+
+If it's possible, what are the licensing options?
+
+Thanks,
+
+Ben"
+Amazon AppStream 2.0	"Slow Home Folder access - S3 bucket transfer acceleration
+Hello,
+
+I'm also experiencing slow upload speeds to the Home Folder when using appstream, like this (https://forums.aws.amazon.com/thread.jspa?threadID=298099)
+
+I've enabled Transfer Acceleration for the S3 bucket but have not seen any improvements. Is there a way for AppStream to use the Transfer Acceleration endpoint so that our users can upload at a reasonable speed?"
+Amazon AppStream 2.0	"Problems with Home Folder Sync.
+Hi, I'm using Appstream to run Solidworks. I have several user accounts in the user pool that have access to this fleet. The stack that this fleet is assigned to was configured to enable home folders and to persist application settings. The problem that I am running into is that when a user logs in they are presented with a  ""Storage errors"" dialog with the message ""Home Folder sync is temporarily interrupted. Last successful sync to cloud: 2 minutes ago. Save your latest files and download them to your local computer if necessary.""
+
+A user is not able to upload files to their home folders and if they log out and log back in they get the same error. I have two other stacks hosting other fleets that work just fine. It looks like AWS by default assigns the same S3 space to all stacks for all home folders. I have tried to delete the problem stack and create a new one that points to the same fleet but the problem persists. Has anyone ran into this problem before?"
+Amazon AppStream 2.0	"Re: Problems with Home Folder Sync.
+Hello,
+Thank You for contacting AWS Forums!
+
+In order to investigate this issue, can you share the following details with us on private message:
+
+ - AWS Account ID
+ - Fleet Region
+ - Fleet Name
+ - Image Name
+ - Are you facing this issue with other users connecting to the stack/fleet?
+
+The way Home Folder integration works is that we mount the S3 folder when users connect to their applications. So, the mounting application needs complete and unrestricted access to the 'My Files' folder. If your application is trying to access this folder to read/write files from it as soon as it launches, the mounting application will face issues while trying to mount the folder.
+
+To avoid this, make sure that you application:
+
+  - Does not have Home Folder as their working directory
+  - Waits at least 10 seconds before trying to access (Read/Write in) the Home Folder
+
+Awaiting your response to take this further. Let us know if you have further questions or concerns. We would be happy to help!"
+Amazon AppStream 2.0	"Re: Problems with Home Folder Sync.
+Hi, I sent you a PM with the information that you requested.
+I can confirm that the application does NOT use the home folder as it's working directory. I can't confirm 100% that the application waits for at least 10 seconds before accessing the folder during load (i'm not sure how I would do this) but I don't have any reason to think that it would try to as that folder is outside of the applications paths of commonly used directories. The only time that the Home folder is accessed is when a user manually loads, saves or uploads files to the home folder.
+
+To clarify further, I already have another stack and fleet that is running Solidworks just fine. The reason why I created a separate stack and fleet was because users were reporting poor performance on the fleet where everything works fine. So I created a copy of the existing image assigned to a more powerful instance type on a new fleet. Outside of this everything else is configured the same way. This new fleet is where users are reporting the problems.
+
+Let me know if you need any additional information."
+Amazon AppStream 2.0	"Re: Problems with Home Folder Sync.
+Hi, I was just following up to see if you had a chance to take a look at this. Thanks."
+Amazon AppStream 2.0	"Re: Problems with Home Folder Sync.
+Hi, is there any feedback that you can provide as to why this is happening?"
+Amazon AppStream 2.0	"Re: Problems with Home Folder Sync.
+This might be a long shot, but it worked for me.
+
+I was having this issue because I did not elect to give my stack default internet access or access to the internet through the VPC.
+
+I enabled internet access for the stack and the problem went away"
+Amazon AppStream 2.0	"Home folder excessively slow
+I'm using Home folders on S3 and they are slow to the point that they are unusable.  I have a program that's loading a 121MB file and it takes over a minute to load. On a desktop it's instantaneous.  If I save it outside the home folder (Downloads folder or directly to Users folder) it's similar enough to the desktop in speed as it's saving with the VHD, but this isn't practical.
+
+The moment I save to a home folder it slows right down.
+
+Also when I upload to Temporary storage it takes about the same amount of time (1 minute or more) to upload 121MB file, It's not our network, only having this issue with AppStream.
+
+Is there something I'm missing?"
+Amazon AppStream 2.0	"Failed to reserve a session
+We are testing out AppStream and successfully built an image, deployed a fleet & stack, and were able to connect fine last week and start initial testing, including launching apps. I stopped the fleet over the weekend and came back to pick back up this week. I couldn't ever get connected back once restarting the fleet so I tried making a new image. That too has been unsuccessful. When trying to connect to the existing -- and previously working -- stack it just says that it's taking an unusual amount of time and then finally says ""Internal error"".
+
+When going into Image Builder, launching a new Base-Image-Builder-05-02-2018 image, waiting for the ""running"" status, and then clicking Connect I get a dialog with the title ""Failed to reserve a session"" and the message ""Internal error"". This dialog is in the new AppStream webapp window that opens not in the AppStream console window.
+
+I've tried launching new instances using Image Builder multiple times this week and the other weird thing is that after roughly 30 minutes the image will just transition into a state of ""stopped"" and never start back up. If you select it after that and do Actions > Start it'll just stay ""pending"" forever and then eventually transition back to ""stopped"".
+
+I'm at a loss."
+Amazon AppStream 2.0	"Re: Failed to reserve a session
+@nvows, Please create an AWS support case with the necessary details such as issue description, AWS account, AWS region, fleet/image builder names and image names. We will investigate."
+Amazon AppStream 2.0	"Re: Failed to reserve a session
+What option do I pick when creating a support case? If I select ""Technical Support"" then it says ""Unavailable under the basic support plan""."
+Amazon AppStream 2.0	"Re: Failed to reserve a session
+I resolved the same issue by verifying VPC and security group settings"
+Amazon AppStream 2.0	"Update NVIDIA drivers for stream.graphics-desktop.2xlarge instance
+Is it possible to update the driver version for the Graphics Desktop instance? An application we're trying to package requires a newer driver version.
+
+Edited by: cloudconqueso on Jan 11, 2019 9:03 AM"
+Amazon AppStream 2.0	"Re: Update NVIDIA drivers for stream.graphics-desktop.2xlarge instance
+Turns out that you can't update the drivers on a Graphics-Desktop instance but you can on a Graphics-Pro instance.
+
+From my experience you'll need to:
+-Enable the Basic Microsoft Display Adapter in Device Manager>Display Adapters
+-Download the latest NVIDIA Tesla M60 driver for Windows Server 2012 R2
+-Extract the Installation to a folder on the desktop
+-Have a youtube video playing in the background
+-Choose ""Custom Installation"" and only install the driver (No Ansel, WMI, nView)
+-After install, restart and log back in
+
+I don't know if the extracting to desktop + playing a youtube video in the background are 100% necessary but I went through the headache of updating the drivers probably 4-5 times before it finally stopped freezing and I'd have to start over so this is what worked for me."
+Amazon AppStream 2.0	"Re: Update NVIDIA drivers for stream.graphics-desktop.2xlarge instance
+Hello!
+
+Thank You for contacting AWS Forums!
+
+I understand that you want to update the NVIDIA drivers on your Appstream Graphics Desktop instance.
+
+I'm afraid that currently, it is not possible to update the graphics drivers for Graphics Desktop instances. However, as other customers have pointed out, you can migrate your workloads to Graphics Pro and update the drivers on it.
+
+Having said that, our internal AppStream team is aware of this request and are working towards it. However, I would not be able to share any ETA around this.
+
+I do realize that this may not be the solution that you were looking for and I would like to apologize for the same.
+
+Please let us know if you have further questions or concerns. I would be happy to help!"
+Amazon AppStream 2.0	"Do you have Microsoft Office 2019 running successfully on AppStream?
+I'd like to run Microsoft Office on AppStream.
+
+I'm looking to get it up and running and want to make sure it works before I put in a lot of time.."
+Amazon AppStream 2.0	"AppStream v2.0 with DCV connecting over CloudFront
+I am trying to solve an AppStream v2.0 / DCV use case where the instance is running in EU Ireland region and the user is in the Middle East, specifically Qatar.  Although average latency is 150-180 ms it is very inconsistent and has been observed to burst as high as 375 ms.  AWS states that DCV has an upper limit of 250ms.  As a result of this high latency, the user experience in this highly graphical application is very poor.
+
+The question has come up as to whether this can be run through CloudFront in Dubai to stabilize this latency.  Does AS2 support CloudFront for this purpose?  If not, could access to Ireland via CloudFront be accomplished using DCV installed on an EC2 instance outside of the AppStream v2.0 environment?
+
+Edited by: gwingate-synchronet on Jan 14, 2019 2:55 PM"
+Amazon AppStream 2.0	"Do you use a public Internet Gateway or a NAT with your appstream instances
+I need to provide Internet access to my AppStream instances so I can run Adobe applications since they use creative cloud.
+
+I'm wondering what the cheapest/easiest method is."
+Amazon AppStream 2.0	"Re: Do you use a public Internet Gateway or a NAT with your appstream instances
+Dear Customer,
+
+To answer your question, you can enable Internet access by simply marking the image builder or fleet instances for default Internet access, selecting a VPC with at least one public subnet (typically your default VPC), and choosing the public subnet to use.
+
+I am including few articles that would help you enable internet access depending upon your setup.
+
+[1] Enabling Internet Access for a Fleet/Image Builder - https://docs.aws.amazon.com/appstream2/latest/developerguide/managing-network-internet-default.html
+[2] Networking, Access, and Security for Amazon AppStream 2.0 - https://docs.aws.amazon.com/appstream2/latest/developerguide/managing-network.html
+[3] General Information - https://aws.amazon.com/about-aws/whats-new/2017/04/amazon-appstream-2-0-adds-simple-network-setup-for-internet-access/
+
+I hope the information above helps and if you have any other questions, please feel free to let us know. 
+
+Regards,
+Qais"
+Amazon AppStream 2.0	"Appstream auto scaling not working
+Hi,
+
+I've setup the following auto scaling policies but they do not seem to be working.
+
+Scale Out Policies
+ default-scale-out: If Available Capacity < 2 instance(s) then add 1 instance(s)
+
+Scale In Policies
+ default-scale-in: If Available Capacity > 2 instance(s) then remove 1 instance(s)
+
+In CloudWatch I can see that the Alarms do get triggered but no new instances get launched."
+Amazon AppStream 2.0	"Replacing Local Domain Controller With SaaS in AppStream 2.0
+Hello!
+
+I have a few questions that many of you will probably find elementary. I am replacing an over-purchased local Windows Small Business Server 2012 piece of, uh... hardware. We run one highly proprietary piece of accounting software that pretty much just fronts a SQL DB and uses FoxPro for reporting. Yeah... that's how we roll... apparently. But, enough griping. Here are my questions.
+
+1. In AppStream 2.0... Is it running Windows? Can I run a Windows setup file to install the application and all dependencies?
+
+2. Must the app live in a browser window? Is there a way to ""present"" the app on a users desktop?
+
+3. Currently, we are running a local exchange server. We have five users that probably don't even know what the bcc field does. It's overkill. We're going to replace it with something cloud-based. However, what is the behavior when a user interacts with a control in my hosted app that is supposed to launch an email client? Does it abide by Google Chrome default action? Does it launch the local system default's specified email client? Do I need to setup an email client in AppStream?
+
+Thanks for any time someone takes to respond.
+
+chrom"
+Amazon AppStream 2.0	"Re: Replacing Local Domain Controller With SaaS in AppStream 2.0
+Hello Chrom,
+
+I noticed my last reply came out from my personal Forums account instead of the AWS account. I apologize about that, I'm replying back to confirm this is an AWS support engineer response: 
+
+Greetings,
+
+This is Farooq, AWS support engineer. 
+1- Yes, AppStream 2.0 uses Windows Server 2012 R2 64 Bit. Reference [1].
+2- The app can either live in a browser window or by using the AppStream 2.0 client which can be installed on any end user machine Windows 7, 8 or Windows 10 (32-64 Bit). Reference [2].
+3- This can be determined by your end user use case. First option, you can install a mail client on the image and configure it with the user settings and make it the default email application. Example for enabling default OS and application settings for your users [3]. Then use that image with a fleet that has a persistent settings. When an end user launches a new session and use your hosted app and initiate an email function, it should bring the mail client on. Second option, if the mail has multiple users and varied by users, you may want to configure the mail client with no user settings, so users can configure the login during the mail step with their credentials. Third option, you use AWS WorkMail [4]. Once you configure WorkMail you can use its web console with your hosted app as your mail provider. 
+
+I hope this comes as a helpful answer. 
+[1] https://aws.amazon.com/appstream2/faqs/
+[2] https://docs.aws.amazon.com/appstream2/latest/developerguide/client-application.html
+[3] https://aws.amazon.com/blogs/desktop-and-application-streaming/enabling-default-os-and-application-settings-for-your-users-in-amazon-appstream-2-0/
+[4] https://docs.aws.amazon.com/workmail/latest/userguide/using_web_application.html"
+Amazon AppStream 2.0	"Re: Replacing Local Domain Controller With SaaS in AppStream 2.0
+Thank you for such a quick reply. 
+
+In addition to those questions which are mostly clear, I have a couple more.
+
+Can the AppStream service be redundant? Can I replicate the app and all data and changes written to the app to a smaller E2 instance in case of outages in my primary region?
+
+How does one backup files/directories in Appstream?
+
+Thanks again!"
+Amazon AppStream 2.0	"Re: Replacing Local Domain Controller With SaaS in AppStream 2.0
+Hello Chrom,
+
+	""Can the AppStream service be redundant? Can I replicate the app and all data and changes written to the app to a smaller E2 instance in case of outages in my primary region?""
+
+	In terms of redundancy you can use the AppStream 2.0 Home Folder. It's S3 bucket mounted to a folder path in the user profile of the AppStream 2.0 session. When you enable the S3 Home Folder feature on a stack, AppStream 2.0 will automatically create the required S3 bucket, and begin using it. The first time a user logs in and saves a file, the path will be created in the S3 bucket, and the files uploaded. See more details in [1]. Yes, you can use the Home Folder to read/write from your Application. 
+
+	If you prefer to write your Application data to another instance. You can basically use our FSx service with AppStream 2.0. FSx is like DFS, you can create shared folders and mount them using Group Policy. You can follow our article [2] that explains FSx with AppStream 2.0. 
+
+	""How does one backup files/directories in Appstream?""
+
+	If you use either of the options I mentioned above you should be able to backup the data. If you are using the home folder it's already in S3 while you can connect from any servers within the same VPC or has a route and permissions to the FSx shared folder to back it up.  
+
+	[1] https://docs.aws.amazon.com/appstream2/latest/developerguide/home-folders.html
+	[2] https://aws.amazon.com/blogs/desktop-and-application-streaming/using-amazon-fsx-with-amazon-appstream-2-0/"
+Amazon AppStream 2.0	"Accessing S3 Buckets Files from Image Instance?
+Hello,
+
+How does AWS AppStream 2.0 allow persistent storage with the S3 bucket? I would like to be able to access the files from an image instance, but am unable to figure out how to do so. Similarly, I am unsure how to save a file to be accessed from the image builder. 
+
+Much thanks
+
+Edited by: dluk on Nov 19, 2018 9:17 AM"
+Amazon AppStream 2.0	"Re: Accessing S3 Buckets Files from Image Instance?
+Hi dluk -
+
+AppStream supports persistent storage to S3 buckets from the streaming instances when a end user has connected to the instance, and the feature is enabled. We don't support the same capability for the image builder instance, as no user is provided during the connection.
+
+What are you attempting to accomplish? Can you clarify what you mean by ""image instance""? Do you mean a fleet streaming instance?
+
+Thanks,
+Murali"
+Amazon AppStream 2.0	"Re: Accessing S3 Buckets Files from Image Instance?
+Yes, a fleet streaming instance.
+
+I would like to make an image of a script that can access the files from the S3 bucket, to do that I would need to know the filepath used for the S3 bucket. (Is it C:\Users\PhotonUser\My Files\Home Folder ? Where does the long string containing appstream-000000-us-east-0000000 come into play in the directory?)
+
+Is this possible? If so, how so?
+
+Similarly, I need to know how to create the home folder in the S3 bucket. Would I need to specially create a home folder in the S3 bucket and give users IAM permission individually, therefor using a user directory? 
+https://docs.aws.amazon.com/appstream2/latest/developerguide/controlling-access.html#s3-iam-policy
+
+I am trying to understand how this home folder can be used and accessed by a user, I would prefer not to have to assign users in a user pool IAM permissions if possible to access the home folder.
+
+Edited by: dluk on Dec 11, 2018 11:18 AM"
+Amazon AppStream 2.0	"Re: Accessing S3 Buckets Files from Image Instance?
+Hi dluk -
+
+""I would like to make an image of a script that can access the files from the S3 bucket, to do that I would need to know the filepath used for the S3 bucket. (Is it C:\Users\PhotonUser\My Files\Home Folder ? Where does the long string containing appstream-000000-us-east-0000000 come into play in the directory?)
+
+Is this possible? If so, how so?""
+
+If you're attempting to access the S3 Home Folder bucket from within the instance, it is mounted to a folder path in the Windows user profile. You can find more details here: https://docs.aws.amazon.com/appstream2/latest/developerguide/home-folders.html
+
+Please note that AppStream does not support using the S3 Home Folder as a working directory for your application. If the application attempts to write files to the Home Folder location before the S3 bucket mount has completed, the S3 bucket mount may fail.
+
+If you're attempting to access the S3 Home Folder from the AWS Management console, or programmatically, you will need to access the S3 bucket that is created automatically: https://docs.aws.amazon.com/appstream2/latest/developerguide/home-folders.html#home-folders-s3
+
+""Similarly, I need to know how to create the home folder in the S3 bucket. Would I need to specially create a home folder in the S3 bucket and give users IAM permission individually, therefor using a user directory? 
+https://docs.aws.amazon.com/appstream2/latest/developerguide/controlling-access.html#s3-iam-policy
+
+I am trying to understand how this home folder can be used and accessed by a user, I would prefer not to have to assign users in a user pool IAM permissions if possible to access the home folder.""
+
+When you enable the S3 Home Folder feature on a stack, AppStream 2.0 will automatically create the required S3 bucket, and begin using it. The first time a user logs in and saves a file, the path will be created in the S3 bucket, and the files uploaded.
+
+You do not need to modify anything to have the S3 Home Folder feature work.
+
+Thanks,
+Murali"
+Amazon AppStream 2.0	"Is it possible to run a script/batch file during instance boot?
+To update some application/customer specific files, I would like to run a batch file that updates an instance folder from a file share on a EC2 Windows instance. Is that possible somehow?"
+Amazon AppStream 2.0	"Re: Is it possible to run a script/batch file during instance boot?
+Hi Sibar -
+
+You can use local policies in the Image Builder to set scripts that run on instance startup or user logon. On the Image Builder, search for ""gpedit.msc"" in the start menu, and launch the ""Edit Group Policy"" item. Navigate to Computer Configuration > Windows Settings > Scripts (Startup/Shutdown) or User Configuration > Windows Settings > Scripts (Logon/Logoff) to set the script. Keep in mind instance startup scripts may execute before the network is available. You can set a separate policy to prevent this: https://technet.microsoft.com/en-us/library/gg486839.aspx
+
+If you're using Active Directory domains with your AppStream 2.0 instances, you can set these scripts as a domain group policy.
+
+Hope this helps.
+
+Murali"
+Amazon AppStream 2.0	"Re: Is it possible to run a script/batch file during instance boot?
+Hello sibar,
+
+Your initial post states  that you ""would like to run a batch file that updates an instance folder from a file share on a EC2 Windows instance"".
+
+This ""implies"" that you have successfully mounted an external file share from an EC2 Windows Instance that is available on startup.
+
+May I trouble you for confirmation of same, and if you would be so kind, some guidance as to how you set that up ?
+
+Thank you in advance for your time and attention."
+Amazon AppStream 2.0	"Re: Is it possible to run a script/batch file during instance boot?
+Hi
+
+I've not tried the suggestion from AWS yet, but will do soon. What I really need is to synchronize a folder with application and configuration files during user login (not instance startup). This ways we can share a fleet among many customers."
+Amazon AppStream 2.0	"Re: Is it possible to run a script/batch file during instance boot?
+Hello,
+
+Sorry to revive a dead thread, but I am having a similar issue to OP, and these instruction don't appear to work for me."
+Amazon AppStream 2.0	"Error: ""There are no streaming resources available""
+At times, users receive the following message, ""No streaming resources - There are no streaming resources available. Please try again in 5 minutes, or contact your admin for assistance"" (image of the error message is attached). At the moment, I'm testing the Appstream service. This is happening to the second user that logs in (the first user is usually me - because I'm logged in all the time).
+
+Is it fair to say that they will receive this error when I'm switching an image? I've read elsewhere that although the console states the image has been swapped - it actually takes some time before the Fleet is actively using the new image?
+
+Regards,
+
+Mitkins"
+Amazon AppStream 2.0	"Re: Error: ""There are no streaming resources available""
+When a user tries to access the applications in your stack, a new instance is created. If your fleet hasn't got the capacity requested at that moment, it will take a few minutes to scale and your user will see that message. If you want to avoid this situation, you must increase the minimum capacity of the fleet.
+I hope this helps you, regards!
+Sara"
+Amazon AppStream 2.0	"Re: Error: ""There are no streaming resources available""
+Does that apply to On-Demand instances too?"
+Amazon AppStream 2.0	"Re: Error: ""There are no streaming resources available""
+Hi Hamish -
+
+Yes, that's correct. The fleet must have enough instances available for the user when they login, regardless of Always On or On-Demand fleet type. However, with Always On fleets, the user will get connected to a streaming instance immediately. With On-Demand fleets, the user will wait about 90 seconds for a streaming instance to be powered up and become available.
+
+In both fleet types, the streaming instance must already be created for the user to stream applications from.
+
+Hope this helps.
+
+Murali"
+Amazon AppStream 2.0	"Re: Error: ""There are no streaming resources available""
+Thank you,
+
+That actually makes sense. I was under the mistaken impression that the 90 second wait included spinning up the streaming resource.
+
+Am I correct in assuming the following:
+
+  * The time it takes to spin up the new streaming resource is the same amount of time it takes to start a Fleet? In my case, that's about 10 minutes
+  * The StoppedInstance charge I see on my bill will be multiplied by the number of dormant On-Demand instances?
+
+Mitkins"
+Amazon AppStream 2.0	"Re: Error: ""There are no streaming resources available""
+Hi Hamish Murphy -
+
+""* The time it takes to spin up the new streaming resource is the same amount of time it takes to start a Fleet? In my case, that's about 10 minutes"" => Yes, that's correct.
+
+""* The StoppedInstance charge I see on my bill will be multiplied by the number of dormant On-Demand instances?"" => Yes, that's correct. When a user logs in to stream from the instance, you will no longer be charged the StoppedInstance fee and instead charged the hourly rate for that instance type and size.
+
+Hope this helps.
+Murali"
+Amazon AppStream 2.0	"Re: Error: ""There are no streaming resources available""
+Hi
+How do you permanently/delete expire stopped instances of a user from an on-demand fleet ? ExpireSession does not seem to do this."
+Amazon AppStream 2.0	"Re: Error: ""There are no streaming resources available""
+Hi sloughton -
+
+""How do you permanently/delete expire stopped instances of a user from an on-demand fleet ? ExpireSession does not seem to do this.""
+
+Users who have streamed from an on-demand fleet will not have a stopped instance. The streaming instance will be on and available for streaming. You can expire these sessions. Instances in the stopped state are unassigned until a user logs in.
+
+Can you provide more details on what you're trying to do?
+
+Thanks,
+Murali"
+Amazon AppStream 2.0	"Re: Error: ""There are no streaming resources available""
+From the API, I just want to :
+
+
+Use an On-demand fleet for cost savings
+Have a user connect to an on-demand instance
+
+  - if fleet is off, turn it on and wait, then create streaming URL (describeFleets, startFleet, createStreamingURL)
+  - if fleet is on then just create streaming URL (createStreamingURL)
+
+When finished either by browser tab close, or user logout of streaming session, destroy session completely for next user or if same user repeats connect action (don't resume the session).
+
+
+At the moment, after two successful createStreamingURLs for a graphics design image, the third or more attempt gives a ""The Instance type 'stream.graphics-design.large' capacity limit for fleet 'test2' was exceeded. Requested: 3, Limit: 2 "" from the API.
+
+In the console, the same error happens when trying to start the Fleet, say, if it was stopped."
+Amazon AppStream 2.0	"Re: Error: ""There are no streaming resources available""
+Hi sloughton -
+
+""At the moment, after two successful createStreamingURLs for a graphics design image, the third or more attempt gives a ""The Instance type 'stream.graphics-design.large' capacity limit for fleet 'test2' was exceeded. Requested: 3, Limit: 2 "" from the API.""
+
+Your fleet is unable to scale further due to the limits applied to your account. Please use this link to submit a limit increase request: https://console.aws.amazon.com/support/v1?region=us-east-1#/case/create.
+
+We can then increase the limits on your account to enable you to stream further.
+
+Thanks,
+Murali"
+Amazon AppStream 2.0	"Re: Error: ""There are no streaming resources available""
+thanks..but why are 2 streams/instances in use if the fleet is off??"
+Amazon AppStream 2.0	"Editing Registry's in AppStream
+Hello,
+
+I am trying to write a script in Amazon AppStream that will edit the registry's, and ultimately register a user to Tableau and activate a license for them. The script on my desktop runs perfectly, and does exactly what it needs to do, which is edit the registry, register it with Tableau, and activate the license. 
+
+I have successfully created an image of the script in AppStream, the first thing it does is try and edit the registry, but get's blocked because ""editing has been disabled by your administrator."" Is there anyway to enable this so that my script can run?
+
+As a side note, my script is also not behaving as expected in other ways. Even though it will run Tableau, it seems unable to perform any Tableau specific commands, such as activating the license. Which is weird, because they all have the same file path, and it works on my desktop...
+
+Any help appreciated,
+dluk
+
+Edited by: dluk on Nov 21, 2018 8:25 AM"
+Amazon AppStream 2.0	"Re: Editing Registry's in AppStream
+This question is similar to:
+https://forums.aws.amazon.com/thread.jspa?threadID=260852
+
+However, currently I have my data stored in a .reg file, and have no idea how to write a Powershell script to edit the registry in an image instance. 
+
+Is there a command similar to ""C:\Scripts\User_Tab.reg"" available in Powershell? Also is there a way to have a Powershell script call a batch script? Otherwise my other commands in the script will be lost. Similarly, I am unsure how to run a Powershell script in an AppStream instance.
+
+EDIT
+I wrote a PowerShell script and it absolutely does not work in the exact same way. To run PowerShell one needs to ""type and administrator password."" How do I obtain the level of administrator access it says I need?
+
+Edited by: dluk on Nov 27, 2018 1:09 PM"
+Amazon AppStream 2.0	"Re: Editing Registry's in AppStream
+https://docs.aws.amazon.com/appstream2/latest/developerguide/active-directory-admin.html#manual-procedure
+
+I am now trying to follow the above guide on ""Using the local Administrators group on the image builder"" to try and give myself admin access on a image instance so I can run my script.
+
+I am running into two issues where it does not recognize the directory I have setup, please see attached screenshots.
+
+I have absolutely no clue how to give administrator access to an image instance."
+Amazon AppStream 2.0	"Re: Editing Registry's in AppStream
+I have also tried assigning a stack to my user in the user pool, which has admin permissions. Using the link auto-generated in my email I can then login with my credentials.
+
+However, I still run into the same error.
+
+I have also tried editing the image builder to enable registry changes, but in both attempts it would appear that I already have permission to edit the registry in the image builder. To add to that, this error doesn't occur in the image builder either.
+
+Links used to try and enable the registry in the image builder:
+https://www.thewindowsclub.com/prevent-access-to-registry-editor-windows
+https://www.online-tech-tips.com/windows-xp/registry-disabled-by-administrator/
+
+Still very stuck on this problem
+
+Edited by: dluk on Nov 30, 2018 8:07 AM"
+Amazon AppStream 2.0	"Re: Editing Registry's in AppStream
+Hi dluk -
+
+If you're using Powershell, one common issue is the Windows Powershell execution policy that prevents scripts from running. You'll want to use a bat file to call Powershell with the execution policy set. Here's an example: https://blog.netspi.com/15-ways-to-bypass-the-powershell-execution-policy/ (#9 specifically)
+
+That said, AppStream's default policy prevents regedit from running. In order to enable regedit, this policy will need to be overridden: https://www.thewindowsclub.com/prevent-access-to-registry-editor-windows. This requires Administrator privileges or running as System (scheduled task on user logon can accomplish this)
+
+What registry key are you attempting to modify? HKCU generally doesn't require elevation, and Powershell should be able to modify it without enabling regedit."
+Amazon AppStream 2.0	"Re: Editing Registry's in AppStream
+Hello Murali,
+
+Thank you for responding!
+
+I have created a .bat file that will call my PowerShell script with the command from #9 of the link you gave me. Essentially it is just a .bat file that runs PowerShell.exe -ExecutionPolicy Bypass -File Register_Run.ps1 to call my PowerShell file. I tested it, and it works perfectly fine in my image builder, however I have just created an image containing this script and will see if it works for editing the registry in an image instance.
+
+I am attempting to edit the registry HKCU:\Software\Tableau\Registration\Data to register a User with Tableau automatically.
+
+As you can see I already linked to https://www.thewindowsclub.com/prevent-access-to-registry-editor-windows in my previous post. I have checked using GPEDIT in the Image Builder, and it would appear that Prevent access to registry editing tools has been set to disabled. Similarly, using REGEDIT I could not find the DisableRegistryTools and had to create it and set it to 0 (false). The DisabledRegistryTools soon disappeared again after I manually created it in the image builder. However, I haven't done the last one using this link. 
+
+I have added the line:
+HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System /v DisableRegistryTools /t REG_DWORD /d 0 /f 
+Both in it's own individual script that I have set to be called on startup, and before my .bat file makes any edits to the registry.
+Attached is a screenshot of me attaching the script to a logon policy, let me know if this is the wrong way to do it.
+
+I will edit this response in the future after the image has been built about whether/which of these solutions work or not.
+
+Edited by: dluk on Dec 3, 2018 7:59 AM"
+Amazon AppStream 2.0	"Re: Editing Registry's in AppStream
+Hi dluk -
+
+Using Powershell to modify the registry would be easier than enabling/disabling regedit.
+
+Can you modify the registry using Powershell? You can also test this in a fleet instance by exposing the Powershell CLI GUI, and testing making changes.
+
+Here's an example: https://blogs.technet.microsoft.com/heyscriptingguy/2015/04/02/update-or-add-registry-key-value-with-powershell/"
+Amazon AppStream 2.0	"Re: Editing Registry's in AppStream
+Hello,
+
+I have a script that works on the image builder to edit the registry using PowerShell. However, it wouldn't run on an image instance because of the aforementioned error where it required me to type an administrator password I have no clue what this would be on an image instance. Attached is the screenshot from that.
+
+My script does work on the image builder and my desktop to edit registry keys. You would have to walk me through opening PowerShell CLI GUI on an image instance, if the application is not in the catalog I have no idea how to open it."
+Amazon AppStream 2.0	"Re: Editing Registry's in AppStream
+Hi dluk -
+
+""You would have to walk me through opening PowerShell CLI GUI on an image instance, if the application is not in the catalog I have no idea how to open it.""
+
+For the sake of testing, adding it as an application to the catalog. The executable path is: C:\Windows\system32\WindowsPowerShell\v1.0\powershell.exe"
+Amazon AppStream 2.0	"Re: Editing Registry's in AppStream
+Hello again,
+
+As an update neither scripts worked, neither the .bat file for running my PowerShell script, or the .bat file with the added line and additional logon policy. The latter gave me the same error as before, that I don't have permission to edit the registry.
+
+However, the .bat that ran the PowerShell script just gave me a black screen for 3 minutes on end. I will try running it longer to see if it will do something, but right now it appears to do nothing. At the end of the PowerShell script, it is supposed to call a similar .bat file that will launch Tableau. It does not do this, which is concerning, because I have no idea if it is editing the registry or not otherwise. Attached is a picture of the only black screen I receive.
+
+The other script I made does launch Tableau (without editing the registry) on the same instance. Similarly, the PowerShell script successfully launches Tableau on the Image Builder."
+Amazon AppStream 2.0	"Re: Editing Registry's in AppStream
+Alright, creating the image now!"
+Amazon AppStream 2.0	"Re: Editing Registry's in AppStream
+Hello,
+
+It appears that using PowerShell this way does work! See attached screenshot.
+
+Do you know why the registry on the brand new Image and new Image Instance appears to already have data stored in the registry? I am thinking if there are going to be multiple users instances sharing the same registry data that would be bad? How does this work?
+
+I also checked and running a PowerShell script from a .bat file appears to also be working, however, the PowerShell script does not work on the instance due to an error that has appeared before on the Image Builder where it doesn't recognize the .ps1 file. Usually I fix this by renaming the file that same thing with .ps1 again and replacing the old file. I will try to get it working on an image instance.
+
+Edited by: dluk on Dec 3, 2018 10:32 AM
+
+Edited by: dluk on Dec 3, 2018 10:33 AM"
+Amazon AppStream 2.0	"Re: Editing Registry's in AppStream
+Hi dluk -
+
+""Do you know why the registry on the brand new Image and new Image Instance appears to already have data stored in the registry?""
+
+Do you have the application settings persistence feature enabled on the stack? If so, registry entries stored in HKCU are persisted between streaming sessions.
+
+""I am thinking if there are going to be multiple users instances sharing the same registry data that would be bad? How does this work?""
+
+AppStream's streaming instances are dedicated to a user. A instance is never shared between multiple users."
+Amazon AppStream 2.0	"AppStream URL Directly to Application?
+Hi,
+
+I see I can use SAML to generate a URL that will take a user to their stack; I was wondering if it is possible to do the same for a specific app within their stack (or if there is only one app in a stack to automatically launch it)?
+
+Basically, I'm looking to generate a site such that it has a link that says ""Click to Launch Program X"" instead of ""Click to Launch Your Stack of Apps""
+
+Thank you."
+Amazon AppStream 2.0	"Re: AppStream URL Directly to Application?
+@Prism, The ability to skip the catalog page and/or launch a specific application using SAML is currently not supported. We will add your request to our feature backlog. 
+
+Thanks,
+Vinoth (AWS)"
+Amazon AppStream 2.0	"Re: AppStream URL Directly to Application?
+Thank you. I see that I can use the API to specify the application id. (https://docs.aws.amazon.com/appstream2/latest/APIReference/API_CreateStreamingURL.html)
+
+I have tried that and been able to get a URL that launches the ... workspace? where the application resides, but I still have to click the four squares in the upper left and select the application to get it to launch.
+
+What am I missing? Did I provide an invalid ApplicationID (why would it give me a URL then)? Any suggestions?
+
+Edited by: Prism on Oct 25, 2018 1:29 PM"
+Amazon AppStream 2.0	"Re: AppStream URL Directly to Application?
+Hi Prism -
+
+What am I missing? Did I provide an invalid ApplicationID (why would it give me a URL then)? Any suggestions?
+
+Most likely you specified an invalid AppID in the CreateStreamingURL API call. We don't validate the AppID when the call is made. You can see the AppID when you create the image, or by checking the image registry for that image (listed as Application Name).
+
+Thanks,
+Murali"
+Amazon AppStream 2.0	"Error in CloudFormation example for AppStream 2.0
+Hi there,
+I came across this blog post on AWS CloudFormation support for Amazon AppStream 2.0 at
+https://aws.amazon.com/blogs/desktop-and-application-streaming/aws-cloudformation-support-for-amazon-appstream-2-0-resources-and-api-enhancements/
+There appears to be a mistake in the YAML example. I think it should have Resources: on line 3 to make the template valid?
+
+Edited by: oso on Oct 29, 2018 3:21 AM"
+Amazon AppStream 2.0	"Re: Error in CloudFormation example for AppStream 2.0
+Hi oso -
+
+Good catch! I will get that corrected.
+
+Thanks,
+Murali"
+Amazon AppStream 2.0	"Home folders disk performance
+Hi,
+
+This is all pretty new to me, so forgive my ignorance.
+
+I'm testing my application with the AppStream service.  I've successfully created the image with my app using the ImageBuilder (Graphics-Desktop, lowest option), created the stack and fleet.  I can start my application just fine, but disk access via the Home folders area is extremely slow.
+
+I assume this is because it is using S3 rather than EBS for storage?  The disk speed in general is very good, at least whilst using the ImageBuilder, which I assume uses EBS.
+
+This seems a shame as it is completely unusable for my application.  Is there any reason EBS isn't an option for user data?
+
+Thanks for any response.
+
+James"
+Amazon AppStream 2.0	"Re: Home folders disk performance
+Hi mrflibbles -
+
+Can you provide more details?
+
+The S3 Home Folder feature syncs files to the S3 bucket within your account. When the user accesses the file, the file is hydrated to the EBS volume for the streaming instance, and then becomes available for use. After the file is fully downloaded from S3, the performance should match that of the EBS volume.
+
+If your application relies on lots of small files and is chatty, the Home Folder may not provide sufficient performance to meet the needs of your application. If your file requirements are low, you could use the application settings persistence VHD instead. This volume is fully downloaded to the streaming instance EBS volume before the user session, and will match the EBS volume performance. You can learn more here: https://docs.aws.amazon.com/appstream2/latest/developerguide/app-settings-persistence.html
+
+Another option would be to take a look at the Amazon FSx managed Windows file share service: https://aws.amazon.com/blogs/desktop-and-application-streaming/using-amazon-fsx-with-amazon-appstream-2-0/
+
+Hope this helps.
+
+Murali"
+Amazon AppStream 2.0	"Always Have to Login Twice even when ADFS and Fleet are in the same domain?
+So I thought this was a restriction with the fact that I was SSOing from one domain to another - however it seems to happen when the ADFS server and fleet are in the same domain.
+
+I have an EC2 hosted domain blah.com - on it I am also running an ADFS server listening on login.blah.com. My fleet is joining the same domain - blah.com.
+
+The ADFS server/relay combo requires me to authenticate as user@blah.com and then the SAML relay from the ADFS server is working and I get authenticated with AWS and I land on the fleet catalog page. 
+
+I click the required starting app and I get the loading settings message ... but after the user application settings have completed loading I am still getting prompted to enter the password for user@blah.com on the fleet instance I have been assigned to.
+
+Have I missed an important step somewhere in the set up on my ADFS server or is this a known restriction?"
+Amazon AppStream 2.0	"Re: Always Have to Login Twice even when ADFS and Fleet are in the same domain?
+Hi roj007 -
+
+You should be able to configure seamless authentication to your ADFS provider when the end user device is joined to the same domain, removing the logon prompt.
+
+AppStream's password prompt when the fleet is joined to the domain is currently unavoidable, as there is no simple way to convert the SAML token to a Windows authentication token. We are working on improving this experience, however, I don't have a timeline I can share today.
+
+Thanks,
+Murali"
+Amazon AppStream 2.0	"Appstream 2.0 HIPAA Compliance and Dual Monitor Support
+As far as I can tell, Appstream 2.0 is not currently HIPAA compliant, and does not support dual monitors.  Is this correct?  If so, when can we expect each these features to be integrated with Appstream 2.0?"
+Amazon AppStream 2.0	"Re: Appstream 2.0 HIPAA Compliance and Dual Monitor Support
+@sbean, We will be adding these features next year. Unfortunately, I dont have a precise timeline to share at this point. 
+
+Thanks,
+Vinoth (AWS)"
+Amazon AppStream 2.0	"Re: Appstream 2.0 HIPAA Compliance and Dual Monitor Support
+Thanks for the message Vinoth.  Could you tell me what exactly is not HIPAA compliant in appstream?  I want to know if it would be possible to use appstream but add extra security in order to be HIPAA compliant."
+Amazon AppStream 2.0	"Re: Appstream 2.0 HIPAA Compliance and Dual Monitor Support
+The native client with dual monitor support was announced at re:Invent on 11/27.  HIPAA compliance is largely about how the environment is architected.  Have you heard of specific issues in AS2 regarding compliance?"
+Amazon AppStream 2.0	"Streaming URL for stack containing Tableau image going to black screen
+Hello,
+
+I have created a simple image loaded with Tableau on the ImageBuilder, which opens and works fine on the ImageBuilder. However, when I associate this image with a fleet and then a stack, and create a streaming URL to run and test the stack, Tableau won't run and instead of seeing a desktop I am stuck with an entirely black screen.
+
+This question is similar to this: https://forums.aws.amazon.com/thread.jspa?messageID=833123&tstart=0
+
+However my image name does not contain any special characters, and images created with Notepad++ work just fine.
+
+Any help appreciated."
+Amazon AppStream 2.0	"Re: Streaming URL for stack containing Tableau image going to black screen
+@dluk
+
+I have a few questions regarding this issue.  
+From your image builder, were you able to successfully launch the application as Test User? 
+
+Does the streaming URL open the app directly, or does it open the app catalog? 
+
+Can the app be opened via the app catalog after you are at the black screen? 
+
+Thanks, 
+
+Nate"
+Amazon AppStream 2.0	"AppStream Authentication Using AWS AD and ADFS on EC2
+So I'm trying to set up an AD and ADFS set-up in the same AWS account to handle the SSO to the AppStream service.
+
+I am following the instructions posted here: https://aws.amazon.com/blogs/security/how-to-enable-your-users-to-access-office-365-with-aws-microsoft-active-directory-credentials/.
+
+However, it is failing at step 2.D.4 when the ADFS install is completed on the EC2 server hosting ADFS. I'm getting the error: 
+
+The specified service account 'blah\adfssvc' does not have permissions to make changes to DKM container 'CN=dc10c6...
+
+I've tried it with the credentials of the Domain Admin account provided with AWS AD and I get the same error. I've posted in the AD forum too but thought I would post here in case someone else had seen this and resolved it."
+Amazon AppStream 2.0	"Re: AppStream Authentication Using AWS AD and ADFS on EC2
+@roj007, Have you tried AWS SSO service. You can setup SAML federation to AppStream much more easily using the AWS SSO service. To learn more about AWS SSO, see https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
+Amazon AppStream 2.0	"Re: AppStream Authentication Using AWS AD and ADFS on EC2
+Unfortunately I'm in EU-West - AWS SSO is only available in Virginia.
+
+What's delaying its roll-out? Its very much needed."
+Amazon AppStream 2.0	"Re: AppStream Authentication Using AWS AD and ADFS on EC2
+@roj007, You can use AWS SSO from Virginia region and federate to AppStream stacks deployed in other regions. 
+
+Thanks,
+Vinoth (AWS)"
+Amazon AppStream 2.0	"Re: AppStream Authentication Using AWS AD and ADFS on EC2
+OK - sounds promising - so it will still work with the domain-joined AD which is providing Group Policies for my users?"
+Amazon AppStream 2.0	"Re: AppStream Authentication Using AWS AD and ADFS on EC2
+Also I'm a sub-account of a corporate account - I don't have it handy but there is something that needs to be enabled but I seem to remember it had to be at the master account level?"
+Amazon AppStream 2.0	"Re: AppStream Authentication Using AWS AD and ADFS on EC2
+So I gave up trying to bring up an ADFS farm against AWS Active Directory and stood up my own domain on an EC2 server. Same scripts worked first time."
+Amazon AppStream 2.0	"Fatal Error AutoCAD won't launch on the Test user, but works on Template
+Trying to get AutoCAD going.
+
+In Template User: Activated serial .. it gave error about not being able to connect to a registeronce.autodesk.com website, but still activated and opened properly as Educational Version.
+
+In Test User, tried to open and it gives this error: 
+
+FATAL ERROR: Invalid Configuration path\filename: %LOCALAPPDATA%\Autodesk\AutoCAD 2019\R23.0\enu\
+
+update
+I did some research and found that for some reason the registry value for AutoCAD paths needed hard coded usernames instead of the ""%LOCALAPPDATA%.""
+
+Using a powershell script that runs at logon, I replace that ""%LOCALAPPDATA%"" with the full path and username.
+
+This got the test user launch working.
+
+Is there a better method than this to make things work properly?
+
+Edited by: highaws on Jul 6, 2018 9:23 PM
+
+Edited by: highaws on Jul 6, 2018 9:26 PM"
+Amazon AppStream 2.0	"Re: Fatal Error AutoCAD won't launch on the Test user, but works on Template
+Have you made any progress on this? I'm having the exact same issue. Was just wondering if you came across a fix over the last few months.
+
+Update:
+Just in case anyone else is hitting their head against a wall with this issue like I was, I wanted to add what I did that finally got this to work. Because OP hinted at using a PowerShell script to adjust the values, I went in that direction as well. However, OP didn't get into whether or not the solution was put into place outside of the Image Builder.
+
+At first, I attempted using the PS Script as a Logon Script through local policy (remember to adjust the delay https://goo.gl/Mqasch). That fixed the issue when using the Test user before snapshotting, but as soon as the image was in a Fleet, the same thing would happen. Then, I tried using a Scheduled Task to run the script at the logon of any user, but with the logon script via policy, it worked in test but not in a Fleet. 
+
+Finally, thinking that AppStream functions more like an RDP session instead of a true interactive logon, I added a trigger to the Scheduled Task to run on connection to a user session. Success! With the Scheduled Task to run on connection to a user session, I am no longer getting this error when the image is in a Fleet!
+
+Here is the script I wrote to accomplish this. I'm sure there are better ways to write this, but wanted to include it here.
+
+$GCF = ""$env:LOCALAPPDATA\Autodesk\AutoCAD 2019\R23.0\enu\GraphicsCache\""
+$LRF = ""$env:LOCALAPPDATA\Autodesk\AutoCAD 2019\R23.0\enu\""
+$RRF = ""$env:APPDATA\Autodesk\AutoCAD 2019\R23.0\enu\""
+$RegKey = ""HKCU:\Software\Autodesk\AutoCAD\R23.0\ACAD-2001:409""
+
+Set-ItemProperty -Path $RegKey -Name ""GraphicsCacheFolder"" -Value $GCF
+Set-ItemProperty -Path $RegKey -Name ""LocalRootFolder"" -Value $LRF
+Set-ItemProperty -Path $RegKey -Name ""RoamableRootFolder"" -Value $RRF
+
+For the scheduled task, make sure it's configured to run as the local Users group to ensure it's run by the user so it is able to get to HKEY_CURRENT_USER hive.
+
+Edited by: VeoliaEK on Nov 8, 2018 8:53 AM"
+Amazon AppStream 2.0	"Smaller Image options?
+Are there plans for any smaller (cheaper!) base image options?
+
+We have a single windows application we would like to expose through AppStreams."
+Amazon AppStream 2.0	"Re: Smaller Image options?
+@roj007, I presume that you are asking for cheaper instance types. stream.standard.medium is our lowest priced instance type with prices starting at 10 cents an hour. We will take your feedback into consideration. I dont know what fleet type you use. If you are using Always-on fleets, you can reduce your streaming cost by creating On-Demand fleets. . To learn more about AppStream instances and pricing, see https://aws.amazon.com/appstream2/pricing. Let me know if you have any other questions
+
+Thanks,
+Vinoth (AWS)"
+Amazon AppStream 2.0	"Configure application order in Catalog?
+I had assumed that it was the order in which you defined the applications in the Builder but it appears to be Alphabetical. Is there a way to order the catalog? A simple option in the Builder to use list or alphabetical order would be a good step forward."
+Amazon AppStream 2.0	"Re: Configure application order in Catalog?
+@roj007, Thank you for your feedback. As you stated, the apps are listed in alphabetical order and cannot be customized for now. We will take your input into consideration. 
+
+Thanks,
+Vinoth (AWS)"
+Amazon AppStream 2.0	"Bypass domain login when using SAML SSO?
+I'm using a domain joined stack with SAML SSO.
+
+Users are authenticated in the (in my test case Google) domainA.com, domainB.com, etc... (i.e. they are all in different domains). I am using a AWS AD in the domain appstream.blah.com to control group policy to map a drive letter ""R:"" to different locations depending upon which domain/AD Org they are in. This allows my app to load a user's domain specific data.
+
+Given that the users are authenticated and SSOed to the AppStream stack how can I prevent the password request dialog for my appstream.blah.com domain appearing? I am mapping the NameID field to user@appstream.blah.com in the SAML assertion at present.
+
+I'm guessing I need to set up some kind of trust relationship within my AD domain? And maybe map the userid differently? 
+
+Or are domain joined images configured to always put up the login dialog?"
+Amazon AppStream 2.0	"Re: Bypass domain login when using SAML SSO?
+Hi roj007 -
+
+Currently AppStream 2.0 doesn't support a method for converting the SAML 2.0 authentication token to a Windows authentication token for logging in. As a result, users are required to provide their domain password when landing on the fleet instance.
+
+We have it in our backlog to improve this experience, but we don't yet have a timeline we can share.
+
+Thank you,
+Murali"
+Amazon AppStream 2.0	"Streaming Sessions Hanging on Loading Application Settings?
+When starting a domain connected streaming session using SAML SSO the catalog displays OK but the connection operation hangs with the message ""Loading Application Settings ..."". Then it times out with a message saying they were not loaded and the application is opened.
+
+If I disconnect and reconnect again fairly quickly I get the error message ... ""Your user settings from your previous session are not yet available. Please choose Retry after a few minutes"". However, it doesn't seem to clear after a few minutes and eventually I get the message 'Failed to reserve a session due to too many browser requests"" after pressing the Retry button a few times.
+
+I'm also seeing the attached HomeFolderSync Error ... could this be linked?
+
+How do I debug something like this in AppStream? There is nothing in the notifications for the stack ... is there any kind of log somewhere?
+
+Edited by: roj007 on Oct 29, 2018 3:06 AM
+
+Edited by: roj007 on Oct 29, 2018 10:25 AM"
+Amazon AppStream 2.0	"Re: Streaming Sessions Hanging on Loading Application Settings?
+SOLVED : I hadn't opened up an S3 end point for my VPC."
+Amazon AppStream 2.0	"Direct Link to AppStream Application
+I see that I can use the API to specify the application id. (https://docs.aws.amazon.com/appstream2/latest/APIReference/API_CreateStreamingURL.html)
+
+I have tried that and been able to get a URL that launches the ... workspace? where the application resides, but I still have to click the four squares in the upper left and select the application to get it to launch.
+
+What am I missing? Did I provide an invalid ApplicationID (why would it give me a URL then)? Any suggestions?"
+Amazon AppStream 2.0	"Re: Direct Link to AppStream Application
+This behavior can happen if the improper application id has been entered.  To ensure that you are using the correct application id, browse to your images from the console and select the image associated to the fleet you are creating the streaming url from.  With the image selected, in the lower pane select the Applications tab.  The names that  you see under the Application Name column is what you should use and it is case sensitive. 
+
+Hope this helps. 
+
+Nate"
+Amazon AppStream 2.0	"Re: Direct Link to AppStream Application
+Thank you. I was using the image name and not the app name within the image."
+Amazon AppStream 2.0	"Delete User in User Pool and Email Case Sensitive
+Is there any way to delete users in the AppStream 2.0 User Pool? 
+I see that I can disable but I would like to be able to remove accounts from past staff or test users.
+
+Also, I am running into an issue where the email/username for AppStream login appears to be case sensitive, Is this intended? 
+
+This seems to also let me create multiple users for the same email just with different capitalization, I'm not sure this is intended."
+Amazon AppStream 2.0	"Re: Delete User in User Pool and Email Case Sensitive
+Hi, TylerP -
+
+Currently, there is no way for customers to delete User Pool users.
+
+With regard to creating new User Pool users, you are correct that AppStream treats email addresses in a case-sensitive manner.
+
+Thanks,
+
+Nick"
+Amazon AppStream 2.0	"Re: Delete User in User Pool and Email Case Sensitive
+Hi TylerP - 
+
+There is now a way to delete UserPool users through an API. 
+For syntax on the API command, please refer to the following.  https://docs.aws.amazon.com/appstream2/latest/APIReference/API_DeleteUser.html 
+
+Nate"
+Amazon AppStream 2.0	"Does the Appstream VPC require Internet Access connect to Google Drive?
+I can't get a listing of any Google Drive files from within AppStream. I don't have Internet Access or a NAT set up for the VPC.. is that why?"
+Amazon AppStream 2.0	"Re: Does the Appstream VPC require Internet Access connect to Google Drive?
+That is correct, you need to have internet access in order to access your Google Drive files as described in the guide https://docs.aws.amazon.com/appstream2/latest/developerguide/google-drive.html . It's best to do this via the NAT gateway in your VPC."
+Amazon AppStream 2.0	"My programs sometimes freeze when put on Appstream
+Hello,
+We are testing to put our software on the  Appstream. However we found the program keeps freezing from time to time, it will recover by itself eventually.  The program has not got this problem when runs on normal PC.  We tried to use different instant types, the stream.memory.xlarge  has less freezing time, but sometimes the program still got frozen.  
+
+Has anyone else had this problem?
+
+Thanks!"
+Amazon AppStream 2.0	"Re: My programs sometimes freeze when put on Appstream
+Hi JinZ,
+
+What application are you using within your environment?
+
+Thanks,
+Murali"
+Amazon AppStream 2.0	"Re: My programs sometimes freeze when put on Appstream
+Hi,
+thanks for your reply. The program I am trying to run on the Appstream is a set of .net programs developed by ourselves. We are testing and evaluating Appstream to see if we can host these programs for our clients.
+
+The problem we are having now is that from time to time one of the applications got frozen. We can't find any reason for it. 
+
+Any help will be appreciated!
+
+Jin"
+Amazon AppStream 2.0	"Launching application directly to bypass the ""Choose your app to get start""
+Hello!
+
+Is that possible somehow to get URL with desired application from the Fleet to get it started automatically and bypass ""Choose your app to get start"" page?"
+Amazon AppStream 2.0	"Re: Launching application directly to bypass the ""Choose your app to get start""
+Hi, Yes it is possible to launch a particular application in the catalog directly without landing on the catalog page. While creating a streaming url using the CreateStreamingURL API, pass the application name, to be launched, as input to the application-id API parameter. You can find the application id for a specific application from the Applications tab under image details in the console. To learn more about the CreateStreamingURL API, see https://docs.aws.amazon.com/appstream2/latest/APIReference/API_CreateStreamingURL.html
+
+Note that this behavior is only supported for API based access model. It is not supported by SAML SSO or User Pool. Let us know if you have any questions. 
+
+Thanks,
+Vinoth (AWS)"
+Amazon AppStream 2.0	"Re: Launching application directly to bypass the ""Choose your app to get start""
+Thanks for reply, @vinothkumarnataws! 
+Basically that is cool to use API, but I feel still would like to request availability of such option for SAML and User Pools."
+Amazon AppStream 2.0	"Office 2019 is here and requires Windows 2016
+Hi all, 
+
+Just curious, if that possible in any way to get Office 2019 run on AppStream? The last one currently leverages Windows 2012 which makes default instillation methods of Office 2019 fails."
+Amazon AppStream 2.0	"How to stage content and create a shortcut to it
+Hi all -
+
+Sometimes you may want to stage content in your image for all your users to use, such as demo files or templates. The easiest way to do this is to create a folder in the C: drive, and then map a network share to it as the Template user. The fleet Windows user will have the drive share, and the user will be able to see it in the file dialogs of their applications.
+
+To stage content and make it visible for your users:
+1) Connect to a running image builder that has your applications already installed and configured. If you don't have one, create a new image builder off of your existing application image. When prompted, select the Administrator user.
+2) Launch Explorer, navigate to the C: drive, and create the folder your files will reside in. For this example, it will be C:\Demo Files.
+3) Populate C:\Demo Files with the content you want all users of your image to have.
+4) When completed, choose Switch User from the AppStream toolbar. When prompted, select the Template user.
+5) Launch Explorer, choose the Computer tab, then choose Map network drive.
+6) For the drive letter, choose a letter E or above. C & D are reserved for AppStream and will not work.
+7) For the folder path, enter in the network path to the folder. From my example above, the path is \\localhost\C$\Demo Files
+8) Ensure ""Reconnect at sign-on"" is selected, then choose finish.
+9) The new network share should appear in the Explorer window. Once it appears, choose Switch User from the AppStream toolbar, then choose Administrator.
+10) Launch Image Assistant from the desktop. If you need to specify additional applications, do so now. Otherwise, select next.
+11) Choose ""Save settings"" to copy the settings from the Template user.
+12) Continue through Image Assistant as you normally would to create the image.
+
+Once the image has been created, apply it to a new or existing fleet. When your users stream, they will now see the staged content that you placed in the image.
+
+Hope this helps,
+Murali"
+Amazon AppStream 2.0	"Re: How to stage content and create a shortcut to it
+Awesome How-To! This is exactly what we were looking for."
+Amazon AppStream 2.0	"Where do we map network drives into appstream; admin or test
+Deepak or associate,
+
+Can you please do a video of how best to share storage from an EC2 instance into appstream.
+
+It ""seemed like"" a network share created in admin did not show up in test.
+
+Thanks
+
+Edited by: moclouds on Jan 26, 2017 6:11 PM"
+Amazon AppStream 2.0	"Re: Where do we map network drives into appstream; admin or test
+More information regarding attaching additional storage to AppStream would be much appreciated. 10GB session folder is nice to try but will not work in my use case."
+Amazon AppStream 2.0	"Re: Where do we map network drives into appstream; admin or test
+Network drives are hidden by default.  You can unhide them using Group Policy.  You can also type in the drive letter in a dialog box."
+Amazon AppStream 2.0	"Re: Where do we map network drives into appstream; admin or test
+Hi, I've tried to map network drives in different ways: local gpedit logon script, Task scheduler batch, but nothing works, when I login as template user or test user the folder cannot be reconnected since doesn't store the password (but I've used the command net use X: \\server\share /username:username password /persistent:yes)
+How do you manage it?
+
+Thanks"
+Amazon AppStream 2.0	"Re: Where do we map network drives into appstream; admin or test
+Hi lupoz91 -
+
+AppStream previous would hide all drive letters. With the latest AppStream agent software, we are now making drive letters E and above visible. You should be able to use Template user (if you choose to save the credentials when mapping the drive letters), or a local GPO with a batch file.
+
+Hope this helps,
+Murali"
+Amazon AppStream 2.0	"AppStream 2.0 Home Folder Location?
+In https://docs.aws.amazon.com/appstream2/latest/developerguide/home-folders.html I'm reading the following about the default location of the Home Folder: ""Home folders on an image builder instance are in the following default location: C:\Users\PhotonUser\My Files\Home Folder."" Even though our Image is associated with a Stack that has Home Folders enabled via S3, I do not see a folder C:\Users\PhotonUser\My Files\Home Folder on the Image. When I log in as an Image administrator, I see C:\Users\Administrator, C:\Users\DefaultProfileUser, C:\Users\ImageBuilderAdmin, C:\Users\ImageBuilderTest, and C:\Users\Public. Am I missing something here?"
+Amazon AppStream 2.0	"Re: AppStream 2.0 Home Folder Location?
+Hi Cloudaroo -
+
+Apologies for the confusion - the Home Folders feature is not available for the Image Builder - the path will only appear on the fleet instances.
+
+Can you confirm whether you see the path on the fleet instance?
+
+Thanks,
+Murali"
+Amazon AppStream 2.0	"Mapped drives?
+My client has an ancient FoxPro app that they want to deliver via AppStream. The app was designed to be implemented on a local network and makes extensive use of mapped drives and a hierarchical directory structure to find its resources. Is there some way to implement that same paradigm in an AppStream app, or do I need to revise it?
+
+Thanks for your help!"
+Amazon AppStream 2.0	"Re: Mapped drives?
+If you have your Windows/Linux machines within the VPC, then you could map your drives to the network shares of the machines in the VPC. If you want to map to local drives, you would need to have some sort of services to get through your firewalls of your own local network or have some port forwarding rules on your local network setup to access the shares. You could always tunnel the SMB over SSH which is a bit more secure but means you need to have an SSH server running on your local server, but still needing to punch a hole in your own firewall for this."
+Amazon AppStream 2.0	"Re: Mapped drives?
+can someone help me. I can mapped a network drive but it's not showing the drive on the streamed file explorer. How can I show it on the file explorer?
+Appstream 2 related."
+Amazon AppStream 2.0	"Re: Mapped drives?
+Hi donravin -
+
+AppStream previously hid all drive letters. With the most recent AppStream agent release, AppStream now hides only the C/OS drive, and the D/app settings VHD drive. This is to prevent users accidentally saving files in the wrong spots.
+
+You should be able to map a network drive letters E: and above and have them show up in the fleet.
+
+Hope this helps,
+Murali"
+Amazon AppStream 2.0	"Many applications want only to run in same account that installed them
+Are there any recommended work arounds?
+
+Most things I've tried installing put themselves in the user's (administrator's) account and fail to run under the test account.
+
+They do this because their business model is to sell a license to each user and installing system-wide would defeat it.
+
+I'm not trying to avoid paying anyone's license. But I'm looking for a way to use such programs with app streaming."
+Amazon AppStream 2.0	"Re: Many applications want only to run in same account that installed them
+Since this was posted, I believe, AWS has introduced Template Users into the Image Builder process. This got us a bit farther: we can install the program as administrator, then activate it when logged in as Template User. This way, the license store, which is in C:\ProgramData, gets preserved into the Test User session, and the program launches correctly when a TestUser is logged in. 
+
+But in the streaming session it fails, because the license is locked to the machine name, which is different in every session. I'd be really interested to hear how other people have addressed this."
+Amazon AppStream 2.0	"How to ""save"" Image Builder image?
+Is there a way to backup an Image Builder instance. Basically, we want to protect ourselves from blowing up the ""golden image"" (meaning the base image we are creating images from). In addition is there a way to snapshot the image, in case we break something with a change and want to revert to pre-change?"
+Amazon AppStream 2.0	"Re: How to ""save"" Image Builder image?
+Hi Z1B -
+
+You can create additional image builders off of images. In the event a change is made to the image builder that needs to be reverted, launch a new image builder off the most recent image that was created. The new image builder will be at the state that was saved in the image.
+
+Hope this helps.
+
+Murali"
+Amazon AppStream 2.0	"Re: How to ""save"" Image Builder image?
+Thanks  for replying and the tip. I was thrown into the Appstream project our company is evaluating after the fact.  So I had 1 already created Image in image builder. With your tip I see I can create another Image for image builder from one of the save revisions in the image repository."
+Amazon AppStream 2.0	"Limited access via corporate network
+Hi
+I’m planning to use AppStream2.0 for my company’s intra system.
+additional requires
+- Access to AppSteam via internet from my corporate network.
+- My company's network can only access to authorized sites in firewall’s whitelist.
+
+Can I configure the allow access only to the Stack created by my corporate system administrator?"
+Amazon AppStream 2.0	"Re: Limited access via corporate network
+Hi micloud -
+
+If I understand correctly, you want to limit AppStream access from your company network to only a specific stack. So a user within the corporate network can only connect to the company AppStream environment but not other AppStream environments.
+
+Is that correct?"
+Amazon AppStream 2.0	"Appstream instance having problems connecting to license servers
+Hello:
+
+I have an appstream instance where I have configured Matlab to connect to the licensing server on our network via VPN. This all works just fine when I'm running the application in the image builder. Matlab launches without a problem and I can see the imagebuilder checkout a license for Matlab on my licensing server. However, in order to make this happen I had to edit the hosts file in the imagebuilder to create an entry for the FQDN of the license server in my corporate network. Again, this works fine in the image builder.
+
+However, after I create the image, assign it to a fleet and connected to it via the appstream web portal with a user account, the application fails to launch because it says that it can NOT find the license server. When the application fails to launch it gives me a ""help"" button that I am able to use to eventually launch a CMD prompt window from within the appstream session. This is useful because I can see that I am not able to ping the licensing server at all even though I was able to do this successfully within the image builder. To test things out I created a test SPOT EC2 instance and placed it in the same subnet, with the same security group as the fleet that I am connecting to. from within that test EC2 instance I am able to see the licensing server just fine and I am able to ping the apptream instance. However, I am not able to do the opposite from the appstream instance. It's almost as if something else is blocking traffic From and To that appstream instance. 
+
+Has anyone else ran across this problem?
+
+Thanks"
+Amazon AppStream 2.0	"Re: Appstream instance having problems connecting to license servers
+Hi AWS-User39 -
+
+Are the fleet instances in the same subnet and security group as the image builder?
+
+This is useful because I can see that I am not able to ping the licensing server at all even though I was able to do this successfully within the image builder.
+
+Are you pinging the IP address or the FQDN? If the FQDN fails, can you try pinging the IP address?"
+Amazon AppStream 2.0	"Rules for copy and paste in and out of streaming session
+Hello all,
+We are wondering about the copy/paste behavior in the streaming session. We start it up, our app opens. There is text in a text box; we highlight that and press Ctrl-C.
+
+In Windows 10 and 7 with Chrome, we can then go to a desktop app (say Notepad), press Ctrl-V, and the text from that streaming session gets pasted to Notepad -- no need to click the Clipboard icon on the AppStream session.
+
+On Mac, Linux, Win 7 (Firefox, IE) we have to use the AppStream clipboard management icon and popups. 
+
+Is this a Chrome thing or (fingers crossed) a settings thing? Is there any way we can get it in more places, or is the absence of the feature in all other browsers the reason for the icon/popup solution?
+
+Thanks for the clarification."
+Amazon AppStream 2.0	"Re: Rules for copy and paste in and out of streaming session
+Hi bigEntian -
+
+The details of the seamless clipboard support are in our tech docs here: https://docs.aws.amazon.com/appstream2/latest/developerguide/troubleshooting-general.html#copy-paste-doesnt-work
+
+The summary is that AppStream has enabled support for the W3C browser specification for clipboard interactions. Currently, only Google Chrome version 66 and later has implemented these APIs. Once the other browsers implement the APIs for the W3C browser specification, AppStream's seamless clipboard will automatically work from them too.
+
+Hope this helps.
+
+Murali"

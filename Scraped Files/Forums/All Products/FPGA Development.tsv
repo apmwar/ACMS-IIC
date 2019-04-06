@@ -1,0 +1,3045 @@
+label	description
+FPGA Development	"AXI master address width
+Hello,
+I seem to have a design that is barely routable. I found that if I reduce the AXI master address width to 16 bits it routes (but does not function). At 64 bits it does not route. 
+
+I only need to transfer 528 bytes of data to/from the kernel.
+
+Is it possible to restrict memory to a much smaller address space? I know the documentation says 64 bits is required but want to see if there are any workarounds. 
+
+I don't think using scalars would work because they cannot be read back. 
+
+Thanks!"
+FPGA Development	"Synthesis fails for axi_register_slice
+My synthesis runs have been working fine until a recent set of innocuous modifications to the source. All of a sudden I'm getting errors in synthesis that have to do with an axi_register_slice I have in my cl_top.sv. I've triple checked the source is there and deleted the encrypted output. Has anyone else run into this problem? Does anyone have any ideas I can try? I'm unfortunately not able to share my source.
+
+The errors happen in RTL Elaboration and look like the following:
+
+INFO: https://forums.aws.amazon.com/ synthesizing module 'axi_register_slice_v2_1_15_axic_register_slice' [/home/centos/aws-fpga/hdk/common/shell_v04261818/design/ip/src_register_slice/hdl/axi_register_slice_v2_1_vl_rfs.v:189]
+        Parameter C_FAMILY bound to: virtexuplus - type: string 
+        Parameter C_DATA_WIDTH bound to: 109 - type: integer 
+        Parameter C_REG_CONFIG bound to: 1 - type: integer 
+ERROR: https://forums.aws.amazon.com/ failed synthesizing module 'axi_register_slice_v2_1_15_axic_register_slice' [/home/centos/aws-fpga/hdk/common/shell_v04261818/design/ip/src_register_slice/hdl/axi_register_slice_v2_1_vl_rfs.v:189]
+ERROR: https://forums.aws.amazon.com/ failed synthesizing module 'axi_register_slice_v2_1_15_axi_register_slice' [/home/centos/aws-fpga/hdk/common/shell_v04261818/design/ip/src_register_slice/hdl/axi_register_slice_v2_1_vl_rfs.v:2300]
+ERROR: https://forums.aws.amazon.com/ failed synthesizing module 'axi_register_slice' [/home/centos/aws-fpga/hdk/common/shell_v04261818/design/ip/axi_register_slice/synth/axi_register_slice.v:58]
+ERROR: https://forums.aws.amazon.com/ Error generated from encrypted envelope. [/home/centos/cl_base/build/src_post_encryption/cl_top.sv:17]
+
+Thanks in advance,
+
+-Jack"
+FPGA Development	"Re: Synthesis fails for axi_register_slice
+Hello JWadden,
+Could you please let us know which HDK version you are using ?
+
+You mentioned ""recent set of innocuous modifications to the source"", is it possible that after reverting these changes you are able to synthesize successfully ?
+
+--Thanks
+Siddharth"
+FPGA Development	"Re: Synthesis fails for axi_register_slice
+I just updated to HDK 1.4.7 and got the same synthesis errors. It attempted to install patch AR71715. Vivado's output looks like the following:
+
+INFO: Setting up environment variables
+INFO: Base vivado version is Vivado v2018.2_AR71275_op (64-bit) ; Checking if patch AR71715 needs to be installed
+INFO:  SDX patch AR71715 is valid for Vivado v2018.2_AR71275_op (64-bit)
+INFO: Using Vivado v2018.2_AR71275_op (64-bit)
+VIVADO_TOOL_VERSION is v2018.2
+INFO: Using HDK shell version shell_v04261818
+INFO: HDK shell is up-to-date
+INFO: HDK shell is up-to-date
+INFO: HDK shell is up-to-date
+INFO: DDR4 model files in /home/centos/r/aws-fpga/hdk/common/verif/models/ddr4_model/ were built with Vivado v2018.2_AR71275_op (64-bit)
+INFO: CL_DIR is /home/centos/r/cl_basedir
+INFO: AWS HDK setup PASSED.
+ 
+
+
+I just clarified with a collaborator that we actually did not change the source before synthesis stopped working. Any thoughts?
+
+-Jack"
+FPGA Development	"Re: Synthesis fails for axi_register_slice
+Hey,
+We have run synthesis on cl_dram_dma example and do not see any issue with axi_register_slice_v2_1_15_axic_register_slice.
+
+Is is possible to share your synthesis log file with us ? We will have a look at it.
+
+-Thanks
+awsSiddharth"
+FPGA Development	"Re: Synthesis fails for axi_register_slice
+This was resolved. Thanks for the response!"
+FPGA Development	"Looking for the SDE Micro-architecture Specification
+The SDE Hardware Guide https://github.com/aws/aws-fpga/blob/master/sdk/apps/virtual-ethernet/doc/SDE_HW_Guide.md mentions the SDE Micro-architecture Specification, but does not provide a link to. I neither could find it in aws-fpga github.
+
+Where can I find the SDE Micro-architecture Specification?
+
+Thanks"
+FPGA Development	"Re: Looking for the SDE Micro-architecture Specification
+Hello Gabima,
+We are updating the README and working on the Spec. We will update the community when the spec is available.
+
+Regards
+Bala"
+FPGA Development	"Re: Looking for the SDE Micro-architecture Specification
+Great, thanks"
+FPGA Development	"Re: Looking for the SDE Micro-architecture Specification
+Hi Bala,
+I was thinking... can you send me a preliminary version for the SDE spec?
+I can borrow the SDE interconnect from the Virtual Ethernet design example, but still I have no clue how the descriptors are defined/configured, etc.
+Thanks"
+FPGA Development	"Re: Looking for the SDE Micro-architecture Specification
+Hello Gabima,
+We will try our best to help you out here.
+
+Regards
+Bala"
+FPGA Development	"Re: Looking for the SDE Micro-architecture Specification
+Hi Bala,
+While waiting for the SDE micro arch specification, I would like to discuss few SDE related design issues. Your attention will be much appreciated.
+
+I am using the cl_sde example as a starting point to my design.
+Next, I need to add another SDE to allow second PCIM channel, for which I will add an axi_crossbar with two SI's (connected to the two SDEs PCIM) and single MI (connected to the shell PCIM).
+
+Regarding the PCIS, I found two alternatives:
+1. Stay with the existing single PCIS channel, that will be connected to both SDEs, while splitting 
+    the PCIS address space to lower 4K bytes to first SDE, and next 4K bytes to the second SDE.
+    To implement that, I assume the PCIS base address is configurable  inside the SDE.
+    Alternatively, if SDEs PCIS base address is non configurable, I can add simple logic outside the 
+    SDEs to split the transaction depending on the referenced address space.
+2. Another option is to add an axi_crossbar to connect the single PCIS master to two PCIS slaves.
+
+My questions:
+Am I correct with the PCIM axi_crossbar, or should I use the axi_interconnect?
+Which of the described PCIS alternatives is preferrable?
+
+Thanks,
+Gabi"
+FPGA Development	"Re: Looking for the SDE Micro-architecture Specification
+Hi Gabi,
+The SDE Hardware guide has been updated to include micro-architecture specifications necessary to integrate SDE into CLs:
+
+https://github.com/aws/aws-fpga/blob/master/sdk/apps/virtual-ethernet/doc/SDE_HW_Guide.md
+
+Thanks,
+AWSaalluri
+
+Edited by: awsaalluri on Feb 26, 2019 1:05 PM"
+FPGA Development	"Re: Looking for the SDE Micro-architecture Specification
+Hey Gabi,
+
+Question 1: For PCIM, using AXI Crossbar is good. 
+
+Question 2: For PCIS:
+SDE PCIS base address is configurable. However, SDE uses only the lower 12 bits of the address bus. So if the SDE is mapped to a different address, you would have to appropriately connect the bits. 
+We are not sure how using a single pcis bus to connect both the SDEs can be achieved.
+We recommend using a AXI Crossbar with 1 master and 2 slaves with addresses configured appropriately (when generating the crossbar)
+
+Thanks
+awsSiddharth"
+FPGA Development	"Re: Looking for the SDE Micro-architecture Specification
+Great ! thanks for you prompt reply.
+
+By the way, this thread was issued while looking for the SDE micro arch specification.
+Any update regarding this
+
+Thanks
+Gabi"
+FPGA Development	"Re: Looking for the SDE Micro-architecture Specification
+Hey,
+The SDE Hardware guide has been updated to include micro-architecture specifications necessary to integrate SDE into CLs:
+
+https://github.com/aws/aws-fpga/blob/master/sdk/apps/virtual-ethernet/doc/SDE_HW_Guide.md
+
+-Thanks"
+FPGA Development	"Uram cascade with vivado ipi
+I am attempting to create a design with the vivado ipi which utilizes the uram resource.
+as a part of my design i created a simple dual port uram using the clk_mem_gen ip with data width  of 64b and address depth of 32768.
+When attempting to run implementation for the design i receive the following error:
+
+runtcl - 4 Error: URAM instance WRAPPER_INST/CL/cl_inst/blk_mem_gen_0/U0/inst_blk_mem_gen/gnuram_without_32bit_addr.uram_sdp.xpm_memory_sdpram_inst/xpm_memory_base_inst/gen_wr_a.gen_word_narrow.mem_reg_uram_0 is expected to CASCADE_ORDER_A and CASCADE_ORDER_B set to ""NONE"".
+CASDCADE_ORDER_A: FIRST
+CASCADE_ORDER_B: FIRST
+Verify synthesis option '-max_uram_casade_height 1' is set, and that no cascaded URAMs are instantiated.
+
+
+is it possible to used cascaded urams in the aws ipi flow?
+
+Is there a definition for max_uram_cascade in one of the amazon scripts used which conflicts with the synthesis settings in the vivado ipi ( in synthesis settings max_uram_cascade is set as default of -1 which is as previous defined)? 
+
+How can i create a cascaded uram ip containing more then one uram block using vivado ipi?
+
+Thanks ,
+Ori"
+FPGA Development	"Re: Uram cascade with vivado ipi
+Hi 
+
+Uram cascade options can be set by passing the parameter ""uram_option "" to the build script through command line.  The value options are 2 or 3 or 4. 
+
+An example command can be found in this document:
+
+https://github.com/aws/aws-fpga/blob/master/hdk/cl/examples/cl_uram_example/README.md#runme
+
+If you need more help, would you be willing to share your build script and command you use as an attachment or through a PM?
+
+Thanks,
+AWSaalluri"
+FPGA Development	"Re: Uram cascade with vivado ipi
+Hi,
+Thank you for your response.
+I am not using the script flow to implement my design, rather then the vivado IPI flow.
+where can i change the uram option via the vivado IPI flow in which i dont use the command line?
+
+I managed to fix the previous error by changing the max_uram_cascade value in the synthesis settings window in the IPI.
+
+I am now encountering a problem creating large uram blocks.
+when creating a 32Kx64b uram, the read and write commands from the uram are working as expected both for simulation and for my implemented design on the F1.
+But when attempting to create a 64Kx64b uram, in simulation the uram works as expected, but for my implemented design on the F1, the rdata port of the uram always returns rdata=64'b0.
+is there a limit for the uram size ( max number of urams cascaded)?"
+FPGA Development	"Re: Uram cascade with vivado ipi
+Hi,
+
+We do have limitations on the cascade.  To get the max cascade I would do the following to fit in the flow/scripts.
+
+For the OOC settings of the IP use the following.
+
+-max_uram_cascade_height 3
+
+Before running synthesis/implementation, set this TCL variable.  My hope this will set the appropriate location constraints based upon restrictions for the URAM in the flow. 
+
+set uramHeight 3
+
+Let me know how this works out or issues that arise.
+
+James"
+FPGA Development	"Re: Uram cascade with vivado ipi
+Hi,
+
+Thank you for the quick response!
+
+I am quite new with the vivado IPI flow.
+
+i have already set -max_uram_cascade_height 3 in the synthesis settings window and that enabled me to create a 16Kx64b uram ( 4 urams cascaded). Is setting the value in the the synthesis settings window,  also sets it for the OOC module runs of the IP's?
+
+Where do i specify the IP  OOC settings  ? does the TCL command you instructed me to write define it?
+
+I will attempt to re-run the build with the TCL command you suggested to see if the problem is sloved.
+
+Is there a way, via the implementation/synthesis logs, to know without running the design on the FPGA (and receiving 64'b0 in the output of the Uram) that the tool didn't manage to create the URAM it properly?
+
+What does the max uram cascade variable define ? i assumed it defined literally the max number of urams that can be cascaded together, but seeing that i need a 64kx64b uram ( 16 uram's cascaded) and you suggested to define it with value 3, i suspect i'm wrong. what does the parameter mean ? and how do i know to what value should i put it for each use case? 
+
+Thank you,
+Ori"
+FPGA Development	"Re: Uram cascade with vivado ipi
+Hi,
+
+Try the following, I have other workarounds but this should the cleanest. Goal here is to put in the synthesis attributes for the IP OOC run which takes a few more steps.
+
+Go to Tools->Settings->Project Settings/IP.  Select Clear Cache.  Click OK.
+
+In the Sources tab on the cl.bd, select Reset Output Product.  After Reset select Generate Output Products.  Synthesis should start on all IPs.
+
+When synthesis is done, in the Design Runs tab, expand the Out-Of-Context Modules Runs/cl and find the IP with the URAM and select.  In Synthesis Run Properties, select Options and change the -max_uram_cascade to the value we want.
+
+In the TCL console, type in the following.
+
+reset_run https://forums.aws.amazon.com/
+launch_runs https://forums.aws.amazon.com/
+
+Then you can run synthesis/implementation like normal.  Just make sure before this to set the following TCL variable as this is needed in the backend scripts to handle URAM correctly (currently some limitations apply with URAM in general).
+
+set uramHeight 3
+
+James"
+FPGA Development	"Re: Uram cascade with vivado ipi
+Command got corrupted. It should look like the following.  Add brackets before get_runs and after _synth.  For some reason I can't add this.
+
+reset_run get_runs name of IP run_synth
+launch_runs get_runs name of IP run_synth
+
+Edited by: jameslxilinx on Dec 12, 2018 8:24 AM
+
+Edited by: jameslxilinx on Dec 12, 2018 8:25 AM"
+FPGA Development	"Re: Uram cascade with vivado ipi
+Hi,
+I have attempted the flow for the work around you suggested, but when attempting to do : Generate output products, i receive to following errors:
+
+  IP_Flow 19-98 ] Generation of the IP CORE failed.
+  BD 41-1030 ] Generation failed for the IP Integrator block f1_inst1 
+  IP_Flow 19-193 ] Failed to save BOM file 
+ IP_Flow 19-194 ]Failed to save IP instance 'axi_clock_converter_0'.
+
+How should i proceed?
+
+Thanks,
+Ori
+
+Edited by: oritaff on Dec 12, 2018 10:57 PM
+
+Edited by: oritaff on Dec 12, 2018 10:58 PM
+
+Edited by: oritaff on Dec 12, 2018 10:58 PM"
+FPGA Development	"Re: Uram cascade with vivado ipi
+I don’t know what happened to your project but was able to get a design built with URAM cascade set to 3 with the following.  I would start with a new project and clear the cache for the below steps to be valid.  I put the command in the attached .txt and information."
+FPGA Development	"Re: Uram cascade with vivado ipi
+Hi,
+I followed your advice and changed my project to work with the build script instead of the vivado IPI.
+i used the build command :
+./aws_build_dcp_from_cl.sh -strategy TIMING -clock_recipe_a A1 -notify -uram_option 3
+
+I attempted to utilize in my design 8 urams, each of size 72'bX128K.
+I instantiate the Uram using the verilog XPM template to instantiate  urams by vivado.
+
+my design works when testing it in the simulation but when i attempt to to build, create AFI and run it on the F1 FPGA i encounter some issues.
+when testing the design on the FPGA, my design doesn't always work as expected. When testing the issue with ILA's, i saw that The data that i write to some of the urams ( at a specific address) isnt the data that i read when reading from the same address. For some of my urams it is as if they dont work properly while othrers do work properly.
+
+An example for what i see with a URAM which isn't working as expected:
+At the init sequence of my design, i write to all of the uram's addresses, data: ""A"".
+while the design is running i write to address ""P"", data ""B""
+but when reading afterwards from address ""P"" the data read is ""A"".
+My assumption is that even dou the write command works ok (when reading, i see data ""A"" that i wrote and not the uram rst value), the read command has an error ( doesnt read the expected data).  I suspect that the read address isn't received in the uram so it reads from a constant address and not the address requested.
+
+it seems that the uram is able to receive a write command, but when reading unexpected data is received.
+This problem is even worse because this problem is not stable.for some builds all the urams work properly and the design works as expected, while for other builds some of  the uram's dont work, and do as described above( builds of designs with small variations in parts that dont effected the uram usage) .
+This means for some builds all the urams work as expected, and for some build, some of the urams work as expected while others have the read issue described above.
+
+I checked in the vivado utilization log of the dcp and saw that *all wanted urams are utilized (256 urams) * in the design.
+when checking timing report, i see that there are no timing issues.
+When checking the build log, the only warnings that i see maybe relevant :
+WARNING: https://forums.aws.amazon.com/ 3D RAM tras_cntr_rb_nxt_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM trcd_cntr_nxt_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM trcd_cntr_is_zero_nxt_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM ap_cntr_dec_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM ap_cntr_nxt_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM ap_cntr_zero_nxt_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM ap_cntr_expired_nxt_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM pageInfo_ref_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM pageInfo_act_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM pageInfo_exp_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM pageInfo_nxt_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM pageInfo_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM ap_cntr_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM ap_cntr_zero_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM trcd_cntr_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM tras_cntr_rb_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM ap_cntr_expired_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM trcd_cntr_is_zero_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM timerWTP_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM timerRTP_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM timerRAS_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ 3D RAM pre_safe_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: https://forums.aws.amazon.com/ Memory: ""gen_wr_a.gen_word_narrow.mem_reg"" defined in module: ""uram_sliced_1/xpm_memory_sdpram_inst/xpm_memory_base_inst"" implemented as Ultra-Ram has no pipeline registers. It is recommended to use pipeline registers to achieve high performance.
+WARNING: https://forums.aws.amazon.com/ IO port buffering is incomplete: Device port I2C_FPGA_MEM_R_SCL expects both input and output buffering but the buffers are incomplete.
+
+Is there a log in which i can test if the urams where crated properly? 
+How can i ensure that the urams i use will work as expected from them?
+How do i continue from here?
+
+Regards,
+Ori
+
+Edited by: oritaff on Feb 3, 2019 12:30 AM
+
+Edited by: oritaff on Feb 3, 2019 12:48 AM"
+FPGA Development	"Re: Uram cascade with vivado ipi
+Hello,
+
+The one thing in this thread that sticks out to me is that one implementation build will result in URAMs returning the expected data, and another, incorrect data. Usually when one build works and another does not it is either a matter of a timing violation that occurs with one placement and routing combination and not another, or that circuits are being trimmed due to the logic sourcing and receiving data from the logic module in question not using them. You state there were no timing violations, and that the only the only change between the builds being what you describe as non-related logic. With URAM, the order of operations on Port A and Port B are critical in determining what data is read - with Port A operations always occurring before Port B. I think because of this, the next step would be for you to provide a design example that works, and a design variation that does not, in order for us to investigate what the differences are. Is that possible for you to provide?
+
+Thank you,
+Scott"
+FPGA Development	"Segmentation fault when running helloworld_ocl example
+First of all, I ran into the almost exact problem as : https://forums.aws.amazon.com/thread.jspa?messageID=887281&#887281, but the solution there did not help me.
+
+Let me explain the problem:
+
+By following the steps in https://github.com/aws/aws-fpga/blob/master/SDAccel/README.md, I was trying to run the example program ""helloworld_ocl"" in the SDAccel/examples folder.
+After generating awsxclbin, and sourcing sdaccel_runtime_setup.sh, I was trying to run the program. But it failed with the following message:
+
+xclProbe found 1 FPGA slots with xocl driver running
+Found Platform
+Platform Name: Xilinx
+Found Device=xilinx_aws-vu9p-f1-04261818_dynamic_5_0
+XCLBIN File Name: vector_addition
+INFO: Importing ./vector_addition.hw.xilinx_aws-vu9p-f1-04261818_dynamic_5_0.awsxclbin
+Loading: './vector_addition.hw.xilinx_aws-vu9p-f1-04261818_dynamic_5_0.awsxclbin'
+INFO: Could not load AFI for data retention, code: 18 - Loading in classic mode.
+AFI load complete.
+Segmentation fault
+
+
+I don't expect there would be a bug with the Xilinx-provided example, so there must be something wrong with my configuration.
+
+Also, I heard from a Xilinx employee that I can ignore the ""data retention"" INFO, and segmentation fault is the real issue. 
+
+I see the same problem is discussed at https://forums.aws.amazon.com/thread.jspa?messageID=887281&#887281, and that thread suggests that the kernel version should be 3.10.0-862.11.6.el7.x86_64 to avoid this problem. However, my kernel version is exactly that one, so I was thinking there might be another issue.
+
+Here is the list of information I should be providing:
+
+1. HDK_VERSION=1.4.7
+
+2. FPGA Developer AMI - 1.5.0-40257ab5-6688-4c95-97d1-e251a40fd1fc-ami-06cecb61c79496e0d.4 (ami-0da0d9ed98b33a214) 
+
+3. Vivado v2018.2_AR71275_op (64-bit)
+
+4. Linux kernel : 3.10.0-862.11.6.el7.x86_64
+
+5. CentOS Linux release 7.5.1804 (Core)
+
+6. XRT build version & hash
+const char xrt_build_version_branch[] = ""HEAD"";
+const char xrt_build_version_hash[] = ""65ffad62f427c0bd1bc65b6ea555a810295468b7"";
+const char xrt_build_version_date[] = ""2019-02-05 17:18:54"";
+const char xrt_build_version[] = ""2.1.0"";
+
+Any advice would be appreciated.
+
+Edited by: ykchoi on Feb 15, 2019 9:39 PM"
+FPGA Development	"Re: Segmentation fault when running helloworld_ocl example
+Hello  ykchoi ,
+Thank you for the post. We are looking into this. We will update you soon.
+
+Regards
+Bala"
+FPGA Development	"Re: Segmentation fault when running helloworld_ocl example
+I encountered a similar problem. 
+
+When deploying an FPGA image on a new instance recently I was prompted to update the XRT with something along the lines of the following instructions: 
+
+curl -s https://s3.amazonaws.com/aws-fpga-developer-ami/1.5.0/Patches/XRT_2018_2_XDF_RC5/xrt_201802.2.1.0_7.5.1804-xrt.rpm -o xrt_201802.2.1.0_7.5.1804-xrt.rpm
+curl -s https://s3.amazonaws.com/aws-fpga-developer-ami/1.5.0/Patches/XRT_2018_2_XDF_RC5/xrt_201802.2.1.0_7.5.1804-aws.rpm -o xrt_201802.2.1.0_7.5.1804-aws.rpm
+sudo yum reinstall -y xrt_*-xrt.rpm
+sudo yum reinstall -y xrt_*-aws.rpm
+
+However, the ""yum reinstall"" for *-xrt.rpm failed because the package was not already installed. I changed it to a ""yum install"" and that resolved the problem for me. 
+
+Simon"
+FPGA Development	"Re: Segmentation fault when running helloworld_ocl example
+Hi,
+With the exact same versions, I am unable to reproduce the issue at my end.
+However, I did see that I used a larger storage for my runs. Can you check if your storage is full ?
+
+Regards
+Bala"
+FPGA Development	"Re: Segmentation fault when running helloworld_ocl example
+Thanks so much! @simonSN  and  @awsbalasram
+
+You were both right. There were 2 problems: 
+1. The compilation machine ran out of disk space. Interesting that it didn't give any noticeable error message.. Maybe I should check again.
+2. As simonSN mentioned, I ignored the message when ""sudo yum reinstall -y xrt_*-aws.rpm"" failed. Changing it to ""sudo yum install -y xrt_*-aws.rpm"" solved the problem.
+
+After applying these changes, I see that I now run into a new problem that is discussed in :
+https://forums.aws.amazon.com/thread.jspa?threadID=283820&tstart=0
+I am currently having difficulty following the solution posted there, but I will post it as a separate thread after some more attempts.
+
+Thanks so much for the help!
+
+Edited by: ykchoi on Feb 20, 2019 12:12 AM"
+FPGA Development	"Re: Segmentation fault when running helloworld_ocl example
+This yum reinstall command was also my problem. See here for a way to run sdaccel_runtime_setup.sh and install the yum dependencies programmatically : https://forums.aws.amazon.com/thread.jspa?messageID=891480&#891480"
+FPGA Development	"SDaccel segfault when executing GZip from Xilinx Applications (HW emulation
+Hello everyone,
+
+
+I am trying to build the GZip example from  https://github.com/Xilinx/Applications/tree/master/GZip 
+
+I was able to successfuly generate the awsxclbin following https://github.com/aws/aws-fpga/tree/master/SDAccel#build-the-host-application-and-xilinx-fpga-binary but I encountered an issue.
+
+My executable will only work one out of several trials resulting in a segfault when failing with output:
+
+root:/home/centos/Git/Applications/GZip# ./xil_gzip -i xocc_gZip_app.hw.xilinx_aws-vu9p-f1-04261818_dynamic_5_0.log
+xclProbe found 1 FPGA slots with xocl driver running
+platform Name: Xilinx
+Vendor Name : Xilinx
+Found Platform
+Found Device=xilinx_aws-vu9p-f1-04261818_dynamic_5_0
+XCLBIN File Name: gZip_app
+INFO: Importing ./gZip_app.hw.xilinx_aws-vu9p-f1-04261818_dynamic_5_0.awsxclbin
+Loading: './gZip_app.hw.xilinx_aws-vu9p-f1-04261818_dynamic_5_0.awsxclbin'
+This AFI already loaded. Skip reload!
+Successfully skipped reloading of local image.
+
+KT(MBps)	GZip_CR		STATUS		File Size(MB)		File Name
+
+Segmentation fault
+I used gdb to debug it and found where the segmentation fault was coming from:
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00007ffff6697511 in xocl::device::allocate_buffer_object(xocl::memory*) () from /opt/xilinx/xrt/lib/libxilinxopencl.so
+I am kind of lost as to why this would be happening.
+
+Does anyone have an idea ?
+
+I am using an f1.2xlarge instance from aws.
+
+
+Best regards."
+FPGA Development	"Re: SDaccel segfault when executing GZip from Xilinx Applications (HW emulation
+Hi,
+ could you please provide more details of your environment so we can try to recreate this issue?
+
+we would need:
+1. your HDK Version 
+cat  $AWS_FPGA_REPO/HDK/hdk_version.txt
+
+2. Your Developer AMI version.
+3.  SDx tool version 
+vivado -version
+
+4. Linux kernel
+uname -r
+
+5. Centos version
+cat /etc/centos-release
+
+6.  XRT build version  & hash
+     {code} cat /opt/xilinx/xrt/include/version.h
+
+Thank you,
+AWSaalluri"
+FPGA Development	"Re: SDaccel segfault when executing GZip from Xilinx Applications (HW emulation
+Hello, 
+
+Here are the information requested: 
+
+$ cat $AWS_FPGA_REPO_DIR/hdk/hdk_version.txt 
+HDK_VERSION=1.4.6
+
+$ vivado -version
+Vivado v2018.2_AR71275_op (64-bit)
+SW Build 2258646 on Thu Jun 14 20:02:38 MDT 2018
+IP Build 2256618 on Thu Jun 14 22:10:49 MDT 2018
+Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+
+AMI version:
+FPGA Developer AMI - 1.5.0-40257ab5-6688-4c95-97d1-e251a40fd1fc-ami-06cecb61c79496e0d.4 (ami-0da0d9ed98b33a214)
+
+$ uname -r
+3.10.0-862.11.6.el7.x86_64
+
+$ cat /etc/centos-release
+CentOS Linux release 7.5.1804 (Core)
+
+$ cat /opt/xilinx/xrt/include/version.h
+const char xrt_build_version_branch[] = ""2018.2_XDF"";
+const char xrt_build_version_hash[] = ""343186f76f59edd01bc48d84cf67fe22a0a3f338"";
+const char xrt_build_version_date[] = ""2019-01-11 16:08:10"";
+const char xrt_build_version[] = ""2.1.0"";"
+FPGA Development	"Re: SDaccel segfault when executing GZip from Xilinx Applications (HW emulation
+Hello,
+ Thanks for providing the requested environment information. We will try to recreate the issue  and get back to you.
+Best
+AWSaalluri."
+FPGA Development	"Re: SDaccel segfault when executing GZip from Xilinx Applications (HW emulation
+Hello motrad, we have found the cause of the problem and we will be publishing an fix to the Gzip kernel on Github very shortly. Thanks for your interest in the SDAccel flow."
+FPGA Development	"Re: SDaccel segfault when executing GZip from Xilinx Applications (HW emulation
+The patch has been published on Github. The change is only in the host code software (xil_gzip.cpp), so you should be able to run this new version without recompiling the xclbin and recreating an AFI."
+FPGA Development	"Re: SDaccel segfault when executing GZip from Xilinx Applications (HW emulation
+Thank you for your assistance. We believe the patch you have applied on GZip fixes the issue of occasional segfault. After applying the changes, we had a consistent segfault issue in xrt::kds::init, however we've now solved the problem, which was linked to XRT.
+
+For anyone who has similar issues, when you source the sdaccel_runtime_setup.sh file on a fresh instance, they currently ask that you execute a few curl and yum reinstall commands. The curl and the first yum command work fine, but the second yum command fails because it is not reinstalling anything. Simply run the same command, but with yum install instead of yum reinstall.
+
+We had not figured this out until now because we would use a script to obtain these commands from the output of the sdaccel_runtime_setup.sh script, look for errors in the output, and execute the suggested curl and yum commands from that output.
+
+If you are interested in running the sdaccel_runtime_setup.sh file and the install commands automatically, here is a snippet of bash that you may use:
+
+#!/bin/bash
+ 
+# Executes the SDAccel script to setup the runtime (env variables and alike)
+trySetupRuntimeEvironment() {
+    export VIVADO_TOOL_VERSION=2018.2 # Change as necessary ; there may be a way to determine this programmatically.
+    echo Setting VIVADO_TOOL_VERSION=""${VIVADO_TOOL_VERSION}""
+    source ""${AWS_FPGA_REPO_DIR}/sdaccel_runtime_setup.sh""
+}
+ 
+# Executes the SDAccel script to setup the runtime, installs
+# RPM packages suggested by that command, and tries to execute the
+# SDAccel runtime script again.
+setupRuntimeEvironmentAndInstallXrtIfNeeded() {
+    echo Setting up the SDAccel runtime...
+    local output=""$(trySetupRuntimeEvironment 2>&1)""
+    echo ""${output}""
+ 
+    # Since the sdaccel_runtime_setup.sh script always returns 0, we have to base ourselves off
+    # the output to tell whether the command worked.
+    local curlCommands=""$(echo ""${output}"" | grep -oP '(?<=^ERROR:\s).*' | grep -oP '^curl.*')""
+    local yumCommands=""$(echo ""${output}""  | grep -oP '(?<=^ERROR:\s).*' | grep -oP '(?<=^sudo)?\s*yum.*')""
+ 
+    # Check whether the CURL and YUM variables are solely composed of whitespaces.
+    # If not, then something failed, and execute them.
+    if echo ""${curlCommands}""     | grep -P '\s*\S+\s*' >/dev/null ||
+            echo ""${yumCommands}"" | grep -P '\s*\S+\s*' >/dev/null; then
+ 
+        # Execute CURL commands
+        echo ""${curlCommands}"" | while IFS= read -r curlCommand; do
+            ${curlCommand}
+        done
+ 
+        # Execute YUM commands
+        echo ""${yumCommands}"" | while IFS= read -r yumCommand; do
+            # If the yum command fails, try the same command,
+            # but changing 'reinstall' to 'install'
+            yumAlternateCommand=""$(echo ""${yumCommand}"" | perl -pe 's|re(?=install)||g')""
+            sudo ${yumCommand} || sudo ${yumAlternateCommand}
+        done
+ 
+        # Try again
+        trySetupRuntimeEvironment
+    else
+        echo Done.
+    fi
+}
+ 
+setupRuntimeEvironmentAndInstallXrtIfNeeded"
+FPGA Development	"--interactive impl fails
+Hello,
+I see there is a new feature in xocc to synthesize and implement and RTL kernel in Vivado and feed the result back into to the xocc flow (at least, that is how I understand it). 
+
+When I try to do this in the F1 development AMI I get an error that the kernel.xml file is not present. It looks like there is a directory tree in _x/link/int that is not yet populated by the makefiles in the rtl_vadd example. 
+
+Is this flow expected to work? 
+
+Thanks!"
+FPGA Development	"Re: --interactive impl fails
+Hi simonSN, the --interactive switch is a method of opening the Vivado project as part of an XOCC compile. One of the requirements is that a previous run exists before using this switch. If you run XOCC without this switch to completion, and then without cleaning the project run it again with the switch, it should open the Vivado project."
+FPGA Development	"Re: --interactive impl fails
+Got it, great, I'll give that a try. 
+
+Once in Vivado do I need to take the design through just synthesis, both synthesis and implementation, or can I choose how far to go? 
+
+Thanks!"
+FPGA Development	"Re: --interactive impl fails
+You can choose how far to go. Depending on the changes you make, you can either re-save the .dcp file in the state it was in (synth or impl), or re-run Synthesis or Implementation to get a new DCP checkpoint. If you want to then use the modified DCP you can use --reuse_impl <dcp_file> or --reuse_synth <dcp_file> depending on the state it was saved in."
+FPGA Development	"Re: --interactive impl fails
+As far as I can tell this flow doesn't seem to allow me to re-synthesize my own IP (the RTL kernel). 
+
+Is there a way to do that so I can change the synthesis options? 
+
+Thanks"
+FPGA Development	"Re: --interactive impl fails
+With the --interactive switch, at the earliest you are already examining a Synthesized netlist. You are able to edit the netlist and re-save the .dcp, but you can only move forward in the flow to implementing the design. If you are trying to add Synthesis options, this should be done before getting to this stage. You may want to look at the Out of Context Synthesis section of the RTL Kernels documentation if you are looking to do this with your RTL kernel. https://www.xilinx.com/html_docs/xilinx2018_3/sdaccel_doc/creating-rtl-kernels-qnk1504034323350.html"
+FPGA Development	"Re: --interactive impl fails
+Ok, thanks that helps."
+FPGA Development	"Re: --interactive impl fails
+Just to note on my previous reply, as the current AMI supports 2018.2, you can refer to the 2018.2 version of the documentation for RTL Kernels: https://www.xilinx.com/html_docs/xilinx2018_2/sdaccel_doc/creating-rtl-kernels-qnk1504034323350.html however this feature is still the same in 2018.2."
+FPGA Development	"segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+Hello, 
+
+I was trying out the SDAccel on AWS-F1, first, I tried the pre-built example https://github.com/aws/aws-fpga/tree/master/SDAccel/examples/aws/helloworld_ocl_runtime
+Everything works fine. The program starts and finishes correctly on the AWS-F1 FPGA board.
+
+Then, I tried to start from the beginning by following the guideline: https://github.com/aws/aws-fpga/blob/master/SDAccel/README.md, using the example SDAccel/examples/xilinx/getting_started/host/helloworld_ocl, which I think should be the same as the prebuilt example. The tests with sw_emu and hw_emu targets both passed, but I met this segmentation fault when I ran it on the read FPGA board (TARGET=hw):
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00007ffff6ddac8f in __strncpy_sse2_unaligned () from /lib64/libc.so.6
+Missing separate debuginfos, use: debuginfo-install glibc-2.17-196.el7.x86_64 libgcc-4.8.5-36.el7.x86_64 nss-softokn-freebl-3.36.0-5.el7_5.x86_64 ocl-icd-devel-2.2.11-2.el7.x86_64
+(gdb) bt
+#0  0x00007ffff6ddac8f in __strncpy_sse2_unaligned () from /lib64/libc.so.6
+#1  0x00007ffff5e3eaca in fpga_mgmt_cmd_init_load (cmd=0x7fffffffd3c0, len=0x7fffffffd5c8, opt=0x7fffffffd830)
+    at fpga_mgmt_cmd.c:146
+#2  0x00007ffff5e3a276 in fpga_mgmt_load_local_image_with_options (opt=0x7fffffffd830) at fpga_mgmt.c:329
+#3  0x00007ffff5e2b4cc in awsbwhal::AwsXcl::xclLoadXclBin (this=0x6666b0, buffer=0x668eb0) at shim.cpp:187
+#4  0x00007ffff5e2e9a5 in xclLoadXclBin (handle=0x6666b0, buffer=0x668eb0) at shim.cpp:1199
+#5  0x00007ffff67ee47d in xrt::hal2::device::loadXclBin(xclBin const*) ()
+   from /opt/Xilinx/SDx/2017.4.rte.dyn/runtime/lib/x86_64/libxilinxopencl.so
+#6  0x00007ffff676df15 in xocl::device::load_program(xocl::program*) ()
+   from /opt/Xilinx/SDx/2017.4.rte.dyn/runtime/lib/x86_64/libxilinxopencl.so
+#7  0x00007ffff6798d3d in xocl::clCreateProgramWithBinary(_cl_context*, unsigned int, _cl_device_id* const*, unsigned long const*, unsigned char const**, int*, int*) ()
+   from /opt/Xilinx/SDx/2017.4.rte.dyn/runtime/lib/x86_64/libxilinxopencl.so
+#8  0x00007ffff67998b6 in clCreateProgramWithBinary ()
+   from /opt/Xilinx/SDx/2017.4.rte.dyn/runtime/lib/x86_64/libxilinxopencl.so
+#9  0x00007ffff7bc4a9a in clCreateProgramWithBinary () from /lib64/libOpenCL.so
+#10 0x0000000000404329 in cl::Program::Program (this=0x7fffffffe1d0, context=..., devices=..., binaries=...,
+    binaryStatus=0x0, err=0x0) at /opt/Xilinx2/SDx/2017.4.op/runtime/include/1_2/CL/cl2.hpp:6204
+#11 0x0000000000402f21 in main (argc=1, argv=0x7fffffffe4c8) at ./src/host.cpp:81
+
+
+Here're my steps:
+
+step 1: Build the host application and Xilinx FPGA binary
+$ cd $SDACCEL_DIR/examples/xilinx/getting_started/host/helloworld_ocl/           
+$ make clean                                                             
+$ make TARGETS=hw DEVICES=$AWS_PLATFORM all   
+
+step 2: Create S3 bucket
+$ sh create-s3-bucket.sh
+
+step 3: Create an AFI
+$ $SDACCEL_DIR/tools/create_sdaccel_afi.sh -xclbin=./xclbin/somename.xclbin -o=somename \
+  -s3_bucket=<bucket-name> -s3_dcp_key=<dcp-folder-name> -s3_logs_key=<logs-folder-name>
+
+Step 4: Run the FPGA accelerated application on Amazon FPGA instances
+$ sudo fpga-clear-local-image -S 0 
+$ sudo sh
+
+source /opt/Xilinx/SDx/2017.4.rte.dyn/setup.sh
+./helloworld 
+
+Can anyone give me some clue to the seg fault?
+
+Thanks a lot!
+
+Edited by: hzhang86 on Feb 1, 2019 10:19 AM
+
+Edited by: hzhang86 on Feb 1, 2019 10:21 AM
+
+Edited by: hzhang86 on Feb 1, 2019 10:23 AM"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+Hello,
+
+I would like to check couple of things with you:
+
+1. Are you using the older AMI version (AMI 1.4.0)? If yes, I would recommend updating to the latest AMI version 1.5.0.
+2. It typically takes some time to generate AFI. Please make sure that your AFI is ""available"" before running the application. You may check the status of your AFI using the command below (See https://github.com/aws/aws-fpga/blob/master/hdk/docs/describe_fpga_images.md for more details):
+aws ec2 describe-fpga-images --fpga-image-ids <your afi-##############>
+
+3. Can you check you have enough disk space on your instance?
+
+Please let us know if you continue to see this issue. We will be happy to help.
+Thanks,
+Chakra"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+Hi,
+
+Answers to your questions:
+1. Are you using the older AMI version (AMI 1.4.0)? If yes, I would recommend updating to the latest AMI version 1.5.0.
+How do I check the version of AMI? and how do I update it?
+
+2. It typically takes some time to generate AFI. Please make sure that your AFI is ""available"" before running the application. You may check the status of your AFI using the command below (See https://github.com/aws/aws-fpga/blob/master/hdk/docs/describe_fpga_images.md for more details):
+aws ec2 describe-fpga-images --fpga-image-ids <your afi-##############>
+Yes, I wait until it's available.
+
+3. Can you check you have enough disk space on your instance?
+Yes, there's enough space.
+
+Edited by: hzhang86 on Feb 1, 2019 3:21 PM"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+Hello,
+
+There are two ways to check your AMI version. 
+1. When you connect to your instance, it displays some information on your terminal (see attached ami_version.jpg image). This also displays your AMI Version.
+
+2. Run ""vivado -version"" command on your terminal and check that it displays ""Vivado v2018.2_AR71275_op (64-bit)"".
+
+Thanks!
+Chakra"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+Got it, thanks!
+
+So does AMI 1.5 pre-install both SDx 2017.4 and SDx 2018.2 ?
+Could you give me steps of how to update AMI?
+
+Thanks"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+Hello,
+
+AMI 1.5.0 version only supports SDx 2018.2.
+
+To update the AMI version you will have to start a new instance using that AMI. If you have your project data stored in the /home/centos/src/project_data directory in the instance you currently have and want to move it to the new instance using the new AMI, we recommend going the following route:
+
+From the AWS EC2 Console,
+1. Select your instance that you wish to replace with an instance that uses an updated FPGA Developer AMI.
+2. Select the Block Device '/dev/sdb' attached to the instance and click on the EBS ID.
+3. Select the EBS Volume, and from Actions choose 'Create Snapshot'. Note down the Snapshot ID: `snap-*`.
+
+It might take a while before the snapshot is created. This depends on the amount of data on the Project Data volume.
+
+4. Launch an instance using the new AMI using manual launch, and when you reach the 'Add Storage' section, use the Snapshot ID for '/dev/sdb'.
+5. The data should be available in `/home/centos/src/project_data/`
+
+These instructions should also be available in the README located at /home/centos/src/AMI_UPDATE_README.md
+
+Let us know if that helps you.
+
+Thanks!
+Chakra"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+I'm currently using AMI 1.3.4 with vivado 2017.1.
+So you are saying that:
+1. In order to run SDAccel example on F1, I need to upgrade my AMI to 1.50
+2. AMI 1.50 only supports vivado 2018.2
+However, why did I simple running the pre-built binary SDAccel/examples/aws/helloworld_ocl_runtime/helloworld pass? (https://github.com/aws/aws-fpga/tree/master/SDAccel/examples/aws/helloworld_ocl_runtime) The configuration with that run was vivado 2017.1+AMI 1.34, but I don't how that binary was built."
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+Hello,
+
+Developer kit versions prior to v1.3.7 and Developer AMI prior to v1.4 (2017.1) reached end-of-life. See AWS forum announcement (https://forums.aws.amazon.com/ann.jspa?annID=6068) for additional details.
+
+We strongly recommend you to use the latest versions of FPGA AMI and Developer Kit. However, the versions that are currently supported are listed here (https://github.com/aws/aws-fpga/blob/master/README.md#fpga-developer-ami)
+
+Thanks,
+Chakra"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+Hello,
+
+I've launched a new instance with AMI 1.5.0 and use aws-fpga 1.4.7. I'm able to run one SDAccel example on FPGA board. However, when I tried to run this example: 
+https://github.com/Xilinx/data-analytics/tree/master/xsql61
+
+It still segfaults, same error , failing at ""fpga_mgmt_cmd_init_load"". Do you have any idea why it's not working with the latest AMI?
+
+Thanks"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+The data analytics example that you are trying to run has only been qualified with AMI 1.3.x and the 2017.1.op version of SDAccel. Our team is working to update the example to work with the latest AMI. I will let you know when the new version is ready."
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+Thank you!
+When would you expect the new version would be released?"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+I have already made the example xsql61 work with the latest AMI and Vivado with some modifications on the makefile and script. However, I didn't see sdaccel_profile_summary.csv generated after running the query, while it's generated on Xilinx-provided AMI. How can I enable the generation of the profile summary?"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+I suspect that this is because you do not have an sdaccel.ini file in your run directory. In earlier releases, the profile data generation was enabled by default. Since 2018.2, you need to explicitly enable it with the sdaccel.ini file.
+
+Create a sdaccel.ini file with the following content:
+
+[Debug]
+profile=true"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+Hello, Thomas
+
+Can I also run data-analytics examples use on-premise board instead of on AWS F1? What need to be changed in the compilation and execution flow in that case?"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+The only thing that is specific to AWS F1 about this example is the platform itself. This should make recompiling this example to another platform straightforward. I have not tried it, but you should only have to change the XDEVICE variable in the Makefile (https://github.com/Xilinx/data-analytics/blob/master/xql6/kernel/makefile) to point to your on-premise platform instead of the AWS F1 one.
+
+PS: The repo was updated earlier today with the necessary changes to run on AWS F1 with SDAccel 2018.2 and the 1.4.x shell."
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+Thank you!
+I'll give it a try and see how it works."
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+Hello, Thomas
+
+I noticed that you have removed xsql61 folder completely, may I ask why is that? I got those examples to work before your update.
+Besides, I also have a silly question: What is the difference between xql6 and xsql61? From the description, they both use FPGA to accelerate Query 6 of TPC-H. 
+But why xql6 needs to install Postgres first and xsql61 doesn't? 
+How does xsql61 process the queries without Postgres?
+
+Thank you!"
+FPGA Development	"Re: segmentation fault when running an SDAccel example on AWS-F1 FPGA board
+xsql61 performs query 6 on .csv text database files. As you noted, it works standalone and does not need postgres. I am inquiring as to why it was removed in this related version of the repo."
+FPGA Development	"Simulation Error: [Memdata 28-82] data2mem failed to process parameter data
+Hi,
+    While simulating my design with AWS SHELL, I see the message (image attached). Can you help me figure out what might be causing this.
+Thanks
+fpgamagic"
+FPGA Development	"simulation build failure
+Hi,
+While trying cl_sde simulation build, I got: 
+
+Compiling package xil_defaultlib.proj_package
+Compiling package xil_defaultlib.sde_pkg
+Compiling package xil_defaultlib.$unit_cl_common_defines_vh
+ERROR: [XSIM 43-3316] Signal SIGSEGV received.
+
+Here are the steps:
+1. Launch & ssh to F1 instance (using FPGA developer AMI v1.5.0)
+2. Created a fresh aws-fpga.git clone
+3. cd $AWS_FPGA_REPO_DIR
+4. source sdk_setup.sh
+5. cd $HDK_DIR/cl/examples/cl_sde/
+6. export CL_DIR=$(pwd)
+7. cd $CL_DIR/verif/scripts/
+8. make TEST=test_simple_c2h
+
+By the way, the same error is enountered also with test_simple_h2c.
+On the other hand, build with the default test is successful.
+
+Thanks,
+Gabi"
+FPGA Development	"Re: simulation build failure
+Typo in step 4. Should be
+4. source hdk_setup.sh
+
+Sorry, 
+Gabi"
+FPGA Development	"Re: simulation build failure
+I am also seeing this error during simulation after upgrading to latest HDK version. Posted my issue in another thread as it was seen with a different design but similar. 
+
+https://forums.aws.amazon.com/thread.jspa?threadID=299042"
+FPGA Development	"Re: simulation build failure
+Hi, 
+ we are working to debug this issue using cl_sde example test. We will get back to you as soon as we have an update.
+Thanks,
+AWSaalluri."
+FPGA Development	"Re: simulation build failure
+FYI, In my case, the error was caused by some functions not having return value defined. Fixing those warnings made this error go away for me."
+FPGA Development	"SIGSEGV error during simulation.
+While compiling my desing with the latest version of HDK Kit (HDK_VERSION=1.4.7) and Vivado version 2018.2, I get the following error. 
+ERROR: https://forums.aws.amazon.com/ Signal SIGSEGV received.
+
+I also found another user having the same error with an hdk example design itself as in thread below.  I am attaching tail my elaborate.log below to provide another datapoint.
+https://forums.aws.amazon.com/thread.jspa?messageID=890695&#890695
+
+
+WARNING: https://forums.aws.amazon.com/ non-void function initialize_memory_with_file called as a task without void casting ../../../../../../../../aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/fpga/fpga_ddr.svh:475
+WARNING: https://forums.aws.amazon.com/ non-void function initialize_memory_with_file called as a task without void casting ../../../../../../../../aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/fpga/fpga_ddr.svh:476
+WARNING: https://forums.aws.amazon.com/ non-void function initialize_memory_with_file called as a task without void casting ../../../../../../../../aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/fpga/fpga_ddr.svh:477
+WARNING: https://forums.aws.amazon.com/ non-void function initialize_memory_with_file called as a task without void casting ../../../../../../../../aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/fpga/fpga_ddr.svh:478
+WARNING: https://forums.aws.amazon.com/ non-void function initialize_memory_with_file called as a task without void casting ../../../../../../../../aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/fpga/fpga_ddr.svh:479
+WARNING: https://forums.aws.amazon.com/ non-void function initialize_memory_with_file called as a task without void casting ../../../../../../../../aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/fpga/fpga_ddr.svh:480
+WARNING: https://forums.aws.amazon.com/ non-void function initialize_memory_with_file called as a task without void casting ../../../../../../../../aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/fpga/fpga_ddr.svh:481
+WARNING: https://forums.aws.amazon.com/ non-void function initialize_memory_with_file called as a task without void casting ../../../../../../../../aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/fpga/fpga_ddr.svh:482
+WARNING: https://forums.aws.amazon.com/ function device_bdr_ld has no return value assignment ../../../../../../../../aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/fpga/fpga_ddr.svh:396
+WARNING: https://forums.aws.amazon.com/ first argument of $fatal is invalid, expecting 0, 1 or 2 [/home/asanghi/project/aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/sh_bfm/sh_bfm.sv:2527]
+WARNING: https://forums.aws.amazon.com/ first argument of $fatal is invalid, expecting 0, 1 or 2 [/home/asanghi/project/aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/sh_bfm/sh_bfm.sv:2685]
+WARNING: https://forums.aws.amazon.com/ function match_char_after has no return value assignment [/home/asanghi/project/valtix-hw/ade/design/rtl_json/http_parser.v:4562]
+WARNING: https://forums.aws.amazon.com/ function match_range has no return value assignment [/home/asanghi/project/valtix-hw/ade/design/rtl_json/http_parser.v:4575]
+WARNING: https://forums.aws.amazon.com/ function track_value_context has no return value assignment [/home/asanghi/project/valtix-hw/ade/design/rtl_json/http_parser.v:5545]
+WARNING: https://forums.aws.amazon.com/ element index 7 into dq_temp is out of bounds ../../../../../../../../aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/ddr4_model/ddr4_model.sv:1571
+WARNING: https://forums.aws.amazon.com/ element index 7 into dq_temp is out of bounds ../../../../../../../../aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/ddr4_model/ddr4_model.sv:1573
+WARNING: https://forums.aws.amazon.com/ element index 143 into sampled_val1_str is out of bounds [/home/asanghi/project/valtix-hw/ade/design/rtl_json/extract_content_type.v:182]
+WARNING: https://forums.aws.amazon.com/ element index 143 into sampled_val1_str is out of bounds [/home/asanghi/project/valtix-hw/ade/design/rtl_json/extract_content_type.v:195]
+WARNING: https://forums.aws.amazon.com/ repetition multiplier must be positive [/home/asanghi/project/valtix-hw/ade/design/rtl_json/ab_api_key_match.sv:117]
+WARNING: https://forums.aws.amazon.com/ repetition multiplier must be positive [/home/asanghi/project/valtix-hw/ade/design/rtl_json/ab_api_key_match.sv:118]
+WARNING: https://forums.aws.amazon.com/ repetition multiplier must be positive [/home/asanghi/project/valtix-hw/ade/design/rtl_json/len_model_mgmt.sv:320]
+WARNING: https://forums.aws.amazon.com/ element index 16 into valid_in is out of bounds [/home/asanghi/project/valtix-hw/ade/design/rtl_json/divider.v:147]
+WARNING: https://forums.aws.amazon.com/ element index 16 into sign_in is out of bounds [/home/asanghi/project/valtix-hw/ade/design/rtl_json/divider.v:148]
+WARNING: https://forums.aws.amazon.com/ element index 16 into dividend_in is out of bounds [/home/asanghi/project/valtix-hw/ade/design/rtl_json/divider.v:149]
+WARNING: https://forums.aws.amazon.com/ element index 16 into dividend_lo_bits_in is out of bounds [/home/asanghi/project/valtix-hw/ade/design/rtl_json/divider.v:150]
+WARNING: https://forums.aws.amazon.com/ element index 16 into divisor_in is out of bounds [/home/asanghi/project/valtix-hw/ade/design/rtl_json/divider.v:151]
+WARNING: https://forums.aws.amazon.com/ element index 16 into remainder_in is out of bounds [/home/asanghi/project/valtix-hw/ade/design/rtl_json/divider.v:152]
+WARNING: https://forums.aws.amazon.com/ element index 16 into quotient_in is out of bounds [/home/asanghi/project/valtix-hw/ade/design/rtl_json/divider.v:153]
+WARNING: https://forums.aws.amazon.com/ element index 16 into division_done_in is out of bounds [/home/asanghi/project/valtix-hw/ade/design/rtl_json/divider.v:154]
+Completed static elaboration
+WARNING: https://forums.aws.amazon.com/ File ""/home/asanghi/project/aws_hdk/2018.2/aws-fpga/hdk/common/shell_v04261818/design/ip/ddr4_core/rtl/cal/ddr4_v2_2_cal_cplx.sv"" Line 855 : The ""System Verilog Assertion"" is not supported yet for simulation. The statement will be ignored.
+WARNING: https://forums.aws.amazon.com/ File ""/home/asanghi/project/aws_hdk/2018.2/aws-fpga/hdk/common/shell_v04261818/design/ip/ddr4_core/rtl/cal/ddr4_v2_2_cal_top.sv"" Line 1753 : The ""System Verilog Assertion"" is not supported yet for simulation. The statement will be ignored.
+INFO: https://forums.aws.amazon.com/ Assuming default value 1 for the first arguement of $fatal at Line 2527, File /home/asanghi/project/aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/sh_bfm/sh_bfm.sv
+INFO: https://forums.aws.amazon.com/ Assuming default value 1 for the first arguement of $fatal at Line 2685, File /home/asanghi/project/aws_hdk/2018.2/aws-fpga/hdk/common/verif/models/sh_bfm/sh_bfm.sv
+ERROR: https://forums.aws.amazon.com/ Signal SIGSEGV received.
+""elaborate.log"" 159L, 29695C"
+FPGA Development	"Re: SIGSEGV error during simulation.
+I found the cause for this issue. I isolated the module causing this error and compiled separately. I found that this module had some warnings regarding functions not having defined the return values. After fixing those, this error went away."
+FPGA Development	"Amazon Linux 2 and Xilinx Runtime Issue
+Installation of the Xilinx Runtime on a clear Amazon Linux 2 instance (which is RedHat based) leads to OpenCL runtime errors.
+
+Xilinx Runtime (XRT) 2018.2_XDF.RC5 Installation instructions:
+https://github.com/aws/aws-fpga/blob/master/hdk/docs/SDxPatch_AR71715_and_XRT_installation_instructions.md#installing-xilinx-runtime-xrt-20182_xdfrc5
+
+Prerequisites:
+Extra Packages for Enterprise Linux (EPEL)
+
+sudo amazon-linux-extras install -y epel
+
+curl -s https://s3.amazonaws.com/aws-fpga-developer-ami/1.5.0/Patches/XRT_2018_2_XDF_RC5/xrt_201802.2.1.0_7.5.1804-xrt.rpm -o xrt_201802.2.1.0_7.5.1804-xrt.rpm
+curl -s https://s3.amazonaws.com/aws-fpga-developer-ami/1.5.0/Patches/XRT_2018_2_XDF_RC5/xrt_201802.2.1.0_7.5.1804-aws.rpm -o xrt_201802.2.1.0_7.5.1804-aws.rpm
+sudo yum install -y xrt_201802.2.1.0_7.5.1804-xrt.rpm
+sudo yum install -y xrt_201802.2.1.0_7.5.1804-aws.rpm
+
+
+Example application:
+#include <stdio.h>
+#include <CL/opencl.h>
+ 
+int main(){
+        cl_uint num_platforms;
+ 
+        cl_int errcode_ret = clGetPlatformIDs(0, NULL, &num_platforms);
+        if (errcode_ret != CL_SUCCESS){
+                fprintf(stderr, ""Error: clGetPlatformIDs (%d)\n"", errcode_ret);
+                return EXIT_FAILURE;
+        }
+ 
+        printf(""Info: %d opencl platform(s) found!"", num_platforms);
+ 
+        return EXIT_SUCCESS;
+}
+
+
+Makefile:
+SRCS = test.cpp
+OBJCTS = $(SRCS:.cpp=.o)
+EXE=test
+ 
+CC = g++ -Wall
+ 
+CFLAGS = -I${XILINX_XRT}/include
+LFLAGS = -L${XILINX_XRT}/lib -lxilinxopencl
+ 
+all: ${OBJCTS}
+        ${CC} ${OBJCTS} ${LFLAGS} -o ${EXE}
+        ${RM} ${OBJCTS}
+ 
+%.o: %.cpp
+        ${CC} ${CFLAGS} -c ${<} -o ${@}
+ 
+clean:
+        ${RM} ${OBJCTS} ${EXE}
+
+
+3 sequential runs:
+ $ ./test 
+Segmentation fault
+ $ ./test 
+Segmentation fault
+ $ ./test 
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+Aborted
+
+The problem must be related to boost library dependency!
+(Our JVM application stated libboost.so as the problematic frame.)
+
+Note that on a CentOS machine the same XRT installation works smoothly."
+FPGA Development	"Re: Amazon Linux 2 and Xilinx Runtime Issue
+Hello,
+
+The XRT RPM's are built using Centos 7 and would yield indeterminate results when used on Amazon Linux 2.
+
+We currently do not support using the provided RPM's on Amazon Linux 2 but are working towards that goal with Xilinx and should be able to provide you a path to using it in the future. 
+We will update here once we have a path forward.
+
+Thanks,
+
+Deep"
+FPGA Development	"on-premise installation Vivado can't find aws::make_ipi
+Hi,
+   I am setting up on-prim development tools for AWS FPGA development. I installed Centos7.6 and downloaded the AWS HDK Kit. Followed all the steps of sourcing the hdk_setup.sh and setting up CL_DIR variable. However Vivado is not able to find aws::make_ipi. I get the following error.
+
+aws::make_ipi
+invalid command name ""aws::make_ipi""
+
+My first thought was that it might have to do something with some of the Vivado features I skipped installing (like SDK). So I reinstalled Vivado System version with all the features and tried again. Still same thing.
+   I have done this many times on AWS FPGA Developer AMI, but doing on premise for the first time. 
+   Also, the AWS HDK Kit has been updated since I last successfully compiled.
+
+Is there any pre-requisite or setting I am missing? or is it something chanaged with the new verseion of AWS HDK Kit.
+
+Thanks
+fpgamagic"
+FPGA Development	"Re: on-premise installation Vivado can't find aws::make_ipi
+Hi fpgamagic,
+
+Just to confirm, you went through these steps here correct? https://github.com/aws/aws-fpga/blob/master/hdk/docs/IPI_GUI_Vivado_Setup.md#linux-install
+
+This step enables the aws specific commands in the flow.
+
+-Deep"
+FPGA Development	"Re: on-premise installation Vivado can't find aws::make_ipi
+I found that I was missing the step to add the hlx_setup.tcl entry to Vivado_init.tcl. After completing this step, it works.
+Thanks
+Anshu"
+FPGA Development	"Re: on-premise installation Vivado can't find aws::make_ipi
+Thanks for confirming! Please feel free to reach out to us for any other questions/issues that you may have!
+
+-Deep"
+FPGA Development	"On-premise Vivado 2017.4 crash on windows 10
+While running a build, I got the error ""EXCEPTION_ACCESS_VIOLATION"". I checked the log pointed to by the message and it was empty. I closed Vivado and restarted in a fresh directory. But this time, Vivado crashed, just disappeared without any warning or message. After this, I tried multiple settings, and even recompiling some old projects which have been compiled successfully many times before,but Vivado just keeps crashing. The Vivado is starting to execute the synth_design task when this happens.In last compilation, the last message in Vivado log before it crashed was:
+
+Launching runs with argument(s) impl_1 -jobs 20
+INFO: https://forums.aws.amazon.com/ Using cached IP synthesis design for IP cl_clk_wiz_0_0, cache-ID = e74bb25c0f1c1add.
+
+I am using Vivado 2017.4op on Windows 10. Has anyone else seen this crash? Are there any known workarounds or fixes for this."
+FPGA Development	"Re: On-premise Vivado 2017.4 crash on windows 10
+Hi,
+I have reached out to Xilinx and checking if they can help you here.
+
+Regards
+Bala"
+FPGA Development	"Re: On-premise Vivado 2017.4 crash on windows 10
+Hi fpgamagic, could you let us know what specific Windows build you are using? You can find out by going to Start and typing 'winver'. The 2017.4 release supported Windows 10 up to the Creators update, which is 1703. Later versions may experience issues like this.
+
+You also may be able to try the steps listed here: https://www.xilinx.com/support/answers/69908.html"
+FPGA Development	"Re: On-premise Vivado 2017.4 crash on windows 10
+@kmorrisXilinx
+    We decided to move away from Windows environment to Linux.
+Thanks"
+FPGA Development	"Help with opt_design error: [Chipscope 16-213]
+Hi,
+In my design I use the SDE block (unmodified) to connect to the shell, as described in cl_sde example. I actually copied the cl_sde example, then added my code. 
+
+The build flow went OK until Logic Optimization, which immdiately failed with:
+ERROR: https://forums.aws.amazon.com/ The debug port 'WRAPPER_INST/CL/SDE/SDE_C2H/SDE_C2H_BUF/SDE_C2H_BUF_ILA/probe16' has 16 unconnected channels (bits). This will cause errors during implementation.
+
+When analyzing the reported unconnected signal (in $CL_DIR/design/sde_c2h_buf.sv), I found out it is actually unconnected. Further than that there more unconnected signals into the ila_sde_c2h_buf cell inside the sde_c2h_buf.sv. I also found similar unconnected signals into other ila_* probing cells.
+
+I tried building my reference design (cl_sde) which ends OK, despite those unconnected signals
+
+My question: How does opt_design know to override those unconnected signals while building cl_sde?  I assume there is a waiver somewhere, but couldn't find where.   
+
+Note: I use on premises tools version, with Vivado v2018.2.op (64-bit), also used with the successful cl_sde build
+
+Thanks,
+
+Edited by: gabima on Feb 13, 2019 7:35 AM
+
+Edited by: gabima on Feb 13, 2019 7:40 AM"
+FPGA Development	"Re: Help with opt_design error: [Chipscope 16-213]
+Hello Gabima,
+We are looking into the issue and will provide an update shortly.
+
+Regards
+Bala"
+FPGA Development	"Re: Help with opt_design error: [Chipscope 16-213]
+Hello Gabima,
+We are unable to re-produce the issue on our setup, even though we see that probe16 is unconnected.
+Can you please share your changes? Also are you using the same build scripts as provided on Github CL_SDE example?
+
+The interim solution would be to remove the ILAs while we solve this issue.
+
+Regards
+Bala"
+FPGA Development	"Re: Help with opt_design error: [Chipscope 16-213]
+Thanks Bala.
+While waiting I also tried building my design on an F1 instance, and ...  it succeeded !!!
+
+I still do not understand why on_premises cl_sde build ended OK, even though its ILA still has many unconnected inputs.
+
+To answer you questions:
+1. I am using the same build scripts as provided on Github CL_SDE example. Recall that, as I mentioned earlier, I copied the cl_sde example, then added my verilog changes.
+2. I will check with my manager whether I can share the design, and let you know.
+
+By the way, I have encountered another issue: Can't build simulation testbench for cl_sde.
+Here are the steps I took. I chose to start from a clean clone:
+1. Launch & ssh to F1 instance (using FPGA developer AMI v1.5.0)
+2. Created a fresh aws-fpga.git clone
+3. cd $AWS_FPGA_REPO_DIR
+   source sdk_setup.sh
+4. cd $HDK_DIR/cl/examples/cl_sde/
+5. export CL_DIR=$(pwd)
+6. cd $CL_DIR/verif/scripts/
+7. make
+
+Simulation build failed (only first error is listed):
+""ERROR: [VRFC 10-2063] Module <fifo_generator_vlog_beh> not found while processing module instance <gwach_nbi_sim.inst_fifo_gen_wach> [/home/centos/aws-fpga_temp/hdk/common/shell_v04261818/design/ip/axi_clock_converter_0/hdl/fifo_generator_v13_2_rfs.v:2711]""
+
+I repeated steps 2 thru 7 on premises, and got the same error.
+Can you please take a look?
+
+Thanks,
+
+Edited by: gabima on Feb 17, 2019 5:39 AM
+
+Edited by: gabima on Feb 17, 2019 5:40 AM
+
+Edited by: gabima on Feb 17, 2019 5:43 AM
+
+Edited by: gabima on Feb 17, 2019 5:44 AM
+
+Edited by: gabima on Feb 17, 2019 5:46 AM"
+FPGA Development	"Re: Help with opt_design error: [Chipscope 16-213]
+Hello Gabima,
+Thank you. I have asked an expert to look into it. BTW, I am able to reproduce the simulation error and I am looking into it.
+
+Can you confirm the the HDK version you are using for the on-premises runs?
+
+Regards
+Bala
+
+Edited by: awsbalasram on Feb 18, 2019 7:50 AM"
+FPGA Development	"Re: Help with opt_design error: [Chipscope 16-213]
+Hi 
+For the simulation compile issue could you please add the below explicit module reference  at line # 66 to the file: https://github.com/aws/aws-fpga/blob/master/hdk/cl/examples/cl_sde/verif/scripts/top.vivado.f
+
+""${HDK_SHELL_DESIGN_DIR}/ip/axi_clock_converter_0/simulation/fifo_generator_vlog_beh.v""
+
+While the above model is included in the ip path , i am finding in some environments XSIM is requiring explicit path to interpret the module.
+
+Thanks
+AWSaalluri."
+FPGA Development	"Re: Help with opt_design error: [Chipscope 16-213]
+It is fine now
+Thanks for you prompt support
+
+Gabi"
+FPGA Development	"Abnormal behaviour in multithreading using Xilinx RTE 2018.2
+Concurrent access on multiple FPGAs through multiple threads (one per FPGA) from a single process, stalls the execution of the kernels.
+The problem does NOT appear though when accessing the resources concurrently from different processes.
+Also note that in previous versions (e.g. 2017.1) such an anomaly is not observed.
+
+The following snippet describes a sample OCL application that targets 2 FPGAs concurrently using multiple pthreads.
+
+Notes:
+ * For better observations we run multiple iterations of the same task
+ * Both FPGA devices are configured with the same bitstream (AFI)
+ * The bitstream includes 4 kernels, each one connected with only 1 out of the 4 available Memory Banks
+ * The OCL command queues are IN ORDER
+ * All the OCL memory transfer calls are BLOCKING
+
+After testing different scenarios we concluded that, somehow, when 2 threads try to access kernels that lie in different devices BUT in the same memory bank, their execution is ""serialized"". However, if each thread access a kernel in a different device AND in a different memory bank, everything runs as expected.
+
+Execution notes (1, 2, 8 FPGAs in the same f1.16xlarge instance):
+ * All executions end with the expected results
+ * The application output shows that the target devices are configured correctly with the bitstreams
+ * Our application logs also show a normal execution flow (apart from, of course, the execution time results)
+ * The two threads seams to be executed concurrently, but each thread's execution time is almost multiplied by the number of currently executed threads.
+
+Time Measurements (each kernel execution ):
+1 FPGA  : Average Kernel execution time ~7 sec
+2 FPGAs : Average Kernel execution time ~13 sec
+8 FPGAs : Average Kernel execution time ~55 sec
+
+This is a critical issue for us, our whole framework and its ability to scale up and out as well.
+
+void core(int DEVICE_ID){
+	// Returns the platform
+	cl_platform_id platform = MYclGetPlatform();
+	// Gets all the available devices in the platform and returns the device with id <DEVICE_ID>
+	cl_device_id device = MYclGetDeviceIDs(platform, DEVICE_ID);
+	// Creates a context for the device
+	cl_context context = MYclCreateContext(device);
+	// Creates and builds a test bitstream
+	cl_program program = MYclCreateProgramWithBinary(""test.xclbin"");
+	MYclBuildProgram(program);
+ 
+	//Creates a kernel in bitstream
+	cl_kernel kernel = MYclCreateKernel(program, ""test_kernel_name_0"");
+ 
+	// Creates an in order command queue for the memory transfers and the kernel executions
+	cl_command_queue command_queue = MYclCreateCommandQueues(context, device);
+ 
+	// We run the same task multiple times for better time observations
+	for (int i = 0; i < ITERATIONS){
+		int size = 12345;
+ 
+		// Creates input and output arrays
+		float *input = (float *) malloc(size);
+		float *output = (float *) malloc(size);
+ 
+		// Creates input and output buffers
+		cl_mem input_buffer = MYclCreateBuffer(context, size);
+		cl_mem output_buffer = MYclCreateBuffer(context, size);
+ 
+		// Transfers data from host memory to device
+		MYclEnqueueWriteBuffer(command_queue, input_buffer, input, size);
+ 
+		// Enqueues accelerated task
+		MYclSetKernelArg(kernel, 0, sizeof(cl_mem), input_buffer);
+		MYclSetKernelArg(kernel, 1, sizeof(cl_mem), output_buffer);
+		MYclSetKernelArg(kernel, 2, sizeof(int), size);
+		MYclEnqueueTask(command_queue, kernel);
+ 
+		// Transfers data to host memory from device
+		MYclEnqueueReadBuffer(command_queue, output_buffer, output, size);
+ 
+		// Waits for tasks to finish
+		MYclFlush(command_queue);
+		MYclFinish(command_queue);
+	}
+}
+ 
+void *thread_0(void *foo){
+	int DEVICE_ID = 0;
+	core(DEVICE_ID);
+	return NULL;
+}
+ 
+void *thread_1(void *foo){
+	int DEVICE_ID = 1;
+	core(DEVICE_ID);
+	return NULL;
+}
+ 
+int main(){
+	pthread_t tid_0, tid_1;
+ 
+	// Creates a thread that will access FPGA 0
+	pthread_create(&tid_0, NULL, thread_0, NULL);
+	// Creates a thread that will access FPGA 1
+	pthread_create(&tid_1, NULL, thread_1, NULL);
+ 
+	// waits for thread 0 to finish
+	pthread_join(tid_0, NULL);
+	// waits for thread 1 to finish
+	pthread_join(tid_1, NULL);
+ 
+	return 0;
+}"
+FPGA Development	"Re: Abnormal behaviour in multithreading using Xilinx RTE 2018.2
+Hello InAccel,
+I have forwarded your issue to the concerned team and will update you shortly.
+
+Regards
+Bala"
+FPGA Development	"Re: Abnormal behaviour in multithreading using Xilinx RTE 2018.2
+Hello InAccel,
+We did an initial debug at our end and we are thinking this might be an issue with Xilinx's openCL compiler. We have contacted Xilinx for their input. 
+
+We will update again on the progress.
+
+Regards
+Bala"
+FPGA Development	"Re: Abnormal behaviour in multithreading using Xilinx RTE 2018.2
+Fixed with Xilinx Runtime (XRT) 2018.2_XDF.RC5
+
+https://github.com/aws/aws-fpga/blob/master/hdk/docs/SDxPatch_AR71715_and_XRT_installation_instructions.md"
+FPGA Development	"Errors while running simulation
+I am getting the following errors, while trying to simulate my design with AWS shell. It seems like the arch_package, proj_package declaration is missing. Where are they supposed to be declared. I already checked the the init.tcl file is being sourced and it contains the following lines:
+
+set AWSINSTALL ""C:/AWS_Repo/aws-fpga""
+source $AWSINSTALL/hdk/common/shell_v04261818/hlx/hlx_setup.tcl
+
+Errors from the log:
+
+INFO: https://forums.aws.amazon.com/ Analyzing SystemVerilog file ""C:/AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_rdimm_wrapper/ddr4_db_delay_model.sv"" into library xil_defaultlib
+INFO: https://forums.aws.amazon.com/ analyzing module ddr4_db_delay_model
+INFO: https://forums.aws.amazon.com/ Analyzing SystemVerilog file ""C:/AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/ddr4_model.sv"" into library xil_defaultlib
+ERROR: https://forums.aws.amazon.com/ arch_package is not declared ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTable.sv:5
+INFO: https://forums.aws.amazon.com/ analyzing module StateTable
+ERROR: https://forums.aws.amazon.com/ proj_package is not declared ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:1553
+ERROR: https://forums.aws.amazon.com/ proj_package is not declared ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:1554
+ERROR: https://forums.aws.amazon.com/ proj_package is not declared ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:2950
+ERROR: https://forums.aws.amazon.com/ MAX_ROW_ADDR_BITS is not declared ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:14
+ERROR: https://forums.aws.amazon.com/ range must be bounded by constant expressions ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:14
+ERROR: https://forums.aws.amazon.com/ MAX_RANKS is not declared ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:15
+ERROR: https://forums.aws.amazon.com/ range must be bounded by constant expressions ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:15
+ERROR: https://forums.aws.amazon.com/ MAX_RANKS is not declared ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:27
+ERROR: https://forums.aws.amazon.com/ range must be bounded by constant expressions ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:27
+ERROR: https://forums.aws.amazon.com/ MAX_RANKS is not declared ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:28
+ERROR: https://forums.aws.amazon.com/ range must be bounded by constant expressions ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:28
+ERROR: https://forums.aws.amazon.com/ MAX_RANKS is not declared ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:29
+ERROR: https://forums.aws.amazon.com/ range must be bounded by constant expressions ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:29
+ERROR: https://forums.aws.amazon.com/ MAX_RANKS is not declared ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:30
+ERROR: https://forums.aws.amazon.com/ range must be bounded by constant expressions ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:30
+ERROR: https://forums.aws.amazon.com/ MAX_RANKS is not declared ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:31
+ERROR: https://forums.aws.amazon.com/ range must be bounded by constant expressions ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:31
+ERROR: https://forums.aws.amazon.com/ MAX_RANKS is not declared ../../../../../../../../../../../../AWS_Repo/aws-fpga/hdk/common/verif/models/ddr4_model/StateTableCore.sv:32
+INFO:  Sorry, too many errors.."
+FPGA Development	"Re: Errors while running simulation
+Sorry, repeat post. This looks like an issue if current version of shell is used with 2017.4"
+FPGA Development	"Regeneration of clocks
+Hi,
+I am facing a problem with clocks while implementing a project.
+During the implementation stage, the clock_main_a0 again gets renamed and regenerated  as  WRAPPER_INST/CL/clk_main_a0.
+I havent given any constraints related to this clock.
+And due to this renaming and regeneration of clocks , inter clock timing violations are occurring between these clocks.
+
+Any suggestions on this issue?
+
+Regards,
+Prigish"
+FPGA Development	"Re: Regeneration of clocks
+Hello Prigish,
+Thank you for posting your problem. The clock signal ""clk_main_a0"" comes from Shell to the CL.
+However in you post you have mentioned ""clock_main_a0"". Do you have a signal by name ""clock_name_a0"" in you design. If so, what is the source of ""clock_main_a0"".
+
+Regards
+Bala
+
+Edited by: awsbalasram on Feb 15, 2019 3:27 PM"
+FPGA Development	"Re: Regeneration of clocks
+Sorry i meant to say was clk_main_a0.
+ It was written by mistake as ""clock_main_a0"" in the previous post.
+
+Regards
+Prigish"
+FPGA Development	"Re: Regeneration of clocks
+Hello Prigish,
+Is the design run on on-premises Vivado ? If on AWS, please provide the AMI and the steps you have followed so we can try to reproduce at our end.Also please provide your vivado.log and any constraint files that you would have used. 
+Regards
+Bala
+
+Edited by: awsbalasram on Feb 18, 2019 6:52 AM"
+FPGA Development	"edma usage
+Hi,
+
+I have applications that uses edma, I know that aws-fpga 1.4.7 doesn't support edma anymore. My question is: transferring from using edma to xdma only requires change in the host code or the fpga kernel code as well?
+
+Thanks"
+FPGA Development	"Re: edma usage
+Your kernel should not need to change because the hardware DMA engine is the same. Your software will need to change in some small ways. You can look at the software example in cl_dram_dma here:
+
+https://github.com/aws/aws-fpga/blob/master/hdk/cl/examples/cl_dram_dma/software/runtime/test_dram_dma.c#L103-L168
+
+If you have more specific questions about how to port to XDMA, please ask.
+
+Thanks,
+Jonathan"
+FPGA Development	"No guidance is available in SDAccel Guidance Tab/Window
+Hello, 
+
+I am using the FPGA Developer AMI 1.5.0, z1d.2xlarge AWS instance and I was following 
+""Getting Started on AWS F1 with SDAccel and C/C++ Kernels"" guide:
+https://github.com/Xilinx/SDAccel-Tutorials/blob/master/docs/aws-getting-started/CPP/README.md
+
+In the step2:
+https://github.com/Xilinx/SDAccel-Tutorials/blob/master/docs/aws-getting-started/CPP/STEP2.md
+section ""Running Hardware emulation"", I stuck at ""Click on the Guidance tab, and then click the Maximize icon to visualize the full report"" paragraph.
+The SDAccel/SDx Guidance tab/window shows:
+""No guidance is available""
+
+Everything else looks fine, e.g. Emulation-HW > binary_container_1 > vadd > Guidance Report can be opened as HTML in a browser.
+
+I can also see Test/Emulation-HW/binary_container_1/vadd_guidance.pb file in the Project Explorer with similar information if I open it as a text.
+
+I wonder what should I do to view an interpreted analysis in the Guidance window.
+
+Thanks!"
+FPGA Development	"Re: No guidance is available in SDAccel Guidance Tab/Window
+Hi scicomp, I see that this post is the same as the one on the Xilinx forums: https://forums.xilinx.com/t5/SDAccel/No-guidance-is-available-in-SDAccel-Guidance-Tab-Window/m-p/937001
+I have given an initial suggestion on the Xilinx forum and can continue working with you there."
+FPGA Development	"Re: No guidance is available in SDAccel Guidance Tab/Window
+Hi scicomp, as you may already have been informed offline, there is a known issue with viewing the guidance report in the GUI with AWS F1 instances. Just to repeat the information, this has been addressed in the 2018.3 build of SDAccel and will be available when Amazon updates to the new build on AWS. The guidance report does work with local installations of SDAccel 2018.2 and 2018.3."
+FPGA Development	"SDAccel example: rtl_vadd: cannot find device
+Hello, 
+I'm using AMI 1.50 with pre-installed SDx 2018.2 and xrt. I followed the instructions in aws-fpga (master) SDAccel example rtl_vadd. This error occurs after executing:
+#sudo sh
+#source /opt/xilinx/xrt/setup.sh
+#./host
+
+opendir: Path /sys/bus/pci/devices/0000:00:1d.0/drm does not exist or could not be read: No such file or directory
+xclProbe found 1 FPGA slots with xocl driver running
+WARNING: AwsXcl - Cannot open userPF: /dev/dri/renderD65535
+WARNING: AwsXcl isGood: invalid user handle.
+WARNING: xclOpen Handle check failed
+device[0].user_instance : 0
+WARNING: AwsXcl - Cannot open userPF: /dev/dri/renderD0
+WARNING: AwsXcl isGood: invalid user handle.
+ERROR: xclOpen Handle check failed
+ERROR: Device setup failed
+ERROR: Failed to find an OpenCL platform CL error code -1=CL_DEVICE_NOT_FOUND
+ERROR: Failed to create context for the given device
+Error: Failed to get FPGA compute platform 
+
+
+Here's some system information in my case:
+# lsmod | grep xdma
+xdma  72464  0
+# lsmod | grep xocl
+[EMPTY]
+#uname -r
+3.10.0-862.11.6.el7.x86_64
+#xbutil query/top
+ERROR: No card found
+
+
+I think something is wrong with the XRT, can anyone help?"
+FPGA Development	"Re: SDAccel example: rtl_vadd: cannot find device
+Hello Hzhang86,
+I have reached out to our team and we are working on this.
+
+Regards
+Bala
+
+Edited by: awsbalasram on Feb 14, 2019 9:32 AM
+
+Edited by: awsbalasram on Feb 14, 2019 11:02 AM"
+FPGA Development	"Re: SDAccel example: rtl_vadd: cannot find device
+Hi,
+In the meantime can you follow instructions to install XRT from this link.
+
+https://github.com/aws/aws-fpga/blob/master/hdk/docs/SDxPatch_AR71715_and_XRT_installation_instructions.md#installing-xilinx-runtime-xrt-20182_xdfrc5
+
+Regards
+Bala"
+FPGA Development	"Re: SDAccel example: rtl_vadd: cannot find device
+Hi Hui,
+  You seemed to have installed xdma driver on this Instance previously and while doing so could have removed xocl driver (only one of xocl or xdma driver can bind to the PF at a given time..so this is perfectly ok).  Hence i see xdma driver module loaded and find no XOCL.  You would have to remove xdma driver and reinstall the xocl driver.  Please follow below steps:
+
+sudo  rmmod  xdma
+ curl -s https://s3.amazonaws.com/aws-fpga-developer-ami/1.5.0/Patches/XRT_2018_2_XDF_RC5/xrt_201802.2.1.0_7.5.1804-xrt.rpm -o xrt_201802.2.1.0_7.5.1804-xrt.rpm
+ curl -s https://s3.amazonaws.com/aws-fpga-developer-ami/1.5.0/Patches/XRT_2018_2_XDF_RC5/xrt_201802.2.1.0_7.5.1804-aws.rpm -o xrt_201802.2.1.0_7.5.1804-aws.rpm
+ sudo yum reinstall -y xrt_201802.2.1.0_7.5.1804-xrt.rpm
+ sudo yum reinstall -y xrt_201802.2.1.0_7.5.1804-aws.rpm
+ 
+
+
+The instructions to reinstall XRT (which installs the xocl driver  and loads into DKMS) can be found in the below link:
+
+https://github.com/aws/aws-fpga/blob/master/hdk/docs/SDxPatch_AR71715_and_XRT_installation_instructions.md#installing-xilinx-runtime-xrt-20182_xdfrc5
+
+Please use XRT release ""2018.2_XDF.RC5"" which is latest for SDx 2018.2 and works with latest linux kernels.
+
+Thanks,
+AWSaalluri"
+FPGA Development	"working version of aws-fpga and ami
+Hello,
+
+Can you recommend a stable version of aws-fpga in which SDAccel and hdk examples all work with the AMI 1.50 (with preinstalled Vivado and xrt)? I've met different issues with the master branch.."
+FPGA Development	"Re: working version of aws-fpga and ami
+Hi,
+We would recommend using AMI version . 1.5.0  & HDK version 1.4.7.
+
+Regards
+Bala"
+FPGA Development	"RTL code working the Vivado 2017.1 not synthesizable with Vivado 2018.2
+I'm trying the latest aws-fpga. The F1 instance has the latest AMI 1.50 and Vivado 2018.2 installed.
+For some reason, I have to base my design on the cl_dram_dma example from a previous aws-fpga commit (https://github.com/aws/aws-fpga/tree/934000f9a57c0cde8786441864d5c6e0cf42fef9/hdk/cl/examples/cl_dram_dma). So first, I copied cl_dram_dma from the old aws-fpga branch and tried it within the new aws-fpga framework and the new Vivdado 2018.2. It works. Then, I ran my own design as before, but synthesizing stopped after a few minutes. Here's the error message I found in *.vivado.log file:
+
+INFO: https://forums.aws.amazon.com/ done synthesizing module 'axi_infrastructure_v1_1_0_vector2axi' (28#1) [/home/centos/src/project_data/aws-fpga/hdk/common/shell_v04261818/design/ip/axi_register_slice_light/hdl/axi_infrastructure_v1_1_vl_rfs.v:474]
+INFO: https://forums.aws.amazon.com/ done synthesizing module 'axi_register_slice_v2_1_15_axi_register_slice' (29#1) [/home/centos/src/project_data/aws-fpga/hdk/common/shell_v04261818/design/ip/axi_register_slice_light/hdl/axi_register_slice_v2_1_vl_rfs.v:2300]
+INFO: https://forums.aws.amazon.com/ done synthesizing module 'axi_register_slice' (30#1) [/home/centos/src/project_data/aws-fpga/hdk/common/shell_v04261818/design/ip/axi_register_slice/synth/axi_register_slice.v:58]
+ERROR: https://forums.aws.amazon.com/ Error generated from encrypted envelope. [/home/centos/src/project_data/aws-fpga/hdk/cl/examples/Hui_HelloSpatial_hw/build/src_post_encryption/cl_dram_dma.sv:1004]
+ERROR: https://forums.aws.amazon.com/ Error generated from encrypted envelope. [/home/centos/src/project_data/aws-fpga/hdk/cl/examples/Hui_HelloSpatial_hw/build/src_post_encryption/cl_dma_pcis_slv.sv:16]
+ERROR: https://forums.aws.amazon.com/ Error generated from encrypted envelope. [/home/centos/src/project_data/aws-fpga/hdk/cl/examples/Hui_HelloSpatial_hw/build/src_post_encryption/cl_dram_dma.sv:18]
+
+I backtracked the log file and found the most recent WARNING to the error, not sure if it helps:
+
+Running synth_design for cl_dram_dma /home/centos/src/project_data/aws-fpga/hdk/cl/examples/Hui_HelloSpatial_hw/build/scripts https://forums.aws.amazon.com/
+Command: synth_design -top cl_dram_dma -verilog_define XSDB_SLV_DIS -part xcvu9p-flgb2104-2-i -mode out_of_context -keep_equivalent_registers -flatten_hierarchy rebuilt -max_uram_cascade_height 1 -directive default
+Starting synth_design
+WARNING: https://forums.aws.amazon.com/ The following IPs are missing output products for Implementation target. These output products could be required for synthesis, please generate the output products using the generate_target or synth_ip command before running synth_design.
+/home/centos/src/project_data/aws-fpga/hdk/common/shell_v04261818/design/ip/axi_register_slice_light/axi_register_slice_light.xci
+/home/centos/src/project_data/aws-fpga/hdk/common/shell_v04261818/design/ip/axi_register_slice/axi_register_slice.xci
+/home/centos/src/project_data/aws-fpga/hdk/common/shell_v04261818/design/ip/dest_register_slice/dest_register_slice.xci
+/home/centos/src/project_data/aws-fpga/hdk/common/shell_v04261818/design/ip/src_register_slice/src_register_slice.xci
+
+Do you have any clues of what the problem could be? Thanks"
+FPGA Development	"Re: RTL code working the Vivado 2017.1 not synthesizable with Vivado 2018.2
+Hi Hui,
+  There has been an update to SH_DDR interface,  cl_dram_dma configuration ,  CL/SH hierarchy as well as a new shell between HDK version 1.3.3 on which your original design is based & latest version of aws-fpga (HDK version 1.4.6).  Due to this you are seeing synthesis failures when you are trying to use older design files on the new framework. 
+
+For better error description, I would recommend you to comment out line number 65 & 68, (where-in we are trying to encrypt the design files),  in below script while you are debugging:
+
+https://github.com/aws/aws-fpga/blob/master/hdk/cl/examples/cl_dram_dma/build/scripts/encrypt.tcl
+
+Once you are done debug & development, you should uncomment the encryption steps to protect your design from being visible in the DCP (even though the new scripts encrypt your DCP).
+
+I would also recommend you to diff the implementation & sysnthesis scripts between 1.3.3 & 1.4.6 as there are version updates to Xilinx IP.
+
+https://github.com/aws/aws-fpga/blob/master/hdk/cl/examples/cl_dram_dma/build/scripts/create_dcp_from_cl.tcl
+
+https://github.com/aws/aws-fpga/blob/master/hdk/cl/examples/cl_dram_dma/build/scripts/synth_cl_dram_dma.tcl
+
+Thanks
+AWSaalluri."
+FPGA Development	"Re: RTL code working the Vivado 2017.1 not synthesizable with Vivado 2018.2
+Thank you!
+
+I ran the old cl_dram_dma example with Vivado 2018 and it worked, which means all the design files and scripts within the old cl_dram_dma from 1.3.3 are compatible with Vivado 2018. I also `diff` create_dcp_from_cl.tcl and synth_cl_dram_dma.tcl between 1.3.3 and 1.4.6 and found no difference.
+
+So is it just my design code needs to be updated to make it run with vivado 2018.2?
+
+The more clear error messages after disabling the encryption is shown below:
+INFO: [Synth 8-6157] synthesizing module 'cl_dma_pcis_slv' [/home/centos/src/project_data/aws-fpga/hdk/cl/examples/Hui_HelloSpatial_hw/build/src_post_encryption/cl_dma_pcis_slv.sv:16]
+        Parameter SCRB_MAX_ADDR bound to: 64'b0000000000000000000000000000001111111111111111111111111111111111
+        Parameter SCRB_BURST_LEN_MINUS1 bound to: 15 - type: integer
+        Parameter NO_SCRB_INST bound to: 0 - type: integer
+        Parameter NUM_CFG_STGS_CL_DDR_ATG bound to: 4 - type: integer
+        Parameter NUM_CFG_STGS_SH_DDR_ATG bound to: 4 - type: integer
+ERROR: [Synth 8-2916] unconnected interface port 'cl_axi_mstr_bus' [/home/centos/src/project_data/aws-fpga/hdk/cl/examples/Hui_HelloSpatial_hw/build/src_post_encryption/cl_dram_dma.sv:1004]
+INFO: [Synth 8-5534] Detected attribute (* dont_touch = ""32'b00000000000000000000000000000000"" *) [/home/centos/src/project_data/aws-fpga/hdk/cl/examples/Hui_HelloSpatial_hw/build/src_post_encryption/cl_dma_pcis_slv.sv:81]
+INFO: [Synth 8-5534] Detected attribute (* dont_touch = ""32'b00000000000000000000000000000000"" *) [/home/centos/src/project_data/aws-fpga/hdk/cl/examples/Hui_HelloSpatial_hw/build/src_post_encryption/cl_dma_pcis_slv.sv:82]
+INFO: [Synth 8-5534] Detected attribute (* dont_touch = ""32'b00000000000000000000000000000000"" *) [/home/centos/src/project_data/aws-fpga/hdk/cl/examples/Hui_HelloSpatial_hw/build/src_post_encryption/cl_dma_pcis_slv.sv:83]
+ERROR: [Synth 8-6156] failed synthesizing module 'cl_dma_pcis_slv' [/home/centos/src/project_data/aws-fpga/hdk/cl/examples/Hui_HelloSpatial_hw/build/src_post_encryption/cl_dma_pcis_slv.sv:16]
+ERROR: [Synth 8-6156] failed synthesizing module 'cl_dram_dma' [/home/centos/src/project_data/aws-fpga/hdk/cl/examples/Hui_HelloSpatial_hw/build/src_post_encryption/cl_dram_dma.sv:18]"
+FPGA Development	"Re: RTL code working the Vivado 2017.1 not synthesizable with Vivado 2018.2
+Hello hzhang86,
+Yes, you are correct. You need to make sure your design is updated with the required changes in HDK version 1.4.6. The Errors are indicative of the same.
+
+Regards
+Bala"
+FPGA Development	"Re: RTL code working the Vivado 2017.1 not synthesizable with Vivado 2018.2
+Hi Hui,
+
+Apologies for a delayed response. I was trying to recreate your case where-in you mentioned cl_dram_dma example from HDK 1.3.3 passed in HDK 1.4.6 framework. I have copied over the cl_dram_dma example from HDK 1.3.3  to HDK 1.4.6. framework and tried building cl_dram_dma. The build errored out  due to IP incompatibility issues,  resulting in floating inputs on FLOPs, later during PNR.  When i scroll through log i see that certain IP that are used in the CL example are stale and need to be upgraded for Vivado 2018.2.    
+
+ERROR: [BD 41-1661] One or more IPs have been locked in the design 'cl_axi_interconnect.bd'. Please run report_ip_status for more details and recommendations on how to fix this issue.
+List of locked IPs:
+cl_axi_interconnect_s00_regslice_0
+cl_axi_interconnect_xbar_0
+cl_axi_interconnect_axi_interconnect_0_0
+cl_axi_interconnect_s01_regslice_0
+cl_axi_interconnect_m00_regslice_0
+cl_axi_interconnect_m03_regslice_0
+cl_axi_interconnect_m02_regslice_0
+cl_axi_interconnect_m01_regslice_0
+ 
+
+
+In addition to IP compatibility, there are also changes to the IP interfaces and other CL hierarchical changes required for your design based on HDK 1.3.3 to work with Vivado 2018.2 & new shell V1.4.  AWS  strongly recommends you to migrate your design to the latest shell & tool set using the below guidelines:
+
+https://github.com/aws/aws-fpga/blob/master/hdk/docs/AWS_Shell_V1.4_Migration_Guidelines.md
+
+Please refer to this below compatibility table for HDK to AWS FPGA Developer AMI  version compatibility:
+
+https://github.com/aws/aws-fpga/blob/master/README.md#fpga-developer-ami
+
+Please do not hesitate to reach out to us if you run into any further issues.
+
+Thank you,
+AWSaalluri."
+FPGA Development	"A license feature for ap_opencl was found but is expired
+Hello,
+
+I launched an instance with this AMI https://aws.amazon.com/marketplace/pp/B07BVSZL51
+
+I can run the demos, but when I try to build from the source by myself and run it following the instructions here: https://github.com/Xilinx/data-analytics/tree/master/xsql61
+
+$make QUERYNO=6 DBMODE=csv run_sw_emu   returns this error:
+
+
+
+
+
+
+
+
+
+
+
+xocc v2017.1_sdx (64-bit)
+
+
+
+
+
+
+
+
+
+
+
+  **** SW Build 1933108 on Fri Jul 14 11:54:19 MDT 2017
+    ** Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
+
+Attempting to get a license: ap_opencl
+WARNING: https://forums.aws.amazon.com/ Failed to get a license for 'ap_opencl'. Explanation: A license feature for ap_opencl was found but is expired.
+Resolution: Check the status of your licenses in the Vivado License Manager. For debug help search Xilinx Support for ""Licensing FAQ"".
+INTERNAL ERROR: Uncaught Exception -- ERROR: https://forums.aws.amazon.com/ Failed to get a license: ap_opencl
+
+I checked the liscense file /opt/Xilinx/liscense/XilinxAWS.lic and it looks like it does expire, why is that and what can I do with it?
+
+Thanks!"
+FPGA Development	"Re: A license feature for ap_opencl was found but is expired
+Hi Hui,
+ The Xilinx postgres accelerated AMI you are using seems to be using a older mechanism for licensing & seems to be based on 2017.1 Vivado Toolset which uses a deprecated version of the shell. We have contacted Xilinx and the team responsible for this AMI will get back to you soon.
+
+Thank you,
+AWSaalluri."
+FPGA Development	"Re: A license feature for ap_opencl was found but is expired
+Hi hzhang86,
+
+To address your issue, we have published a new AMI that should be available shortly.
+
+To compile make the following changes to the Makefile:
+CLCC_OPT = --xdevice ${XDEVICE} ${DEVICE_REPO_OPT} --xp param:compiler.enableAutoPipelining=false -O0
+
+->
+CLCC_OPT = -f /home/centos/src/project_data/aws-fpga/SDAccel/aws_platform/xilinx_aws-vu9p-f1_4ddr-xpr-2pr_4_0/xilinx_aws-vu9p-f1_4ddr-xpr-2pr_4_0.xpfm ${DEVICE_REPO_OPT} --xp param:compiler.enableAutoPipelining=false -O0
+
+
+Then perform these commands:
+1) source  src/project_data/aws-fpga/sdaccel_setup.sh 
+2) make xbin FLOW=sw_emu QUERYNO=6
+
+If you have any questions, please don't hesitate to ask.
+
+Best,
+Vincent"
+FPGA Development	"CL_SDE simulation on Questa
+Has anyone successfully run the CL_SDE simulation with Questa?  I ran it with the ""make all"" option and xsim appears to run.  I am not very familiar with the tool, but it seemed to run in the CLI.
+
+I add the QUESTA=1 switch, and it seems that some of the files are in different places that it is expecting.  I have managed to change a bunch of things and progress somewhat, but this is an example design and I don't think I should be modifiying it this heavily.  Some of the files look like they may have been copied from the hello world example and not run.  Maybe there is some cut and paste things in the repo.
+
+Thanks,
+MS"
+FPGA Development	"Re: CL_SDE simulation on Questa
+Hi MS,
+
+Would you be able to share the Questa version you ran with?
+
+Thanks,
+
+Deep"
+FPGA Development	"Re: CL_SDE simulation on Questa
+I have been running questa 10.6c.  The tools seem to indicate it requires 10.6b but we never installed that version of the tool and my tool guy is on vacation.  
+
+I am on the 1.4.5 hdk branch.  
+
+bash-4.1$ git branch -a
+  master
+
+v1.4.5_hdk_version_update
+
+
+I was able to compile the hello world sim with questa with this tool.  I did however, have to suppress errors 2732 in the modelsim.ini file or in the command line when running.
+
+I am not sure the errors I am seeing revolve around the.  The first error looks like the include directory for the C code is specified wrong.  I have gone through and changed it and corrected loads of errors but never got it to successfully run.  I seem so far off that I think I am doing something fundamentally wrong or this was never run through Questa.  It seems to work fine with XSIM .
+
+(run hdk_setup.sh and set the CL_DIR)
+
+bash-4.1$ make all QUESTA=1
+mkdir -p /home/mscott/msu/aws-fpga/hdk/cl/examples/cl_sde/verif/scripts/../../verif/sim/questa
+mkdir -p /home/mscott/msu/aws-fpga/hdk/cl/examples/cl_sde/verif/scripts/../../verif/sim/questa/test_null
+cd /home/mscott/msu/aws-fpga/hdk/cl/examples/cl_sde/verif/scripts/../../verif/sim/questa/test_null && ln -s -f ../questa_complib/modelsim.ini 
+cd /home/mscott/msu/aws-fpga/hdk/cl/examples/cl_sde/verif/scripts/../../verif/sim/questa/test_null && vlog /home/mscott/msu/aws-fpga/hdk/common/software/src/test_null.c -ccflags ""-I/home/mscott/msu/aws-fpga/hdk/cl/examples/cl_sde/verif/scripts/../../software/runtime""
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 25 2017
+Start time: 18:14:22 on Jan 08,2019
+vlog /home/mscott/msu/aws-fpga/hdk/common/software/src/test_null.c -ccflags ""-I/home/mscott/msu/aws-fpga/hdk/cl/examples/cl_sde/verif/scripts/../../software/runtime"" 
+
+
+
+Compiling DPI/PLI C file /home/mscott/msu/aws-fpga/hdk/common/software/src/test_null.c
+
+
+
+
+
+
+Error: (vlog-70) Compilation of the C/C++ src files failed with the error messages given below.
+
+
+
+
+/home/mscott/msu/aws-fpga/hdk/common/software/src/test_null.c:28:32: fatal error: utils/sh_dpi_tasks.h: No such file or directory
+compilation terminated."
+FPGA Development	"Re: CL_SDE simulation on Questa
+Hi 
+Could you update to Devkit release 1.4.6 and try compile. We have updated the scripts to work with both  questa versions 10.6b & 10.6c. 
+
+https://forums.aws.amazon.com/ann.jspa?annID=6537
+
+Thank you
+AWSaalluri."
+FPGA Development	"Re: CL_SDE simulation on Questa
+Sorry for the delayed response.
+
+I had updated the scripts myself and got it working.  I just pulled down the repo 1.47 and built that.  I had to suppress some errors but the tests pass when I do that.
+
+Thanks,
+Mike"
+FPGA Development	"hdk cl examples used in SDAccel
+Hello,
+
+I'm not familiar with verilog or fpga hardware related knowledge. However, I'm trying to use some pre-built RTL code in the SDAccel flow. I've tried out a few examples in SDAccel/examples/xilinx/getting_started/, either under host or rtl_kernel directory. I also tried examples under hdk/cl/examples, like cl_dram_dma. Since SDAccel support rtl kernls, so I'm wondering if it's possible to use the rtl code under hdk/cl/examples (e.g. cl_dram_dma) as the kernel, and simply write a host code to make in run under SDAccel flow. Any suggestions on how to do that?
+
+Thanks a lot!"
+FPGA Development	"Re: hdk cl examples used in SDAccel
+The actual RTL you'd want to implement needs special connectivity on its ports to comply with SDAccel.
+As you can see in examples such as rtl_vadd (from SDAccel examples), the connectivity files are already provided. You can either adapt those to your needs or use the RTL kernel wizard in the SDAccel GUI (main menu ""Xilinx"" -> ""RTL Kernel Wizard"").
+
+There are some videos on the topic here (scroll down to ""watch a video"" and select part #3):
+https://www.xilinx.com/products/design-tools/software-zone/sdaccel.html#gettingstarted"
+FPGA Development	"Generating cl_sde IPs with vivado 2018.2
+Hi, 
+I am using the cl_sde example in my design, including its IPs.
+I use vivado v2018.2_AR71275_op (included in FPGA Developer AMI v1.5.0).
+
+The problem: I can't generate the included sde IPs, due to a different vivado version.
+For instance, I got this in a attempt to generate the ila_axi4 ip:
+
+CRITICAL WARNING: https://forums.aws.amazon.com/ Unable to generate target(s) for the following file is locked: /home/centos/aws-fpga/hdk/cl/examples/cl_sde/ip/ila_axi4/ila_axi4.xci
+Locked reason: 
+
+IP definition 'ILA (Integrated Logic Analyzer) (6.2)' for IP 'ila_axi4' (customized with software release 2017.4.op) has a different revision in the IP Catalog.
+
+
+Any hint/help with resolving this will be much appreciated.
+
+Thanks,
+gabima"
+FPGA Development	"Re: Generating cl_sde IPs with vivado 2018.2
+Resolved, via ""Upgrade IP"""
+FPGA Development	"PCIM performance limits
+I am trying to understand the performance limitations of the PCIM interface.
+
+I saw that AWS claims this
+12GB/s Bandwidth per channel for C2H and H2C (4KB packet at 250MHz).
+in this page
+https://github.com/aws/aws-fpga/blob/master/sdk/apps/virtual-ethernet/doc/SDE_HW_Guide.md
+
+How was this number obtained?
+
+My test design, not based on SDE, that just generates PCIM read requests is only able to do about 8.25 GB/s with 4K ""packets"".  I tried with various sizes and found the best performance to be just over 10GB/s with 1K ""packets"".  From what I can see using my counters and an ILA the performance limiter is the response time and outstanding read limit of the PCIM interface.  All of my numbers are the average of sustained.
+
+I tried adding some counters and an ILA to monitor the PCIM to the example SDE design but in loopback mode it only generates 64B packets which will obviously be much slower and the network limitation of an instance is 10Gb/s or 1.25GB/s so obviously using a separate traffic generator won't hit the claimed 12GB/s either.
+
+What is the real sustained BW limitation of the PCIM interface and what are the conditions of a faster burst?"
+FPGA Development	"Re: PCIM performance limits
+Hi,
+
+The documentation is specific to SDE. However, to achieve bandwidth of 12GB/s please try packet sizes of 512B at PCIM interface. Let us know if you have further questions.
+
+Thanks
+Kris
+
+Edited by: awssunil on Jan 28, 2019 4:25 PM"
+FPGA Development	"Re: PCIM performance limits
+I tried using 512B packets but only got about 8.3 GB/s in my own testing.  This was done with splitting read requests at 4K boundaries and only blocks requests based on ARREADY.
+
+My earlier numbers were a bit off.  After fixing an issue I get the following results
+512B = 8.30 GB/s
+1024B = 9.58 GB/s
+4096B = 8.36 GB/s
+
+I looked at the SDE data a bit more and it seems to be splitting at 512B boundaries (and internally limiting requests since ARREADY never deasserted).  So I modified my design to split at 512B boundaries and got the following results
+512B = 6.29 GB/s
+1024B = 7.85 GB/s
+4096B = 9.63 GB/s
+
+I also figured out how to modify the packet sizes in the SDE loopback test and am getting lower performance than claimed. 
+512B = 2.60 GB/s
+1024B = 5.05 GB/s
+4096B = 11.08 GB/s
+
+These measurements are calculated by counting bytes in 1/100 of a second intervals and saving the maximum seen while traffic is sending"
+FPGA Development	"Re: PCIM performance limits
+Hello,
+
+(I tried to put together some details on achieving max bandwidth using SDE here. Hence the long answer).
+
+Our assumption is that you are doing these analyses on the instance and not using simulation. Please correct us if this assumption is not correct.
+
+In case you are using Virtual Ethernet Application (https://github.com/aws/aws-fpga/blob/master/sdk/apps/virtual-ethernet/doc/Virtual_Ethernet_Application_Guide.md#Overview) to test PCIM bandwidths, please note that this application maximizes the Packets Per Second for 64B packets with a single vCPU and using DPDK framework. However, this test is not tuned to achieve maximum bandwidth over PCIe. One more thing to note is, changing packet sizes in this application will only change the payload packet sizes and will not have an impact on the AXI4 packet sizes on PCIM. 
+
+For the SDE (on PCIM), we have noticed that maximum H2C performance is highly dependent on a number of factors in the application. We have followed these system level/software guidelines to achieve max BW on PCIM using the SDE. We recommend using similar guidelines for your application software to be able to achieve maximum bandwidth:
+
+1)	Buffers use huge pages and are 4K aligned in host DRAM for packets and descriptors. 
+2)	Descriptors are pre-allocated and pre-assembled before entering the critical loop. Also, 64 descriptors are written to the SDE before entering the critical loop.
+3)	Packet buffers are pre-allocated and pre-filled with data before entering the critical loop.
+4)	Critical loop is tightly optimized to include credit checks and descriptor writes only. 
+5)	In the critical loop, descriptor coalescing is used to write 32 descriptors at a time. 
+6)	For C2H, metadata pointers and metadata ring occupancy checks are disabled. 
+7)	No data checks are performed. 
+8)	Use GCC for compilation. O2 Compiler optimization is used for H2C.
+9)	Use flamegraphs to profile the application and identify software bottlenecks that affect the performance.
+
+In the SDE micro-architecture, in addition to maximizing the number of outstanding reads and picking 512B AXI4 read packet sizes (AXI4 packet sizes on PCIM), we have used the following methods to achieve maximum H2C performance: 
+
+1)	For H2C, the data from host is received by a utility block designed to accept stream data without back-pressuring the SDE on the AXI Stream interface. 
+2)	For C2H, use stream data ATG to generate packet traffic at a very high rate without introducing bubbles on the AXI Stream interface. 
+3)	Decrease PCIM Read Request Size from 4KB to 512B
+4)	Use Coalescing for Write-Back of Status and Counters
+5)	Disable metadata ring pointers and ring occupancy check
+
+Lastly, we have measured average bandwidth by running hundreds of millions of packets through the SDE (on PCIM) and tracking how much time it takes to complete data transfer. For example, we measure the time taken (start time and end time) to move 1000 Million 4KB packets (payload) and use it to measure average bandwidth. 
+
+Please consider following the above software and hardware guidelines to achieve maximum BW on PCIM.
+
+Thanks!
+Chakra"
+FPGA Development	"Re: PCIM performance limits
+Is there any examples that can be provided on how to implement the software guidance points? 
+
+I am much more familiar with RTL development than software development and I was able to get the packet size up using the testpmd example. That did help get the performance up but it was clear that the packet buffers were not address aligned and I wasn't able to find how to adjust the alignment in that code."
+FPGA Development	"Struggling with SDAccel and RTL Kernels
+I have put together a portion of my RTL that I am porting over to an RTL Kernel.  I took an initial Vivado project for an RTL Kernel then moved it offline to my local machine to develop and debug it.  When I tried to bring it back over, I have had nothing but trouble.  I can't even get a new RTL Kernel to be built and simulated.
+
+I am using the FPGA Developer AMI.  I just tried to use the Xilinx SDAccel Developer Labs (https://github.com/Xilinx/SDAccel-AWS-F1-Developer-Labs).  The AMI doesn't seem to have the 2017.4 tool suite any longer.
+
+Have there been updates to allow this to run on 2018.2?  I looked around and searched forums on AWS and Xilinx and didn't find anything.
+
+What I am really looking for is a clear method to get my RTL into an RTL Kernel -> XO -> AFI.  I see the various tutorials, but they don't address the issues that come up when I try to keep the structure and plug my code in.  Simulations don't work, etc.  Frustrating.  Maybe I have missed something in doing this.  That is why I went back to start over with the tutorials again and I can't seem to get them up and running.  
+
+Any directions or help from anyone who has done this already?  If not, has someone run through the Xilinx SDAccel Developer Labs on the newest AMI (v1.4.5) with the 2018.2 tool set? Thanks!
+
+Bill"
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+Hi,
+
+For 2017.4 support:  We support this tool version in the latest developer kit (currently v1.4.5) and AWS Developer AMI v1.4.0 (https://aws.amazon.com/marketplace/pp/B06VVYBLZZ)
+The default AMI version is v1.5.0 but you can select to launch using v1.4.0 via the AWS marketplace
+
+For RTL Kernel:  Please try the examples:  aws-fpga/SDAccel/examples/getting_started/rtl_kernel/*
+
+Xilinx Developer Lab:  I will ask Xilinx to respond based on your feedback
+
+Please provide more details on the issues you are seeing.
+
+Thanks
+Kris"
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+Hi,
+
+We (Xilinx) are currently working on updated labs for the latest version of SDAccel. The Xilinx SDAccel Developer Labs that you are trying to run do not cover the RTL kernel flow. 
+
+As Kris pointed out above, there is a Github example which illustrates the RTL kernel flow. There is also a tutorial on how to use this specific example:
+https://github.com/Xilinx/SDAccel-Tutorials/blob/master/docs/aws-getting-started/RTL/STEP2.md
+
+The most important to understand is that RTL kernels use the same software interface and execution model as C/C++ kernels. They are seen by the host application as functions with a void return value, scalar arguments, and pointer arguments. 
+
+This implies that an RTL kernel has an execution model like that of a software function:
+. It must start when called.
+. It is responsible for processing the necessary results.
+. It must send a notification when processing is complete.
+
+More specifically, the SDAccel execution model relies on the following mechanics and assumptions:
+. Scalar arguments are passed to the kernel through an AXI4-Lite slave interface.
+. Pointer arguments are transferred through global memory (DDR or PLRAM).
+. Base addresses of pointer arguments are passed to the kernel through its AXI4-Lite slave interface.
+. Kernels access pointer arguments in global memory through one or more AXI4 memory mapped interfaces.
+. Kernels are started by the host application through its AXI4-Lite interface
+. Kernels must notify the host application when they completed the operation through its AXI4-Lite interface or a special interrupt signal
+
+To comply with this execution model, SDAccel requires that a kernel satisfy specific hardware interface requirements which are described here:
+https://www.xilinx.com/html_docs/xilinx2018_3/sdaccel_doc/creating-rtl-kernels-qnk1504034323350.html#qnk1504034323350"
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+Hey Thomas,
+
+Can we assume in the latest AMI that the SDAccel RTL Kernel Wizard generates Kernel code that meets the above assumptions and mechanics?
+
+Edited by: HairyMongrel on Jan 25, 2019 3:28 AM"
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+Yes, the RTL Kernel Wizard will generate code matching the SDAccel interface requirements.
+
+The Wizard lets you specify:
+
+Clocks and resets
+Scalar arguments
+Number of AXI MM interfaces
+Pointer arguments and which AXI MM interface they are mapped to
+
+
+From there, the Wizard generates:
+
+The kernel.xml summarizing all the above information and necessary to package the design as a kernel .xo file
+An example kernel with the interfaces specified in the wizard, a testbench for this example kernel, a corresponding Vivado project, and a sample host code to use the example in SDAccel.
+
+
+The generated example provides a convenient starting point for your kernel, but you don't necessarily have to use it. In the Github example, the RTL already complies with SDAccel interface requirements. In this case, you can simply use the kernel.xml generated by the Wizard and then run the package_xo command."
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+Cheers Thomas, that's a big help"
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+I tried to see how to launch an older version of the AMI, but apparently can't find the option.  Can you point me to the existing documentation on how I can launch the v1.4.0 (older version) of the FPGA Developer AMI.  The default right now if v1.5.0 and I can't seem to get the examples to work with that one.  Thanks!
+
+Bill"
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+You can easily select your AMI when you go through here:
+https://aws.amazon.com/marketplace/server/configuration?productId=40257ab5-6688-4c95-97d1-e251a40fd1fc&ref_=psb_cfg_continue
+You will find a pull down menu which lets you select the version of the AMI."
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+Thanks for your response.  I tried that, but I only have v1.5.0 available on the drop down.  I am not sure if the old one is gone or what.  Anyway, back to my original question.
+
+I went back with my AMI v1.5.0 image and successfully went through https://github.com/Xilinx/SDAccel-Tutorials/blob/master/docs/aws-getting-started/RTL/STEP1.md.  I am back on https://github.com/Xilinx/SDAccel-Tutorials/blob/master/docs/aws-getting-started/RTL/STEP2.md.  I am having problems when I get to the SDAccel Project where I build.  It appears to build, but I don't see a xclbin folder being created.  The build doesn't give any warnings.  Here is the output of the build step.
+
+18:57:23 **** Build of configuration Emulation-HW for project TEST_RTL_KERNEL ****
+make -j8 incremental 
+/opt/Xilinx/SDx/2018.2.op2258646/bin/xcpp -DSDX_PLATFORM=xilinx_aws-vu9p-f1-04261818_dynamic_5_0 -D__USE_XOPEN2K8 -I/opt/Xilinx/SDx/2018.2.op2258646/runtime/include/1_2/ -I/opt/Xilinx/Vivado/2018.2.op2258646/include/ -O0 -g -Wall -c -fmessage-length=0 -std=c++14 -DSDX_PLATFORM=xilinx_aws-vu9p-f1-04261818_dynamic_5_0 -D__USE_XOPEN2K8 -I/opt/Xilinx/SDx/2018.2.op2258646/runtime/include/1_2/ -I/opt/Xilinx/Vivado/2018.2.op2258646/include/ -O0 -g -Wall -c -fmessage-length=0 -o ""src/host.o"" ""../src/host.cpp""
+/opt/Xilinx/SDx/2018.2.op2258646/bin/xcpp -DSDX_PLATFORM=xilinx_aws-vu9p-f1-04261818_dynamic_5_0 -D__USE_XOPEN2K8 -I/opt/Xilinx/SDx/2018.2.op2258646/runtime/include/1_2/ -I/opt/Xilinx/Vivado/2018.2.op2258646/include/ -O0 -g -Wall -c -fmessage-length=0 -std=c++14 -DSDX_PLATFORM=xilinx_aws-vu9p-f1-04261818_dynamic_5_0 -D__USE_XOPEN2K8 -I/opt/Xilinx/SDx/2018.2.op2258646/runtime/include/1_2/ -I/opt/Xilinx/Vivado/2018.2.op2258646/include/ -O0 -g -Wall -c -fmessage-length=0 -o ""src/xcl2.o"" ""../src/xcl2.cpp""
+/opt/Xilinx/SDx/2018.2.op2258646/bin/xcpp -o ""TEST_RTL_KERNEL.exe"" src/host.o src/xcl2.o -lxilinxopencl -lpthread -lrt -lstdc++ -L/opt/Xilinx/SDx/2018.2.op2258646/runtime/lib/x86_64 -lxilinxopencl -lpthread -lrt -lstdc++ -L/opt/Xilinx/SDx/2018.2.op2258646/runtime/lib/x86_64 -Wl,-rpath,/opt/Xilinx/Vivado/2018.2.op2258646/lnx64/lib/csim -L /opt/Xilinx/Vivado/2018.2.op2258646/lnx64/lib/csim -lhlsmc++-GCC46 -Wl,-rpath,/opt/Xilinx/Vivado/2018.2.op2258646/lnx64/tools/fpo_v7_0 -L /opt/Xilinx/Vivado/2018.2.op2258646/lnx64/tools/fpo_v7_0 -lgmp -lmpfr -lIp_floating_point_v7_0_bitacc_cmodel -Wl,-rpath,/opt/Xilinx/Vivado/2018.2.op2258646/lnx64/tools/fft_v9_1 -L /opt/Xilinx/Vivado/2018.2.op2258646/lnx64/tools/fft_v9_1 -lIp_xfft_v9_1_bitacc_cmodel -Wl,-rpath,/opt/Xilinx/Vivado/2018.2.op2258646/lnx64/tools/fir_v7_0 -L /opt/Xilinx/Vivado/2018.2.op2258646/lnx64/tools/fir_v7_0 -lgmp -lIp_fir_compiler_v7_2_bitacc_cmodel -Wl,-rpath,/opt/Xilinx/Vivado/2018.2.op2258646/lnx64/tools/dds_v6_0 -L /opt/Xilinx/Vivado/2018.2.op2258646/lnx64/tools/dds_v6_0 -lIp_dds_compiler_v6_0_bitacc_cmodel 
+/opt/Xilinx/Vivado/2018.2.op2258646/tps/lnx64/binutils-2.26/bin/ld: warning: libgmp.so.11, needed by /opt/Xilinx/Vivado/2018.2.op2258646/lnx64/tools/fft_v9_1/libIp_xfft_v9_1_bitacc_cmodel.so, may conflict with libgmp.so.7
+/opt/Xilinx/SDx/2018.2.op2258646/bin/emconfigutil --od . --nd 1  --platform /home/centos/src/project_data/aws-fpga/SDAccel/aws_platform/xilinx_aws-vu9p-f1-04261818_dynamic_5_0/xilinx_aws-vu9p-f1-04261818_dynamic_5_0.xpfm
+/opt/Xilinx/Vivado/2018.2.op2258646/tps/lnx64/binutils-2.26/bin/ld: warning: libgmp.so.11, needed by /opt/Xilinx/Vivado/2018.2.op2258646/lnx64/tools/fft_v9_1/libIp_xfft_v9_1_bitacc_cmodel.so, may conflict with libgmp.so.7
+ 
+****** configutil v2018.2.op (64-bit)
+  **** SW Build 2258646 on Thu Jun 14 20:02:38 MDT 2018
+    ** Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+ 
+INFO: [ConfigUtil 60-895]   Target platform: /home/centos/src/project_data/aws-fpga/SDAccel/aws_platform/xilinx_aws-vu9p-f1-04261818_dynamic_5_0/xilinx_aws-vu9p-f1-04261818_dynamic_5_0.xpfm
+emulation configuration file `emconfig.json` is created in . directory 
+ 
+18:57:34 Build Finished (took 10s.729ms)
+
+
+Then when I try to run, I get this output
+
+[Console output redirected to file:/home/centos/src/project_data/aws-fpga/SDAccel/examples/xilinx_2018.2/getting_started/rtl_kernel/rtl_vadd/Test_dir/TEST_RTL_KERNEL/Emulation-HW/TEST_RTL_KERNEL-Default.launch.log]
+Found Platform
+Platform Name: Xilinx
+XCLBIN File Name: vadd
+INFO: Importing xclbin/vadd.hw_emu.xilinx_aws-vu9p-f1-04261818_dynamic_5_0.xclbin
+ERROR: xclbin/vadd.hw_emu.xilinx_aws-vu9p-f1-04261818_dynamic_5_0.xclbin xclbin not available please build
+
+
+I look and can't find the xclbin.  I am following the steps exactly as outlined.  Why isn't the build process for the xclbin being invoked?  How do I get that working?  This makes it hard to get my own RTL Kernel going if I can't create the example project.  Thanks for any help and guidance.
+
+Bill"
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+Hi Bill,
+
+There is an error in the instructions in this section: https://github.com/Xilinx/SDAccel-Tutorials/blob/master/docs/aws-getting-started/RTL/STEP2.md#specifying-the-binary-container-for-the-kernel-executable
+
+Instead of clicking the ""Add Binary Container"" icon, you need to click the ""Add Hardware Function"" which is right next to it. This will give you both the binary container and the vector add kernel. After this, you can rebuild the project and you will see that xocc is invoked and the xclbin file is generated.
+
+If you prefer to work from the command line instead of using the GUI, you can simply run the following from the example directory to build and run everything:
+make check TARGETS=hw_emu DEVICES=$AWS_PLATFORM all"
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+I was able to get my RTL Kernel into a SDAccel project.  I seem to be getting stuck with the Kernel not responding.  In the SDAccel app I have the following:
+
+    // Set Arguments
+    ...
+    q.enqueueTask(krnl_et_pc);
+ 
+    //Copy Result from Device Global Memory to Host Local Memory
+    q.enqueueMigrateMemObjects(outBufVec,CL_MIGRATE_MEM_OBJECT_HOST);
+    q.finish();
+
+
+I added std::cout to the code to see what is going on.  The enqueueTask(krnl_et_pc)
+ seems to return immediately.  I don't want to copy the results buffer until my kernel is done.  Are there options to change that?  It seems to hang in q.finish()
+. I assume it is waiting for an interrupt.  Does the Emulation-HW handle the interrupts properly from the RTL Kernels?  My simulations are running fine in Vivado for this RTL Kernel.  What debug options do I have in SDAccel to delve into the RTL Kernel? 
+
+Thanks!
+
+Bill"
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+OpenCL ""enqueue"" APIs always return immediately since they only put the command in the command queue. By default, command queues are ordered so the commands are executed in the order they are submitted after the previous one completes. So if your command queue is indeed ordered, then the output buffer will be migrated back only after the kernel is done processing. q.finish() is a blocking call. It waits for all the previously euqueued commands to finish. You can refer to the SDAccel programmers guide for more details: https://www.xilinx.com/html_docs/xilinx2018_3/sdaccel_doc/vpy1519742402284.html#vpy1519742402284
+
+The SDAccel runtime (XRT) needs to know when the kernel is done. This is either done by polling the mandatory ""done"" bit or your kernel or by responding to the optional interrupt signal. If you design is hanging, it is likely that the kernel doesn't complete correctly, or that SDAccel doesn't recognize the completion signal.
+
+To debug this, you can bring-up the XSIM simulator in interactive mode during HW emulation. By default, it will come up with waveform tracing the primary I/Os of your kernel, but you can trace any signal you want. You can find more informations on how to do this in the SDAccel Debugging Guide: https://www.xilinx.com/html_docs/xilinx2018_3/sdaccel_doc/dtp1532068222773.html#emy1525709036960"
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+That is helpful!  Thanks!  I am getting this simulated now.  When it starts up the Vivado simulator, it seems to be get stuck as various points in the simulation running the ""xsim.dir/emu_wrapper_behav/xsim_script.tcl"".  
+
+The OpenCL C/C++ side I have a break point happening after the arguments are set and the enqueueTask();
+ call.  The Vivado simulation first hung up around ~64 ns.  These last two times it has hung up at 3583.566ps.  I also see this warning, not sure if it matters:
+Warning: (W509) module construction not properly completed: did you forget to add a sc_module_name parameter to your module constructor?: module 'emu_wrapper_emu_i_sdaccel_generic_pcie_0'
+In file: sc_module.cpp:403
+
+
+I will keep reading in the meantime and see what I can figure out as to why the simulation is hanging up.  I can't interact with this either.  The default simulation time is 10 us when Vivado launches.  Is there a way to change that through an INI or some other file or option?"
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+Ok, I see that it is locked in with the simulation.  I had to go to the finish() call to allow it to free run.  It would be nice to add more wave forms as previous points in the simulation as I step through the enqueue commands for data transfer and the command queue.  I am still working through it, but see better how the OpenCL C/C++ side is being tied into the Vivado simulator."
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+More information now, as I get further.  It appears that one of my BRAMs is not initialized in my RTL Kernel. Most are for data, but a few hold look up tables that I use.  I had included my .mem files in the RTL simlulations before packaging into a .XO file.  When creating the .XO file for the RTL Kernel, how do I ensure I get the BRAM memory initialized with my lookup table values (.mem files)?  Could it be part of the IP Packaging step?  Any experience or thoughts on this?  Thanks!
+
+Bill"
+FPGA Development	"Re: Struggling with SDAccel and RTL Kernels
+OK.  All of the pieces have fallen into place now.  I needed to add the .mem files to my script that I use (modified from package_kernel.tcl in the example RLT Kernel) to package my RTL Kernel (in the IPI generation step).  That seems to have fixed this.  I can interact with the RTL Kernel in debugging mode, which is helpful.  I am moving this over to an AFI now.  Thanks for your help!
+
+Bill"
+FPGA Development	"Segmentation Fault When Running helloworld_ocl_runtime Example
+Hi,
+I'm trying to run the helloworld_ocl_runtime example on an FPGA instance. If I run
+sdaccel_runtim_setup.sh
+./helloworld
+
+
+I get
+xclProbe found 1 FPGA slots with xocl driver running
+ERROR AwsXcl: PCI kernel bar attach failed for slot# 0
+WARNING: AwsXcl isGood: kernel, global & mgmt bar are: ffffffff, ffffffff, ffffffff
+WARNING: xclOpen Handle check failed
+device[0].user_instance : 80
+ERROR AwsXcl: PCI kernel bar attach failed for slot# 0
+WARNING: AwsXcl isGood: kernel, global & mgmt bar are: ffffffff, ffffffff, ffffffff
+ERROR: xclOpen Handle check failed
+ERROR: Device setup failed
+Error: Failed to find Xilinx platform
+
+
+If I try 
+sudo sh
+sdaccel_runtim_setup.sh
+./helloworld
+
+
+I get 
+AWS FPGA: Copying Amazon FPGA Image (AFI) Management Tools to /usr/bin
+AWS FPGA: Installing shared library to /usr/local/lib64
+        libfpga_mgmt.so.1 (libc6,x86-64) => /usr/local/lib64/libfpga_mgmt.so.1
+AWS FPGA: Done with Amazon FPGA Image (AFI) Management Tools install.
+Done with SDK install.
+INFO: sdk_setup.sh PASSED
+INFO:  VIVADO tools not found. Reading VIVADO_TOOL_VERSION ENV variable to determine runtime version...
+INFO: VIVADO_TOOL_VERSION is 2018.2
+INFO: Xilinx Vivado version is 2018.2
+sh: override: command not found
+INFO: XRT installed. proceeding to check version compatibility
+INFO: Installed XRT version : 343186f76f59edd01bc48d84cf67fe22a0a3f338
+INFO: XRT version 343186f76f59edd01bc48d84cf67fe22a0a3f338 is supported.
+INFO:  Now checking XOCL driver...
+INFO: Found 'xocl Driver is installed and running. '
+XILINX_XRT      : /opt/xilinx/xrt
+PATH            : /opt/xilinx/xrt/bin:/home/centos/aws-fpga/shared/bin/scripts:/sbin:/bin:/usr/sbin:/usr/bin
+LD_LIBRARY_PATH : /opt/xilinx/xrt/lib:
+INFO:  XRT Runtime setup Done
+INFO: SDAccel runtime check PASSED
+sh-4.2# ./helloworld
+xclProbe found 1 FPGA slots with xocl driver running
+Found Platform
+Platform Name: Xilinx
+Found Device=xilinx_aws-vu9p-f1-04261818_dynamic_5_0
+XCLBIN File Name: vector_addition
+INFO: Importing ./vector_addition.hw.xilinx_aws-vu9p-f1-04261818_dynamic_5_0.awsxclbin
+Loading: './vector_addition.hw.xilinx_aws-vu9p-f1-04261818_dynamic_5_0.awsxclbin'
+WARNING: Please update xclbin. Legacy clocking section support will be removed soon
+This AFI already loaded. Skip reload!
+Successfully skipped reloading of local image.
+Segmentation fault
+
+
+What am I doing wrong?
+
+Thanks,"
+FPGA Development	"Re: Segmentation Fault When Running helloworld_ocl_runtime Example
+Hi,
+
+We are observing with the kernel version ""3.10.0-957.1.3.el7.x86_64"" and later.  The xocl driver is not installed properly/ doesnt work with this kernel. We are working with Xilinx to address the issue with highest priority. 
+
+However, we have tested with kernel version ""3.10.0-862.11.6.el7.x86_64"" the helloworld ocl example works.
+
+Meanwhile, as a workaround, you may want to start a new instance with fpga developer AMI 1.5.0 and do not source the setup_gui script ""https://s3.amazonaws.com/aws-fpga-developer-ami/1.5.0/Scripts/setup_gui.sh"". As, Sourcing the above script updates kernel version to 3.10.0-957.1.3.el7.x86_64 or later; which in-turn causes the xocl driver to break.
+
+Which linux version were you using when you hit this issue?
+
+Thanks
+Kris"
+FPGA Development	"Re: Segmentation Fault When Running helloworld_ocl_runtime Example
+Hi,
+
+I met the similar issue, please check this thread: https://forums.aws.amazon.com/message.jspa?messageID=887905#887905
+Basically, I can run the aws/helloworld_ocl_runtime example correctly, but if I tried to build AFI myself from xilinx/getting_started/host/helloworld_ocl and run, it'll segfault. 
+The kernel version of my F1 instance is 3.10.0-693.2.2.el7.x86_64
+
+Any clues? Thanks"
+FPGA Development	"Virus found on FPGA developer AMI
+Hi
+I'm currently trying to build an AMI based on FPGA developer AMI, and when trying to share it, I'm getting the next warnings:
+Vulnerable file(s) detected
+Vulnerability found in filepath
+Win.Virus.Triusor-6735658-0: /opt/Xilinx/Vivado/2017.4.op/msys/mingw32/bin/objdump.exe
+Win.Virus.Triusor-6735658-0: /opt/Xilinx/Vivado/2017.4.op/msys/bin/objdump.exe
+
+Any idea what might've cause them?
+I'm working only in Linux environment - can I just delete those files?
+
+Thanks, Oren"
+FPGA Development	"Re: Virus found on FPGA developer AMI
+Hi Oren,
+
+The AWS Marketplace runs Vulnerability scans on the Developer AMI before it is released to our customers. We scanned the AMI before releasing and did not find any vulnerabilities at that time. However, a re-scan today shows the same vulnerability that you found.
+
+Initial triage points to this detection being a false positive, however we are trying to confirm with the AWS Marketplace and Xilinx to understand the vulnerability/threat of the objdump.exe files.
+We will update you here as soon as we get more information on it.
+
+Another thing I wanted to check is whether you are trying to share the Developer AMI. If so, please make sure to review the EULA on the marketplace listing here: https://aws.amazon.com/marketplace/pp/B06VVYBLZZ
+
+Thanks,
+Deep"
+FPGA Development	"Re: Virus found on FPGA developer AMI
+Hi Oren,
+
+The AWS Marketplace team inspected these files and confirmed that the vulnerability listing is a false positive.
+
+If you are getting your vulnerability report through the AWS Marketplace scanning tool, you should be able to re-run your scans and see them pass now. 
+
+If you intend to release/publish an AMI through the AWS Marketplace and find vulnerabilities in your AMI's, you should reach out using the form here: https://aws.amazon.com/marketplace/management/contact-us/ and the team should help you out from there!
+
+Hope this clarifies the warnings that you saw. Please feel free to ask us any other questions you may have here and we'd be happy to help! 
+
+Thanks,
+Deep"
+FPGA Development	"Unable to Run hdk_setup script on AMI 1.5
+Hi Amazon Team, 
+
+As requested in the previous thread:https://forums.aws.amazon.com/thread.jspa?messageID=887224&#887224 
+
+I am unable to source the hdk_setup script with maintaining the kernel version 3.10.0-862.11.6.el7.x86_64 and AMI version 1.5.
+
+When sourcing the script i get this error: 
+NFO: Setting up environment variables
+ERROR: Please install/enable Vivado.
+ERROR: If you are using the FPGA Developer AMI then please request support.
+
+Additional Info: Launching the vivado -mode batch command gives:
+$ vivado -mode batch
+terminate called after throwing an instance of 'std::runtime_error'
+what(): locale::facet::_S_create_c_locale name not valid
+/opt/Xilinx/Vivado/2018.2.op2258646/bin/loader: line 194: 2270 Aborted ""$RDI_PROG"" ""$@""
+
+Information: 
+Kernel version : 3.10.0-862.11.6.el7.x86_64
+AMI version : 1.5.0
+hdk version : HDK_VERSION=1.4.6
+
+Please advise. 
+
+Thanks,"
+FPGA Development	"Re: Unable to Run hdk_setup script on AMI 1.5
+Hi,
+
+Here is what I see when I source hdk_setup.sh:
+$ source hdk_setup.sh
+INFO: Setting up environment variables
+INFO: Changing AWS_FPGA_REPO_DIR from /home/centos/src/project_data/aws-fpga to /home/centos/aws-fpga
+INFO: Base vivado version is Vivado v2018.2_AR71275_op (64-bit) ; Checking if patch AR71715 needs to be installed
+INFO:  SDX patch AR71715 is valid for Vivado v2018.2_AR71275_op (64-bit)
+INFO: Downloading the AR71715 patch.
+INFO: Extracting the AR71715 patch.
+Archive:  AR71715.zip
+....
+INFO: [Common 17-206] Exiting Vivado at Mon Jan 28 16:30:28 2019...
+Copying files to /home/centos/aws-fpga/hdk/common/verif/models/ddr4_model
+Copying files to /home/centos/aws-fpga/hdk/common/verif/models/ddr4_rdimm_wrapper
+patching ddr4_rdimm_wrapper.sv file
+patching ddr4_sdram_model_wrapper.sv file
+patching interface.sv file
+patching proj_package.sv file
+patching ddr4_model.sv file
+INFO: DDR4 model build passed.
+INFO: ATTENTION: Don't forget to set the CL_DIR variable for the directory of your Custom Logic.
+INFO: AWS HDK setup PASSED.
+
+
+Vivado is installed here:
+$ which vivado
+/opt/Xilinx/Vivado/2018.2.op2258646/bin/vivado
+
+
+Do you have enough disk space allocated for download of the developer kit?  During hdk_setup, we download a DCP file and build memory models, therefore, you will need to have enough free disk?
+
+What is the instance type and AWS region you are running in?  I want to replicate exactly.
+
+Thanks
+Kris"
+FPGA Development	"Re: Unable to Run hdk_setup script on AMI 1.5
+Hi Kris, 
+
+Thank you for your response, I used to source it while using the SSH connection and without installing the GUI packages and I think that's what caused my problem. 
+
+I excluded the kernel from YUM updates and done the rest manually while ignoring the broken packages and I was able to source the HDK setup script after connecting through RDP.
+
+Thank you for your Response, I am sharing the steps so it may help others: 
+
+Freezing the Kernel update: 
+ sudo vi /etc/yum.conf
+
+
+add or append the following line: exclude=kernel*
+
+then Execute the following commands: 
+ sudo yum update
+sudo yum groupinstall -y ""Server with GUI"" --skip-broken
+sudo systemctl set-default graphical.target
+sudo yum -y install epel-release
+sudo rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm
+sudo yum install -y xrdp tigervnc-server
+sudo systemctl start xrdp
+sudo systemctl enable xrdp
+sudo systemctl disable firewalld
+sudo systemctl stop firewalld
+
+
+and then 
+ sudo reboot 
+
+
+Hope this helps other people. 
+
+Thanks again"
+FPGA Development	"Virtual Ethernet example issue: pktgen instance hangs
+Hi,
+I am new to AWS F1, and already successfully ran several CL examples. Yet having problems to run the virtual-ethernet example.
+Immediately after running pktgen, the pktgen instance is stuck, and no packets received by the virtual-ehernet instance.
+pktgen instance had to be rebooted.
+
+Below are the steps I took (I apologize for the detailed list, but I assumed it was necessary for pinpointing the root cause):
+Any hints to help resolving this, will be  much appreciated.
+
+1. Created my AMI, to be used with all my experiments, including this virtual-ethernet example:
+1.1. Launched m4.2xlarge with FPGA Developer AMI v1.5.0.
+1.2. ssh & cloned aws-fpga.git to $MY_AWS_FPGA
+1.3. Saved my image
+
+2. Preparing virtual_ethernet instance:
+2.1. Launched an f1.2xlarge image, using my preprepared AMI, and my placement group
+2.2. Added new network interface, with same subnet as the f1's default NI.
+2.3. Attached the new NI to the f1 instance
+2.4. ssh to f1, then followed the additional ENI/eth1 interface setup in https://github.com/aws/aws-fpga/blob/master/sdk/apps/virtual-ethernet/doc/Virtual_Ethernet_Application_Guide.md#CentosEthCfg  to complete the new NI setup
+2.5. Modified the new NI name to eth1 (was eth0, while the default NI named ens3)
+2.6. f1 reboot, then verified the new NI up and running, and correctly named (eth1).
+2.7. Loaded the virtual-ethernet-example AFI:
+2.7.1. sudo fpga-load-local-image -S 0 -I agfi-0f4eca32dc6100729
+
+2.8. Followed the ""Hello World"" Loopback install & setup steps in Virtual Ethernet Application Guide
+2.8.1. cd $MY_AWS_FPGA/sdk/apps/virtual-ethernet/scripts/
+2.8.2. sudo python ./virtual_ethernet_install.py my_ve_dir
+2.8.3. sudo python ./virtual_ethernet_setup.py my_ve_dir/dpdk 0
+
+2.9. Successfully ran the ""Hello World"" Loopback example, getting ~6 mpps:
+2.9.1. cd my_ve_dir/dpdk
+2.9.2. sudo ./x86_64-native-linuxapp-gcc/app/testpmd -l 0-1  -- --port-topology=loop --auto-start --tx-first --stats-period=3
+
+2.10. Followed the ""End-to-End"" PacketGen Traffic install & setup steps in Virtual Ethernet Application Guide
+2.11. cd $MY_AWS_FPGA/sdk/apps/virtual-ethernet/scripts/
+2.12. install already done (step 2.8.2)
+2.13. 'lspci -D' to get the new NI pci DBDF
+2.14. sudo python ./virtual_ethernet_setup.py my_ve_dir/dpdk 0 --eni_dbdf 0000:00:04.0 --eni_ethdev eth1
+2.15. cd my_ve_dir/dpdk
+2.16. sudo ./x86_64-native-linuxapp-gcc/app/testpmd -l 0-1  -- --port-topology=chained --auto-start --stats-period=3 --forward-mode=spp-eni-addr-swap
+
+3. Preparing pktgen instance:
+3.1. Launched an m4.2xlarge image, using my preprepared AMI, and same placement group previously set to the f1 instance. Also verified same VPC for both instances.   
+3.2. Added new network interface, with same subnet as the m4's default NI (which is same subnet as the f1 NIs).
+3.3. Attached the new NI to m4 instance
+3.4. ssh, then followed the additional ENI/eth1 interface setup in https://github.com/aws/aws-fpga/blob/master/sdk/apps/virtual-ethernet/doc/Virtual_Ethernet_Application_Guide.md#CentosEthCfg to complete the new NI setup
+3.5. Modified the new NI name to eth1 (was eth0, while the default NI named ens3)
+3.6. m4 reboot, then verified the new NI up and running, and correctly named (eth1).
+
+3.7. Followed the ""End-to-End"" PacketGen Traffic install & setup steps in Virtual Ethernet Application Guide
+3.8. cd $MY_AWS_FPGA/sdk/apps/virtual-ethernet/scripts/
+3.9. sudo python ./virtual_ethernet_pktgen_install.py ~/my_pktgen_dir
+3.9.1. Note: An attempt to install into ./my_pktgen_dir failed, so I had to move the install_dir to my home dir.
+3.10. sudo python ./virtual_ethernet_pktgen_setup.py ~/my_pktgen_dir --eni_dbdf 0000:00:04.0 --eni_ethdev eth1
+3.11. Updated src/dst mac/ip addresses in '$MY_AWS_FPGA/sdk/apps/virtual-ethernet/scripts/pktgen-ena.pkt' to match eth1 in both instances
+
+3.12. Running ""End-to-End"" PacketGen:
+3.12.1. cd ~/my_pktgen_dir/pktgen-dpdk/
+3.12.2. sudo app/x86_64-native-linuxapp-gcc/pktgen -l 0,1 -n 4 --proc-type auto --log-level 7 --socket-mem 2048 --file-prefix pg -b 00:03.0 -- -T -P -m [1].0 -f $MY_AWS_FPGA/sdk/apps/virtual-ethernet/scripts/pktgen-ena.pkt
+
+Edited by: gabima on Dec 25, 2018 3:43 AM
+
+Edited by: gabima on Dec 25, 2018 3:43 AM
+
+Edited by: gabima on Dec 25, 2018 4:18 AM
+
+Edited by: gabima on Dec 25, 2018 4:26 AM"
+FPGA Development	"Re: Virtual Ethernet example issue: pktgen instance hangs
+Hello Gabima,
+Thank you very much for the detailed steps. We are looking into this.
+Can you please share your Instance ID and region?
+
+Regards
+Bala
+
+Edited by: awsbalasram on Dec 26, 2018 1:09 PM"
+FPGA Development	"Re: Virtual Ethernet example issue: pktgen instance hangs
+Hi Bala,
+My region: US East (N. Virginia).
+Regarding the instance ID, the ID is different each time I launch the instance (instances are usually teminated at the end of a day), so which ID is needed?  
+
+Thanks"
+FPGA Development	"Re: Virtual Ethernet example issue: pktgen instance hangs
+Hello Gabima,
+
+Thank you again for providing such detailed steps on the problem you are having. I have read through your post and don't see anything that looks wrong. It seems that you have followed the instructions carefully and correctly. I do have a few suggestions for things to try:
+
+1. After you restart your m4 instance, can you check the last few lines of dmesg to see if there is any hint about the instance hang?
+2. You can also try using Amazon Linux 2 as the base AMI instead of the FPGA Dev AMI; there isn't anything in the FPGA Dev AMI that is necessary for the virtual ethernet setup. This will make a cleaner starting point and the network interface setup is a bit more turn-key.
+
+Thanks,
+Jonathan"
+FPGA Development	"Re: Virtual Ethernet example issue: pktgen instance hangs
+Hi Jonathan,
+I would like to verify the steps to create a new network interface:
+1. EC2 Dashboard -> Network Interfaces -> Create New Interface
+2. In ""Create Network Interface"" window.
+2.1. Set a unique name. Useful for later stages to idenify this NI among others
+2.2. Select same subnet as the main (eth0) instance network interface
+2.3. Leave ""Private IP"" at Auto Assign
+2.4. Choose either of the ""Security Groups"" available choices
+3. Create
+
+In step 2.4, I noticed that sometimes the selected security group has both tcp and icmp inbound protocols, while in other cases there was only tcp.
+What is the correct way to set/define/select the security group for the new NI?
+
+Thanks"
+FPGA Development	"Re: Virtual Ethernet example issue: pktgen instance hangs
+Gabima,
+
+For this kind of testing, I normally add a rule to the security group to allow all traffic from a network interface in the same security group. You can do this by adding a new line for a rule and then selecting ""all traffic"" as the type and then enter the security group id in the source field. You may need to add more specific rules if you use the security group with other instances, but this should be acceptable for testing.
+
+Please write again if you have more questions.
+
+Jonathan"
+FPGA Development	"Re: Virtual Ethernet example issue: pktgen instance hangs
+Hi Jonathan,
+I tried your tip to use ""Amazon Linux 2"" as base AMI for packetgen instance, but the install part failed with:
+== Build kernel/linux/igb_uio
+make: *** /lib/modules/4.14.77-81.59.amzn2.x86_64/build: No such file or directory.  Stop.
+make[6]: *** http://igb_uio.ko Error 2
+make[5]: *** https://forums.aws.amazon.com/ Error 2
+make[4]: *** https://forums.aws.amazon.com/ Error 2
+make[3]: *** https://forums.aws.amazon.com/ Error 2
+make[2]: *** https://forums.aws.amazon.com/ Error 2
+make[1]: *** https://forums.aws.amazon.com/ Error 2
+make: *** https://forums.aws.amazon.com/ Error 2
+ERROR:2019-01-06 13:05:49,868: cmd='make install T=x86_64-native-linuxapp-gcc' failed with ret=512, exiting
+
+Can you see why?
+
+Thanks,"
+FPGA Development	"Re: Virtual Ethernet example issue: pktgen instance hangs
+Reposting the errors sequence (something went wrong in previous post):
+== Build kernel/linux/igb_uio
+make:  /lib/modules/4.14.77-81.59.amzn2.x86_64/build: No such file or directory.  Stop.
+make[6]:  igb_uio.ko Error 2
+make[5]:  igb_uio Error 2
+make[4]:  linux Error 2
+make[3]:  kernel Error 2
+make[2]:  all Error 2
+make[1]:  pre_install Error 2
+make:  install Error 2
+ERROR:2019-01-06 13:05:49,868: cmd='make install T=x86_64-native-linuxapp-gcc' failed with ret=512, exiting
+
+Edited by: gabima on Jan 6, 2019 5:17 AM"
+FPGA Development	"Re: Virtual Ethernet example issue: pktgen instance hangs
+That could happen if the headers for the running kernel aren't installed. The most likely cause is that you have run updates and a new kernel is installed but not yet running. You can prepare the instance by running updates and then rebooting before proceeding with the install steps.
+sudo yum update
+sudo reboot
+
+Thanks,
+Jonathan"
+FPGA Development	"Re: Virtual Ethernet example issue: pktgen instance hangs
+Hi,
+I retried using same FPGA_AMI image on both sides, and this time something is happening.
+On the pckgen instance, the screen is frozen right after the ""start 0"" command, but then I noticed that the other instance do get the desired packets. Attached are screens snapshots on both sides.
+The pckgen screen is frozen, while the F1 instance peridically updates the total packets and bytes.
+
+I also retried the same scenario with different packet sizes: the pktgen screen still frozen, but I did get matching numbers on the F1 screen.
+Yet, I hit these pps/bw limits:
+1. As can be seen on the F1 screen, the pps is upper-bounded by 200000, which is only 104 MB/s with 64B packets.
+2. Setting higher packet sizes do increase the total BW, but the max BW is upper-bounded by 1GB/s. For instance, I set packet size to 1 KB, but the pps dropped to ~122000, thus yielding ~1 GB/s (1KB * 122000 * 8). Likewise, when setting packet size to any number between 64..625 bytes, the pps is steady at 200000.
+
+Any idea how to resolve the pckgen frozen screen (currently resolved with reboot)?
+How to override the pps/bw (200000, 1GB) limits?
+
+Thanks"
+FPGA Development	"Re: Virtual Ethernet example issue: pktgen instance hangs
+gabima--
+
+You mentioned you created your own AMI to do these experiments. Have you tried using the Amazon Linux AMI, unchanged? Are you using the sample AFI or did you generate your own AFI?
+
+Thanks,
+Jonathan"
+FPGA Development	"Re: Virtual Ethernet example issue: pktgen instance hangs
+Hi Jonathan,
+I did try Amazon Linux 2 as base AMI, unchanged, with the pckgen instance, but unfortunately it still failed on the setup phase:
+1. Updated the AMI as you suggested on your reply from Jan 7th
+        sudo yum update & reboot
+2. cd ~/aws-fpga/sdk/apps/virtual-ethernet/scripts
+3. sudo python ./virtual_ethernet_pktgen_install.py ~/ve_pktgen_dir
+    which ended successfully
+4. Double checked the added network interface dbdf and ethdev values, then:
+        sudo python ./virtual_ethernet_pktgen_setup.py ~/ve_pktgen_dir --eni_dbdf 0000:00:04.0 --eni_ethdev eth1
+    which failed with:
+    ERROR:2019-01-10 08:02:09,781: cmd='modprobe uio_pci_generic' failed with ret=-1, exiting
+
+
+In regard to my Jan 8th reply, I used the available FPGA Developer AMI v1.5.0, from AWS marketplace, on both instances.
+I used the sample cl_sde agfi (agfi-0f4eca32dc6100729)
+
+Thanks,
+
+Edited by: gabima on Jan 10, 2019 12:39 AM
+
+Edited by: gabima on Jan 10, 2019 12:43 AM
+
+Edited by: gabima on Jan 10, 2019 12:44 AM"
+FPGA Development	"Re: Virtual Ethernet example issue: pktgen instance hangs
+gabima--
+
+I missed a step in my previous post about updating an Amazon Linux AMI for use with this example.
+
+Install build tools, then make sure all updates are installed, then reboot:
+sudo yum -y groupinstall ""Development Tools"" ""Development Libraries""
+sudo yum update
+sudo reboot
+
+
+Regarding the frozen pktgen issue:
+
+I managed to track down the cause, at a high level, for the problem you are encountering. The M4 instance type uses an older version of the Enhanced Networking feature in EC2; it uses the Intel 82599 Virtual Function Interface. Our testing up to this point has been done using newer generation instance types, such as F1, C5, and M5. These instance types use the latest revision of Enhanced Networking which supports higher throughput and IOPS. The quickest solution for you is to upgrade to an M5 instance type, which is cheaper than M4 and provides better performance. I was able to reproduce the problem you described and I converted the instance to an M5 and the test performed as intended.
+
+Note that on an M5 instance, the PCI DBDF for the network interface is usually different. In my tests it appears as 000:00:06.0 for the second network interface.
+
+See:
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/enhanced-networking.html
+https://aws.amazon.com/ec2/pricing/on-demand/
+
+Thanks,
+Jonathan"
+FPGA Development	"ERROR: Device Setup Failed in Helloworld_ocl : AMI 1.5
+Hi All ;
+
+I created an instance with FPGA AMI 1.5.0 and I followed the SDAccel getting started instructions. 
+All the steps are passed successfully but when I tried to run the host application I got the following errors. 
+Note: 
+ - I sourced sdaccel_setup.sh to set up not the sdaccel_gui.sh.
+ - I added the AFI is available and loaded properly to the slot 0. 
+""State"": {
+""Code"": ""available""
+},
+ Type  FpgaImageSlot  FpgaImageId             StatusName    StatusCode   ErrorName    ErrorCode    ShVersion
+AFI          0       agfi-xxxxxxxxxxxxxxxx  loaded           0        ok               0       0x04261818
+Type  FpgaImageSlot  VendorId    DeviceId    DBDF
+AFIDEVICE    0       0x1d0f      0xf010      0000:00:1d.0
+
+xclProbe found 1 FPGA slots with xocl driver running
+WARNING: AwsXcl - Cannot open userPF: /dev/dri/renderD0
+WARNING: AwsXcl isGood: invalid user handle.
+WARNING: xclOpen Handle check failed
+device[0].user_instance : 0
+WARNING: AwsXcl - Cannot open userPF: /dev/dri/renderD0
+WARNING: AwsXcl isGood: invalid user handle.
+ERROR: xclOpen Handle check failed
+ERROR: Device setup failed
+../../..//libs/xcl2/xcl2.cpp:40 Error calling err = cl::Platform::get(&platforms), error code is: -1001
+
+
+_ _ _   _     _  _____   __    _   __  __ _
+| __| _ \/ __| /_\   |   \| __\ \ / /   /_\ |  \/  |_ _|
+| _||  / ( |/ _ \  | |) | _| \ V /   / _ \| |\/| || |
+|_| |_|  \___/_/ \_\ |___/|___| \_/   /_/ \_\_|  |_|___|
+AMI Version:        1.5.0
+Readme:             /home/centos/src/README.md
+GUI Setup Steps:    /home/centos/src/GUI_README.md
+GUI Setup script:   /home/centos/src/scripts/setup_gui.sh
+AMI Release Notes:  /home/centos/src/RELEASE_NOTES.md
+Xilinx Tools:       /opt/Xilinx/
+Developer Support:  https://github.com/aws/aws-fpga/blob/master/README.md#developer-support
+Centos Common code: /srv/git/centos-git-common
+
+Edited by: kl3van on Jan 11, 2019 5:39 AM"
+FPGA Development	"Re: ERROR: Device Setup Failed in Helloworld_ocl : AMI 1.5
+Hi 
+Could you please provide some additional info to recreate your issue.
+
+1. Your centos version
+
+ cat /etc/centos-release 
+
+
+2. Kernel version on your instance
+
+ uname -r 
+
+
+3.  Check if xocl is installed and running
+
+ lsmod | grep xocl 
+
+
+4. Your SDX build & runtime after you sourced sdaccel_setup.sh
+
+ echo $XILINX_SDX 
+
+ echo $XILINX_XRT 
+
+
+Could you also please try this command sequence and see if  this command sequence works for you:
+
+sudo fpga-clear-local-image -S 0
+sudo sh
+sh-4.2# source /opt/xilinx/xrt/setup.sh
+sh-4.2# ./helloworld
+
+
+Thanks,
+AWSaalluri"
+FPGA Development	"Re: ERROR: Device Setup Failed in Helloworld_ocl : AMI 1.5
+Hi, 
+
+Thanks for your response, these are the info you requested: 
+
+1. Centos version: CentOS Linux release 7.6.1810 (Core)
+
+2. Kernel Instance: 3.10.0-957.1.3.el7.x86_64
+
+3. xocl is not installed 
+
+4. SDx Runtime: /opt/Xilinx/SDx/2018.2.op2258646
+XRT: /opt/xilinx/xrt
+
+5. sh-4.2# ./helloworld
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  locale::facet::_S_create_c_locale name not valid
+Aborted (core dumped)
+
+Thanks again."
+FPGA Development	"Re: ERROR: Device Setup Failed in Helloworld_ocl : AMI 1.5
+Hi kl3van,
+
+The XRT runtime is not compatible/tested with Centos 7.6 release. I believe we had an issue with setting up a GUI desktop and the workaround was heavy handed(due to the fact that we suggested a yum upgrade). The yum upgrade would update the kernel which would then affect the runtime.
+
+We've uploaded a fix to the GUI setup script on our S3 bucket. This would work on a new instance and will setup a Mate Desktop and will not update the kernel: 
+source <(curl -s https://s3.amazonaws.com/aws-fpga-developer-ami/1.5.0/Scripts/setup_gui.sh) 
+
+
+This should help with a new instance that you can use as a runtime instance(as it will still be on Centos 7.5) as well if needed.
+
+We apologize for the GUI desktop setup troubles. Since we don't have control over Centos/Epel/nux dextop repositories, things can get broken when packages are updated in those repositories and we are looking into improving this experience for our customers.
+
+Thanks,
+
+Deep"
+FPGA Development	"Re: ERROR: Device Setup Failed in Helloworld_ocl : AMI 1.5
+Hi awsdeep, 
+
+Thanks for your answer, but I still have the same problem even after using the GUI script and the Centos 7.5.
+
+I used this example : 
+
+At the step when I issue the command :  make check TARGETS=hw_emu DEVICES=$AWS_PLATFORM all 
+ 
+
+I get these Errors: 
+
+INFO: https://forums.aws.amazon.com/ Total elapsed time: 2h 3m 2s
+./helloworld
+xclProbe found 1 FPGA slots with xocl driver running
+ERROR: Load image failed.
+ERROR: Sleep until load failed.
+WARNING: AwsXcl - Cannot open userPF: /dev/dri/renderD0
+ERROR AwsXcl: PCI kernel bar attach failed for slot# 0
+WARNING: AwsXcl isGood: kernel, global & mgmt bar are: ffffffff, ffffffff, ffffffff
+WARNING: xclOpen Handle check failed
+device[0].user_instance : 0
+ERROR: Load image failed.
+ERROR: Sleep until load failed.
+WARNING: AwsXcl - Cannot open userPF: /dev/dri/renderD0
+ERROR AwsXcl: PCI kernel bar attach failed for slot# 0
+WARNING: AwsXcl isGood: kernel, global & mgmt bar are: ffffffff, ffffffff, ffffffff
+ERROR: xclOpen Handle check failed
+ERROR: Device setup failed
+../../..//libs/xcl2/xcl2.cpp:40 Error calling err = cl::Platform::get(&platforms), error code is: -1001
+make: *** https://forums.aws.amazon.com/ Error 1
+
+centos@ip-172-31-88-233 helloworld_ocl$ sudo ./helloworld 
+./helloworld: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.21' not found (required by ./helloworld)
+
+Can you advise on how to solve this, please? 
+Thanks.
+
+Edited by: kl3van on Jan 16, 2019 5:02 AM"
+FPGA Development	"Re: ERROR: Device Setup Failed in Helloworld_ocl : AMI 1.5
+Hi kl3van,
+
+Can you please tell us what the environment variable LD_LIBRARY_PATH point to
+Also, let us know the kernel version.
+echo $LD_LIBRARY_PATH 
+uname -r
+
+This will help us recreate the issue you are facing.
+
+Thanks,
+Sunil."
+FPGA Development	"Re: ERROR: Device Setup Failed in Helloworld_ocl : AMI 1.5
+Hi Sunil, 
+
+Thank you for your response and of course, these are the info you requested: 
+
+The LD_LIBRARY_PATH  is
+$ echo $LD_LIBRARY_PATH
+/opt/xilinx/xrt/lib:/opt/Xilinx/SDx/2018.2.op2258646/lnx64/tools/opencv/:/opt/Xilinx/SDx/2018.2.op2258646/lib/lnx64.o/Default:/opt/Xilinx/SDx/2018.2.op2258646/lib/lnx64.o:/opt/Xilinx/SDx/2018.2.op2258646/runtime/lib/x86_64 
+
+
+The kernel version:
+$ uname -r
+3.10.0-957.1.3.el7.x86_64
+
+
+I hope this helps. 
+Thanks."
+FPGA Development	"Re: ERROR: Device Setup Failed in Helloworld_ocl : AMI 1.5
+Hi kl3van,
+
+We are trying to reproduce the issue at our end. We shall get back to you as soon as possible.
+
+Thanks,
+Sunil."
+FPGA Development	"Re: ERROR: Device Setup Failed in Helloworld_ocl : AMI 1.5
+Hi kl3van,
+
+Sorry for the long delay.
+
+We are observing that with the kernel version ""3.10.0-957.1.3.el7.x86_64"" the xocl driver is not installed properly/ doesnt work. We are working with xilinx to address the issue with highest priority. We shall get back to you as soon as the issue is fixed.
+
+However, we have tested with kernel version ""3.10.0-862.11.6.el7.x86_64"" the helloworld ocl example works.
+
+Meanwhile, as a workaround, you may want to start a new instance with fpga developer AMI 1.5.0 and do not source the setup_gui script ""https://s3.amazonaws.com/aws-fpga-developer-ami/1.5.0/Scripts/setup_gui.sh"". As, Sourcing the above script updates kernel version to 3.10.0-957.1.3.el7.x86_64 which in-turn causes the xocl driver to break.
+
+Please let us know if you face issue.
+
+Thanks,
+Sunil."
+FPGA Development	"Re: ERROR: Device Setup Failed in Helloworld_ocl : AMI 1.5
+Hi Sunil, 
+
+With the older Kernel and without launching the GUI script, the Vivado is not Enabled/Installed anymore. 
+
+Whenever I want to source the hdk_setup script it returns errors: 
+
+NFO: Setting up environment variables
+ERROR: Please install/enable Vivado.
+ERROR:   If you are using the FPGA Developer AMI then please request support.
+
+Additional Info: Launching the  vivado -mode batch 
+ command gives: 
+$ vivado -mode batch
+terminate called after throwing an instance of 'std::runtime_error'
+what():  locale::facet::_S_create_c_locale name not valid
+/opt/Xilinx/Vivado/2018.2.op2258646/bin/loader: line 194:  2270 Aborted                 ""$RDI_PROG"" ""$@""
+
+Is it a problem related to updates too?
+
+Thanks,
+
+Edited by: kl3van on Jan 28, 2019 7:51 AM"
+FPGA Development	"Re: ERROR: Device Setup Failed in Helloworld_ocl : AMI 1.5
+Hi,
+
+Please create a new forum thread and provide hdk version, ami version and linux kernel version.  
+
+I was able to create a new ami (1.5.0) and run hdk_setup script (aws-fpga 1.4.6) successfully using linux kernel 3.10.0-862.11.6.el7.x86_64.
+
+Thanks
+Kris"
+FPGA Development	"Re: ERROR: Device Setup Failed in Helloworld_ocl : AMI 1.5
+Hi Krisk, 
+
+As requested, I created a new thread and provided the requested information. 
+The thread is in the following link: https://forums.aws.amazon.com/thread.jspa?threadID=297517
+
+Thanks,"
+FPGA Development	"OpenCL Unable to detect platform on AMI 1.5.0
+Apologies if this already has an answer somewhere that I've missed, but I've been working on getting the platform recognised for a while now with OPenCL and I haven't had much luck.
+
+I've been attemping to make a simple inverter AFI using the VADD example code generated by the SDAccel RTL Kernel Wizard. The code has a slight change made to invert rather than add to user input, but the important I/O code remains unchanged. 
+
+This Verilog code is then packaged into an xo using the Viviado GUI, and the xo is imported into SDAccel. From there I've been able to determine that the xo logic is sound using Emulation-HW, but either running the System build or an AFI generated from the system build using  create_sdaccel_afi.sh results in the following error:
+
+[centos@ip-172-31-82-43 opencl_test]$ sudo sh    
+xclProbe found 1 FPGA slots with xocl driver running
+WARNING: AwsXcl - Cannot open userPF: /dev/dri/renderD0
+WARNING: AwsXcl isGood: invalid user handle.
+WARNING: xclOpen Handle check failed
+device[0].user_instance : 0
+WARNING: AwsXcl - Cannot open userPF: /dev/dri/renderD0
+WARNING: AwsXcl isGood: invalid user handle.
+ERROR: xclOpen Handle check failed
+ERROR: Device setup failed
+Error: clGetPlatformIDs(-1001)
+
+
+Executing the .exe generated in the system build using sudo sh
+ and sourcing  source /opt/xilinx/xrt/setup.sh  
+ gives the same error, so I'm not sure why OpenCL can't recognise the platform. 
+
+This is on an f1.x2Large instance, with the latest version of the AMI and a working GUI installed using the newer gui script. The afi of the system build can be generated successfuly using create_sdaccel_afi.sh
+ and loaded onto the fpga, so I'm not certain what exactly the issue is. 
+
+Any advice would be a great help."
+FPGA Development	"Re: OpenCL Unable to detect platform on AMI 1.5.0
+Hi,
+
+Which linux kernel version are you using?  
+
+The issue might be related to this thread:
+https://forums.aws.amazon.com/thread.jspa?threadID=296545&tstart=0
+
+Thanks
+Kris"
+FPGA Development	"Re: OpenCL Unable to detect platform on AMI 1.5.0
+Hey Kris,
+
+I've checked the kernel version of my AMI using  uname -r 
+ as mentioned in the thread you linked and I got back  3.10.0-957.1.3.el7.x86_64 
+ so I do have the kernel version that's quoted as causing issues in the thread you linked.I will try a reinstall with a fresh AMI and no execution of the GUI script as suggested.
+
+The issue I have though, is that I won't be able to get the GUI working if I don't source the script mentioned in the post and the GUI is more or less essential for my work. Would I be able to get both the GUI and the xocl driver working correctly on an earlier version of AMI? I have no need to use 1.5.0 specifically so reverting wouldn't be an issue for me.
+
+Thanks for the quick reply,
+Adam"
+FPGA Development	"Possible to use more than 16 interrupts?
+Hello,
+
+if I understand the architecture correctly, I can only have 16 interrupts [1]. Is this correct? For my current project, it would be good to have 128+ interrupts. Is there any way to achieve this? Except for aggregating interrupts and additional checking on the host/software side.
+
+[1] https://github.com/aws/aws-fpga/blob/master/hdk/docs/AWS_Shell_Interface_Specification.md#interrupts
+
+Regards and thanks."
+FPGA Development	"Re: Possible to use more than 16 interrupts?
+Hi miob,
+
+Yes, the architecture supports 16 interrupts (cl_sh_apppf_irq_reqhttps://forums.aws.amazon.com/) from the CL. As you mentioned by, aggregating interrupts and additional host software it is possible to support 128+ interrupts.
+
+Thanks,
+Sunil."
+FPGA Development	"Re: Possible to use more than 16 interrupts?
+So there are no plans for native support of more than 16 interrupts?"
+FPGA Development	"Re: Possible to use more than 16 interrupts?
+Hi miob,
+
+We don't support more than 16 interrupts from CL to shell currently. However, Our roadmap is driven by what matters to our customers. Please send me a personal message about your application needs for having more number of interrupts. It will help us refine roadmap based on customer needs, also we can help you come-up with a solution in the current scenario.
+
+Thank you,
+Sunil."
+FPGA Development	"SDAccel + RTL kernel utilization and timing report
+Hi,
+
+Does anybody know how to get utilization and timing reports when using SDAccel + RTL flow?. I was trying to use --report estimate on xocc but it is not reporting anything on the system_estimate.xtxt file. I think this option only works for OpenCL kernels and not for RTL's ones?
+
+Thanks!"
+FPGA Development	"Re: SDAccel + RTL kernel utilization and timing report
+Hi xor, for RTL kernels the only time this information would be generated would be for a system run as this is the time that the RTL is synthesized. Once a system run is completed, the timing and utilization reports are put in the same folder as the system_estimate is generated in, under the syn and imp folder names."
+FPGA Development	"Re: SDAccel + RTL kernel utilization and timing report
+Hi,
+
+Yeah, system_estimate is located under _x/reports/link but the file reporting utilization is under _x/logs/link/syn/pfm_dynamic_KERNEL_NAME_synth_1_runme.log 
+
+The reports are not in rpt, txt, or xtxt as they used to. They are now in log files, in case anyone is using find command to look for them."
+FPGA Development	"Cannot create pblock in SLR2
+I am having difficulty creating a pblock in SLR2. (Needed for floorplanning purposes.) This is the command I am using to size it:
+
+resize_pblock  -add { SLICE_X0Y600:SLICE_X168Y899 }
+
+The Pblock is resized without problem. However DRC fails complaining of a conflict with pblock_CL, and this prevents placement:
+
+report_drc -ruledecks {placer_checks}
+...
+HDPR-66#1 Error
+Reconfigurable Pblock must not overlap other pblocks.  
+HD.RECONFIGURABLE Pblock 'pblock_CL' and Pblock 'ms_pblock2' overlap.  Please re-floorplan Pblocks to ensure that reconfigurable pblocks don't have overlap with other rm or static pblocks.
+
+Creating pblocks in SLR0 and SLR1 (excluding shell) cause no DRC problem:
+
+resize_pblock  -add { SLICE_X0Y300:SLICE_X107Y599 }
+resize_pblock  -add { SLICE_X0Y0:SLICE_X107Y299 }
+
+How can I get that SLR2 pblock so I can floor plan? Or should I be following a different approach?
+
+Thanks!
+
+Edited by: logician on Jan 15, 2019 8:47 AM
+
+Edited by: logician on Jan 15, 2019 8:48 AM
+
+Edited by: logician on Jan 15, 2019 8:48 AM"
+FPGA Development	"Re: Cannot create pblock in SLR2
+Hello,
+
+You might need to set the following property for your new pblock:
+set_property PARENT pblock_CL [get_pblocks <your_pblock_name>]
+
+Please refer to the following constraint file in which new pblocks are defined for CL_DRAM_DMA example design:
+https://github.com/aws/aws-fpga/blob/master/hdk/cl/examples/cl_dram_dma/build/constraints/cl_pnr_user.xdc
+
+Let us know if you still run into issues.
+
+Thanks!
+Chakra"
+FPGA Development	"Re: Cannot create pblock in SLR2
+Hmm. That generates a different error. Apparently pblock_CL does not include all of SLR2. (Even though it appears SLR2 is completely empty. And without floorplanning my CL logic will be placed throughout SLR2.)
+
+set_property PARENT pblock_CL https://forums.aws.amazon.com/
+resize_pblock  -add { SLICE_X0Y600:SLICE_X120Y899 } -replace
+report_drc -ruledecks {placer_checks}
+
+HDPR-23#1 Error
+Nested Pblock ranges must be a subset of parent Pblock ranges.  
+The child Pblock 'foo' is not contained by the parent Pblock 'pblock_CL'.
+Child ranges 'SLICE_X120Y600:SLICE_X120Y899 SLICE_X119Y660:SLICE_X119Y839 SLICE_X105Y600:SLICE_X118Y899 SLICE_X104Y660:SLICE_X104Y839 SLICE_X91Y600:SLICE_X103Y899 SLICE_X90Y660:SLICE_X90Y839 SLICE_X79Y600:SLICE_X89Y899 SLICE_X78Y660:SLICE_X78Y839 SLICE_X63Y600:SLICE_X77Y899 SLICE_X62Y660:SLICE_X62Y839 SLICE_X48Y600:SLICE_X61Y899 SLICE_X47Y660:SLICE_X47Y839 SLICE_X34Y600:SLICE_X46Y899 SLICE_X33Y660:SLICE_X33Y839 SLICE_X20Y600:SLICE_X32Y899 SLICE_X19Y660:SLICE_X19Y839 SLICE_X9Y600:SLICE_X18Y899 SLICE_X8Y660:SLICE_X8Y839 SLICE_X0Y600:SLICE_X7Y899 '.
+Parent ranges 'URAM288_X3Y160:URAM288_X3Y239 URAM288_X0Y0:URAM288_X2Y239 SYSMONE4_X0Y2:SYSMONE4_X0Y2 RIU_OR_X1Y40:RIU_OR_X1Y59 RIU_OR_X0Y0:RIU_OR_X0Y59 RAMB36_X8Y120:RAMB36_X11Y179 RAMB36_X0Y0:RAMB36_X7Y179 RAMB18_X8Y240:RAMB18_X11Y359 RAMB18_X0Y0:RAMB18_X7Y359 PLL_X1Y20:PLL_X1Y29 PLL_X0Y0:PLL_X0Y29 PCIE40E4_X1Y4:PCIE40E4_X1Y4 PCIE40E4_X0Y5:PCIE40E4_X0Y5 PCIE40E4_X0Y3:PCIE40E4_X0Y3 PCIE40E4_X0Y1:PCIE40E4_X0Y1 MMCM_X1Y10:MMCM_X1Y14 MMCM_X0Y0:MMCM_X0Y14 LAGUNA_X16Y600:LAGUNA_X23Y719 LAGUNA_X0Y0:LAGUNA_X15Y719 IOB_X1Y520:IOB_X1Y779 IOB_X0Y0:IOB_X0Y779 ILKNE4_X1Y7:ILKNE4_X1Y8 ILKNE4_X0Y6:ILKNE4_X0Y6 ILKNE4_X0Y3:ILKNE4_X0Y3 ILKNE4_X0Y0:ILKNE4_X0Y0 HPIO_VREF_SITE_X1Y20:HPIO_VREF_SITE_X1Y29 HPIO_VREF_SITE_X0Y0:HPIO_VREF_SITE_X0Y29 HPIOBDIFFOUTBUF_X1Y240:HPIOBDIFFOUTBUF_X1Y359 HPIOBDIFFOUTBUF_X0Y0:HPIOBDIFFOUTBUF_X0Y359 HPIOBDIFFINBUF_X1Y240:HPIOBDIFFINBUF_X1Y359 HPIOBDIFFINBUF_X0Y0:HPIOBDIFFINBUF_X0Y359 HARD_SYNC_X16Y20:HARD_SYNC_X23Y29 HARD_SYNC_X0Y0:HARD_SYNC_X15Y29 GTYE4_COMMON_X1Y10:GTYE4_COMMON_X1Y14 GTYE4_COMMON_X0Y0:GTYE4_COMMON_X0Y14 GTYE4_CHANNEL_X1Y40:GTYE4_CHANNEL_X1Y59 GTYE4_CHANNEL_X0Y0:GTYE4_CHANNEL_X0Y59 DSP48E2_X14Y240:DSP48E2_X18Y359 DSP48E2_X0Y0:DSP48E2_X13Y359 CONFIG_SITE_X0Y2:CONFIG_SITE_X0Y2 CMACE4_X0Y0:CMACE4_X0Y8 CFGIO_SITE_X0Y2:CFGIO_SITE_X0Y2 BUFG_GT_SYNC_X1Y150:BUFG_GT_SYNC_X1Y224 BUFG_GT_SYNC_X0Y0:BUFG_GT_SYNC_X0Y224 BUFG_GT_X1Y240:BUFG_GT_X1Y359 BUFG_GT_X0Y0:BUFG_GT_X0Y359 BUFGCTRL_X1Y80:BUFGCTRL_X1Y119 BUFGCTRL_X0Y0:BUFGCTRL_X0Y119 BUFGCE_DIV_X1Y40:BUFGCE_DIV_X1Y59 BUFGCE_DIV_X0Y0:BUFGCE_DIV_X0Y59 BUFGCE_X1Y240:BUFGCE_X1Y359 BUFGCE_X0Y0:BUFGCE_X0Y359 BITSLICE_TX_X1Y80:BITSLICE_TX_X1Y119 BITSLICE_TX_X0Y0:BITSLICE_TX_X0Y119 BITSLICE_RX_TX_X1Y520:BITSLICE_RX_TX_X1Y779 BITSLICE_RX_TX_X0Y0:BITSLICE_RX_TX_X0Y779 BITSLICE_CONTROL_X1Y80:BITSLICE_CONTROL_X1Y119 BITSLICE_CONTROL_X0Y0:BITSLICE_CONTROL_X0Y119 BIAS_X1Y20:BIAS_X1Y29 BIAS_X0Y0:BIAS_X0Y29 SLICE_X163Y600:SLICE_X168Y899 SLICE_X162Y660:SLICE_X162Y899 SLICE_X161Y660:SLICE_X161Y839 SLICE_X152Y600:SLICE_X160Y899 SLICE_X151Y660:SLICE_X151Y899 SLICE_X150Y660:SLICE_X150Y839 SLICE_X137Y600:SLICE_X149Y899 SLICE_X136Y660:SLICE_X136Y899 SLICE_X135Y660:SLICE_X135Y839 SLICE_X121Y600:SLICE_X134Y899 SLICE_X120Y660:SLICE_X120Y899 SLICE_X119Y660:SLICE_X119Y839 SLICE_X108Y600:SLICE_X118Y899 SLICE_X105Y0:SLICE_X107Y899 SLICE_X104Y660:SLICE_X104Y839 SLICE_X104Y360:SLICE_X104Y539 SLICE_X104Y60:SLICE_X104Y239 SLICE_X91Y0:SLICE_X103Y899 SLICE_X90Y660:SLICE_X90Y839 SLICE_X90Y360:SLICE_X90Y539 SLICE_X90Y60:SLICE_X90Y239 SLICE_X79Y0:SLICE_X89Y899 SLICE_X78Y660:SLICE_X78Y839 SLICE_X78Y360:SLICE_X78Y539 SLICE_X78Y60:SLICE_X78Y239 SLICE_X63Y0:SLICE_X77Y899 SLICE_X62Y660:SLICE_X62Y839 SLICE_X62Y360:SLICE_X62Y539 SLICE_X62Y60:SLICE_X62Y239 SLICE_X48Y0:SLICE_X61Y899 SLICE_X47Y660:SLICE_X47Y839 SLICE_X47Y360:SLICE_X47Y539 SLICE_X47Y60:SLICE_X47Y239 SLICE_X34Y0:SLICE_X46Y899 SLICE_X33Y660:SLICE_X33Y839 SLICE_X33Y360:SLICE_X33Y539 SLICE_X33Y60:SLICE_X33Y239 SLICE_X20Y0:SLICE_X32Y899 SLICE_X19Y660:SLICE_X19Y839 SLICE_X19Y360:SLICE_X19Y539 SLICE_X19Y60:SLICE_X19Y239 SLICE_X9Y0:SLICE_X18Y899 SLICE_X8Y660:SLICE_X8Y839 SLICE_X8Y360:SLICE_X8Y539 SLICE_X8Y60:SLICE_X8Y239 SLICE_X0Y0:SLICE_X7Y899 '.
+Resolution: add the missing ranges to the parent or child Pblock."
+FPGA Development	"Re: Cannot create pblock in SLR2
+BTW, the boundary between error and not appears to be at Y119. This one no error:
+
+resize_pblock -add { SLICE_X0Y600:SLICE_X119Y899 } -replace
+
+This one generates error:
+
+resize_pblock -add { SLICE_X0Y600:SLICE_X120Y899 } -replace"
+FPGA Development	"Re: Cannot create pblock in SLR2
+I tried resizing pblock_CL, but same error. Is there something taking priority over the pblock sizing? I note that the original error said something about reconfiguration.
+
+resize_pblock  -add { SLICE_X0Y600:SLICE_X168Y899 }
+resize_pblock: Time (s): cpu = 00:00:10 ; elapsed = 00:00:09 . Memory (MB): peak = 13252.250 ; gain = 0.000 ; free physical = 63620 ; free virtual = 113653
+resize_pblock  -add { SLICE_X0Y600:SLICE_X168Y899 } -replace
+resize_pblock: Time (s): cpu = 00:00:11 ; elapsed = 00:00:10 . Memory (MB): peak = 13285.945 ; gain = 0.000 ; free physical = 63620 ; free virtual = 113654
+
+HDPR-23#1 Error
+Nested Pblock ranges must be a subset of parent Pblock ranges.  
+The child Pblock 'foo' is not contained by the parent Pblock 'pblock_CL'.
+Child ranges 'SLICE_X120Y600:SLICE_X120Y899 SLICE_X119Y660:SLICE_X119Y839 SLICE_X105Y600:SLICE_X118Y899 SLICE_X104Y660:SLICE_X104Y839 SLICE_X91Y600:SLICE_X103Y899 SLICE_X90Y660:SLICE_X90Y839 SLICE_X79Y600:SLICE_X89Y899 SLICE_X78Y660:SLICE_X78Y839 SLICE_X63Y600:SLICE_X77Y899 SLICE_X62Y660:SLICE_X62Y839 SLICE_X48Y600:SLICE_X61Y899 SLICE_X47Y660:SLICE_X47Y839 SLICE_X34Y600:SLICE_X46Y899 SLICE_X33Y660:SLICE_X33Y839 SLICE_X20Y600:SLICE_X32Y899 SLICE_X19Y660:SLICE_X19Y839 SLICE_X9Y600:SLICE_X18Y899 SLICE_X8Y660:SLICE_X8Y839 SLICE_X0Y600:SLICE_X7Y899 '.
+Parent ranges 'URAM288_X3Y160:URAM288_X3Y239 URAM288_X0Y0:URAM288_X2Y239 SYSMONE4_X0Y2:SYSMONE4_X0Y2 RIU_OR_X1Y40:RIU_OR_X1Y59 RIU_OR_X0Y0:RIU_OR_X0Y59 RAMB36_X8Y120:RAMB36_X11Y179 RAMB36_X0Y0:RAMB36_X7Y179 RAMB18_X8Y240:RAMB18_X11Y359 RAMB18_X0Y0:RAMB18_X7Y359 PLL_X1Y20:PLL_X1Y29 PLL_X0Y0:PLL_X0Y29 PCIE40E4_X1Y4:PCIE40E4_X1Y4 PCIE40E4_X0Y5:PCIE40E4_X0Y5 PCIE40E4_X0Y3:PCIE40E4_X0Y3 PCIE40E4_X0Y1:PCIE40E4_X0Y1 MMCM_X1Y10:MMCM_X1Y14 MMCM_X0Y0:MMCM_X0Y14 LAGUNA_X16Y600:LAGUNA_X23Y719 LAGUNA_X0Y0:LAGUNA_X15Y719 IOB_X1Y520:IOB_X1Y779 IOB_X0Y0:IOB_X0Y779 ILKNE4_X1Y7:ILKNE4_X1Y8 ILKNE4_X0Y6:ILKNE4_X0Y6 ILKNE4_X0Y3:ILKNE4_X0Y3 ILKNE4_X0Y0:ILKNE4_X0Y0 HPIO_VREF_SITE_X1Y20:HPIO_VREF_SITE_X1Y29 HPIO_VREF_SITE_X0Y0:HPIO_VREF_SITE_X0Y29 HPIOBDIFFOUTBUF_X1Y240:HPIOBDIFFOUTBUF_X1Y359 HPIOBDIFFOUTBUF_X0Y0:HPIOBDIFFOUTBUF_X0Y359 HPIOBDIFFINBUF_X1Y240:HPIOBDIFFINBUF_X1Y359 HPIOBDIFFINBUF_X0Y0:HPIOBDIFFINBUF_X0Y359 HARD_SYNC_X16Y20:HARD_SYNC_X23Y29 HARD_SYNC_X0Y0:HARD_SYNC_X15Y29 GTYE4_COMMON_X1Y10:GTYE4_COMMON_X1Y14 GTYE4_COMMON_X0Y0:GTYE4_COMMON_X0Y14 GTYE4_CHANNEL_X1Y40:GTYE4_CHANNEL_X1Y59 GTYE4_CHANNEL_X0Y0:GTYE4_CHANNEL_X0Y59 DSP48E2_X14Y240:DSP48E2_X18Y359 DSP48E2_X0Y0:DSP48E2_X13Y359 CONFIG_SITE_X0Y2:CONFIG_SITE_X0Y2 CMACE4_X0Y0:CMACE4_X0Y8 CFGIO_SITE_X0Y2:CFGIO_SITE_X0Y2 BUFG_GT_SYNC_X1Y150:BUFG_GT_SYNC_X1Y224 BUFG_GT_SYNC_X0Y0:BUFG_GT_SYNC_X0Y224 BUFG_GT_X1Y240:BUFG_GT_X1Y359 BUFG_GT_X0Y0:BUFG_GT_X0Y359 BUFGCTRL_X1Y80:BUFGCTRL_X1Y119 BUFGCTRL_X0Y0:BUFGCTRL_X0Y119 BUFGCE_DIV_X1Y40:BUFGCE_DIV_X1Y59 BUFGCE_DIV_X0Y0:BUFGCE_DIV_X0Y59 BUFGCE_X1Y240:BUFGCE_X1Y359 BUFGCE_X0Y0:BUFGCE_X0Y359 BITSLICE_TX_X1Y80:BITSLICE_TX_X1Y119 BITSLICE_TX_X0Y0:BITSLICE_TX_X0Y119 BITSLICE_RX_TX_X1Y520:BITSLICE_RX_TX_X1Y779 BITSLICE_RX_TX_X0Y0:BITSLICE_RX_TX_X0Y779 BITSLICE_CONTROL_X1Y80:BITSLICE_CONTROL_X1Y119 BITSLICE_CONTROL_X0Y0:BITSLICE_CONTROL_X0Y119 BIAS_X1Y20:BIAS_X1Y29 BIAS_X0Y0:BIAS_X0Y29 SLICE_X163Y600:SLICE_X168Y899 SLICE_X162Y660:SLICE_X162Y899 SLICE_X161Y660:SLICE_X161Y839 SLICE_X152Y600:SLICE_X160Y899 SLICE_X151Y660:SLICE_X151Y899 SLICE_X150Y660:SLICE_X150Y839 SLICE_X137Y600:SLICE_X149Y899 SLICE_X136Y660:SLICE_X136Y899 SLICE_X135Y660:SLICE_X135Y839 SLICE_X121Y600:SLICE_X134Y899 SLICE_X120Y660:SLICE_X120Y899 SLICE_X119Y660:SLICE_X119Y839 SLICE_X108Y600:SLICE_X118Y899 SLICE_X105Y0:SLICE_X107Y899 SLICE_X104Y660:SLICE_X104Y839 SLICE_X104Y360:SLICE_X104Y539 SLICE_X104Y60:SLICE_X104Y239 SLICE_X91Y0:SLICE_X103Y899 SLICE_X90Y660:SLICE_X90Y839 SLICE_X90Y360:SLICE_X90Y539 SLICE_X90Y60:SLICE_X90Y239 SLICE_X79Y0:SLICE_X89Y899 SLICE_X78Y660:SLICE_X78Y839 SLICE_X78Y360:SLICE_X78Y539 SLICE_X78Y60:SLICE_X78Y239 SLICE_X63Y0:SLICE_X77Y899 SLICE_X62Y660:SLICE_X62Y839 SLICE_X62Y360:SLICE_X62Y539 SLICE_X62Y60:SLICE_X62Y239 SLICE_X48Y0:SLICE_X61Y899 SLICE_X47Y660:SLICE_X47Y839 SLICE_X47Y360:SLICE_X47Y539 SLICE_X47Y60:SLICE_X47Y239 SLICE_X34Y0:SLICE_X46Y899 SLICE_X33Y660:SLICE_X33Y839 SLICE_X33Y360:SLICE_X33Y539 SLICE_X33Y60:SLICE_X33Y239 SLICE_X20Y0:SLICE_X32Y899 SLICE_X19Y660:SLICE_X19Y839 SLICE_X19Y360:SLICE_X19Y539 SLICE_X19Y60:SLICE_X19Y239 SLICE_X9Y0:SLICE_X18Y899 SLICE_X8Y660:SLICE_X8Y839 SLICE_X8Y360:SLICE_X8Y539 SLICE_X8Y60:SLICE_X8Y239 SLICE_X0Y0:SLICE_X7Y899 '.
+Resolution: add the missing ranges to the parent or child Pblock.
+Related violations: <none>"
+FPGA Development	"Re: Cannot create pblock in SLR2
+Hello,
+
+I was able to successfully build CL_DRAM_DMA example after resizing the pblocks as follows (attached is the edited cl_pnr_user.xdc):
+resize_pblock [get_pblocks pblock_CL_top] -add { SLICE_X0Y600:SLICE_X168Y899 }
+resize_pblock [get_pblocks pblock_CL_mid] -add { SLICE_X0Y300:SLICE_X107Y599 }
+resize_pblock [get_pblocks pblock_CL_bot] -add { SLICE_X0Y0:SLICE_X107Y299 }
+
+Can you share (private message) your placement constraints file? Maybe we can better assist you from the details there.
+
+Thanks!
+Chakra"
+FPGA Development	"Re: Cannot create pblock in SLR2
+I found the problem. Unfortunately I don't have the original constraint file. But I do have the dcp file from the failed case. Inspecting that file I found that ms_pblock2 did not have that PARENT property set. I'm guessing that somehow I did not create that pblock in the cl_synth_user.xdc, but rather in cl_pnr_user.xdc. So that resulted in the first error about overlaping pblocks.
+
+Now the curious part. Apparently the pblock must be created in in cl_synth_user.xdc. In that case resizing in pnr works correctly. If instead you add the PARENT property later, then when you resize you get the second error about subset of parent Pblock ranges.
+
+In any event, it seems to be working for me now with my current constraints file that I'm certain creates the pblock in synth and resizes it in pnr.
+
+Thanks for the help!
+
+Edited by: logician on Jan 15, 2019 7:28 PM
+
+Edited by: logician on Jan 15, 2019 7:29 PM
+
+Edited by: logician on Jan 16, 2019 7:52 AM"
+FPGA Development	"Re: Cannot create pblock in SLR2
+Hi,
+
+If you are using AWS flow (https://github.com/aws/aws-fpga/blob/master/hdk/README.md#step2) to build your CL design then the cl_synth_user.xdc constraints file is read during CL synthesis. So pblock definitions are not required at this phase. 
+
+The cl_pnr_user.xdc constraints will be applied during placement phase (place_design). So if you define (create, add cells, resize, set PARENT) the pblocks in this xdc file, that should work.
+
+excerpt from cl_pnr_user.xdc:
+create_pblock pblock_CL_top
+add_cells_to_pblock [get_pblocks pblock_CL_top] [get_cells -quiet -hierarchical -filter {NAME =~ WRAPPER_INST/CL/SH_DDR/ddr_stat[0].*}]
+resize_pblock [get_pblocks pblock_CL_top] -add { SLICE_X0Y600:SLICE_X168Y899 }
+resize_pblock [get_pblocks pblock_CL_top] -add {CLOCKREGION_X0Y10:CLOCKREGION_X5Y14}
+set_property PARENT pblock_CL [get_pblocks pblock_CL_top]
+
+
+Thanks!
+Chakra"
+FPGA Development	"Re: Cannot create pblock in SLR2
+Error happened again. I was editing my constraints and left a created PBlock empty in both synth and PNR constraints.
+
+My error free MO has been to create a pblock and add cells to it in the synth constraint file. Then in the PRN constraints I resize the pblock and add cells to it again. (Not sure adding cells again is necessary, but I'm thinking yes in case of optimizations that remap logic.)
+
+In the failing case I just encountered, I created three PBlock in synth constraint. I left two completely unpopulated this time. DRC error happens. In looking at the .dcr, I see that one of the unpopulated PBlocks does not have the PARENT property set to pblock_CL. And as observed previously, not having that PARENT property that results in the DRC error. These tools are so fragile -- so many ways to fail.
+
+get_property PARENT 
+ROOT
+get_property PARENT 
+pblock_CL
+get_property PARENT 
+pblock_CL"
+FPGA Development	"ERROR: [Common 17-161] Invalid option value '' specified for 'objects'
+Hi,
+I got the following error while compiling a project after the route design 
+ERROR: (Common 17-161) Invalid option value '' specified for 'objects'
+The route design got completed successfully but the tool threw a error before the tarball creation step.
+I had seen this issue before too but now this is getting very frequent.
+Last two compilations done by me with different configurations also threw the same error.
+Any advice on this issue?
+
+Regards,
+Prigish"
+FPGA Development	"Re: ERROR: [Common 17-161] Invalid option value '' specified for 'objects'
+Hi Prigish,
+This error is most probably a  result of one of your constraints not able to find the node in design that the constraint is being applied to. The node probably got optimized in the  optimization run after route design step.  If you would like to retain the node please add a ""do-not-touch"" constraint on the node(s) which was/were specified in the constraint generating this error.
+
+Thanks,
+AWSaalluri"
+FPGA Development	"Re: ERROR: [Common 17-161] Invalid option value '' specified for 'objects'
+Thanks AWSaalluri for the response.
+
+But the error does not specify any details about which object it is speaking about or which constraint given by the user is causing this problem. So in such a situation it would be very tough to say which constraint is causing this problem.
+I have shared the link for the screenshot of tool throwing error. The link is as follows :
+https://drive.google.com/drive/folders/1UIqH6vDdT32eewxNA_tdvfteuKZKCBdX?usp=sharing"
+FPGA Development	"Re: ERROR: [Common 17-161] Invalid option value '' specified for 'objects'
+Hello,
+
+Usually, when non-descript errors are produced by Vivado, it is a TCL command that is missing information, or file references are not found, due to a failure of a prior step. 
+
+In this case, your image shows that you had critical warnings due to IOB placement and constraint conflicts. This may be the true location of the error. 
+
+My first suggestion would be to resolve these critical warnings, then re-attempt the implementation flow to see if the problem remains. Can you let us know how that turns out then?
+
+OK, I hope this helps,
+Thank you,
+Scott"
+FPGA Development	"Re: ERROR: [Common 17-161] Invalid option value '' specified for 'objects'
+Thanks Scott for the response.
+Those constraints are generated automatically by the scripts provided by the AWS and they are related to shell and I dont have any control over it.
+I am attaching the image of one of the run which passed without any errors as mentioned in the above question and those runs also show the same critical warning which you pointed out.
+So I am also thinking about how to handle those critical warnings as this error(specified query) in the route design 
+comes over randomly. 
+
+The link of the image is as follows :
+https://drive.google.com/open?id=12ZgpJXWpKQBOkclziP9o0eX8NTok9iq_
+
+Regards
+Prigish"
+FPGA Development	"Re: ERROR: [Common 17-161] Invalid option value '' specified for 'objects'
+Hi Prigish, looking at your screenshot it appears to be failing in the route_design_post.tcl script that is being run right after route_design finishes. This script I believe is defined in the repository here: https://github.com/aws/aws-fpga/blob/bc02590ac03a2fa04ddaf19c6c68ee77ad94176a/hdk/common/shell_v04261818/hlx/build/scripts/subscripts/route_design_post.tcl.
+
+Comparing this script flow with your screenshot, the lock_design step works, but it could be failing when doing the 'get_timing_paths' or right afterward. In your design, could you run 'get_timing_paths' in the TCL console to make sure a result is returned? If values are returned, could you try doing 'get_property SLACK [get_timing_paths]'? This will hopefully help in pinpointing what command isn't properly returning a value in the script."
+FPGA Development	"Re: ERROR: [Common 17-161] Invalid option value '' specified for 'objects'
+Hi Kmorris,
+Thanks for the response.
+Yes you are right .The script is being used from the directory you mentioned in the response.
+The routing completed but implementation failed so cannot open implemented design.
+if I use the get_timing_paths on project , I get the following error :
+
+
+
+ERROR: (Common 17-53) User Exception: No open design. Please open an elaborated, synthesized or implemented design before executing this command**
+
+
+
+When I use the command after opening the error DCP, both the commands work on it . But i assume you were not asking after opening the error DCP .
+
+Regards
+Prigish"
+FPGA Development	"Re: ERROR: [Common 17-161] Invalid option value '' specified for 'objects'
+Hi Prigish, when you do get that error, does the run still continue or does it stop immediately? Are you manually running the write_checkpoint for the error DCP or is it coming from a script?
+
+A potential way to narrow this down further is to edit your local copy of the route_design_post.tcl file. You can add 'puts' commands at specific points in the script to see what was last executed in your log file. For example, you could modify it to show the following (lines 32-42):
+puts ""After set SLACK""
+if {$SLACK > -0.400 && $SLACK < 0} {
+#   set_property STEPS.POST_ROUTE_PHYS_OPT_DESIGN.IS_ENABLED true [get_runs impl_1]
+#	phys_opt_design -directive Explore
+}
+puts ""Before timestamp""
+#move to bitgen stage, add in tarball
+set timestamp $::env(timestamp)
+file mkdir ""$FAAS_CL_DIR/build/checkpoints/to_aws""
+puts ""After mkdir""
+write_checkpoint -force $FAAS_CL_DIR/build/checkpoints/to_aws/${timestamp}.SH_CL_routed.dcp -encrypt
+write_checkpoint -force $FAAS_CL_DIR/build/checkpoints/to_aws/SH_CL_routed.dcp -encrypt
+puts ""After checkpoint"""
+FPGA Development	"Re: ERROR: [Common 17-161] Invalid option value '' specified for 'objects'
+Hi Kmorris,
+When I get the error , the run continues for sometime and after that it fails showing ""send_msg_id"" failed due to earlier errors.
+I am not manually running the write_checkpoint for for error DCP but I think its coming from script related to the tool.
+The suggestion given by you for narrowing down the issue is very good and I will try it and let you know about the results.
+
+Thanks for the response.
+
+Regards
+Prigish"
+FPGA Development	"Re: ERROR: [Common 17-161] Invalid option value '' specified for 'objects'
+Hi Kmorris,
+I did a run with the changes in the script as described by you.
+And it threw error as expected and I got the print ""After set SLACK"" but didnt get the next print ""Before timestamp"".
+I have attached the screenshot for the same. The link for it is as follows:
+https://drive.google.com/open?id=1ELKJPjdJXUo3vbCPVm9fPT-92cBnTVf8
+Can you suggest what further action needs to be taken to solve this problem ?
+
+Regards
+Prigish"
+FPGA Development	"Re: ERROR: [Common 17-161] Invalid option value '' specified for 'objects'
+Hi Prigish, thanks for testing that. So we have narrowed it down to the if statement section:
+if {$SLACK > -0.400 && $SLACK < 0} {
+#   set_property STEPS.POST_ROUTE_PHYS_OPT_DESIGN.IS_ENABLED true [get_runs impl_1]
+#	phys_opt_design -directive Explore
+}
+
+Can you verify that your route_design_post.tcl file has the inner section of the 'if' statement commented out? The only thing I can think of that would return that type of error is if these lines were uncommented. If they are uncommented, please try commenting them out as it is shown above."
+FPGA Development	"Re: ERROR: [Common 17-161] Invalid option value '' specified for 'objects'
+Thanks Kmorris
+We did the suggestion given by you already and the problem seems to be solved now.
+
+Thanks for your valuable time and response.
+
+Regards 
+Prigish"
+FPGA Development	"CRITICAL WARNINGS from the AWS SHELL static partition
+Hi,
+   We are seeing some critical warnings from the AWS SHELL region. So far I can see, we are not doing anything to cause them. Can you check and advise whether these are expected in general or something we are doing that is causing them. Also, how to fix them.
+
+CRITICAL WARNING: [Board 49-67] The board_part definition was not found for xilinx.com:f1_cl:part0:1.0. This can happen sometimes when you use custom board part. You can resolve this issue by setting 'board.repoPaths' parameter, pointing to the location of custom board files. Valid board_part values can be retrieved with the 'get_board_parts' Tcl command.
+CRITICAL WARNING: [Shape Builder 18-539] Setting IOB or IOB_TRI_REG property to TRUE for instance WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/IO0_I_REG conflicts with its current constrained placement (SLICE_X149Y278). The conflicting constraint will be removed.
+CRITICAL WARNING: [Shape Builder 18-539] Setting IOB or IOB_TRI_REG property to TRUE for instance WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/IO1_I_REG conflicts with its current constrained placement (SLICE_X149Y278). The conflicting constraint will be removed.
+CRITICAL WARNING: [Shape Builder 18-539] Setting IOB or IOB_TRI_REG property to TRUE for instance WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/IO2_I_REG conflicts with its current constrained placement (SLICE_X151Y293). The conflicting constraint will be removed.
+CRITICAL WARNING: [Shape Builder 18-539] Setting IOB or IOB_TRI_REG property to TRUE for instance WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/IO3_I_REG conflicts with its current constrained placement (SLICE_X162Y294). The conflicting constraint will be removed.
+CRITICAL WARNING: [Place 30-73] Invalid constraint on register 'WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/IO0_I_REG'. It has the property IOB=TRUE, but it is not driving or driven by any IO element.
+CRITICAL WARNING: [Place 30-73]\ Invalid constraint on register 'WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/IO1_I_REG'. It has the property IOB=TRUE, but it is not driving or driven by any IO element.
+CRITICAL WARNING: [Place 30-73] Invalid constraint on register 'WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/IO2_I_REG'. It has the property IOB=TRUE, but it is not driving or driven by any IO element.
+CRITICAL WARNING: [Place 30-73] Invalid constraint on register 'WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/IO3_I_REG'. It has the property IOB=TRUE, but it is not driving or driven by any IO element.
+CRITICAL WARNING: [Place 30-73] Invalid constraint on register 'WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/QSPI_LEGACY_MD_GEN.QSPI_CORE_INTERFACE_I/LOGIC_FOR_MD_12_GEN.SPI_MODE_CONTROL_LOGIC_I/RATIO_NOT_EQUAL_4_GENERATE.SCK_O_NQ_4_NO_STARTUP_USED.SCK_O_NE_4_FDRE_INST'. It has the property IOB=TRUE, but it is not driving or driven by any IO element.
+CRITICAL WARNING: [Shape Builder 18-539] Setting IOB or IOB_TRI_REG property to TRUE for instance WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/QSPI_LEGACY_MD_GEN.QSPI_CORE_INTERFACE_I/LOGIC_FOR_MD_12_GEN.SPI_MODE_CONTROL_LOGIC_I/RATIO_NOT_EQUAL_4_GENERATE.SCK_O_NQ_4_NO_STARTUP_USED.SCK_O_NE_4_FDRE_INST conflicts with its current constrained placement (SLICE_X160Y216). The conflicting constraint will be removed.
+CRITICAL WARNING: [Shape Builder 18-850] Failed to place register with ASYNC_REG property shape that starts with register WRAPPER_INST/SH/SH/MGT_TOP/SH_ILA_0/inst/ila_core_inst/u_ila_cap_ctrl/u_cap_addrgen/i_intcap.icap_addr_reg[1]. This is likely caused by merging with other shapes due to some register in the chain may belong to other shapes. Reason: Routing contention at pips pin element OUTMUXA
+CRITICAL WARNING: [Shape Builder 18-850] Failed to place register with ASYNC_REG property shape that starts with register WRAPPER_INST/SH/SH/MGT_TOP/SH_ILA_0/inst/ila_core_inst/u_ila_cap_ctrl/u_cap_addrgen/i_intcap.icap_addr_reg[4]. This is likely caused by merging with other shapes due to some register in the chain may belong to other shapes. Reason: Routing contention at pips pin element OUTMUXA
+CRITICAL WARNING: [Shape Builder 18-850] Failed to place register with ASYNC_REG property shape that starts with register WRAPPER_INST/SH/SH/MGT_TOP/SH_ILA_0/inst/ila_core_inst/u_ila_cap_ctrl/u_cap_addrgen/i_intcap.icap_addr_reg[1]. This is likely caused by merging with other shapes due to some register in the chain may belong to other shapes. Reason: Routing contention at pips pin element OUTMUXA
+CRITICAL WARNING: [Shape Builder 18-850] Failed to place register with ASYNC_REG property shape that starts with register WRAPPER_INST/SH/SH/MGT_TOP/SH_ILA_0/inst/ila_core_inst/u_ila_cap_ctrl/u_cap_addrgen/i_intcap.icap_addr_reg[4]. This is likely caused by merging with other shapes due to some register in the chain may belong to other shapes. Reason: Routing contention at pips pin element OUTMUXA
+CRITICAL WARNING: [Shape Builder 18-850] Failed to place register with ASYNC_REG property shape that starts with register WRAPPER_INST/SH/SH/MGT_TOP/SH_ILA_0/inst/ila_core_inst/u_trig/U_TM/N_DDR_MODE.G_NMU[4].U_M/allx_typeA_match_detection.ltlib_v1_0_0_allx_typeA_inst/DUT/I_WHOLE_SLICE.G_SLICE_IDX[7].U_ALL_SRL_SLICE/I_IS_TERMINATION_SLICE_W_OUTPUT_REG.DOUT_O_reg. This is likely caused by merging with other shapes due to some register in the chain may belong to other shapes. Reason: Routing contention at pips pin element OUTMUXA
+CRITICAL WARNING: [Shape Builder 18-850] Failed to place register with ASYNC_REG property shape that starts with register WRAPPER_INST/SH/SH/MGT_TOP/SH_ILA_0/inst/ila_core_inst/u_trig/U_TM/N_DDR_MODE.G_NMU[4].U_M/allx_typeA_match_detection.ltlib_v1_0_0_allx_typeA_inst/DUT/I_WHOLE_SLICE.G_SLICE_IDX[7].U_ALL_SRL_SLICE/I_IS_TERMINATION_SLICE_W_OUTPUT_REG.DOUT_O_reg. This is likely caused by merging with other shapes due to some register in the chain may belong to other shapes. Reason: Routing contention at pips pin element OUTMUXA
+CRITICAL WARNING: [Shape Builder 18-539] Setting IOB or IOB_TRI_REG property to TRUE for instance WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/QSPI_LEGACY_MD_GEN.QSPI_CORE_INTERFACE_I/LOGIC_FOR_MD_12_GEN.SPI_MODE_CONTROL_LOGIC_I/RATIO_NOT_EQUAL_4_GENERATE.SCK_O_NQ_4_NO_STARTUP_USED.SCK_O_NE_4_FDRE_INST conflicts with its current constrained placement (SLICE_X160Y216). The conflicting constraint will be removed.
+CRITICAL WARNING: [Shape Builder 18-539] Setting IOB or IOB_TRI_REG property to TRUE for instance WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/IO0_I_REG conflicts with its current constrained placement (SLICE_X149Y278). The conflicting constraint will be removed.
+CRITICAL WARNING: [Shape Builder 18-539] Setting IOB or IOB_TRI_REG property to TRUE for instance WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/IO1_I_REG conflicts with its current constrained placement (SLICE_X149Y278). The conflicting constraint will be removed.
+CRITICAL WARNING: [Shape Builder 18-539] Setting IOB or IOB_TRI_REG property to TRUE for instance WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/IO2_I_REG conflicts with its current constrained placement (SLICE_X151Y293). The conflicting constraint will be removed.
+CRITICAL WARNING: [Shape Builder 18-539] Setting IOB or IOB_TRI_REG property to TRUE for instance WRAPPER_INST/SH/SH/AXI_QUAD_SPI/U0/NO_DUAL_QUAD_MODE.QSPI_NORMAL/IO3_I_REG conflicts with its current constrained placement (SLICE_X162Y294). The conflicting constraint will be removed.
+
+Edited by: fpgamagic on Jan 18, 2019 11:47 AM
+
+Edited by: fpgamagic on Jan 18, 2019 11:48 AM
+
+Edited by: fpgamagic on Jan 18, 2019 11:51 AM"
+FPGA Development	"Re: CRITICAL WARNINGS from the AWS SHELL static partition
+Hi fpgamagic,
+
+It is safe to waive the CRITICAL WARNINGS from the SHELL region that you have mentioned in the post.
+
+There have beed couple of similar posts related to CRITICAL WARNINGS. You can check them here
+
+https://forums.aws.amazon.com/thread.jspa?messageID=828801&#828801
+https://forums.aws.amazon.com/thread.jspa?messageID=867232&#867232
+
+Let us know if you face some issues.
+
+Thanks,
+Sunil."

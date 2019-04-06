@@ -1,0 +1,664 @@
+label	description
+AWS Single Sign-on (SSO)	"Change User portal URL for AWS SSO Directory
+I want to change the url, or at least change the component preceding ""*.awsapps.com/start"" for one of my directories."
+AWS Single Sign-on (SSO)	"Re: Change User portal URL for AWS SSO Directory
+If anyone could assist on renaming my SSO directory URL it would be great. There isn't any cli commands to do so."
+AWS Single Sign-on (SSO)	"Renamed AWS Accounts not showing correctly in console
+Hi,
+Im repurposed and renamed 2 of my accounts but dont see the title reflected in SSO. Is there some other way of renaming the AWS Accounts under SSO?
+
+Thanks"
+AWS Single Sign-on (SSO)	"Re: Renamed AWS Accounts not showing correctly in console
+Having the same issue. Must just be a hidden property somewhere. Hopefully they fix this soon since they've been rolling out other improvements lately."
+AWS Single Sign-on (SSO)	"Re: Renamed AWS Accounts not showing correctly in console
+Thanks a lot. We have added this feature request to our backlog and will prioritize it for future releases."
+AWS Single Sign-on (SSO)	"Users can only sign in once to the user portal link. Must reset password.
+We're using AWS SSO using the AWS SSO directory with AWS organizations. Currently users have can only login once using the user portal URL. After that they have to reset their password. 100% reproducible. Super inconvenient. It's as if all passwords are one time use only.
+
+Has anyone seen this or know why?
+
+Not using any VPN or proxies. Tried different browsers from different locations.
+
+Edited by: jamesfauna on Feb 5, 2019 11:39 AM
+
+Edited by: jamesfauna on Feb 5, 2019 11:39 AM"
+AWS Single Sign-on (SSO)	"Re: Users can only sign in once to the user portal link. Must reset password.
+Thanks a lot. Could you reach out to AWS Support to help with your specific issue?"
+AWS Single Sign-on (SSO)	"Use CLI to retrieve credential from SSO
+Hello,
+Is there a way to retrieve a credential from SSO using a cli utility?
+
+I do see the option to get the credential after signing in to the login page, and to copy-paste it into the shell, and that's nifty but not really usable for programmatic access.
+
+Ideally, to me, there would be a utility that worked with the credential_process option of the AWS config file. I do see that a SAML identity provider is created in the configured accounts, so I had hopes that SSO would expose a SAML authentication endpoint, and that `awsprocesscreds` would handle it, but I'm not seeing a way to make that work currently. I opened an issue there also. Linking it here in case the SSO team was unaware of such utilities.
+
+https://github.com/awslabs/awsprocesscreds/issues/26"
+AWS Single Sign-on (SSO)	"Re: Use CLI to retrieve credential from SSO
+Thanks a lot for your feedback regarding using SSO to retrieve the password for CLI access. We have added this feature to our backlog and will consider it for future prioritization."
+AWS Single Sign-on (SSO)	"Re: Use CLI to retrieve credential from SSO
++1 for interest on this feature. Is there any new progress on it? Thanks."
+AWS Single Sign-on (SSO)	"Enforce TOTP MFA & Strong Password Policies w/ Rotation
+It was incredibly exciting to see the release of the AWS SSO managed directory, a free AWS alternative to Microsoft Active Directory.
+
+Announcement: https://aws.amazon.com/about-aws/whats-new/2018/10/now-you-can-create-and-manage-users-within-aws-single-sign-on/
+Blog Post: https://aws.amazon.com/blogs/security/how-to-create-and-manage-users-within-aws-sso/
+
+According to https://aws.amazon.com/directoryservice/pricing/, AWS managed AD costs $288-$432/mo minimum. For my organization, any flat monthly rate above the cost of a t3.nano requires good justification for approval. That much money did not justify moving away from IAM users.
+
+Because of this huge reduction in price, I am sure some organizations will use AWS SSO right now. However, my organization will not be comfortable using this service for two reasons.
+
+1) MFA - Specifically, Time-based One-Time Passwords cannot be configured and required for all users.
+2) Password policies cannot be tailored. We use a password manager, so it is no problem to enforce 30-90 day rotation and 16+ character passwords.
+
+When will these two enhancements to AWS SSO built-in directory be released?"
+AWS Single Sign-on (SSO)	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+Thanks a lot for your feedback. We have added these features to our backlog and will consider these for future prioritization. 
+
+Regarding 1) Just to clarify that you are referring to a time-based one-time MFA code that can configure for your users?
+Regarding 2) You want the capability to the interval after which the password expires requiring the user to reset the password.
+
+Thanks a lot and we appreciate your feedback."
+AWS Single Sign-on (SSO)	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+1) We wouldn't mind supplying the QR code to our users from an admin interface. However, it would be nice to have users manage their own TOTP device. Until the device is configured correctly, the user should not be able to do anything besides login to configure the TOTP device.
+2) A custom password policy is less important than #1, but I imagine this could be done similar to the IAM User password policy capability.
+
+Thanks."
+AWS Single Sign-on (SSO)	"Re: Enforce TOTP MFA & Strong Password Policies w/ Rotation
+Looks like OTP is now configurable in the AWS SSO console.  https://aws.amazon.com/blogs/security/add-a-layer-of-security-for-aws-sso-user-portal-sign-in-with-context-aware-email-based-verification/ 
+
+Looks like AWS is moving in the right direction, as always. This is good enough to answer my question."
+AWS Single Sign-on (SSO)	"SSO Start Page - UI Modification
+Is it possible to customize the UI of the login page for AWS SSO."
+AWS Single Sign-on (SSO)	"Re: SSO Start Page - UI Modification
+Thanks a lot for your feedback. We have added your request to customize the SSO Start page to our feature backlog and will consider it for future prioritization. 
+
+What type of modifications would you want to do for the Start Page? Are you looking to have your own logo? Anything else?"
+AWS Single Sign-on (SSO)	"When will we see AWS Single Sign-On in EU ?
+Hi there..
+
+With the newly build-in directory in AWS Single Sign-On, the service really got interesting, but with the GDPR regulation we still cannot use it here in EU.
+AWS Single Sign-On has been out since 2017, when can we expect to see it ""Over here"" ?
+
+Looking forward..
+David"
+AWS Single Sign-on (SSO)	"Re: When will we see AWS Single Sign-On in EU ?
+Thanks a lot David. We have added your request to our feature back log and will update the thread once the service is available in EU region."
+AWS Single Sign-on (SSO)	"Customer Managed Policies in SSO
+I've come across what seems to be a surprising omission from SSO: Customer Managed Policies.
+
+From my understanding the most custom Permission Set you can create is by using 10 AWS Managed Policies alongside the 1 inline IAM policy.
+
+The problem with this is the permissions we require do not always fit into managed policies and having to 'complete' them by an additional inline policy seems 'hacky' and a poor way to manage permissions when trying to give 'least privilege where possible'.
+
+We could live with the inline policy creator however the byte limit severely limits the kind of policies you can create.
+
+Is there anything in the pipeline to be able to add Customer Managed Policies to Permission Sets, or at least the ability to increase the inline policy byte limit?"
+AWS Single Sign-on (SSO)	"Re: Customer Managed Policies in SSO
+Thank you for your feedback. We will consider your inputs while planning the future roadmap of the product.
+-Anand Murugesan"
+AWS Single Sign-on (SSO)	"Re: Customer Managed Policies in SSO
+Disregard this.  I see custom policies are supported now.
+
+Edited by: JGardner123 on Jan 15, 2019 9:23 AM"
+AWS Single Sign-on (SSO)	"MFA Prompt moved?
+It seems that our MFA prompt is no longer on the main SSO login page. Our users used to see three fields (Username+Password+MFA). Now they just see (UserName+Password).
+
+Our users are still prompted for MFA, but as a second step, after the user authenticates against our directory.
+
+Was this a design change? I don't see this as configurable anywhere. Our directory still has MFA enabled and I can't see any obvious settings to configure this.
+
+Someone over in infosec escalated this without trying to login - ""oh heck, who disabled mfa?"""
+AWS Single Sign-on (SSO)	"Re: MFA Prompt moved?
+like it never disappeared, the MFA prompt is back on the SSO Login page."
+AWS Single Sign-on (SSO)	"How to use AWS SSO with Amazon RedShift
+Hi
+
+I see that AWS SSO service for AWS organizations support SAML. Also Amazon Redshift supports SAML. But I can't find any documentation how to use AWS SSO service with redshift.
+
+Is it possible to use AWS SSO with Amazon Redshift?
+
+Best
+Steffen"
+AWS Single Sign-on (SSO)	"How to change default directory alias in AWS SSO?
+AWS SSO doesn't allow changing directory alias. How can I do that? Is it possible to remove default directory or remove/disable whole SSO and configure it from the beginning or maybe from CLI?"
+AWS Single Sign-on (SSO)	"Re: How to change default directory alias in AWS SSO?
+The default alias for your directory is your directory's id (format ""d-""). You can change the directory alias by navigating to the directory tab. Note that you can change the directory alias only once. Once you change the directory alias, you cannot change it again. Please let us know if you have issues"
+AWS Single Sign-on (SSO)	"Re: How to change default directory alias in AWS SSO?
+In addition, you can also change the default directory to use a Microsoft AD (AWS Managed Microsoft AD or AD Connector ) directory by choosing ""Change Directory"" in the Directory tab in the AWS SSO Console."
+AWS Single Sign-on (SSO)	"Re: How to change default directory alias in AWS SSO?
+Ok, I thought there is a posibility to release given alias because I wanted to use this alias for my Microsoft AD Directory."
+AWS Single Sign-on (SSO)	"General Question about AWS Single Sign On
+If I enable AWS Single Sign On in my master account and root org, if I determine this service is not for me, can it be disabled and/or removed?"
+AWS Single Sign-on (SSO)	"Re: General Question about AWS Single Sign On
+Yes, you can disable SSO by navigating to the AWS Organizations console and choose Settings. You can disable AWS Single Sign-On by choosing the Disable button next to AWS Single Sign-On. Here is the deep link to the settings page: https://console.aws.amazon.com/organizations/home?region=us-east-1#/organization/settings"
+AWS Single Sign-on (SSO)	"How do I add a new SSO connector for Tallyfy?
+AWS offers a list of pre-existing apps as connectors - such as Salesforce, Box, etc.
+
+I want to have  https://tallyfy.com as a default listing on this directory - how do I build a connector such that it's published in that listing?
+
+Edited by: amitarelli on Nov 6, 2018 2:06 AM"
+AWS Single Sign-on (SSO)	"AWS SSO for applications that need AccessKey / Secret Access key
+Hi,
+
+maybe a stupid question, but i couldn´t find a definitive answer: What is the intended way to use AWS SSO with an application that needs AccessKey and SecretAccessKey as credentials to login? 
+
+There are some descriptions about how to do it with a script that gets (temporary) credentials using a script, saving them in the current users credentials files and going ahead from there:
+https://aws.amazon.com/de/blogs/security/how-to-implement-a-general-solution-for-federated-apicli-access-using-saml-2-0/ 
+
+https://aws.amazon.com/de/blogs/big-data/connect-to-amazon-athena-with-federated-identities-using-temporary-credentials/
+
+I wonder if this is the only / intended way to go, or if there is something more ""elegant"" that i keep on missing? Is there any way of getting non-temporary credentials this way, or do i have to manually create IAM-users if i want permanent ones?
+
+Thank you"
+AWS Single Sign-on (SSO)	"AWS SSO login with UPN suffix
+Currenty we have AWS SSO connected to AWS AD (domain.com), and AWS AD has a two way trust with other AD domains (e.g. corp.trusteddomain.com).
+
+When we assign username@corp.trusteddomain.com to an account and permission set, the console lists the user as : corp.trusteddomain.com\username. 
+
+In the user portal for AWS accounts, it's possible to logon as corp.trusteddomain.com\username but not as username@corp.trusteddomain.com (authentication fails) or with the AD UPN suffix defined for that user (username@trusteddomain.com).
+
+Most users are familiar with username@trusteddomain.com as a universal way to login, since it's also often their email. Is there any way to allow UPN login?"
+AWS Single Sign-on (SSO)	"AWS Console display suggestions for AWS SSO Federated access
+When using AWS SSO to login, the ""AWS console"" user is displayed as:
+
+AWSReservedSSO_Administrat...
+
+You need to hover with the mouse to get a tooltip and see the full permissionset name, account and user name:
+
+AWSReservedSSO_AdministratorAccess_13109712941410932/user@fqdn @awsaccountnameor#
+
+From a customer's standpoint, the most relevant info is user@fqdn, permissionset and aws account name or number. AWSReservedSSO and the number string are not as relevant yet they take up most of the screen real estate in the navbar. It would save time if the relevant info was always visible. Also, when frequently switching between multiple accounts, it's helpful to know at a glance which account you're in to avoid mistakes. 
+
+Would it be possible to display the info like this instead:
+
+user@fqdn @awsaccountname /AdministratorAccess"
+AWS Single Sign-on (SSO)	"Why should we use Federation with AWS Single Sign on Endpoint
+Hi,
+
+We have Ping federation configured on-prem which is directly send the SAML assertion to the AWS sign in endpoint for SAML (https://signin.aws.amazon.com/saml). The endpoint uses the AssumeRoleWithSAML API to request temporary security credentials and then constructs a sign-in URL for the AWS Management Console using those credentials.
+
+It's simple and straightforward. 
+
+I see, there's another option where we can use AWS Single Sign-on (SSO) endpoint. The endpoint requests temporary security credentials on behalf of the user and creates a console sign-in URL.
+AWS sends the sign-in URL back to the client as a redirect.
+
+My question's why should we use AWS SSO endpoint integration with Ping federate when we can get the same functionality with AWS sign-in endpoint with SAML (https://signin.aws.amazon.com/saml).
+
+Please check the following links and guide us which option's best.
+
+AWS SSO endpoint:- https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_enable-console-saml.html
+
+AWS Sign-in endpoint with SAML:
+https://aws.amazon.com/blogs/security/how-to-establish-federated-access-to-your-aws-resources-by-using-active-directory-user-attributes/"
+AWS Single Sign-on (SSO)	"We were unable to sign you in
+Suddenly getting an issue signing in, nothing has changed in my set up, any ideas?
+
+https://xyz.awsapps.com/start/error/400.html
+
+We were unable to sign you in.
+This is due to an error with how single sign-on was originally configured.
+Please contact your system administrator and ask them to verify that all attribute mappings are valid.
+Try signing in again
+
+
+Joe"
+AWS Single Sign-on (SSO)	"Re: We were unable to sign you in
+Seems to have resolved itself, curious what the issue was? Nothing reported on aws status page."
+AWS Single Sign-on (SSO)	"Connect non-org account to AWS SSO as a custom SAML app. Attributes help
+I have an account that is not part of my org but I would like to add it as a custom SAML 2.0 app in my AWS SSO. Is this possible? 
+
+https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-accounts.html  states that it is possible:
+
+""You can also connect an AWS account that is not part of your organization by setting up the account as a custom SAML application in AWS SSO. In this scenario, you provision and manage the IAM roles and trust relationships that are required to enable SSO access. For more information on how to do this, see Add and Configure a Custom SAML 2.0 Application.""
+
+I have all this set up but I can't seem to find the proper attribute mappings for the assertion. Anyone have any info or advice?"
+AWS Single Sign-on (SSO)	"Re: Connect non-org account to AWS SSO as a custom SAML app. Attributes help
+A big thank you to Jose Eduardo at AWS Support for the help. 
+
+""Assuming that you have already created the application in SSO and the role to be assumed in the other account, the following three attributes are needed when configuring access to an AWS account as a Custom SAML application in AWS SSO:
+
+User attribute in the application: Subject
+Maps to this string value or user attribute in AWS SSO: $null
+Format: persistent
+
+User attribute in the application: https://aws.amazon.com/SAML/Attributes/Role
+Maps to this string value or user attribute in AWS SSO: arn:aws:iam::012345678910:role/NAME-OF-YOUR-ROLE,arn:aws:iam::012345678910:saml-provider/NAME-OF-IDENTITY-PROVIDER
+Format: unspecified
+
+User attribute in the application: https://aws.amazon.com/SAML/Attributes/RoleSessionName
+Maps to this string value or user attribute in AWS SSO: $null
+Format: unspecified
+
+Note that if you use the user attribute $null as a mapping value then the user must have a value configured in the email address field in Active Directory. Alternatively, you can also specify other supported attributes. For more information about supported attributes in AWS SSO please see link [1] in the references below.
+
+Finally, please note that the attributes above are case-sensitive, therefore, they must be set exactly to https://aws.amazon.com/SAML/Attributes/Role and https://aws.amazon.com/SAML/Attributes/RoleSessionName. For more information about the required attributes in SAML responses for authentication to AWS please see link [2] in the references below.""
+
+References:
+
+[1] Supported AWS SSO Attributes
+https://docs.aws.amazon.com/singlesignon/latest/userguide/attributemappingsconcept.html
+
+[2] Configuring SAML Assertions for the Authentication Response
+https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_saml_assertions.html"
+AWS Single Sign-on (SSO)	"Re: Connect non-org account to AWS SSO as a custom SAML app. Attributes help
+Hey ITGuyDennis,
+
+Just adding a link to another thread which you asked this on. I provided the answer there, the same as you have posted here, but with the formatting fixed so that NULL isn't displayed. Just for anyone who comes here to find the solution:
+
+https://forums.aws.amazon.com/thread.jspa?threadID=282953"
+AWS Single Sign-on (SSO)	"Use SSO to access accounts outside of an Organization
+The AWS SSO FAQ mentions that SSO allows access to accounts within your Organization.
+
+Is SSO able to allow access to accounts in an org AND accounts in another org or not in any org?"
+AWS Single Sign-on (SSO)	"Re: Use SSO to access accounts outside of an Organization
+AWS SSO can be setup in your AWS Organization. Then, AWS SSO provides single sign-on access to all the accounts managed with in your AWS Organization. I want to learn more about your use case that would require you to manage SSO to accounts managed outside your AWS Organization."
+AWS Single Sign-on (SSO)	"Re: Use SSO to access accounts outside of an Organization
+I work for an MSP.
+
+We currently use Switch Role but SSO has all the links to account consoles in the SSO GUI and Switch Role we need to manage those Switch Role URLs manually.
+
+Edited by: velvetpixeldevcam on May 29, 2018 4:30 PM"
+AWS Single Sign-on (SSO)	"Re: Use SSO to access accounts outside of an Organization
+Understood. AWS SSO does not have support for managed service providers use cases at this time. I appreciate your feedback. We will consider your inputs while planning for future releases of AWS SSO.
+--Anand Murugesan
+
+Edited by: anandmataws on May 29, 2018 4:35 PM"
+AWS Single Sign-on (SSO)	"Re: Use SSO to access accounts outside of an Organization
+Thanks for the confirmation"
+AWS Single Sign-on (SSO)	"Re: Use SSO to access accounts outside of an Organization
+I just wanted to tag on to this question. I have an account that is not part of my org but I would like to add it as a custom SAML 2.0 app in my AWS SSO. Is this possible? The documentation at https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-accounts.html states that it is possible:
+
+""You can also connect an AWS account that is not part of your organization by setting up the account as a custom SAML application in AWS SSO. In this scenario, you provision and manage the IAM roles and trust relationships that are required to enable SSO access. For more information on how to do this, see Add and Configure a Custom SAML 2.0 Application.""
+
+I have all this set up but I can't seem to find the proper attribute mappings for the assertion. Anyone have any info or advice?"
+AWS Single Sign-on (SSO)	"Re: Use SSO to access accounts outside of an Organization
+Hey ITGuyDennis,
+
+Indeed this is possible. It can be achieved by configuring a Custom SAML 2.0 Application, but bear the following in mind:
+
+
+Users will only be able to assume a single role within the target AWS account
+Unlike the AWS Accounts application, you will not be able to obtain temporary credentials for programmatic use via the app in the SSO User Portal.
+
+
+The steps below are how I achieved this in my own environment:
+
+1) Create a new Custom SAML 2.0 application.
+2) Download the 'AWS SSO SAML metadata' file.
+3) Go to your target account and create an Idp in IAM, uploading the metadata file which you downloaded.
+4) Create an IAM Role to allow for federated access with SAML - Select the Idp which you just created, allow for Console access, attach the IAM Policies you wish.
+5) Go back to the account where you're configuring the SSO application.
+6) For 'Application Metadata' select to manually enter the data.
+7) Enter the following:
+	i) Application ACS URL - https://signin.aws.amazon.com/saml
+	ii) Application SAML audience - urn:amazon:webservices
+	iii) Leave 'Application start URL' blank.
+8) In Attribute Mappings, enter the following (user attribute - map string value - format):
+	i) Subject - $\{user:email\} - persistent
+	ii) https://aws.amazon.com/SAML/Attributes/RoleSessionName - $\{user:email\} - unspecified
+	iii) https://aws.amazon.com/SAML/Attributes/Role - arn:aws:iam::account_number:saml-provider/Idp_name,arn:aws:iam::account_number:role/role_name - unspecified
+9) Assign a user to access the application and save the changes.
+
+N.B. Remember to remove the '\' from the user attributes above. I had to put those in so that the values weren't show as null.
+
+I hope that this helps.
+
+Regards,
+Ciarán C
+
+Edited by: CiaranC-AWS on Aug 20, 2018 5:34 AM - Has to reformat the user attributes as they were coming up as '$null' when saved."
+AWS Single Sign-on (SSO)	"Removing CLI option from SSO Portal
+Hi,
+
+AWS SSO dashboard shows ""Management Console | Command Line access"". Is there a way I can hide or not show CLI option?
+
+Thanks
+Bala
+
+Edited by: ACN-Bala on May 7, 2018 5:43 AM"
+AWS Single Sign-on (SSO)	"Re: Removing CLI option from SSO Portal
+You cannot hide the CLI option from the user portal. May I ask what is the motivation for that?
+Thanks,
+Anand Murugesan."
+AWS Single Sign-on (SSO)	"Re: Removing CLI option from SSO Portal
+Its just that I want to limit users to have access through Console only.
+
+Thanks
+Bala"
+AWS Single Sign-on (SSO)	"Re: Removing CLI option from SSO Portal
+I understand. If the user can perform an operation through Console, the same operation can be performed through API route as well. Users have the same permission immaterial of the route the use to access those API/features. Would you please elaborate what is your thought when you said you wanted to not provide access to your users from the command line/programmatic access. I am trying to understand the benefits/need for that setup. 
+Thanks,
+Anand Murugesan."
+AWS Single Sign-on (SSO)	"Re: Removing CLI option from SSO Portal
+I think this option would be handy to stop those who may be inexperienced with CLI attempting something which could potentially bring down an account."
+AWS Single Sign-on (SSO)	"How to enable Master account for AWS SSO
+Hi,
+
+As part of testing, I have been able to create an AWS Organizations with different OUs and AWS SSO enabled for the member accounts with AWS Microsoft AD directory services.
+
+But for the master account I was not able to assign users, the ""Assign Users"" option is greyed out. So, I added IAM Roles for directory users and groups, from the ""AWS Management Console"" option under my instance of Directory Service. With this I am able to SSO into master account as well, but the URL is different i.e I have to use https://myportal.awsapps.com/console.
+
+For all the rest of the member accounts, I use the https://myportal.awsapps.com/start, as this lists all the member accounts, and when you select any of them, it shows the corresponding roles, f more than 1 created.
+
+My question is - how do I enable Master account to show up in the common URL -
+https://myportal.awsapps.com/start, rather than using two URLs - one for Master account and another for all the member accounts.
+
+Request clarity and addition info on this requirement of mine.
+
+Thanks
+Bala"
+AWS Single Sign-on (SSO)	"Re: How to enable Master account for AWS SSO
+Thank you for sharing your feedback. We are aware of the request to enable SSO access to master accounts. Currently AWS SSO does not support SSO access to master accounts. We are looking to enable this in the future.
+
+Edited by: anandmataws on May 2, 2018 10:24 AM"
+AWS Single Sign-on (SSO)	"Re: How to enable Master account for AWS SSO
+Thanks Anand for the clarification."
+AWS Single Sign-on (SSO)	"Re: How to enable Master account for AWS SSO
+We recently launched a feature to enable single sign-on to master account. You can find more details here: https://aws.amazon.com/about-aws/whats-new/2018/07/aws-single-sign-on-streamlines-access-to-aws-organizations-master-account-resources/
+
+Please let us know if you have additional questions."
+AWS Single Sign-on (SSO)	"OpenVPN integration
+Any chance of adding OpenVPN integration to SSO? This would be a crucial piece for our organisation.
+
+Many thanks,
+B"
+AWS Single Sign-on (SSO)	"AWS SSO - Error when saving attribute mapping.
+I'm trying to set up a SSO from AWS SSO to QuickSight. I'm getting the attached error when saving the attribute mapping. Any ideas whats going on here?"
+AWS Single Sign-on (SSO)	"Office 365 Sign-In Issue
+We're trialing AWS SSO as an identity provider for Office 365 using a test tenant. Federation has been configured successfully as per AWS SSO guidelines.
+
+A user can sign in to the AWS SSO portal and then click on Office 365 icon to launch the app. The sign-in process works successfully and the user is logged in to the Office 365 portal.
+
+However, if a user who has not logged in to AWS SSO goes directly to the Office 365 portal, the sign in request is automatically redirected to AWS SSO and once credentials are entered, an error is displayed.
+
+<URL> - https://portal.sso.us-east-1.amazonaws.com/saml/assertion/Nzg0ODMzNTMwNjkyX2lucy0yZGIwMDVhNDVhMjY2NGQ1
+
+403
+Please contact your System Administrator
+No access
+
+Something went wrong and we could not sign you in to the application. 
+
+This message is received by any user attempting to sign in from Outlook 2016 or iOS native mail client on the sign in page.
+
+However if the user once again navigates to portal.office.com and tries to sign, the process is successful. The difference being, the user is already signed on to AWS SSO.
+
+Can anyone assist with further troubleshooting on this error. 
+
+Thanks
+Kasun"
+AWS Single Sign-on (SSO)	"Re: Office 365 Sign-In Issue
+AWS SSO supports single sign-on to business applications such as Office365  through web browsers only. AWS SSO does not support single sign-on from mobile or desktop native applications.
+
+Edited by: anandmataws on Apr 30, 2018 6:55 AM"
+AWS Single Sign-on (SSO)	"Re: Office 365 Sign-In Issue
+I dont think you have understood the question.
+
+If AWS is my federated authentication provider for Office 365, I would expect that I can sign in to my email from outlook or any other client that supports modern authentication. i'm only referring to authentication and not true SSO (passthrough authentication) from a client device. 
+
+The issue is that I receive an error if the authentication request is initiated from the application side (i.e. user going to portal.office.com in a browser, then redirected to AWS SSO and error post authentication). No issues if i log in to AWS SSO first in the browser and then click on the Office 365 tile.
+
+Has anyone tried this and is this expected behavior?"
+AWS Single Sign-on (SSO)	"Re: Office 365 Sign-In Issue
+Thank you for bringing this issue (i.e. user going to portal.office.com in a browser, then redirected to AWS SSO and error post authentication) to our notice. We are aware of this issue and we are working on a fix for this."
+AWS Single Sign-on (SSO)	"Re: Office 365 Sign-In Issue
+We have fixed this issue. Please retry your use case."
+AWS Single Sign-on (SSO)	"AWS SSO - SAML Integration with G-Suite Not Working
+Hi,
+
+I have recently configured AWS SSO for GSuite using the configuration link available in AWS Console. 
+When I login to the AWS SSO Portal, I get to see the GSuite icon and when I click, it takes me to Google Drive (as I have configured ""Application start URL https://drive.google.com/a/acnbalamurugan.in""), and then I get the below error:
+
+400 -Please contact your System Administrator
+Mapped property (NameId) cannot be empty. Please check Attribute Source
+
+Request some guidance on resolving this attribute issue.
+
+Thanks
+Bala"
+AWS Single Sign-on (SSO)	"Re: AWS SSO - SAML Integration with G-Suite Not Working
+I was able to resolve this. It was a simple fix - had to set the email address filed in user account properties in my connected directory."
+AWS Single Sign-on (SSO)	"Bug - unable to sign on with Chrome
+Hello,
+
+I've been scratching my head for a while as to why my SSO setup wasn't working - turns out it is just not in Chrome.
+
+Running on Chrome Version 65.0.3325.146 (Official Build) (64-bit), both in standard mode with a couple of extensions (uBlock Origin and React Developer Tools) and incognito mode with no extensions running. The console is showing a 401 on https://portal.sso.us-east-1.amazonaws.com/token/whoAmI
+
+Using the same URL and login details on IE 11 works without issues."
+AWS Single Sign-on (SSO)	"Re: Bug - unable to sign on with Chrome
+We cannot reproduce this issue in latest version of chrome -- Version 65.0.3325.181 (Official Build) (64-bit). I would recommend to upgrade to this version of chrome."
+AWS Single Sign-on (SSO)	"Cant delete SSO after leaving organisation
+I decided to move SSO to another account due to access restriction however, now I cant delete AD due to it being connected to SSO (Your request has a problem. Please see the following details. A different organization with id:o-amexdo86gg already exists for accountId:XXXXX Please contact support.)
+
+The SSO id in question is o-amexdo86gg and AD in question is d-90672d1796.
+
+Any help on getting SSO deleted on my account is greatly appreciated, thanks!"
+AWS Single Sign-on (SSO)	"Re: Cant delete SSO after leaving organisation
+Please disconnect the directory from AWS SSO. Then you can remove the directory."
+AWS Single Sign-on (SSO)	"Re: Cant delete SSO after leaving organisation
+Thanks for getting back to me,
+
+The problem now is I cant delete the AD due to the associated SSO, but I cant even see the SSO due to me leaving the organisation. I have tried reenable SSO to delete it but Im getting the error shown in the attached screenshot."
+AWS Single Sign-on (SSO)	"Re: Cant delete SSO after leaving organisation
+You can manage AWS SSO only from the master account.  Do you still have access to the master organization? If so login to the master organization to delete the directory. Please describe the list of events that got you into the current state."
+AWS Single Sign-on (SSO)	"Re: Cant delete SSO after leaving organisation
+So this account was originally the master account until I switched it to another one.
+
+AccountA
+enable SSO, setup windows AD
+
+At the point when AccountA was all set up I decided I needed to move it to another org due to restriction in SSOing to the master account.
+
+AccountB
+leave accountA org, set accountB as master, add accountA.
+
+In adding accountB I left the organization in which accountA was the master.
+
+Now Im in a state where AccountA can not enable SSO regardless of being the master or not.
+
+I hope this is enough information in replicating the issue.
+
+Edited by: JustJoe on Mar 2, 2018 3:00 PM"
+AWS Single Sign-on (SSO)	"Re: Cant delete SSO after leaving organisation
+Thank you for sharing your use case. We are aware of this bug and working on a fix. Can you please file an AWS Support Ticket for us to help you further."
+AWS Single Sign-on (SSO)	"Re: Cant delete SSO after leaving organisation
+I only have basic support, how would I go about doing this?"
+AWS Single Sign-on (SSO)	"Re: Cant delete SSO after leaving organisation
+I only have basic support, is there any way to progress this further?"
+AWS Single Sign-on (SSO)	"Re: Cant delete SSO after leaving organisation
+Hi,
+We are working on a fix for this issue. In them mean time, I have sent you a personal message in the forum with instructions on how to proceed further. Please review."
+AWS Single Sign-on (SSO)	"Re: Cant delete SSO after leaving organisation
+This bug has been fixed."
+AWS Single Sign-on (SSO)	"G Suite SSO to AWS: SSO requests from users with pre-existing IAM
+I am referencing ""How to Set Up Federated Single Sign-On to AWS Using Google Apps"":  https://aws.amazon.com/blogs/security/how-to-set-up-federated-single-sign-on-to-aws-using-google-apps/ 
+
+How does this handle pre-existing IAM users? What if a pre-existing IAM user's email address matches an SSO negotiation? Is the SSO session logged into the existing IAM user, or a new temporary one? Obviously being able to merge existing IAM users with SSO requests that match their email address (or somehow) is optimal."
+AWS Single Sign-on (SSO)	"Re: G Suite SSO to AWS: SSO requests from users with pre-existing IAM
+You need to connect a user directory (AD) with users who want to allow authentication through AWS SSO user portal. Please refer here https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-connected-directory.html
+
+Edited by: anandmataws on Mar 24, 2018 8:11 AM"
+AWS Single Sign-on (SSO)	"AWS SSO New User Registration
+We are trying to evaluate AWS SSO along with Amazon Cognito. Does AWS SSO come with new user registration screens/flows out of the box? With Cognito I was at least able to find some example angular code to drop right in for things like forgot password, new user registration, etc. I was hoping AWS SSO was a full security product similar to Auth0 or Keycloak and had those things built in. Is AWS SSO relying entirely on some external mechanism to create users in the connected Active Directory?
+
+Also, how do AWS SSO users authenticate against AWS Resources like API Gateway? Cognito Identity Pools assign iam roles to authenticated cognito user pool users. Otherwise, a custom authorizer can take an issued token, verify it and allow access. Can AWS SSO issue SAML tokens? If so, how do I get the SAML tokens to pass on to a custom authorizer?"
+AWS Single Sign-on (SSO)	"Re: AWS SSO New User Registration
+AWS SSO does not provide new user registration screens/flows out of the box. It depends on underlying AD for users. It is possible to build a custom user registration flow on top of underlying AD using AD/LDAP protocols on your own.
+
+AWS SSO does not allow authentication to AWS Resources like API Gateway like Amazon Cognito does. AWS SSO does not issue SAML tokens through API. But, it does issue SAML tokens to integrated applications (you can configure a custom SAML application) in the browser login flow only."
+AWS Single Sign-on (SSO)	"Possible BUG with SSO and Organizations
+It seems if you create an organization, delete it, then create another one the previous organization will be listed along with your current. When attempting to sign up for SSO the following error message occurs for me;
+
+""Your request has a problem. Please see the following details. A different organization with id:o-w1gs180c6w already exists for accountId:255993005091 Please contact support.""
+
+Since there's no way to specify which Organization to delete with the CLI or to work with SSO through the CLI it seems that it was meant that only one Organization was meant to exist at one time. However, it also seems previous Organizations are recorded."
+AWS Single Sign-on (SSO)	"Re: Possible BUG with SSO and Organizations
+Thank you for your feedback. We are aware of this bug and working on a solution. In the mean time, please raise a support ticket so that we could help you further."
+AWS Single Sign-on (SSO)	"Re: Possible BUG with SSO and Organizations
+Hi,
+
+Is there a chance you could just delete that old organization from our account? We only have a basic support plan.
+
+Thanks!"
+AWS Single Sign-on (SSO)	"Re: Possible BUG with SSO and Organizations
+Seems to be working now"
+AWS Single Sign-on (SSO)	"Re: Possible BUG with SSO and Organizations
+Thanks for confirming. We have fixed this bug. This should work from now on."
+AWS Single Sign-on (SSO)	"AWS SSO and AD Connector groups
+We primarily use the eu-west-1 region, but have created a presence in us-east-1 with an AD Connector back to London over VPN to trial AWS SSO.
+
+The AD connector and SSO account access works well when we assign accounts/roles directly to user objects, but when assigning to groups instead of directly to users it doesn't seem to pick these up.
+
+At first I assumed this was going to be the same limitation that the Directory Console runs into where nested groups are not picked up. But I've tried this with flat groups too and still does not work.
+
+Is this expected behaviour with groups over AD Connector, or should this functionality work?"
+AWS Single Sign-on (SSO)	"Re: AWS SSO and AD Connector groups
+Assignments to AD groups are supported. But AD nested groups are not supported."
+AWS Single Sign-on (SSO)	"Re: AWS SSO and AD Connector groups
+Thanks @anandmataws 
+
+That is great, except the groups are not nested, and it doesn't work. How might one go about debugging?
+
+Sam
+
+Edited by: SamB on Feb 28, 2018 6:53 AM"
+AWS Single Sign-on (SSO)	"Re: AWS SSO and AD Connector groups
+Sam,
+After the user signs in to the portal please go to the URL https://portal.sso.us-east-1.amazonaws.com/user to see what groups for the users are getting picked up. This will help debug this issue further.
+
+You can  file a support ticket, if you need help further.
+Thanks,
+Anand."
+AWS Single Sign-on (SSO)	"Federated users error: Token must be redeemed within 5 minutes of issuance
+I was troubleshooting a SAML error and thought I'd leave my fix here for anyone that has ADFS SSO enabled for user federation and encounters this error. I looked in the docs at ( https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_saml.html ) but did not see it mentioned. 
+
+Federated users error: Token must be redeemed within 5 minutes of issuance (Service: AWSSecurityTokenService; Status Code: 400; Error Code: ExpiredTokenException
+
+Found the ADFS server clock was out of sync by more than 5 minutes. I corrected the time and restarted the ADFS service. My test user was able to login normally. 
+
+Hope this helps someone in the future!"
+AWS Single Sign-on (SSO)	"api and cli access
+Will SSO also provide access to STS for api and cli access in addition to the console?"
+AWS Single Sign-on (SSO)	"Re: api and cli access
+As of today, AWS SSO does not support that. We will consider your feedback as we develop the service going forward."
+AWS Single Sign-on (SSO)	"Re: api and cli access
+Hi,
+I came here with the same question, thanks for confirming, would be nice if this was noted in the documentation. 
+
+Cheers"
+AWS Single Sign-on (SSO)	"Re: api and cli access
+Hi, we have enabled API and CLI access. See https://forums.aws.amazon.com/ann.jspa?annID=5267."
+AWS Single Sign-on (SSO)	"Tableau - Referer header is missing
+Hello,
+
+I have AWS SSO setup with our Tableau Online instance. I can authenticate via the web fine, but when I try to login from Tableau Desktop I get a ""{""message"":""Referer header is missing""}"" error.
+
+Here is a copy of the request/response:
+
+GET https://portal.sso.us-east-1.amazonaws.com/auth/wd?auth_code=XXX&organization=d-XXXX&region=us-east-1 HTTP/1.1
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,/;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/538.1 (KHTML, like Gecko) Tableau/10.5 Safari/538.1
+Accept-Language: en-us
+Cookie: x-amz-sso_state=XXXXXX
+Connection: Keep-Alive
+Accept-Encoding: gzip, deflate
+Host: portal.sso.us-east-1.amazonaws.com
+
+HTTP/1.1 400 Bad Request
+Date: Fri, 02 Feb 2018 19:39:40 GMT
+Content-Type: application/json
+Content-Length: 39
+Connection: keep-alive
+Server: Apache-Coyote/1.1
+RequestId: a79280c6-9b76-4d28-9ad2-5f43a27ad4af
+
+{""message"":""Referer header is missing""}
+
+Any thoughts?
+
+Thanks,"
+AWS Single Sign-on (SSO)	"Re: Tableau - Referer header is missing
+AWS SSO supports single sign-on to business applications through web browsers only."
+AWS Single Sign-on (SSO)	"sso-saml-logging-into-idp-from-service-provicer
+SP is an app which have its own Auth mechanism and local identities, User can directly login.
+
+Is there a way SP can notify IDP about the logged in user so that other SP are logged in from IDP(salesforce)
+
+https://forums.aws.amazon.com/ -> https://forums.aws.amazon.com/
+
+https://forums.aws.amazon.com/ ---login req--> https://forums.aws.amazon.com/ -> https://forums.aws.amazon.com/
+
+Problem is SP1 have set of users which is not part of idp and other SPs
+
+SP = Service provider
+
+IDP = Identity provider
+
+Edited by: simon007 on Feb 7, 2018 3:21 AM"
+AWS Single Sign-on (SSO)	"Re: sso-saml-logging-into-idp-from-service-provicer
+All users have to be mastered in IDP/Directory Service for SSO to work."
+AWS Single Sign-on (SSO)	"Simple AD support
+I'm only using Active Directory for basic auth in a proxy and some on-prem applications that support it. I would also like to use AWS SSO to move users off AWS IAM users. Is there a plan to support Simple AD with SSO?"
+AWS Single Sign-on (SSO)	"Re: Simple AD support
+AWS SSO supports AWS Directory Service for Microsoft Active Directory, also known as AWS Managed Microsoft AD, and AD Connector. AWS SSO will not support Simple AD."
+AWS Single Sign-on (SSO)	"Region Availability
+Hello AWS Team,
+
+Keen to get started with AWS SSO connected to our AD in London, it would seem crazy not to offer SSO in the regions AD is available, are you able to share an expected availability date in the other major regions such as London?
+
+Thanks
+James"
+AWS Single Sign-on (SSO)	"Re: Region Availability
+Thank you for your valuable inputs. We will consider your inputs as we plan the future releases."
+AWS Single Sign-on (SSO)	"Re: Region Availability
+Replied."
+AWS Single Sign-on (SSO)	"OpenId Connect Support
+According to FAQ https://aws.amazon.com/single-sign-on/faqs/ currently there's no support for OIDC protocol - Is this temporary and support for OIDC will be added in forthcoming updates?
+
+I know that SAML is mature and comprehensive protocol but OIDC is web (js) friendly and seems to be 
+a interoperable standard among different identity providers (Facebook, Twitter, Google, etc.). When you compare the specifications you’ll find that OIDC was designed to work with the web while SAML was retrofitted to work on top of the web.
+
+Best regards, 
+Marcin"
+AWS Single Sign-on (SSO)	"Re: OpenId Connect Support
+Marcin,
+Appreciate your feedback.
+Can you please elaborate your use case? OpenID Connect support could mean many things. It would be helpful if can describe what is the use case and how are you planning use this feature. We are considering adding this feature. This will help us to address this use case correctly in the future.
+Thanks,
+Anand."
+AWS Single Sign-on (SSO)	"Re: OpenId Connect Support
+Hi Anand, 
+
+Thanks for your reply. I'd like to have possibility to use AWS SSO as an OIDC identity provider and  also federate it with 3rd party identity providers, either for my custom apps or 3rd party services which are offering OIDC integration. I'd expect similar functionalities as provided by solutions like Keycloak or (to a smaller extent) ADFS but offered as PaaS service, like i.e. AzureAD. 
+
+AFAIK currently there's no AWS equivalent of such services. Cognito i.e. operates on tokens compatible with OIDC but the protocol it's not fully implemented and cannot be exposed as a OIDC identity provider. (https://forums.aws.amazon.com/thread.jspa?threadID=231517). I hoped that AWS SSO will fill that gap. 
+
+Best regards,
+Marcin
+
+Edited by: krlm on Dec 13, 2017 1:58 AM"
+AWS Single Sign-on (SSO)	"Re: OpenId Connect Support
+answered"
+AWS Single Sign-on (SSO)	"Re: OpenId Connect Support
+I'm going through this blog post, but it seems the support for OpenId was removed???
+https://aws.amazon.com/blogs/security/building-an-app-using-amazon-cognito-and-an-openid-connect-identity-provider/"
+AWS Single Sign-on (SSO)	"Re: OpenId Connect Support
+Hi, the post you are referring to is from Amazon Congito Product. Cognito still supports OpenID Connect. This post talks about AWS Single Sign-on, a separate service for managing access to AWS accounts and cloud business applications."
+AWS Single Sign-on (SSO)	"API information for custom mobile application integration
+Can you point me to documentation on Auth or Identity API for custom mobile application integration jwt or otherwise , including TOTP challenges. Thanks ... 
+
+update:
+Looks like SAML 2 is the answer.
+
+Edited by: jumptack on Dec 13, 2017 4:46 AM"
+AWS Single Sign-on (SSO)	"Re: API information for custom mobile application integration
+For custom mobile application development, we recommend using Amazon Cognito -> https://aws.amazon.com/cognito/"
+AWS Single Sign-on (SSO)	"AWS Account SSO - Your request included an invalid SAML response
+I created a new standard AD directory in AWS Directory Service, connected it to SSO and assigned access to my root AWS account to the standard ""Admin"" user in AD. I can sign into the application portal and see the AWS Management Console application with my permission set, but when I click on it, I get an error saying ""Your request included an invalid SAML response. To logout, click here"" on the AWS SAML sign-in page. I tried repairing my identity provider and verified the SSO console and my AWS Directory instance is in us-east-1. Is anyone else seeing this or am I missing something?
+
+Edited by: snixon123 on Dec 8, 2017 11:49 AM"
+AWS Single Sign-on (SSO)	"Re: AWS Account SSO - Your request included an invalid SAML response
+It could be that the out of the box AD users are missing email. Try adding 'Email' to the out of the box users are try creating a native AD users."
+AWS Single Sign-on (SSO)	"Re: AWS Account SSO - Your request included an invalid SAML response
+This helped. It turned out it wasn't the email address but the UPN that was missing. Looks like the admin user out of the box doesn't have a UPN set by default and that must have been part of the claims sent to the AWS SAML endpoint. I set the UPN on the user and it worked like a charm. Thank you!"
