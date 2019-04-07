@@ -1,0 +1,11 @@
+name,description,url
+Amazon Aurora,High Performance Managed Relational Database,https://aws.amazon.com/rds/aurora/faqs
+Amazon RDS,"Managed Relational Database Service for MySQL, PostgreSQL, Oracle, SQL Server, and MariaDB",https://aws.amazon.com/rds/faqs
+Amazon DynamoDB,Managed NoSQL Database,https://aws.amazon.com/dynamodb/faqs
+Amazon ElastiCache,In-memory Caching System,https://aws.amazon.com/elasticache/faqs
+Amazon Redshift,"Fast, Simple, Cost-effective Data Warehousing",https://aws.amazon.com/redshift/faqs
+Amazon Neptune ,Fully Managed Graph Database Service,https://aws.amazon.com/neptune/faqs
+AWS Database Migration Service,Migrate Databases with Minimal Downtime,https://aws.amazon.com/dms/faqs
+Amazon RDS on VMware,Automate on-premises database management,https://aws.amazon.com/rds/vmware/faqs
+Amazon Quantum Ledger Database (QLDB),Fully managed ledger database,https://aws.amazon.com/qldb/faqs
+Amazon DocumentDB (with MongoDB compatibility),Fully managed document database,https://aws.amazon.com/documentdb/faqs
