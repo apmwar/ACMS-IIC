@@ -1,0 +1,1883 @@
+Amazon S3	"Best glacier backup strategy
+Hi, I'm relatively new to AWS and S3/Glacier. I want to use mainly S3 Glacier for a cheap offsite solution to backup my data, which I only need to retrieve when disaster of some form strikes and destroys all my backups at home. I want to do this through a script, python or bash. I already did a lot of research, but I'm not completely sure yet of what the best strategy is. I want to be able to update the backup on glacier on a regular basis. From what I understand you cannot directly update an archive on glacier, but only delete and re-upload. If you delete before 90 days you have to pay, so a regular incremental backup directly to glacier doesn't seem like a good idea. I have some 700 GB of data to backup. So, I thought about uploading the first iteration of the complete data to S3 Standard, which is cheaper than uploading to Glacier directly as it seems ($0.005 vs $0.05 per 1000 requests in US East). I would then transfer that data over to glacier. What I'm not sure about is, if that transfer is free or if you have to pay. On the pricing page it says ""Transfers between S3 buckets or from Amazon S3 to any service(s) within the same AWS Region are free."" Not sure if that applies here. After deleting the data from S3 Standart (free?), I would then upload/sync only modified and new data to the S3 Standart bucket on a regular basis, i.e. once a week, until after 90 days, when I would ""update"", i.e. delete and copy the updated data over to glacier - through a lifecycle roule? From what I understand from the pricing page, lifecycle transitions are not free: ""Lifecycle Transition Requests into Glacier	$0.05 per 1,000 requests"". Or can this be done ""for free"", by deleting the affected data from glacier through cli/script and re-transfering from S3 Standart?
+So, in general, does this sound like a viable strategy, also money wise, or is there a better solution to do regular, incremental backups on glacier. Also, would those routines be the same with the new glacier deep archive? Any input would be very appreciated. Thanks!
+
+Edited by: mtlmaks on Apr 6, 2019 5:47 PM"
+Amazon S3	"Re: Best glacier backup strategy
+Nobody?"
+Amazon S3	"Re: Best glacier backup strategy
+The best way to move data is using a Lifecycle Policy, which you can set up in the bucket or in your backup software (I work for CloudBerry and we support lifecycle policies in our products). The policy will transition the data automatically between tiers. As I recall, movement of data is mostly free except for transition requests.
+
+Regarding using Glacier for DR, you need to keep in mind a couple things. Use the AWS calculator to see how much it's going to cost you to restore all your data. Restoring from S3 Glacier has higher costs than restoring from S3 Standard - just as restoring from S3 - Infrequent Access has higher costs than restoring from S3 Standard. Also keep in mind that getting data ready for restore may take 3-5 hours on average. Expedited restores are available at a higher cost. The reason I mention cost is that you might find that the cost is not something you're willing to pay. In that case, you might be better off sticking to something like S3 - Infrequent Access or the new S3 One Zone - Infrequent Access for your longer term storage."
+Amazon S3	"Can't Delete ""Ghost"" folders.
+Hi,
+
+In some of my buckets, some empty folders with special characters appeared and I can't delete them, resulting into having useless buckets that I can't delete on my account, which is becoming a problem since those buckets are old and empty buckets that the users shouldn't use but they can still see them.
+Everytime I try to delete them, they reappear as if they were temp files, but they've been there for many months now. An example of a folder name would be "" & # x 1 ; "" (I need to put spaces between characters else it does this  ). I tried deleting them with web console, no success, tried deleting them with third parties, no success either. I even tried adding a file in it in order to delete it and all it does is duplicate this said folder, with one version being the one with the file, which i can delete back, and the other version being empty and still not able to delete it.
+
+If anyone could help me with that it would be really appreciated.
+
+Thank you.
+
+Edited by: bissd304 on Apr 1, 2019 10:12 AM
+
+Edited by: bissd304 on Apr 1, 2019 10:13 AM
+
+Edited by: bissd304 on Apr 1, 2019 10:13 AM"
+Amazon S3	"Re: Can't Delete ""Ghost"" folders.
+Hi,
+
+I'm having a similar issue. I can't delete certain folders that contain ""jpg"" files with an ""umlaut"" in their name. They were uploaded via a WordPress backup plugin.
+
+Anybody have a solution to this?
+
+Doug"
+Amazon S3	"Google chrome detects s3-us-west-2.amazonaws.com as dangerous site
+All our s3 links don't work in google chrome:
+
+Deceptive site ahead
+Attackers on s3-us-west-2.amazonaws.com may trick you into doing something dangerous like installing software or revealing your personal information (for example, passwords, phone numbers, or credit cards). Learn more
+
+
+Is there something we can do about it? Is anyone else experiencing that too?"
+Amazon S3	"High Availability - Network File System (NFS) between EC2
+I have the following scenario:
+
+11 EC2 servers with Docker and about 35 containers (Web application) on each host;
+An NFS server that shares files between hosts. Containers needs to access these files.
+Rancher Master Server to orchestration these containers.
+
+
+Well, the question is: We have a single point of failure that is NFS Server. I need suggestion to avoid this disaster and so...:
+1) HA NFS with DRBD and HeartBeat;
+2) EFS is unavailable in my region;
+3) ""GlusterFS was not a good solution in the case that the web servers were writing small files (meaning small number of kilobytes) often that change a lot e.g. session.xml being read, updated re-saved, read, updated, re-saved etc.""
+4) S3 with S3FS-FUSE...but Amazon does not recommend S3 for a File System and don't have a native tool to mount .
+
+I read about Aws Storage Gateway but this only makes sense in Hybrid Scenarios (Cloud + On-Premise)...in my case, just interest in Cloud.
+
+I see no other solution than #1. Does anyone have another point of view ? Any Suggestion?
+
+Thanks.
+
+Edited by: markketing on Apr 10, 2019 11:31 AM"
+Amazon S3	"Re: High Availability - Network File System (NFS) between EC2
+Answered by Support Center. Thanks."
+Amazon S3	"Inaccessible host. This service may not be available in the `eu-west-1'
+Hi
+
+We have electron app and we are uploading recorded videos to Amazon S3. Sometimes, after some part of uploading is done, the uploading stops with message: 
+
+Inaccessible host: `rm-production-1-incoming.s3.eu-west-1.amazonaws.com'. This service may not be available in the `eu-west-1' region.
+
+It sometimes work, sometimes not. I don't think it is timeout error, it would end with another error message, I think. This issue is reported with users using our mobille app and also electron desktop app, so i think it is not issue with wifi connection or our app, but with S3. Could you help me please?
+
+Thanks,
+Martin"
+Amazon S3	"How to upload large file greater then 5GB without duplicate
+Hello everyone!
+I am using s3cmd to upload large file, but everytime I upload to update large object, the old segments still be in segment bucket with new segments. 
+How can I replace data without duplicate? Thanks."
+Amazon S3	"Contents of bucket vanished! - How to track creation of Lifecycle rule
+Hi there,
+
+I use a backup tool called Jungledisk to backup into an S3 account. 
+
+Today my application was throwing errors that the data was missing, when I connect into the S3 console I can see that a great deal of the data is missing.
+
+Digging further I can see a Lifecycle rule on my bucket that looks like it has expired everything. I do not have verisoning turned on, I created the disk and left it at defaults.
+
+Is ther eany way to recover the whole bucket data back to how it was 12 hours ago?
+
+Is there a way to track who created this lifecycle rule?"
+Amazon S3	"Re: Contents of bucket vanished! - How to track creation of Lifecycle rule
+Rob
+If you did not enable versioning, created a backup or set up replication, there is no way to recover your data.
+To see who created the lifecycle rule, you could use cloudtrail
+
+hope this helps,
+RT"
+Amazon S3	"Delegating user permissions on SMB File Gateway
+Hi,
+
+We don't have Active Directory on our company, and we have Linux & Windows clients (using SAMBA). Is there any way that we can assign read/write permissions on users for each folder we create on the bucket via Storage Gateway?
+
+We are using SMB with guest authentication, but we only can configure one user/password for the entire shared folder.
+
+Will cached volumes allow us to do it?
+
+Thanks in advance."
+Amazon S3	"EC2 API export to S3 ACL issue
+Hi There,
+
+I have the EC2 APIs installed and want to run the ec2-create-instance-export-task to export instances. This drops to export to an S3 bucket which I created. 
+
+However in running the ec2-create-instance-export-task command I get this error:
+
+Client.AuthFailure: vm-import-export@amazon.com must have WRITE and READ_ACL permission on the S3 bucket.
+
+So I go to the bucket, and under Properties assign Everyone List, Upload/Delete, View and Edit Permissions. 
+
+Then I get this error when I run ec2-create-instance-export-task:
+
+Client.InvalidParameterValue: Could not read the ACL associated with the S3 bucket.
+
+Any ideas on what I am not doing to allow EC2 ACL to S3? Or otherwise?
+
+Thanks,
+Kon."
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Hi There
+
+I have the same problem too ... anyone can help!!
+
+Client.InvalidParameterValue: Could not read the ACL associated with the S3 bucket.
+
+Regards"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Hello,
+
+If you are getting this error them I believe there may be an ACL issue with your bucket.
+When using this command the destination bucket must grant WRITE and READ_ACL permissions to the vm-import-export@amazon.com AWS account.
+
+So I think you need to grant these permissions to the destination bucket you are currently using.
+This link clarifies the information in relation to what ACLs to use
+http://docs.amazonwebservices.com/AmazonS3/latest/dev/ACLOverview.html#permissions
+i.e. what ACL permission you can grant.
+
+And this link clarifies how you can grant these permissions via the management console:
+http://docs.amazonwebservices.com/AmazonS3/latest/dev/ManageACLsUsingConsole.html
+
+Please let me know if this allows you to execute the command successfully."
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Thanks for your quick reply
+I tried by using bucket properties --> permissions --> Grantee: Me and check it all but i had the same error massege 
+
+also i tried to use bucket policy by editing 
+
+{
+	""Version"": ""2008-10-17"",
+	""Statement"": [
+		{
+			""Sid"": "" Grant a CloudFront Origin Identity access to support private content"",
+			""Effect"": ""Allow"",
+			""Principal"": {
+				""AWS"": ""arn:aws:iam::myAWS Account ID:root""
+			},
+			""Action"": ""s3:GetObject"",
+			""Resource"": ""arn:aws:s3:::mybucketname/*""
+		}
+	]
+}
+
+but also have the same error :
+
+Client.InvalidParameterValue: Could not read the ACL associated with the S3 bucket.
+
+Edited by: icompusys on Jul 17, 2012 4:56 AM"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+I tried modifying the permissions to include WRITE and READ for Everyone and also Authorized Users and the error message is now :
+
+""Client.InvalidParameterValue: Could not read the ACL associated with the S3 bucket.""
+
+If I remove the permissions the error message returns to being:
+
+""Client.AuthFailure: vm-import-export@amazon.com must have WRITE and READ_ACL permission on the S3 bucket."""
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+I also tried this in Bucket policy
+
+<?xml version=""1.0"" encoding=""UTF-8""?>
+<AccessControlPolicy xmlns=""http://s3.amazonaws.com/doc/2006-03-01/"">
+  <Owner>
+    <ID>Owner-canonical-user-ID</ID>
+    <DisplayName>display-name</DisplayName>
+  </Owner>
+  <AccessControlList>
+    <Grant>
+      <Grantee xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xsi:type=""CanonicalUser"">
+        <ID>Owner-canonical-user-ID</ID>
+        <DisplayName>display-name</DisplayName>
+      </Grantee>
+      <Permission>FULL_CONTROL</Permission>
+    </Grant>
+
+    <Grant>
+      <Grantee xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xsi:type=""CanonicalUser"">
+        <ID>user1-canonical-user-ID</ID>
+        <DisplayName>display-name</DisplayName>
+      </Grantee>
+      <Permission>WRITE</Permission>
+    </Grant>
+
+    <Grant>
+      <Grantee xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xsi:type=""CanonicalUser"">
+        <ID>user2-canonical-user-ID</ID>
+        <DisplayName>display-name</DisplayName>
+      </Grantee>
+      <Permission>READ</Permission>
+    </Grant>
+
+    <Grant>
+      <Grantee xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xsi:type=""Group"">
+        <URI>http://acs.amazonaws.com/groups/global/AllUsers</URI> 
+      </Grantee>
+      <Permission>READ</Permission>
+    </Grant>
+    <Grant>
+      <Grantee xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xsi:type=""Group"">
+        <URI>http://acs.amazonaws.com/groups/s3/LogDelivery</URI>
+      </Grantee>
+      <Permission>WRITE</Permission>
+    </Grant>
+
+  </AccessControlList>
+</AccessControlPolicy>
+
+but can't be saved because off this error
+
+Policy could not be parsed as a valid JSON string"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+and this too successfully saved but the error still there
+
+{
+  ""Version"":""2008-10-17"",
+  ""Statement"":[{
+	""Sid"":""AddCannedAcl"",
+        ""Effect"":""Allow"",
+	  ""Principal"": {
+            ""AWS"": 
+         },
+	  ""Action"":[""s3:PutObject"",""s3:PutObjectAcl""
+      ],
+      ""Resource"":[""arn:aws:s3:::bucket/*""
+      ],
+      ""Condition"":{
+        ""StringEquals"":{
+          ""s3:x-amz-acl"":
+        }
+      }
+    }
+  ]
+}
+
+
+Client.InvalidParameterValue: Could not read the ACL associated with the S3 bucket."
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Does anybody have any thoughts on this?"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Any one found a solution for this issue yet? I tried giving vm-import-export@amazon.com user READ and WRITE permission on the bucket from S3Fox. But running an export keeps giving same error:
+
+root@ip bin# ./ec2-create-instance-export-task i-123456789 -e vmware -f vmdk -c ova -b myexports -O xxxx -W yyyyy
+Client.AuthFailure: vm-import-export@amazon.com must have WRITE and READ_ACL permission on the S3 bucket.
+
+Export functionality was release few months ago so it ridicules that this question is not answered yet.
+
+Kamal"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+No luck here still. It seems that there is little if no support on the topic."
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Hi kongeorgopoulos,
+Sorry for the late reply.
+Your approach which grant the permission to everyone can make the error message ""Client.AuthFailure: vm-import-export@amazon.com must have WRITE and READ_ACL permission on the S3 bucket."" go away.
+This approach is correct though I strongly suggest limit the access to everyone but only expose the correct access to vm-import-export@amazon.com and of course yourself.
+
+The other error you got after you correctly grant permission to vm-import-export@amazon.com is ""Client.InvalidParameterValue: Could not read the ACL associated with the S3 bucket."".
+
+This error is really unexpected. I am sorry for that. 
+May I ask how you grant the permission, you did it programmatically or from AWS Management Console?
+And in the meantime, I will take a closer look at your task.
+Sorry for the delay again.
+Shuai
+EC2 VM Import"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Any progress on this matter?
+
+root@/hyperv$ ec2-create-instance-export-task -e Microsoft -f vhd -b rocxmain ami-xyz
+Client.AuthFailure: vm-import-export@amazon.com must have WRITE and READ_ACL permission on the S3 bucket.
+
+And after the grants through the EC2/S3 Console:
+root@/hyperv$ ec2-create-instance-export-task -e Microsoft -f vhd -b rocxmain ami-xyz
+Client.InvalidParameterValue: Could not read the ACL associated with the S3 bucket.
+
+So, the console command is not setting properly the ACL flags on the S3 bucket?
+
+Is there a way to work around this manually?
+
+Rgds"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+I created a new S3 bucket and now the error is:
+
+root@/hyperv$ ec2-create-instance-export-task -e Microsoft -f vhd -b rocxteste ami-xyz
+Client.InvalidParameterValue: S3 bucket should be at endpoint 's3.amazonaws.com'."
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+I am having the same problem.
+I set the permissions through the console and i get the message:
+
+Client.InvalidParameterValue: Could not read the ACL associated with the S3 bucket.
+
+Does anybody have a solution for this.
+
+Charles H"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Folks,
+  The solution to this problem is to give  vm-import-export@amazon.com WRITE and READ_ACL permission on the S3 bucket"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Just go to https://console.aws.amazon.com/s3/ and select your bucket. Then click ""add more permissions"". There is a drop-down / select-box for the grantee. The hack is: you can just copy/paste ""vm-import-export@amazon.com"" into this drop-down."
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+It works for me, thanks Gerfried!
+Who would have guessed that you can write in the drop down list!"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+The hack is currently not working. Says: The request contained and unsupported argument.
+I have tried also 3rd party tools.
+S3 Browser: needs pro account to do that
+CyberDuck: same error above returned
+
+there is no simple way to grant access to vm-import-export@amazon.com and that makes exporting an instance from aws impossible for me.
+
+Any help will be appreciated"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Anyone found a solution on it?
+
+Currently via the management console I get the error ""The request contained an unsupported argument"" while setting the user vm-import-export@amazon.com in the dropdownbox and click save.
+
+Tried via the Java API and I get the same errors ..."
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Hi ozkolonur & andreaskrieg,
+
+Which region is your S3 bucket located in when you try to set this ACL? 
+
+For reference, S3 does not support granting access with an email address in the new eu-central-1 region. This is also the case with the Beijing and GovCloud regions. This will be the case for all new regions (any created since 12/8/2014):
+
+
+http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#specifying-grantee
+
+
+I have raised this with the vm import/export team and we are working on a way forward for you.
+
+Please let me know which regions you are encountering this in. 
+
+Regards,
+
+Alastair"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Hi there,
+
+I am facing to same issue in region ""https://ec2.eu-central-1.amazonaws.com"". I see the error:
+
+Client.AuthFailure: vm-import-export@amazon.com must have WRITE and READ_ACL per
+mission on the S3 bucket. (Service: AmazonEC2; Status Code: 400; Error Code: Aut
+hFailure;
+
+For the bucket I defined permissions for Everybody. Unfortunately vm-import-export@amazon.com cannot be saved.
+
+Nevertheless, there is no way to export the instance.
+
+Any idea, how long it will take to fix the issue?
+
+Thank you."
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Hi Everyone,
+
+If you are having trouble with assigning permissions using the email address provided, you can use the Canonical ID instead. Please note that S3 does not support using an email address as a grantee on ACL assignment in the following regions:
+
+
+Frankfurt
+Beijing
+GovCloud
+
+
+
+http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#specifying-grantee
+
+
+Please use the following Canonical IDs to allow the VM Import/Export service to work with your S3 bucket:
+
+
+Beijing: 834bafd86b15b6ca71074df0fd1f93d234b9d5e848a2cb31f880c149003ce36f
+GovCloud: af913ca13efe7a94b88392711f6cfc8aa07c9d1454d4f190a624b126733a5602
+All other regions (including Frankfurt): c4d8eabf8db69dbe46bfe0e517100c554f01200b104d59cd408e777ba442a322
+
+
+Regards,
+
+Alastair"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+A client error (AuthFailure) occurred when calling the CreateInstanceExportTask operation: vm-import-export@amazon.com must have WRITE and READ_ACL permission on the S3 bucket.
+
+=/
+
+Sadly, not working. 
+
+I used all of the above methods include the canonical id : c4d8eabf8db69dbe46bfe0e517100c554f01200b104d59cd408e777ba442a322
+
+I also setup a new bucket with the permission, still fails =/"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Edit: well this isn't done in bucket policy at all, it is done in the access control list with the button add account, just paste the canonical name there and give list and write objects permissions.  But only imported instances can be exported... 
+
+I'm having the same problem now.  Apparently this is a bug from 2012 to now 2018?  That sounds unlikely, so would someone please paste a working bucket policy for the 'aws ec2 create-instance-export-task' command to work.
+below is the policy i created, and doesn't work.  All i get is this error 'vm-import-export@amazon.com must have WRITE and READ_ACL permission on the S3 bucket'
+
+{
+    ""Version"": ""2012-10-17"",
+    ""Id"": ""Policy1538488511142"",
+    ""Statement"": [
+        {
+            ""Sid"": ""Stmt1538488506708"",
+            ""Effect"": ""Allow"",
+            ""Principal"": {
+                ""AWS"": ""arn:aws:iam::766393641962:root""
+            },
+            ""Action"": [
+                ""*""
+            ],
+            ""Resource"": [
+                ""arn:aws:s3:::my.buckit/*"",
+                ""arn:aws:s3:::my.buckit""
+            ]
+        }
+    ]
+}
+
+
+Edited by: worms on Oct 2, 2018 9:29 AM"
+Amazon S3	"Re: EC2 API export to S3 ACL issue
+Hello, I am having the same issues and the documentation or examples on that are really old, the interface changed. 
+Did you manage to get a working policy for the bucket to work with create-instance-export-task? 
+Thank you"
+Amazon S3	"Create new Virtual Directory on IIS and MAP a network Drive under same IAM
+Hi,
+
+I am trying to add a virtual Directory on iis (ec2 instance) from a s3 bucket under the same IAM User.
+
+I tried to use TNT Drive and i was able to map the drive, but couldnt access the resources from within the website.
+
+My question is: 
+Why the resources are not accessible? Its not a security issue, since i have no connection problems (authorization and authentication). Could be a path issue, but i tried recreating the bucket with upper case folders (since iis reads it all in uppercase) but had no luck.
+
+Anyone has some insights?
+
+Thanks!"
+Amazon S3	"Re: Create new Virtual Directory on IIS and MAP a network Drive under same IAM
+Hello
+
+
+from the tntdrive FAQ (https://tntdrive.com/faq.aspx), your filenames should be in uppercase  MYDIRECTORY/MYFILENAME.EXT
+
+
+dont know the need for tntDrive but there is the FSx storage that can be attached directly to the instance and would provide faster response time. Might be useful.
+
+hope this helps,
+RT"
+Amazon S3	"Modify SSL Max Fragment Size
+I'm working on an IoT solution that is memory constrained. I managed to increase it's stability a lot by reducing the SSL buffers from 16KB (standard) to 8KB. Most of my messages, anyway, are much smaller than that, so there is no need to keep that memory reserved. The problem is that from time to time, I will need to get an OTA file from S3, and then all hell breaks loose, as my device doesn't know what to do with the 16KB messages that I get from there. I found a message from 2016 about it, and I was wondering if the situation has changed since then.
+
+Reduce MQTT over SSL Max Fragment Size: https://forums.aws.amazon.com/thread.jspa?threadID=229098
+
+Cheers!"
+Amazon S3	"Re: Modify SSL Max Fragment Size
+Hi JoelSantos,
+
+Thanks for reaching out!  I have 2 clarifying questions:
+1.  It sounds like you are requesting that both AWS IoT Core and S3 support the Max Fragment Length Extension.  Is that correct?
+
+2.  In the meantime are you able to adjust your send and receive message buffers independently?  Could you for instance leave the receive buffer at 16K and shrink the send buffer to 8K (or potentially even 4k?)  would that meet your memory footprint requirements?
+
+thanks,
+Jared"
+Amazon S3	"Re: Modify SSL Max Fragment Size
+Hi,
+
+I realised that I might have posted this on the wrong forum, sorry if it's the case, feel free to move it to a more relevant forum. 
+
+I am not using AWS IoT Core at the moment, but I'm using S3 to store my files, and it's when I access them that I need to change the fragment size to something smaller.
+
+2) That's a very good idea. Sadly, it doesn't seem to be the case. The only variable that I found controls both buffers, so it would need a lot of reworking to get them to be independent"
+Amazon S3	"Re: Modify SSL Max Fragment Size
+Hi!
+
+Any news regarding this?"
+Amazon S3	"Re: Modify SSL Max Fragment Size
+Hi Joel -
+
+MbedTLS supports splitting in/out buffer sizes now:
+ - https://github.com/ARMmbed/mbedtls/blob/development/include/mbedtls/config.h#L2990
+
+Part of MbedTLS 2.12.0 and up: https://tls.mbed.org/tech-updates/releases/mbedtls-2.12.0-2.7.5-and-2.1.14-released
+
+
+Tim"
+Amazon S3	"Re: Modify SSL Max Fragment Size
+This is also vital to our applications for embedded devices interacting with AWS. Very bad limitation in this day and age"
+Amazon S3	"Problem accessing S3 from Kuwait
+Hi there, 
+
+We have a customer based in Kuwait. Our application saves attachments into an S3 buckets and gives public access to that bucket for users downloading the attachment.
+
+When users from the Kuwait company try to download an attachment they get a certificate error and the item fails to download. 
+
+If I try the same thing from our offices in Ireland, South Africa, Spain or the US, everything is working perfectly. We've matched browser versions (Chrome) and it appears that the only issue is location. We've also tried different ISPs in Kuwait, different machines that are on and off Windows domains, different browsers, mobile phone ISPs instead.
+
+I suspect that the certificate being served up to the Kuwait customer is wrong in some way. This worked 2 weeks ago with no issues and the customer suggests that they have made zero configuration changes on their end.
+
+Lastly, I know that Kuwait has a government firewall, but I am not suspecting that right now.
+
+Any thoughts would be appreciated?"
+Amazon S3	"One bucket VS a lot of buckets with Cross Region Replication
+Hi
+
+Although my question includes Storage Gateway, I see it necessary to publish it here.
+
+Is there any billing difference in having:
+
+1. Only one bucket, with multiples shared directories pointing to it, and Cross Region Replication enabled.
+
+2. One bucket for each department, one shared directory pointing to each bucket, and Cross Region Replication enabled for all the buckets.
+
+Will I have any difference in the price? Why?
+
+Thanks you in advance."
+Amazon S3	"Re: One bucket VS a lot of buckets with Cross Region Replication
+Hello
+From AWS documentation, S3 charges by the amount of data saved and the amount of data retrievals.  So it shouldn't matter if you have many files in one bucket or in separate buckets in one region. 
+
+The billing can be tricky as some regions are more expensive than others (data and transfer.) to minimize your costs, you could create buckets based on the regions they need to replicate to. this will help you avoid replicating data that is not needed in another region.
+
+https://aws.amazon.com/s3/pricing/
+
+hope this helps
+RT"
+Amazon S3	"Unable to delete S3 bucket
+Hello,
+
+I have an S3 bucket that appears to be stuck in a state that makes me unable to completely delete it or recreate it. I cannot update my CloudFormation stack now either because it thinks it was able to delete the bucket but then it fails to recreate it because it already exists. It looks like a bug to me.
+
+The bucket is listed in the UI but attempting to delete it manually does nothing from a user's perspective. I see that an HTTP request returns 404 when I attempt to delete it. The bucket cannot be viewed either as it gives the error ""Data not found"". It does not seem to be assigned to a region either anymore because the value is blank in the list of buckets.
+
+I have temporarily worked around the problem by creating a new bucket with a different name.
+
+How can we fix this problem? I realize it is hard to help without knowing exactly which bucket it is but how do we exchange information without sharing it with everyone?
+
+Thank you!"
+Amazon S3	"Re: Unable to delete S3 bucket
+The bucket disappeared on its own eventually."
+Amazon S3	"Retaining original Last Modified date when uploading to S3
+Has anyone found a solution to retaining the original ""Last Modified"" date when uploading a file from a computer to an S3 bucket?  This would seem like a rather important feature but S3 seems to use the copy date when storing to an S3 bucket.  I just want to be able to preserve the ""last modified"" date from the source computer for each file copied.
+
+Thanks."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+Hello,
+
+We have engaged our S3 team to look at your request and will post back to this forum once we have any workaround.
+
+Kind regards
+Tony"
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+Hello,
+
+Currently S3 does not support customizing the Last Modified value, as per the following documentation 
+http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html
+
+However, one way you can achieve this would be to use the AWS CLI to store this information when using the 'aws s3api put-object' command to upload files and appending the following argument:
+     --metadata (map) A map of metadata to store with the object in S3.
+
+Shorthand Syntax:
+      --metadata key_name=string,key_name2=string
+
+Please let us know if you have any further questions, we would be happy to assist you.
+
+Kind regards,
+Ridwaan"
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+We have now tested this suggested solution but it is not adequate.  This solution does not permit changing the ""Last Modified"" date viewable by users and most drive mapping programs.  It only allows adding a new metadata field which can only be viewed online (under properties for the file).  This is a significant obstacle for anyone trying to use S3 as enterprise-level cloud storage.
+
+While I like all other features provided by S3, we are now forced to investigate other cloud storage providers as this is an obstacle for which Amazon does not appear to provide a solution."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+I'd like to add my support for this feature request.  Please let me know if there is a better channel to voice my support for adding the ability to set last modified value.
+
+Thank you."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+I don't understand the thought process at AWS that doesn't comprehend the importance (and MANDATORY under HIPAA) to maintain a file creation date, modified date and last accessed date in addition to the original integrity of any uploaded file.
+
+OneDrive does it. Dropbox does it. Google Drive does it. Elephant does it. Why not AWS S3?
+
+That AWS does not feel compelled to address this directly is ridiculous.
+
+It makes S3 completely unusable.
+
+We will have to find another storage provider as a result."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+The inability to support such critical property for each file on S3 would make it appear that this product is not ready for enterprise-level deployment.  Knowing the creation and/or last modified date for each file is critical for many reasons, as already noted, so this is a significant flaw in S3. 
+
+After spending several thousand dollars in deploying S3 company-wide, we are now looking to migrate our files elsewhere that can provide adequate file date support.   If anyone has any suggestions of alternatives, please let me know.  Otherwise, I will post any findings."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+Ridwaan,
+
+Has there been any progress on fixing this?  My company is about to start migrating away from Amazon S3 due to this issue and I would like to avoid the hassle if Amazon is about to release a fix.
+
+Thanks.
+
+Julio."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+Thanks for the feedback. AWS S3 team will will prioritize this feature request with other features planned for S3."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+Add me to the list of 'dissatisfied' customers as it relates to modified date.  
+
+Working on a proof of concept using S3 to create a cost effective hybrid network for my largest client and tomorrow I will have to tell them we need to start over."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+I was just bitten by this bug.   I know AWS might not consider it a bug,  but I need to sync lots of large files to AWS from local servers and only want to copy changed files.    I'm using a tool from Linoma called GoAnywhere MFT so I can not use the API as recommended by this thread.  
+
+Sad to say it took me a few hours to move 2 TB to s3 and think I was all done, only to find it wanted to copy everything again as  the dates didn't match.
+
+I think my only option is to use something like dropbox that does work but was hoping to use cloudfront."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+Has there been any movement on this? Are we the only 10 people that utilize the Modified Date of a file? Is there any work around to retain the modified date?  
+
+The only option I have found is if I zip the file before uploading it... the files inside the zip folder do retain their original dates. But, unless there is an easy method of retaining this date, I will be forced to not use cloud drive as an option...
+
+so Please Please Please, Amazon don't mess with the Modified Date's of our files when we upload them!!!!!"
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+Hi is there any update on this issue? if there is no simple way to keep the original creation date I will have to leave AWS.
+
+Thanks
+
+Kind regards,
+
+Federico"
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+HELP!
+
+Why does AWS modify every single dates of every file that is uploaded? It is so frustrating and I haven't found a work around.
+
+Is there someone I can talk with to find a work around? HELP!
+
+Thanks
+
+Mike"
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+Hi Tony,
+
+HELP!
+
+It is so frustrating and I haven't found a work around. Why does AWS modify every single dates of every file that is uploaded? 
+
+Is there someone I can talk with to find a work around? HELP!
+
+Thanks
+Mike"
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+My company's Legal department also needs to retain Date Created, Date Modified, Date Accessed and Authors for electronic evidence data. 
+
+I had some success when I mapped an S3 bucket as a drive using Cloudberry Drive and copied files using the following Robocopy command: 
+
+Robocopy C:\SourceDirectory \\Server\AWS_S3_Bucket_Drive  /copy:DATSO /S /R:0 /DCOPY:T
+
+The Date Modified and Authors were retained but Date Created and Date Accessed were not.
+
+We will also have to find a different storage solution."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+We were just bitten by this as well. I hadn't considered this issue and now am in the same situation as MANY other S3 users. I need to talk to my CEO to determine if we need to change cloud providers.
+
+Does AWS have a timeframe for solving this issue? Your initial response to getting it into the pipeline was Feb 2015!"
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+Are we any closer to finding a solution to this? We archive data to S3/glacier  buckets and due to legal and auditing reasons require the retention of creation and modified dates. I see from this forum that there is a huge demand for this, why is nothing being done to address it? We are all paying customers!"
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+I'm astonished that this is even an issue.  I felt sure I was missing something, or doing something wrong with the sync commands that I'd set up.
+
+I didn't even bother to check before hand whether files would retain their last modified date - how could an online storage provider not retain this information?  I spent hours refining a backup script and setting it up as a scheduled task.  It took days to run - I ""synced"" 60 GB of files.  But they're not really in sync, now that they've lost their last modified date.
+
+What a disappointment!  We liked AWS; we're nonprofit and would rather not spend our resources on a cloud syncing solution.  Would love to hear that this is being fixed, it is an obvious and fatal flaw in an otherwise great service.
+
+Thank you,
+Matthew"
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+My company has also just hit this issue.  Data retention requirements for our industry mean that we need to retain all original timestamps for any files that we migrate to S3.  Unfortunately, it doesn't look like AWS has any kind of mechanism for migrating files in bulk while retaining their original properties.  Everything is treated as a brand new file and the LastModified value is set based on that assumption.
+
+Are there plans to fix this or otherwise override it?  It seems like an awfully fundamental thing to be missing from an enterprise solution."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+I discovered this issue too about a month ago, after drafting a proof of concept proposal, reviewing it with IT consultants and then testing it. Not retaining files' and folders' original modification dates when migrating data to AWS S3 is a disaster. I'm amazed Amazon is allowing this to happen.
+
+I'm not an IT pro, but I have to make tech recommendations to my company. Just when I thought we'd found a solid cloud-based file share solution, I now have to look elsewhere and start all over again. Unreal."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+Has anyone found a solution to this yet I am looking at using s3cmd as it seems to be able to do it.  Id much rather do it in the aws s3 cli though. 
+
+Thanks!"
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+I am sorry, but I disagree with your request. S3 is NOT a filesystem.  I want Amazon to keep all the advantages of an industrial strength object store.  The features you are looking for is more along the lines of a traditional filesytem - which Amazon is not. All the third party hacks (from s3cmd to s3browser of s3fs)  designed to  make S3 looks to the family user as a filesystem can give you that ability."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+There is at least one product, Syncovery, that works around this problem by encoding a date and time into the filename as it uploads the files.  So when you look at the filename on S3 it has a strange date and time stamp appended to it.  Now you might think this is an unacceptable work around, but the files are restored to their original name when you use the same program to restore them locally.  
+There is a second option too.  If you don't care about last modified date per se but only care to track changed files (i.e your using S3 as a backup repository), As an alternative you can turn on ""smart tracking"" in same the program, which keeps a database of what files have been uploaded and compares them when it runs the next time to see if they've changed.  You then have to tell it to ""copy latest version"" to overwrite the older version up on S3.  https://www.syncovery.com/uncategorized/modification-dates-of-files-are-not-retained-what-can-be-done/
+Now I'm wondering about NTFS permissions.  My understanding is those are lost as well."
+Amazon S3	"Re: Retaining original Last Modified date when uploading to S3
+I found this interesting work around for storing and restoring NTFS ACLs, although I haven't tried it seems like it'd work. 
+https://serverfault.com/questions/301436/folder-permissions-when-zip-and-unzip-on-windows
+
+You can do it with a two-step process. If that 2003 server has SP2 on it, you have access to the icacls utility. With that you can run:
+icacls f:\inetpub\wwwhome\* /save f:\backups\rights-acls.txt /t /c
+[zip f:\inetpub\wwwhome\
+That will create a file with all of the rights stored in it, keep it with the zip. To restore
+https://forums.aws.amazon.com/
+icacls f:\inetpub\wwwhome /restore f:\backups\rights-acls.txt 
+If you don't have icacls on the system, there isn't much help. Happily, icacls is included on Windows Vista and higher, so if you can access the data via a mapped drive, you can run it from the client-side and drop the file where you need it."
+Amazon S3	"Return CORS Header Regardless of Origin header on request (Safari issue)
+With CORS setup on my S3 bucket the headers are being returned correctly (particularly access-control-allow-origin) as long as the HTTP request includes an 'Origin' header. Easy to test this behaviour using curl, seems reasonable.
+
+We are hosting or Javascript assets on S3 and unfortunately when using <script> tags in Safari, Safari won't pass the Origin header, which means S3 won't pass the 'access-control-allow-origin' header back.
+
+This causes issues for our diagnostics tools as some errors are obfuscated because the 'access-control-allow-origin' header wasn't there.
+
+Wondering if there is a way to get around this behaviour? I really just want to return that header for every request. Proxying the request though another server and adding the header gives the desired behaviour, but defeats the purpose of using S3 
+
+... Oh and I'm fronting the bucket with cloudfront as well, but assume S3 and cloudfront are doing the same thing."
+Amazon S3	"Re: Return CORS Header Regardless of Origin header on request (Safari issue)
+Hello,
+
+If you are using CloudFront, you could setup Custom Header Forwarding to Origin. In this setup, you could configure to Forward Origin Header to S3 which should get the desired outcome.
+
+You must ensure that you are not forwarding this Header as part of the Whitelist, else you will see an error. You could read more about this option in our documentation here:
+http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/forward-custom-headers.html#forward-custom-headers-configure
+
+Hope this helps.
+
+Regards
+DilipS"
+Amazon S3	"Re: Return CORS Header Regardless of Origin header on request (Safari issue)
+If you are using CloudFront, you could setup Custom Header Forwarding to Origin. In this setup, you could configure to Forward Origin Header to S3 which should get the desired outcome.
+
+This is not fully correct. While forwarding the Origin header to S3 does make CORs work most of the time, it still will break if you have multiple pages that point to the same asset where some of the requests send an Origin header and others do not. Since S3 does not return ""Vary: Origin"" when there is no Origin header present, browsers and other CDNs/proxies can cache that response and end up using it for later requests that do send an Origin header (causing that request to fail with a CORs error)."
+Amazon S3	"Re: Return CORS Header Regardless of Origin header on request (Safari issue)
+tfinley's observation is accurate.  
+
+Forwarding the Origin header in CloudFront is necessary, but it is not sufficient.  There is problematic behavior from S3 CORS, whether used with or without CloudFront.
+
+CloudFront itself actually does the right thing when the Origin header is whitelisted for forwarding, because CloudFront doesn't actually depend on the Vary response header -- it keeps track of the potential for variation based on the headers that are whitelisted for forwarding, so it does appear to behave correctly, caching separate versions of the response for variations on (and absence of) the Origin request header, regardless of Vary. 
+
+However, S3's behavior in the absence of an Origin request header seems incorrect when CORS is enabled.  (Really, any CORS header, but the others are somewhat moot without Origin).
+
+When a bucket has CORS enabled, Vary: Access-Control-Request-Headers, Access-Control-Request-Method, Origin should be returned unconditionally by S3 -- even for non-CORS requests -- specifically because varying these will cause an important variation in the response.
+
+Otherwise, browsers (and potentially other caches and CDNs, though not CloudFront) will incorrectly try to use their cached versions where they should not be used -- specifically, the browser will have a cached response where no Origin header was sent, and will reuse this response for a subsequent request where an Origin header is needed -- resulting in a cross-origin policy violation.
+
+If using CloudFront, the S3 behavior can be worked around (thus preventing browser caches from incorrectly trying to reuse unusable cached responses) using a Lambda@Edge Origin Response trigger.  As noted above, CloudFront already does the right thing, so this isn't solving a problem with CloudFront -- this solution is actually leveraging Lambda@Edge via CloudFront to correct the behavior of S3 -- so that responses correctly always indicate the potential for a response to vary on these request headers... perhaps not the most optimal solution, but it does appear to work around the issue.
+
+'use strict';
+ 
+// If the response lacks a Vary: header, fix it in a CloudFront Origin Response trigger.
+ 
+exports.handler = (event, context, callback) => {
+    const response = event.Records[0].cf.response;
+    const headers = response.headers;
+ 
+    if (!headers['vary'])
+    {
+        headers['vary'] = [
+            { key: 'Vary', value: 'Access-Control-Request-Headers' },
+            { key: 'Vary', value: 'Access-Control-Request-Method' },
+            { key: 'Vary', value: 'Origin' },
+        ];
+    }
+    callback(null, response);
+};
+
+
+This issue has been spotted in the wild, also: https://serverfault.com/a/856948/153161."
+Amazon S3	"Re: Return CORS Header Regardless of Origin header on request (Safari issue)
+Has in the meantime anything changed in this regard? Is this workaround still necessary?"
+Amazon S3	"How to use lifecycle rules to delete files without deleting the folder
+I currently have a bucket (MyBucket) which contains a folder (MyFolder) and have a lifecycle rule set up as follows:
+ -- Apply the rule to a prefix:  MyFolder/
+ -- ""Permanently delete only"" 1 day after the creation date
+This results in a Rule Target of:  ""This rule will apply to Objects with the prefix: MyFolder/ in the MyBucket bucket"" and an Action on Objects setting of : ""Permanently Delete 1 days after the object's creation date""
+
+Unfortunately, this rule also results in the folder MyFolder being deleted as well!  Is there any way to adjust the rule so files in the folder are deleted, but the folder itself is not?
+
+Thanks!
+
+Edited by: Adam on Jul 12, 2014 7:12 AM"
+Amazon S3	"Re: How to use lifecycle rules to delete files without deleting the folder
+Is there a reason why you need the folder to remain when it's empty? My understanding is that S3 doesn't really have a concept of folders, just objects can be named with a prefix such as ""myfolder/"" and if there's no objects with that prefix then that folder doesn't really exist.
+
+It shouldn't cause any issues though, as soon as you put another object with that prefix the ""folder"" should appear again."
+Amazon S3	"Re: How to use lifecycle rules to delete files without deleting the folder
+That's exactly it. . . the ""folder"" is created each time.  That hadn't even crossed my mind.
+
+Thanks for the help!"
+Amazon S3	"Re: How to use lifecycle rules to delete files without deleting the folder
+If you are using the Transfer for SFTP service (which is backed by S3), folder deletion is a problem since an SFTP client will be unable to change to the expected directories."
+Amazon S3	"S3 Bucket Policy error - Policy has invalid resource
+{
+  ""Id"": ""Policy1552285770471"",
+  ""Version"": ""2012-10-17"",
+  ""Statement"": [
+    {
+      ""Sid"": ""Stmt1552281028599"",
+      ""Action"": [
+        ""s3:ListBucket""
+      ],
+      ""Effect"": ""Allow"",
+      ""Resource"": ""arn:aws:s3:::nikhilawsb9ansible"",
+      ""Principal"": {
+        ""AWS"": [
+          ""arn:aws:iam::122079770012:root""
+        ]
+      }
+    },
+    {
+      ""Sid"": ""Stmt1552285743309"",
+      ""Action"": [
+        ""s3:GetObject""
+      ],
+      ""Effect"": ""Allow"",
+      ""Resource"": ""arn:aws:s3:::nikhilawsb9ansible/*"",
+      ""Principal"": {
+        ""AWS"": [
+          ""arn:aws:iam::122079770012:root""
+        ]
+      }
+    }
+  ]
+}"
+Amazon S3	"Re: S3 Bucket Policy error - Policy has invalid resource
+Hi,
+
+The issue of “Policy has invalid resource” occurs when the given Resource Arn is incorrect. It can be due to the incorrect Resource name. 
+I tried the attached policy on my testing bucket and I was able to attach the policy without any error. With the incorrect bucket name, the error  “Policy has invalid resource” was received. Please check the bucket name given in the Resource field. 
+
+Also It is advisable for you to use Policy generator tool in future for the bucket policy generation. 
+[1] Policy generator: https://awspolicygen.s3.amazonaws.com/policygen.html
+
+Best Regards,
+Meghamala."
+Amazon S3	"Recover S3 bucket access after Deny all in ACL
+Hello,
+
+I made a mistake in my configuration, writing too fast. I put this policy to an S3 bucket in my account :
+{
+  ""Id"": ""Policy"",
+  ""Version"": ""2012-10-17"",
+  ""Statement"": [
+    {
+      ""Sid"": ""Stmt"",
+      ""Action"": ""s3:*"",
+      ""Effect"": ""Deny"",
+      ""Resource"": ""*"",
+      ""Principal"": ""*""
+    }
+  ]
+}
+
+I can't do anything now, even with the ""root"" account. How can I unblock the access ? Fortunately, it's a bucket for tests. But can I change this and remove the policy by any mean ? AWS CLI responds ""Access Denied"" too, of course...
+Subsidiary question : why can't the ""root"" account change this ?
+
+Thanks."
+Amazon S3	"Re: Recover S3 bucket access after Deny all in ACL
+Hi,
+
+I can see that the policy is denying the access on the bucket from everyone. Yes, there are a couple of ways from which you can delete the bucket or delete the policy which is inaccessible. The root account will have full control over the bucket resources. 
+
+1. Log into S3 console using the root credentials and you should be able to delete the bucket or modify the bucket policy. 
+2. The deletion via AWS CLI using the command delete-bucket-policy. To do that configure the AWS credentials with the root account credentials and run the command :
+
+aws s3api delete-bucket-policy --bucket testbucket
+
+     -> https://docs.aws.amazon.com/cli/latest/reference/s3api/delete-bucket-policy.html
+
+Note that these are both using root account credentials. Once the bucket policy is deleted, you can create new policies. 
+
+Best Regards,
+Meghamala.
+
+Edited by: Meghamala-AWS on Apr 3, 2019 11:08 PM"
+Amazon S3	"S3 public access can not be set.
+I've edited the bucket policy, public access settings, but the bucket is not changed to public and access is denied.
+
+Why do you see these symptoms?
+
+https://imgur.com/rV64vwd
+(Edit Public Access Settings)
+
+https://imgur.com/Y3pPAQJ
+(bucket policy)"
+Amazon S3	"Re: S3 public access can not be set.
+Hi,
+
+If the “block public access” permissions are enabled, it will block or restrict the users ( root account / IAM users ) from making the object or bucket public.  
+
+There should be no issue with the addition of the bucket policy to the bucket if the “block public access” permissions are disabled. The root account/users will be able to add the bucket policy if they have the required S3 permissions. 
+
+Best Regards,
+Meghamala."
+Amazon S3	"Accidentally expired entire bucket contents
+So yesterday one of the files in our bucket wouldn't delete. I set a lifecycle rule to expire the object, at least I thought I did. What I actually did was name the rule the object I wanted to expire and set the scope to the entire bucket. Is there any way to recover the contents?
+
+Edited by: _bd on Mar 6, 2019 11:46 AM"
+Amazon S3	"Re: Accidentally expired entire bucket contents
+Hi,
+
+It is not possible to restore unless versioning is enabled or any other recovery setting is enabled for the bucket. 
+however, It is possible to recover deleted objects if you have the versioning enabled. With the versioning enabled bucket, the objects can be recovered by deleting the ""delete marker”. 
+When an object is deleted on a bucket with versioning enabled, the object is not really deleted, instead the object is marked as deleted by adding to the object a ""Delete Marker”. The original object will disappear from the console. 
+
+See more information regarding Delete Marker here: https://docs.aws.amazon.com/AmazonS3/latest/dev/DeleteMarker.html.
+
+Regarding the question how do you get them back, I provide the step by step below:
+
+1. Go to your S3 console: https://s3.console.aws.amazon.com/s3/
+2. Select the bucket you want to ""undelete"" objects
+3. Click on ""Versions"" select ""Show"" (you will see all versions of the objects, and the deleted ones will have a ""(Delete marked)"" in front, with no size.)
+4. Now delete the “Delete marker” . The original object will reappear on your console.
+More information here: https://docs.aws.amazon.com/AmazonS3/latest/user-guide/undelete-objects.html
+
+In addition, If you would like to restore thousands of objects which are deleted, then you can develop your own script to do this, using for example the CLI or our Boto3.
+
+Using CLI you can get the list of objects versions by issuing this command:
+aws s3api list-object-versions --bucket mys3bucket
+
+This command will provide you the list of objects and the different versions, for example the output would for a single delete marker would be:
+
+""DeleteMarkers"": [
+        {
+            ""Owner"": {
+                ""DisplayName"": “admin”, 
+                ""ID"": ""1e4986f7a6ff32bbee2100e3846c897397e58f5b981e629f650c065c421455d3""
+            }, 
+            ""IsLatest"": true, 
+            ""VersionId"": ""YS3vicNxYu3K4R49yhB76QoSUDXfaoLV"", 
+            ""Key"": “mykey.txt”, 
+            ""LastModified"": ""2019-01-15T07:06:06.000Z""
+        }
+
+You can then issue the following command to delete the delete marker to recover the file:
+aws s3api delete-object --bucket mybucket --key mykey.txt --version-id 'YS3vicNxYu3K4R49yhB76QoSUDXfaoLV'
+
+A sample output would be:
+{
+    ""VersionId"": ""YS3vicNxYu3K4R49yhB76QoSUDXfaoLV"", 
+    ""DeleteMarker"": true
+}
+
+You can get more information here:
+https://aws.amazon.com/premiumsupport/knowledge-center/s3-undelete-configuration
+
+Best Regards,
+Meghamala."
+Amazon S3	"Moving S3 lifecycled data from Glacier to Glacier Deep Archive
+It's great to see the announcement that Glacier Deep Archive is now available, but how do you move S3 data from the Glacier storage class to the Glacier Deep Archive storage class? If you try to use ""change storage class"" on objects you just get an error message saying that this isn't possible for something already using the Glacier class."
+Amazon S3	"Re: Moving S3 lifecycled data from Glacier to Glacier Deep Archive
+To answer my own question:
+
+although a manual change in storage class just fails, if you update the lifecycle rule to move to Glacier Deep Archive rather than standard Glacier, then it seems to do the migration for you anyway. My Glacier objects are now showing as being in Deep Archive instead.
+
+Edited by: ArchitectChris on Apr 2, 2019 2:24 AM"
+Amazon S3	"Re: Moving S3 lifecycled data from Glacier to Glacier Deep Archive
+Hello! 
+
+Did you do any rule to move first to glacier then to deep archive? I made this one but is not working:
+
+https://imgur.com/E9looZm
+
+Thanks
+Cristian"
+Amazon S3	"Can't terminate pending jobs from Amazon s3 queue
+Hello, I'm hoping to get some answers to this problem I'm having. I own a Pr4100 and I'm using the Amazon S3 as a backup service for my server. When I made a job to send to Amazon it fails and when I try to delete it I get an update dialogue box and then nothing happens and I can't delete the job. I have 4 in the queue and can't delete any or add any."
+Amazon S3	"[Ann] CloudBerry Explorer free with Glacier Deep Archive support
+Hi everyone,
+
+CloudBerry Lab is proud to present the new version of Cloudberry Explorer freeware Glacier Deep Archive support.
+
+More info on out blog
+https://www.cloudberrylab.com/resources/blog/amazon-s3-glacier-deep-archive-support-in-cloudberry-backup-and-explorer/or here you can get some information on different Amazon S3 storage classes and choose which on is best for you. 
+https://www.cloudberrylab.com/resources/blog/amazon-s3-glacier/
+
+Get your copy here 
+https://www.cloudberrylab.com/explorer/amazon-s3.aspx
+
+CloudBerry Backup is also updated to support new Glacier Deep Archive storage. 
+
+Thanks
+Andy"
+Amazon S3	"AWS S3 Root user abruptly lost access to 'update bucket policy'
+Issue :As a root user cannot update S3 bucket policy . get ""access denied "" error. I have been using AWS for over a year now but never experienced such issue .
+How it happened :
+I had multiple AWS console windows open with S3 ,IAM and Cognito.
+While updating something in IAM or Cognito I got error something like IRC ""Something went wrong , please log in again. If issue still persists try to clear the browser cookies "" Then AWS logged me out of all tabs. Ever since I think I have lost access to some parts of S3. I switched browser from MS Edge to Mozilla , still cannot update S3 bucket policy.
+I have screenshot of static html page in S3 that I was testing , but after this issue I cannot access that same html page .I can create a new bucket though.
+Here is Credential Report from the IAM dashboard:
+user <root_account>
+arn arn:aws:iam::888888888888:root
+user_creation_time 2017-88888888888
+password_enabled not_supported
++password_last_used 2019-01-22T09:02:45+00:00+
+password_last_changed not_supported
+password_next_rotation not_supported
+mfa_active TRUE
+access_key_1_active TRUE
++access_key_1_last_rotated 2017-09-18T11:06:12+00:00+
++access_key_1_last_used_date 2019-01-20T07:41:00+00:00+
+access_key_1_last_used_region us-east-1
+access_key_1_last_used_service cognito-idp
+access_key_2_active FALSE
+access_key_2_last_rotated N/A
+access_key_2_last_used_date N/A
+access_key_2_last_used_region N/A
+access_key_2_last_used_service N/A
+cert_1_active FALSE
+cert_1_last_rotated N/A
+cert_2_active FALSE
+cert_2_last_rotated N/A
+
+Kindly help to restore my S3 bucket policy update root access so that I can resume my project
+Thanks"
+Amazon S3	"Re: AWS S3 Root user abruptly lost access to 'update bucket policy'
+While creating the bucket you might have not unchecked the Manage public access control lists in Configure Options.
+   To get it done navigate through AWS s3 console --> select required bucket --> click on Edit public access settings --> verify whether both the options below Manage public access control lists remains unchecked.
+   But please remember reading it clearly before you proceed. 
+This would resolve your issue."
+Amazon S3	"allowing S3 Logging Delivery service to use SSE-KMS
+I've set up server access logging on a source bucket. For the target bucket, if I use no encryption or if I use SSE-S3 as the bucket default, the logs get delivered as expected. If I specify default bucket encryption using SSE-KMS, log deliveries fail with 403 Access Denied. The type of encryption is the only change between success and failure.
+
+I assume I have to authorize the S3 Logging Delivery service to use my KMS CMK, but so far I have not found the right recipe in the AWS docs.
+
+Suggestions?"
+Amazon S3	"s3 prefixes- are they still important?
+hey all,
+
+so im studying for the CSAA exam, and I came to a confusion about prefixes in s3.
+from what I understood, until not long ago prefixing your files in s3 was really important for performance- as each prefix would be eligible for a certain number of requests per second, and prefixing the files would be crucial for high-performance applications to optimizing throughput to and from s3.
+But, I came across the following AWS statement:
+https://aws.amazon.com/about-aws/whats-new/2018/07/amazon-s3-announces-increased-request-rate-performance/
+
+in this statement, there are 2 sentences (one after the other actually) which seems to completely negate each other: 
+1. ""Performance scales per prefix, so you can use as many prefixes as you need in parallel to achieve the required throughput. There are no limits to the number of prefixes."" - this is what i knew was right until now.
+2. ""This S3 request rate performance increase removes any previous guidance to randomize object prefixes to achieve faster performance. That means you can now use logical or sequential naming patterns in S3 object naming without any performance implications."" - now im confused.
+
+can someone help me get a clear understanding on this? do i still need to prefix in order to optimize performance? and if not, how do I scale up my throughput to s3- or is it done automatically now by amazon? 
+
+thanks alot for your help!
+
+Edited by: Gibor on Mar 18, 2019 2:48 AM"
+Amazon S3	"Re: s3 prefixes- are they still important?
+Hi Gibor,
+
+S3 prefix are the folder structure inside bucket, these are not hierarchical filesystem, it is only key-value pair. To optimize storage for AWS to handle billions of requests per second, it needs to be shard up the data, to achieve is they split the data into partitions based on first 6 to 8 charters of the object key.
+
+for example - considering 6 charters define the partition:
+Case 1 - files/user/abc would be bad as all the objects would be on one partition files/
+
+Case 2 - 2019-03-27/files/abc would be almost bad if only date is being read from partition 2019-0, but slightly batter if the object are read from current year only
+
+Case 3 - abc/users/files would be pretty good if different users are likely to be using the data at the same time from partition abc/us. But not so good if abc is by far the busiest user.
+
+3B6EA902/files/users/abc would be best for performance but more challenging to reference, where the first part is a random string, this would be pretty evenly spread.
+
+As per your question on #2, randomize object prefixes to achieve faster performance is the key to achieve higher performance speed.
+
+Thanks."
+Amazon S3	"Amazon S3  Java 11 compatibility
+Team,
+Amazons3 client is compatible with java 8. When I upgraded to java 11, receiving these SSL certificate errors. It is not compatible with java 11 
+I'm using aws-java-sdk-s3 1.11.519
+For Ref: Error
+com.amazonaws.SdkClientException: Unable to execute HTTP request: Unexpected error: java.security.InvalidAlgorithmParameterException: the trustAnchors parameter must be non-empty
+        at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleRetryableException(AmazonHttpClient.java:1175) ~aws-java-sdk-core-1.11.519.jar:?
+        at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeHelper(AmazonHttpClient.java:1121) ~aws-java-sdk-core-1.11.519.jar:?
+        at com.amazonaws.http.AmazonHttpClient$RequestExecutor.doExecute(AmazonHttpClient.java:770) ~aws-java-sdk-core-1.11.519.jar:?
+        at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeWithTimer(AmazonHttpClient.java:744) ~aws-java-sdk-core-1.11.519.jar:?
+        at com.amazonaws.http.AmazonHttpClient$RequestExecutor.execute(AmazonHttpClient.java:726) ~aws-java-sdk-core-1.11.519.jar:?
+        at com.amazonaws.http.AmazonHttpClient$RequestExecutor.access$500(AmazonHttpClient.java:686) ~aws-java-sdk-core-1.11.519.jar:?
+        at com.amazonaws.http.AmazonHttpClient$RequestExecutionBuilderImpl.execute(AmazonHttpClient.java:668) ~aws-java-sdk-core-1.11.519.jar:?
+        at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:532) ~aws-java-sdk-core-1.11.519.jar:?
+        at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:512) ~aws-java-sdk-core-1.11.519.jar:?
+        at com.amazonaws.services.s3.AmazonS3Client.invoke(AmazonS3Client.java:4914) ~aws-java-sdk-s3-1.11.519.jar:?
+        at com.amazonaws.services.s3.AmazonS3Client.invoke(AmazonS3Client.java:4860) ~aws-java-sdk-s3-1.11.519.jar:?
+        at com.amazonaws.services.s3.AmazonS3Client.access$300(AmazonS3Client.java:389) ~aws-java-sdk-s3-1.11.519.jar:?
+        at com.amazonaws.services.s3.AmazonS3Client$PutObjectStrategy.invokeServiceCall(AmazonS3Client.java:5793) ~aws-java-sdk-s3-1.11.519.jar:?
+        at com.amazonaws.services.s3.AmazonS3Client.uploadObject(AmazonS3Client.java:1786) ~aws-java-sdk-s3-1.11.519.jar:?
+        at com.amazonaws.services.s3.AmazonS3Client.putObject(AmazonS3Client.java:1746) ~aws-java-sdk-s3-1.11.519.jar:?
+        at com.vistara.report.cloud.Aws.saveFile(Aws.java:85) ~vistara-cs-reports-5.3.0-SNAPSHOT.jar:?
+        at com.vistara.report.cloud.Aws.saveFile(Aws.java:91) ~vistara-cs-reports-5.3.0-SNAPSHOT.jar:?
+        at com.vistara.report.cloud.Aws.saveFile(Aws.java:91) ~vistara-cs-reports-5.3.0-SNAPSHOT.jar:?
+        at com.vistara.report.cloud.Aws.saveFile(Aws.java:91) ~vistara-cs-reports-5.3.0-SNAPSHOT.jar:?
+        at com.vistara.report.cloud.Aws.saveFile(Aws.java:40) vistara-cs-reports-5.3.0-SNAPSHOT.jar:?
+        at com.vistara.report.schedule.eventhandler.DataExportHandler.uploadFile(DataExportHandler.java:72) vistara-cs-reports-5.3.0-SNAPSHOT.jar:?
+        at com.vistara.report.schedule.eventhandler.DataExportHandler.export(DataExportHandler.java:52) vistara-cs-reports-5.3.0-SNAPSHOT.jar:?
+        at com.vistara.report.core.job.ReportJobUtils.exportData(ReportJobUtils.java:1144) vistara-cs-reports-5.3.0-SNAPSHOT.jar:?
+        at com.vistara.report.core.job.ReportsJob.performJob(ReportsJob.java:22) vistara-cs-reports-5.3.0-SNAPSHOT.jar:?
+        at com.vistara.cs.mq.notifier.JobMessageHandler.messageRecvd(JobMessageHandler.java:94) vistara-server-core-5.3.0-SNAPSHOT.jar:?
+        at com.vistara.mq.msg.JSONMessageHandler.messageRecvd(JSONMessageHandler.java:42) vistara-message-queue-5.3.0-SNAPSHOT.jar:?
+        at com.vistara.mq.ConsumerThread$MessageProcessor.call(ConsumerThread.java:261) vistara-message-queue-5.3.0-SNAPSHOT.jar:?
+        at com.vistara.mq.ConsumerThread$MessageProcessor.call(ConsumerThread.java:245) vistara-message-queue-5.3.0-SNAPSHOT.jar:?
+        at java.util.concurrent.FutureTask.run(FutureTask.java:264) https://forums.aws.amazon.com/
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128) https://forums.aws.amazon.com/
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628) https://forums.aws.amazon.com/
+        at java.lang.Thread.run(Thread.java:834) https://forums.aws.amazon.com/
+Caused by: javax.net.ssl.SSLException: Unexpected error: java.security.InvalidAlgorithmParameterException: the trustAnchors parameter must be non-empty
+        at sun.security.ssl.Alert.createSSLException(Alert.java:129) ~https://forums.aws.amazon.com/
+        at sun.security.ssl.TransportContext.fatal(TransportContext.java:321) ~https://forums.aws.amazon.com/
+        at sun.security.ssl.TransportContext.fatal(TransportContext.java:264) ~https://forums.aws.amazon.com/
+        at sun.security.ssl.TransportContext.fatal(TransportContext.java:259) ~https://forums.aws.amazon.com/
+
+
+Can some one help me here..."
+Amazon S3	"S3 Console - Sort by Last Modified - Feature Request plus small bug
+I like the support for S3 in the AWS console, especially being able to apply ACLs at time of upload. However, it would be very good if the view was sortable by last modified date, as I am typically working with the last 10-15 files uploaded.Also, I have noticed that about 50% of the time, my uploads get to 100%, wait for a long while, then restart at 0% again. Usually they get through by the second attempt. Is this a common problem?Dylan"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
++1 , has anyone found a solution for this?"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+Hi cloudtelephony,
+
+We don't currently have a timeline for adding this type of functionality to the Amazon S3 Console. That said, we're always looking for ways to improve our offering, and I've passed the comments from this thread to the appropriate team as a feature request. 
+
+If we do end up launching this type of feature in a future release, we'll let the Developer community know right away. We typically post these announcements in the forums and on the ""What's New?"" page:
+
+http://aws.amazon.com/about-aws/whats-new/
+
+Thank you,
+
+Darryll W.
+AWS Customer Service"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+This would be really useful and so easy to integrate"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+Darryll - Please bump this up on to do list.  Can you give a completion date. 
+
+Thank you"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+In my log buckets there are many thousands of files and it seems sorting most recent date first makes more since than oldest date first. I look forward to this option being added.
+
+Work around:
+Just use the built in filters. For example, if it is July, and my log format is ""log-yyyy-mm-dd"", then I just type in ""log-2012-07"" and now I just see the logs for this month. 
+
+Still, it would be much easier/faster to just see the most recent items in S3 first."
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+I too would like to be able to sort by date in the S3 console. Has there been any further consideration to adding this feature?"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+I keep clicking on ""Last Modified"" header in that table in the S3 Web Console in the hope it will sort it.... It's still not added? I hope it gets added soon."
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+I'd like this feature too!  Can we get an update on if sorting is ever going to get added?"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
++1 for this feature request. It has been suggested for 2 years. Maybe it's time Amazon put some resource in providing this feature?"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
++1 for this as well.   I can not believe the lack of such a BASIC feature. What the heck?"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+Another vote for sorting file listings based on Last Modified"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+Here you have my vote for sorting file listings based on Last Modified!"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+Seriously. Add this in. How is this not up and running already? Insane."
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
++1, please! (5 years later, ha.) It takes a ridiculous amount of time to scroll through logs over several months. The feature is almost unusable as is. Is there another way to sort / access?
+
+Edited by: trishadley on Jun 19, 2015 9:48 AM"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+Please add this feature."
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+I use this bookmarklet as a workaround. It sets the prefix search value to the current hour, eg, ""2016-02-02T17:"" so you can simply hit return and only see this hour's files. 
+
+javascript:(function(){var da = new Date();document.getElementsByTagName(""iframe"")[0].contentDocument.getElementById(""prefix-search-input"").value=da.getUTCFullYear() + ""-"" + (""0"" + (1+da.getUTCMonth())).substr(-2) + ""-"" + (""0"" + da.getUTCDate()).substr(-2) + ""T"" + (""0"" + da.getUTCHours()).substr(-2) + "":"";})()
+
+If you're new to bookmarklets: 
+  - create a new bookmark
+  - give it a name - I use ""S3 prefix search""
+  - paste the above JavaScript as the URL
+
+When you're viewing your S3 bucket, just click the bookmark. It'll fill the prefix search field, and you hit return."
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+After four years, I'm probably beating a dead horse by chiming in on this thread. On the other hand, it seems pretty ridiculous that the basic functionality of sorting files by date modified is missing from S3. It's not a deal breaker, but it definitely gets added to the ""List of Frustrating AWS Idiosyncrasies"". If/when that list gets too big, then it will be time to look for a new provider. Help me out, AWS. Add the sort functionality to all fields so that I can cross this one off my naughty list."
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+Agreed, this should be added"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+Add me to the list of people would would really like to see this feature. Or even sorting by file size would be great."
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+Man...how come has this never been done?!!! C'mon"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+Add me to the list of those who want this feature. For those who need something like this, I have see this available though in my s3 client DragonDisk, where I can sort by date, or any of the normal sort options."
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+Hello,
+
+With the new S3 console you can make use of editing the represented files/folders in your desired order, such as Date Created, name, Size etc.
+
+If you haven't had a look at the new S3 console, please use the below link and click the 'Opt In' link for trying object tagging and storage management: https://console.aws.amazon.com/s3/home
+
+You can also view the link to the recent S3 blog post where additional features that have also been announced: http://amzn.to/2hZjTJ5
+
+Please reach out to us again if you have any other queries.
+
+Kind regards,
+Craig E"
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+Unfortunately, Craig E, the new console doesn't provide the functionality being requested in this thread. In fact, the sorting functionality as implemented is useless -- it only sorts the current set of 99 files showing on screen. Thus, if the files you want to view aren't already on a single page together then sorting won't help, and even if they were already on a single page together you'd still have to manually hunt through possibly thousands of pages to find the right page. What we need is the ability to sort ALL the files in a given bucket and/or folder into date-based order."
+Amazon S3	"Re: S3 Console - Sort by Last Modified - Feature Request plus small bug
+It doesn't work the way we need, only sorts 99 files exists on the page, we need to sort ""ALL"" files in the folder"
+Amazon S3	"Unable to delete S3 bucket
+I have created two S3 buckets, which I have deleted after my use but they still appearing in s3 buckets and I am unable to delete as well.I have tried using old console still no luck. Also I tried deleting using cloudberry desktop app but it shows ""Bucket doest not exists"".They were empty buckets. Whenever I am clicking on bucket I am just getting message as 'Error data not found'. Can anybody please help me with this. 
+Bucket name
+adimumbaibucket(ARN:arn:aws:s3:::adimumbaibucket)
+adisydenybucket(ARN:arn:aws:s3:::adisydenybucket)
+
+Edited by: adityab on Jul 30, 2017 9:21 AM"
+Amazon S3	"Re: Unable to delete S3 bucket
+Hello  adityab, 
+
+Thank you for your post, I trust you are well. 
+
+After reviewing your account, I confirm that there are no longer any S3 Buckets on your account. 
+
+If you are still able to view them on your end and continue to receive the error, please do let us know and we will gladly investigate further. 
+
+Best regards. 
+
+Jayd J."
+Amazon S3	"Re: Unable to delete S3 bucket
+I also just deleted two buckets, and now have the same issue. They are still showing up when listing my buckets, but they don't have a region and they cause a ""Data not found"" error when you click on them."
+Amazon S3	"Re: Unable to delete S3 bucket
+Same issue here, I am not able to delete the bucket (NoSuchBucket error) and not able to create it (BucketAlreadyExists error):
+
+aws s3 mb s3://extole-dverlan-lo-reporting-events
+make_bucket failed: s3://extole-dverlan-lo-reporting-events An error occurred (BucketAlreadyExists) when calling the CreateBucket operation: The requested bucket name is not available. The bucket namespace is shared by all users of the system. Please select a different name and try again.
+
+aws s3 rb s3://extole-dverlan-lo-reporting-events
+remove_bucket failed: s3://extole-dverlan-lo-reporting-events An error occurred (NoSuchBucket) when calling the DeleteBucket operation: The specified bucket does not exist
+
+I get similar results when using ""aws s3api"" commands.
+
+This bucket was showing in S3 UI with ""Data error"" message yesterday, it is not listed there anymore today, but API calls still don't work.
+
+Any suggestions? Will auto resolve eventually?"
+Amazon S3	"Error E297: Write error in swap file
+I'm having an issue right now.  my site is unavailable, and I cant even login to the database.  
+
+I get the following when I try to edit a file in the command line:
+
+E297: Write error in swap file
+Request ID(s): 
+
+I tried restarting Apache after the problem appeared but it doesn't look like it worked completely.
+
+Any suggestions?"
+Amazon S3	"S3 SSL certificates
+Hello Amazon,There are two questions at the end of this post.In checking the SLL certificates used by S3, I see the following:1. Certificate for s3.amazonaws.com:Subject: CN = s3.amazonaws.comSerial #: 39 7f 83 cf 0f bc 37 ea 3b 9c bd 41 4e 8d 59 a3Thumbprint: f3 7c bd 27 0a d4 16 7d ae 30 91 84 77 a0 8e c7 38 0c 1e e7Issuer: OU = Secure Server Certification Authority O = RSA Data Security, Inc.Valid from: Monday, February 19, 2007 7:00:00 PMValid to: Wednesday, February 20, 2008 6:59:59 PMThe root for this certificate is:Friendly name: VeriSign/RSA Secure Server CASubject: OU = Secure Server Certification Authority O = RSA Data Security, Inc.Serial #: 02 ad 66 7e 4e 45 fe 5e 57 6f 3c 98 19 5e dd c0Thumbprint: 44 63 c5 31 d7 cc c1 00 67 94 61 2b b6 56 d3 bf 82 57 84 6fValid from: Tuesday, November 08, 1994 7:00:00 PMValid to: Thursday, January 07, 2010 6:59:59 PM2. Certificate for *.s3.amazonaws.com:Subject: CN = *.s3.amazonaws.comSerial #: 06 86 84 fb 4f 26 40 c3 99 e3 f9 bc d3 4f 29 a0Thumbprint: 4a e4 45 db 13 dc 4d bb d0 73 40 a9 4b 2f c9 f0 14 61 74 96Issuer: CN = DigiCert Global CA OU = www.digicert.com O = DigiCert IncValid from: Tuesday, October 09, 2007 7:00:00 PMValid to: Friday, December 12, 2008 6:59:59 PMThe root for this certificate is:Friendly name: Entrust.net Secure Server Certification AuthoritySubject: CN = Entrust.net Secure Server Certification Authority OU = www.entrust.net/CPS incorp. by ref. (limits liab.) O = Entrust.netSerial #: 37 4a d2 43Thumbprint: 99 a6 9b e6 1a fe 88 6b 4d 2b 82 00 7c b8 54 fc 31 7e 15 39Valid from: Tuesday, May 25, 1999 11:09:40 AMValid to: Saturday, May 25, 2019 11:39:40 AMMy questions are these:1. Am I correct that these are the only two certificates in use by S3?2. Would it be possible to give advance notice to the developer community if Amazon ever decides to deploy an SSL certificate on S3 that uses a different root certificate than either of the two listed above?  The rational for this request is that many developers are creating applications that have to be bundled with root certificates in order to properly use SSL, and the advance notice would facilitate any updates that need to be made to the applications.Thank you."
+Amazon S3	"Re: S3 SSL certificates
+I would like to request a clarification in this thread on a related subject. The question is about browser-based upload using HTTPS. When a Policy Document (generated on the server) specifies HTTPS rather than HTTP - uploading objects from browser to S3 via HTTPS works fine. Would it be correct to assume that a file (read from a client PC) reached the S3 in an encrypted form? Thank you in advance."
+Amazon S3	"Re: S3 SSL certificates
+Allen:1.  Those are the only two certificates in use by S3 at this time, yes.  However...2.  The certificate chain supporting Amazon S3 SSL is an implementation detail of the system that may change from time to time. A robust application should not depend on the Amazon S3 SSL certificate being signed by a particular certification authority. However, you can depend on the fact that we will only use reputable CAs that are widely supported by existing user-agents. The easiest way to select root CAs to bundle with your application is to simply import the set from a modern web browser with a large market share."
+Amazon S3	"Re: S3 SSL certificates
+simplewebservant:  It depends on what you mean.  The data element being uploaded via POST is transmitted securely, but after being stored in S3, if it is requested subsequently over HTTP, the data is sent back in its original unencrypted form."
+Amazon S3	"Re: S3 SSL certificates
+Hello Doug,Thanks.  I imported Mozilla's root certificates, as compiled in the Debian ssl-certificates package.  I did not take all of them though because many of them looked like they are historical or from second tier companies or are not intended for general purpose web server use.  So I ended up including only the ones from US companies that looked like they were intended for general purpose web server use.The following is a list of certificates I included:Entrust.net_Global_Secure_Server_CA.crtEntrust.net_Premium_2048_Secure_Server_CA.crtEntrust.net_Secure_Server_CA.crtEquifax_Secure_CA.crtGeoTrust_Global_CA.crtGTE_CyberTrust_Global_Root.crtGTE_CyberTrust_Root_CA.crtThawte_Premium_Server_CA.crtThawte_Server_CA.crtVerisign_RSA_Secure_Server_CA.crtThe following is a list of certificates that I did NOT include:ABAecom_=sub.__Am._Bankers_Assn.=_Root_CA.crtAddTrust_External_Root.crtAddTrust_Low-Value_Services_Root.crtAddTrust_Public_Services_Root.crtAddTrust_Qualified_Certificates_Root.crtAmerica_Online_Root_Certification_Authority_1.crtAmerica_Online_Root_Certification_Authority_2.crtAOL_Time_Warner_Root_Certification_Authority_1.crtAOL_Time_Warner_Root_Certification_Authority_2.crtBaltimore_CyberTrust_Root.crtbeTRUSTed_Root_CA-Baltimore_Implementation.crtbeTRUSTed_Root_CA.crtbeTRUSTed_Root_CA_-_Entrust_Implementation.crtbeTRUSTed_Root_CA_-_RSA_Implementation.crtCertum_Root_CA.crtComodo_AAA_Services_root.crtComodo_Secure_Services_root.crtComodo_Trusted_Services_root.crtDigital_Signature_Trust_Co._Global_CA_1.crtDigital_Signature_Trust_Co._Global_CA_2.crtDigital_Signature_Trust_Co._Global_CA_3.crtDigital_Signature_Trust_Co._Global_CA_4.crtEntrust.net_Global_Secure_Personal_CA.crtEntrust.net_Secure_Personal_CA.crtEquifax_Secure_eBusiness_CA_1.crtEquifax_Secure_eBusiness_CA_2.crtEquifax_Secure_Global_eBusiness_CA.crtGlobalSign_Root_CA.crtIPS_Chained_CAs_root.crtIPS_CLASE1_root.crtIPS_CLASE3_root.crtIPS_CLASEA1_root.crtIPS_CLASEA3_root.crtIPS_Servidores_root.crtIPS_Timestamping_root.crtQuoVadis_Root_CA.crtRSA_Root_Certificate_1.crtRSA_Security_1024_v3.crtRSA_Security_2048_v3.crtSecurity_Communication_Root_CA.crtSonera_Class_1_Root_CA.crtSonera_Class_2_Root_CA.crtStaat_der_Nederlanden_Root_CA.crtTC_TrustCenter__Germany__Class_2_CA.crtTC_TrustCenter__Germany__Class_3_CA.crtTDC_Internet_Root_CA.crtTDC_OCES_Root_CA.crtThawte_Personal_Basic_CA.crtThawte_Personal_Freemail_CA.crtThawte_Personal_Premium_CA.crtThawte_Time_Stamping_CA.crtUTN-USER_First-Network_Applications.crtUTN_DATACorp_SGC_Root_CA.crtUTN_USERFirst_Email_Root_CA.crtUTN_USERFirst_Hardware_Root_CA.crtUTN_USERFirst_Object_Root_CA.crtValiCert_Class_1_VA.crtValiCert_Class_2_VA.crtVerisign_Class_1_Public_Primary_Certification_Authority.crtVerisign_Class_1_Public_Primary_Certification_Authority_-_G2.crtVerisign_Class_1_Public_Primary_Certification_Authority_-_G3.crtVerisign_Class_1_Public_Primary_OCSP_Responder.crtVerisign_Class_2_Public_Primary_Certification_Authority.crtVerisign_Class_2_Public_Primary_Certification_Authority_-_G2.crtVerisign_Class_2_Public_Primary_Certification_Authority_-_G3.crtVerisign_Class_2_Public_Primary_OCSP_Responder.crtVerisign_Class_3_Public_Primary_Certification_Authority.crtVerisign_Class_3_Public_Primary_Certification_Authority_-_G2.crtVerisign_Class_3_Public_Primary_Certification_Authority_-_G3.crtVerisign_Class_3_Public_Primary_OCSP_Responder.crtVerisign_Class_4_Public_Primary_Certification_Authority_-_G2.crtVerisign_Class_4_Public_Primary_Certification_Authority_-_G3.crtVerisign_Secure_Server_OCSP_Responder.crtVerisign_Time_Stamping_Authority_CA.crtVisa_eCommerce_Root.crtVisa_International_Global_Root_2.crtIf you think I missed one that Amazon might use in the future, please let me know.It would still be great to get advance notice if/when Amazon changes root certificates.Thank you,Allen"
+Amazon S3	"Re: S3 SSL certificates
+Without stating an opinion on any of the other certificates you omitted, the Verisign_Class_X ones are definitely ""important"". For example:$ openssl s_client -connect www.amazon.com:443CONNECTED(00000003)depth=2 /C=US/O=VeriSign, Inc./OU=Class 3 Public Primary Certification Authorityverify return:1depth=1 /C=US/O=VeriSign, Inc./OU=VeriSign Trust Network/OU=Terms of use at https://www.verisign.com/rpa (c)05/CN=VeriSign Class 3 Secure Server CAverify return:1depth=0 /C=US/ST=Washington/L=Seattle/O=Amazon.com Inc./CN=www.amazon.comverify return:1Unless you have serious concerns about the trustworthiness of a particular CA, I think Doug's advice stands and it would be safer to take a cert rather than leave it."
+Amazon S3	"Re: S3 SSL certificates
+Roger.  Thanks."
+Amazon S3	"Re: S3 SSL certificates
+Of course, we should be told in advance if they are going to change certificates.  I learned after several months that my backup system (based on s3sync) was not doing any backups because they were not accepting my certificate anymore--I just copied the certificate in the README.txt, which worked fine for a time."
+Amazon S3	"Re: S3 SSL certificates
+Team,
+Amazons3 client is compatible with java 8. When I upgraded to java 11, receiving these SSL certificate errors. Is it compatible with java 11 ?
+I'm using aws-java-sdk-s3 1.11.519 
+For Ref: Error
+  Caused by: javax.net.ssl.SSLException: Unexpected error: java.security.InvalidAlgorithmParameterException: the trustAnchors parameter must be non-empty
+        at sun.security.ssl.Alert.createSSLException(Alert.java:129)
+
+Can some one help me here..."
+Amazon S3	"S3 Policy - Cannot Create Folders & Unrecognized Actions
+Hello,
+
+We have put together a policy for access to a bucket that is shared amongst members of a research group.  Currently, the policy provides the expected behaviors for each directory:
+
+tmp/  --> public, anyone can read an write
+scratch/ --> public, users can read and write in their own (scratch/username/), and only read other users
+snapshots/ --> public, users can read and write in their own (snapshots/username/), and only read other users
+home/ --> private, users can read an write in their own (home/username/), and have no access to other users
+
+Users are able to upload files to the expected directories.  However, they are unable to create folders in any of their directories (all tested via the S3 management console).  In addition, when the policy summary is viewed using the console it complains the following are 'Unrecognized Actions':
+
+
+DeleteObjectTagging
+GetObjectTagging 
+GetObjectVersionTagging
+
+
+A screen shot of the policy summary page showing the 'Unrecognized Actions' has been attatched to this post.  I assume the difficulties we are encountering are related to our policy document.  Any help in debugging the JSON is much appreciated.  The JSON is provided below and attatched to this post.
+
+Thanks,
+
+Sean
+
+{
+    ""Statement"": [
+        {
+            ""Sid"": ""1AllowSeeingBucketsList"",
+            ""Effect"": ""Allow"",
+            ""Resource"": [
+                ""arn:aws:s3:::*""
+            ],
+            ""Action"": [
+                ""s3:ListAllMyBuckets"",
+                ""s3:GetBucketLocation""
+            ]
+        },
+        {
+            ""Sid"": ""2AllowRootLevelListingOfThisBucketAndItsDirectories"",
+            ""Effect"": ""Allow"",
+            ""Resource"": [
+                ""arn:aws:s3:::cst-compbio-research-00-buc""
+            ],
+            ""Condition"": {
+                ""StringLike"": {
+                    ""s3:prefix"": [
+                        """",
+                        ""home/"",
+                        ""home/${aws:username}/*"",
+                        ""snapshots/"",
+                        ""snapshots/*"",
+                        ""scratch/"",
+                        ""scratch/*"",
+                        ""tmp/"",
+                        ""tmp/*""
+                    ],
+                    ""s3:delimiter"": [
+                        ""/""
+                    ]
+                }
+            },
+            ""Action"": [
+                ""s3:ListBucket""
+            ]
+        },
+        {
+            ""Sid"": ""3AllowListingAndGetAndPutAndDelTmp"",
+            ""Effect"": ""Allow"",
+            ""Resource"": [
+                ""arn:aws:s3:::cst-compbio-research-00-buc/tmp/*""
+            ],
+            ""Action"": [
+                ""s3:GetObject"",
+                ""s3:GetObjectTagging"",
+                ""s3:PutObject"",
+                ""s3:PutObjectTagging"",
+                ""s3:DeleteObject"",
+                ""s3:DeleteObjectTagging""
+            ]
+        },
+        {
+            ""Sid"": ""4AllowGetSnapshotsAndScratch"",
+            ""Effect"": ""Allow"",
+            ""Resource"": [
+                ""arn:aws:s3:::cst-compbio-research-00-buc/snapshots/*"",
+                ""arn:aws:s3:::cst-compbio-research-00-buc/scratch/*""
+            ],
+            ""Action"": [
+                ""s3:GetObject"",
+                ""s3:GetObjectTagging"",
+                ""s3:GetObjectVersion"",
+                ""s3:GetObjectVersionTagging""
+            ]
+        },
+        {
+            ""Sid"": ""5AllowEverythingInUsersOwnHomeAndSnapshotsAndScratch"",
+            ""Effect"": ""Allow"",
+            ""Resource"": [
+                ""arn:aws:s3:::cst-compbio-research-00-buc/home/${aws:username}/*"",
+                ""arn:aws:s3:::cst-compbio-research-00-buc/snapshots/${aws:username}/*"",
+                ""arn:aws:s3:::cst-compbio-research-00-buc/scratch/${aws:username}/*""
+            ],
+            ""Action"": [
+                ""s3:*""
+            ]
+        }
+    ],
+    ""Version"": ""2012-10-17""
+}"
+Amazon S3	"Re: S3 Policy - Cannot Create Folders & Unrecognized Actions
+Amazon Web Services
+May 29, 2017
+08:08 AM -0400
+Hi,
+
+After reviewing an example policy and reproducing the intended results on my infrastructure, it looks like the issue is with the s3:delimiter condition on the policy with the list bucket action. To work around this limitation you can have two statements for the S3 List bucket action:
+
+1. One with the StringEquals for s3:prefix and s3:delimiter properties.
+
+2. The other with StringLike with just the s3:prefix. 
+
+The example policy they've provided can be seen below, though please be aware that you may need to modify this further to meet your exact use case.
+
+===
+{
+    ""Statement"": [
+        {
+            ""Sid"": ""1AllowSeeingBucketsList"",
+            ""Effect"": ""Allow"",
+            ""Resource"": [
+                ""arn:aws:s3:::*""
+            ],
+            ""Action"": [
+                ""s3:ListAllMyBuckets"",
+                ""s3:GetBucketLocation""
+            ]
+        },
+        {
+            ""Sid"": ""2AllowRootLevelListingOfThisBucketAndItsDirectories"",
+            ""Effect"": ""Allow"",
+            ""Resource"": [
+                ""arn:aws:s3:::cst-compbio-research-00-buc""
+            ],
+            ""Condition"": {
+                ""StringEquals"": {
+                    ""s3:prefix"": [
+                        """",
+                        ""home/""
+                    ],
+					""s3:delimiter"": [
+                        ""/""
+                    ]
+                }
+            },
+            ""Action"": [
+                ""s3:ListBucket""
+            ]
+        },
+		{
+            ""Sid"": ""3AllowUserListingOfThisBucketAndItsDirectories"",
+            ""Effect"": ""Allow"",
+            ""Resource"": [
+                ""arn:aws:s3:::cst-compbio-research-00-buc""
+            ],
+            ""Condition"": {
+                ""StringLike"": {
+                    ""s3:prefix"": [
+                        ""home//*"",
+                        ""snapshots/*"",
+                        ""scratch/*"",
+                        ""tmp/*""
+                    ]
+                }
+            },
+            ""Action"": [
+                ""s3:ListBucket""
+            ]
+        },
+        {
+            ""Sid"": ""4AllowListingAndGetAndPutAndDelTmp"",
+            ""Effect"": ""Allow"",
+            ""Resource"": [
+                ""arn:aws:s3:::cst-compbio-research-00-buc/tmp/*""
+            ],
+            ""Action"": [
+                ""s3:GetObject"",
+                ""s3:GetObjectTagging"",
+                ""s3:PutObject"",
+                ""s3:PutObjectTagging"",
+                ""s3:DeleteObject"",
+                ""s3:DeleteObjectTagging""
+            ]
+        },
+        {
+            ""Sid"": ""5AllowGetSnapshotsAndScratch"",
+            ""Effect"": ""Allow"",
+            ""Resource"": [
+                ""arn:aws:s3:::cst-compbio-research-00-buc/snapshots/*"",
+                ""arn:aws:s3:::cst-compbio-research-00-buc/scratch/*""
+            ],
+            ""Action"": [
+                ""s3:GetObject"",
+                ""s3:GetObjectTagging"",
+                ""s3:GetObjectVersion"",
+                ""s3:GetObjectVersionTagging""
+            ]
+        },
+        {
+            ""Sid"": ""6AllowEverythingInUsersOwnHomeAndSnapshotsAndScratch"",
+            ""Effect"": ""Allow"",
+            ""Resource"": [
+                ""arn:aws:s3:::cst-compbio-research-00-buc/home//*"",
+                ""arn:aws:s3:::cst-compbio-research-00-buc/snapshots//*"",
+                ""arn:aws:s3:::cst-compbio-research-00-buc/scratch//*""
+            ],
+            ""Action"": [
+                ""s3:*""
+            ]
+        }
+    ],
+    ""Version"": ""2012-10-17""
+}
+
+===
+
+If you have any other questions or concerns, please don't hesitate to reach out to us again, we are happy to help wherever we can.
+
+Best regards,
+
+Matt J.
+Amazon Web Services
+
+Check out the AWS Support Knowledge Center, a knowledge base of articles and videos that answer customer questions about AWS services: https://aws.amazon.com/premiumsupport/knowledge-center/?icmpid=support_email_category
+
+We value your feedback. Please rate my response using the link below.
+===================================================
+
+Was this response helpful? Click here to rate:
+Amazon Web Services
+May 29, 2017
+05:21 AM -0400
+Hi,
+
+Thanks for your patience while the S3 team investigated the issue with being unable to create folders in the S3 console and issues with the IAM console.
+
+Regarding the issue with the IAM console, the experts have also verified this issue and the console team has been made aware of the ""unrecognised actions"" issue in the console.
+
+As for the permissions itself, the S3 experts and I have been digging into why exactly this issue is occurring and they have come up with a workaround policy that will avoid this error. I'm testing this modified policy now to ensure it is working as intended and will be in touch again as soon as I've verified it is working.
+
+If you have any other questions or concerns, please don't hesitate to reach out to us again, we are happy to help wherever we can.
+
+Best regards,
+
+Matt J.
+Amazon Web Services
+
+Check out the AWS Support Knowledge Center, a knowledge base of articles and videos that answer customer questions about AWS services: https://aws.amazon.com/premiumsupport/knowledge-center/?icmpid=support_email_category
+
+We value your feedback. Please rate my response using the link below.
+===================================================
+
+Was this response helpful? Click here to rate:
+Amazon Web Services
+May 27, 2017
+04:48 AM -0400
+Hi,
+
+Thank you for getting in touch with AWS Premium Support regarding your S3 policy.
+
+Regarding the issue with users creating folders in their home directory, I think this might be a bug with the new S3 console, as the same policy allowed me to create folders in the specified prefixes with both the old console and with the AWS CLI. I've reached out to the console development team with the information you've provided and my replication of the issue for more information.
+
+I've reviewed the policy document and it appears to definitely be valid JSON, however I have been able to replicate the issue with ""GetObjectTagging"", ""GetObjectVersionTagging"" and ""PutObjectVersionTagging"" being marked as unrecognised in the IAM console. However, despite these tags being marked as unrecognised, they functioned as intended and removing them from the policy prevented a user with that policy from accessing the object tags. I've reached out to the IAM console team for more information on why these are showing as unrecognised.
+
+If you have any other questions or concerns, please don't hesitate to reach out to us again, we are happy to help wherever we can.
+
+Best regards,
+
+Matt J.
+Amazon Web Services
+
+Check out the AWS Support Knowledge Center, a knowledge base of articles and videos that answer customer questions about AWS services: https://aws.amazon.com/premiumsupport/knowledge-center/?icmpid=support_email_category
+
+We value your feedback. Please rate my response using the link below.
+==================================================="
+Amazon S3	"Re: S3 Policy - Cannot Create Folders & Unrecognized Actions
+Thank you."
+Amazon S3	"Duplicate on both S3 and EC2 after mounting
+I created S3 bucket and mounted with ec2. When I upload a file to S3 bucket, that file is copied to ec2 mounted folder automatically. I wanted the file to be uploaded to S3 bucket only. As it copies to EC2 folder, it becomes redundant and doesn't fulfill our requirements. I installed S3fs and executed the following commands:
+
+    sudo s3fs my-s3-bucket /var/www/html/vqmod/xml/ -o passwd_file=/home/ubuntu/.passwd-s3fs,nonempty,retries=5,gid=33,uid=33,allow_other,url=https://s3.amazonaws.com,umask=0000
+
+Am I doing any permission mistake? Thanks.
+
+Edited by: Agile1 on Mar 24, 2019 7:45 PM"
+Amazon S3	"bucket is missing object lock configuration
+what does this message mean? i have not enabled object lock. i have tried to give read access to a bucket to someone and they can list the keys but get this message when try to download."
+Amazon S3	"Amazon Sage Maker Notebook instance Decision tree
+ResourceLimitExceeded                     Traceback (most recent call last)
+<ipython-input-19-607652764830> in <module>()
+----> 1 predictor = tree.deploy(1, 'ml.m4.xlarge', serializer=csv_serializer)
+
+~/anaconda3/envs/python3/lib/python3.6/site-packages/sagemaker/estimator.py in deploy(self, initial_instance_count, instance_type, accelerator_type, endpoint_name, use_compiled_model, update_endpoint, **kwargs)
+    381             endpoint_name=endpoint_name,
+    382             update_endpoint=update_endpoint,
+--> 383             tags=self.tags)
+    384 
+    385     @property
+
+~/anaconda3/envs/python3/lib/python3.6/site-packages/sagemaker/model.py in deploy(self, initial_instance_count, instance_type, accelerator_type, endpoint_name, update_endpoint, tags)
+    274             self.sagemaker_session.update_endpoint(self.endpoint_name, endpoint_config_name)
+    275         else:
+--> 276             self.sagemaker_session.endpoint_from_production_variants(self.endpoint_name, https://forums.aws.amazon.com/, tags)
+    277 
+    278         if self.predictor_cls:
+
+~/anaconda3/envs/python3/lib/python3.6/site-packages/sagemaker/session.py in endpoint_from_production_variants(self, name, production_variants, tags, wait)
+   1053 
+   1054             self.sagemaker_client.create_endpoint_config(**config_options)
+-> 1055         return self.create_endpoint(endpoint_name=name, config_name=name, wait=wait)
+   1056 
+   1057     def expand_role(self, role):
+
+~/anaconda3/envs/python3/lib/python3.6/site-packages/sagemaker/session.py in create_endpoint(self, endpoint_name, config_name, wait)
+    765         """"""
+    766         LOGGER.info('Creating endpoint with name {}'.format(endpoint_name))
+--> 767         self.sagemaker_client.create_endpoint(EndpointName=endpoint_name, EndpointConfigName=config_name)
+    768         if wait:
+    769             self.wait_for_endpoint(endpoint_name)
+
+~/anaconda3/envs/python3/lib/python3.6/site-packages/botocore/client.py in _api_call(self, *args, **kwargs)
+    355                     ""%s() only accepts keyword arguments."" % py_operation_name)
+    356             # The ""self"" in this scope is referring to the BaseClient.
+--> 357             return self._make_api_call(operation_name, kwargs)
+    358 
+    359         _api_call.__name__ = str(py_operation_name)
+
+~/anaconda3/envs/python3/lib/python3.6/site-packages/botocore/client.py in _make_api_call(self, operation_name, api_params)
+    659             error_code = parsed_response.get(""Error"", {}).get(""Code"")
+    660             error_class = self.exceptions.from_code(error_code)
+--> 661             raise error_class(parsed_response, operation_name)
+    662         else:
+    663             return parsed_response
+ResourceLimitExceeded: An error occurred (ResourceLimitExceeded) when calling the CreateEndpoint operation: The account-level service limit 'ml.m4.xlarge for endpoint usage' is 0 Instances, with current utilization of 0 Instances and a request delta of 1 Instances. Please contact AWS support to request an increase for this limit."
+Amazon S3	"Public files used on my website suddenly not public, what happened?
+Hello, 
+A folder of images that has been public for years stopped being public without my making any changes.
+
+I have a folder of images inside a bucket that has always been public, because we use it to host the images for our online store. The images are pulled from AWS each time we refresh our inventory. We reference the image via direct link, e.g. http://s3.amazonaws.com/wuladrum/products/all-w-sku-photos/W-17-102-SP2-6069-1-K.jpg
+
+We upload to the bucket from two different computers using the AWS CLI sync command. The two of us who perform the syncs are both logged in with the root user account.
+
+This has been working flawlessly for years.
+Last time I went to upload the sheet (this past week), my boss called me and said all the product images were gone from the website! 
+
+Indeed, the images.. stopped being public.
+
+I was able to go through the folder and manually ""make public"" the ~7,000 files one screen at a time, so for now the images are public and seem to be working normally.
+
+I need to figure out what happened so I can make sure it never happens again!
+I have done research to try to find this answer, but I can only find information on how to control permissions - not how permissions could become changed without my intent..
+
+I'll attach several screen shots of the various permissions as they appear now.
+The only difference between the screen shots and what it looked like when I noticed the issue is that I have since gone in and made each file public manually (as mentioned ^).
+
+Thanks!!"
+Amazon S3	"Frequent S3 bucket logs occurring with brand new, private account?
+Hello,
+
+Thank you for your time. I'm fairly new to S3 and have a quick question regarding logs. 
+
+I created a brand new AWS account with secure password and two-factor authentication. I'm 100% sure I'm the only person who has logged into my account.
+
+I made a new S3 Bucket with very restrictive permissions (basically, all Permissions were enabled ""true"" and the access status says ""Bucket and objects not public"".
+
+I did create an IAM user so that I can send backups from cPanel to my bucket via access key. Those backups have been validated from cPanel but not enabled yet.
+
+However, when I view my bucket with logging enabled, I'm seeing a new log message about every hour or more with an IP I don't recognize. I'm very confused by this because I'm confident my bucket is private and no one else has access to this account.
+
+Does S3 bucket logging happen hourly no matter what?
+
+Edited by: CircleLogicAWS on Mar 21, 2019 2:02 PM"
+Amazon S3	"Re: Frequent S3 bucket logs occurring with brand new, private account?
+Hello,
+
+S3 bucket logging happens hourly only if ""Server access logging"" is enabled in your S3 bucket properties.
+
+And the logs which are displaying different IP addresses is because Metadata must have been enabled in object's properties.
+
+As a solution to this, you can disable server access logging in your bucket (to avoid log generation) properties.
+
+This should help.
+
+Thank you."
+Amazon S3	"Missing files
+We're noticing some files missing off of one of our buckets but without any matching deletes from our system. The files exist in cloudfront so they were in s3 at one time but are no longer.
+
+Are there any known issues going on with S3 currently?
+
+Is it possible for a Put with the same object name to fail and delete the existing object?"
+Amazon S3	"Re: Missing files
+If you have not done so already, I would suggest switching logging for your buckets on. Although this will not tell you what has happened, if it happens again, you will have a full log and be able to see where the problem is.
+
+If you need help in how to do this let me know.
+
+I have not know for a Put with the same object name to fail and delete the existing object. However, this does not mean it is not possible. Have you considered someone else accidentally (or purposefully) deleting the files? The logging will be able to discover this.
+
+If others have access to the buckets, have you set up IAM users with strict security so they can only do what you want them to do?"
+Amazon S3	"Re: Missing files
+I noticed my last AWS bill was less than normal.  Upon checking my S3 account I see I am missing 10GB + of files.  I ONLY use S3 for storage and do not programmatically access the service in anyway, aside from AWS, and I have not performed ANY transactions in the past few months.  
+
+Where are my files?!"
+Amazon S3	"Re: Missing files
+Im facing same problem.. lots of files folders missing suddenly from our server we didn't delete anything.. what is solution?"
+Amazon S3	"Re: Missing files
+Bahare, I'd like to hear more about your case.  I've private messaged you to find out more about the details of your S3 bucket and object."
+Amazon S3	"Re: Missing files
+I have several files missing from my S3 bucket. They seem to be disappearing about 1 year after being uploaded, but not exactly 1 year. I have confirmed that I don't have any Expiration policy on the bucket or any of the objects that still exist in the bucket. I have also set up CloudTrail to try to figure out what is going on, but more hep would certainly be appreciated. Thanks!"
+Amazon S3	"Slow S3 upload - Same region, uploading from Elastic Beanstalk docker
+Hello,
+
+I've been dealing with very slow upload speeds from my application to S3. I have a rails application running in a single docker environment on Elastic Beanstalk and a specific bucket that stores files created by the user. Both are in the same region and availability zone. The files that are being uploaded are very small (< 1kb) text files that are taking 40 seconds on average to upload. This seems ludicrous to me considering I am not even transferring outside of the datacenter. Reading the files are near instant as is moving the files.
+
+I'm using the ruby aws-sdk to perform the upload that looks like this:
+
+ 
+key = ""resources/#{file_name}""
+s3 = Aws::S3::Resource.new(region: ENV[""AWS_REGION""])
+obj = s3.bucket(bucket_name).object(key)
+ 
+logger.info ""** Uploading file #{file_name} to S3""
+logger.info "" - File size is #{file.size} bytes""
+start_time = Time.now.to_i
+obj.upload_file(file)
+end_time = Time.now.to_i
+seconds = end_time - start_time
+elapse = Time.at(seconds).utc.strftime(""%H:%M:%S"")
+logger.info ""** File upload took #{elapse} to complete""
+
+
+and I'm seeing output like this:
+
+** Uploading file untitled-NUB3eAURYspbpdaBqu.md to S3
+  - File size is 23 bytes
+** File upload took 00:00:41 to complete
+
+
+I've exhausted my research ability on this issue after reading hundreds of other posts on this forum and others. Any insight into how I can improve this would be greatly appreciated.
+
+Edited by: GBRS on Mar 21, 2019 6:45 AM"
+Amazon S3	"Re: Slow S3 upload - Same region, uploading from Elastic Beanstalk docker
+Update: It seems that 40 seconds is the minimum amount of time it takes to upload a file. I've tested with a 10 byte file and a 29kb file. Both take the same amount of time to complete."
+Amazon S3	"Re: Slow S3 upload - Same region, uploading from Elastic Beanstalk docker
+Update: I've enabled wire trace on the upload request and I've discovered that there are two requests that are sent. The first one fails with a 400 Bad Request error. These are the details:
+
+<?xml version=""1.0"" encoding=""UTF-8""?>\n<Error><Code>RequestTimeout</Code><Message>Your socket connection to the server was not read from or written to within the timeout period. Idle connections will be closed.</Message><RequestId>XXXXXXXXXXXXXXXX</RequestId><HostId>XXXXXXXXXXXX</HostId></Error>
+
+
+The second request is successful and is very quick. Everything else looks normal.
+
+Edited by: GBRS on Mar 21, 2019 9:48 AM"
+Amazon S3	"Re: Slow S3 upload - Same region, uploading from Elastic Beanstalk docker
+Solution Found: After trying out a few options, I've discovered that the issue was passing a File object to the upload_file() method. Even though the aws documentation https://docs.aws.amazon.com/sdkforruby/api/Aws/S3/Object.html#upload_file-instance_method says this is acceptable, my issues went away when I switched to using the `file.path` instead.
+
+I'm reluctant to mark this question as answered though since my solution feels more like a workaround. If the documentation says that a `File` object is an acceptable source the request should not fail on first attempt.
+
+Edited by: GBRS on Mar 21, 2019 11:18 AM
+
+Edited by: GBRS on Mar 21, 2019 11:19 AM"
+Amazon S3	"Avoid S3 redirection rule limit
+I have a static website (React) hosted in AWS S3 and I want to add a bunch of redirects to it. By 'a bunch', I mean hundreds. Now I know URLs shouldn't change but they have so I need to deal with the consequences.
+
+The problem I have is that S3 has a limit of 50 redirects for the 'Redirection Rules' field. Is there any way around this or any other way I can set up hundreds of redirects? I am using Route 53 + Cloudfront + S3 bucket."
+Amazon S3	"how to solve this error in s3 storage upload and display
+when using the image uploader works successfully with no problem But the picture does not appear in the display ..
+But when I upload a photo from a server it works fine no problem
+and The second problem if you upload a large size image not upload 
+please solve this problem 
+
+this is link example in github :
+https://github.com/ahmedzaki72/s3Storage-.git"
+Amazon S3	"Set up HTTPS on AWS S3 without using a custom domain
+After having enable the Static Web Server function in our S3 bucket I got something which looks like:
+
+http://our-bucket-name.s3-website-ap-southeast-2.amazonaws.com/
+
+However I want to be able to use this exact domain with https.
+So far I have found out a whole heap of guides how to set up cloudfront with your own custom domain, but I want to simply be able to use the above domain over HTTP and HTTPS"
+Amazon S3	"How can I stop people from downloading my S3 videos files???
+I have my videos and documents in an Amazon S3 bucket. But how can I stop people from downloading them in my website. What kind of policy is needed in the bucket or what else need to be done?
+I tried to use the bucket policy called ""restricting access to a specific HTTP referrer"" but it did not work. People keep downloading without problems using the google crome browser. 
+Your help will be highly appreciated. 
+Gabriel.
+
+Edited by: gabino on Mar 19, 2019 11:03 AM
+
+Edited by: gabino on Mar 19, 2019 11:04 AM"
+Amazon S3	"S3 - Moving files and renaming - Please help!
+New to S3 at my job.  
+
+Trying to do two things.
+1. Renaming a folder.  I select the folder and Actions > Rename is grayed out.
+2. There are some files in S3 that I need to place in a folder. How can I move files to a folder?
+
+~Bob
+
+Edited by: microsvc on Mar 18, 2019 1:32 PM
+
+Edited by: microsvc on Mar 19, 2019 9:02 AM"
+Amazon S3	"S3 Redirection rules issue for Cloudfront https requests
+Hello,
+
+We have an s3 bucket that hosts our dynamic images, which will be fetched by web and mobile apps through https and with different sizes (<url>/<width>x<height>/<image_name) i.e. http://test.s3.com/200x300/image.png).
+
+For this we did two things:
+1- Realtime resizing: I have a redirection rule in my s3 bucket to redirect 404 errors requesting non-existing image sizes to an API gateway that calls a Lambda function. The lambda function fetches the original image and resizes it and places it in a folder in the bucket matching the requested size.
+
+We followed the steps in this articles:
+https://aws.amazon.com/blogs/compute/resize-images-on-the-fly-with-amazon-s3-aws-lambda-and-amazon-api-gateway/
+
+2- HTTPS: I created a cloudfront distribution with an SSL certificate and its origin is the s3 static website endpoint 
+
+Problem: Requesting an image from s3 using the cloudfront https domain always causes an 404 error which gets redriected by my redirection rule the API gateway, even if this specific image size already exists.
+
+I tried to debug this issue with no luck. I examined the requests and from what I see things should work normally.
+
+I'd appreciate a hint on what to do to better debug this issue (and what kind of logs I need to provide here). Sorry, this is my first time posting to the AWS forums.
+
+Sary"
+Amazon S3	"Need help Troubleshooting S3 InternalError
+Can someone please help me troubleshoot these two S3 InternalErrors?
+
+Around 17 Mar 20:07:08 UTC:
+<?xml version=""1.0"" encoding=""UTF-8""?>
+<Error>
+  <Code>InternalError</Code>
+  <Message>We encountered an internal error. Please try again.</Message>
+  <RequestId>FDE82D99D954DC10</RequestId>
+         <HostId>+K6lEtiKjgklAgPTqUvFGYjIBnHLjF1W9qp78QJhMX9SB4heRJxCa9Ipz9vMSSCVU36URN5diPE=</HostId>
+</Error>
+
+
+Around 17 Mar 10:35:25 UTC
+<?xml version=""1.0"" encoding=""UTF-8""?>
+<Error>
+  <Code>InternalError</Code>
+  <Message>We encountered an internal error. Please try again.</Message>
+  <RequestId>4F7B07E690013324</RequestId>
+  <HostId>uJTIDoeLCno0QbpaBaMVGjSIiCD0HZ1d6CNCQx9/6YxjN57h14V8gS96lowTUeN9uzBbbXrriCA=</HostId>
+</Error>
+
+
+Thank you very much!"
+Amazon S3	"EC2 mount S3Fs create some sockets with ""CLOSE_WAIT"" status
+Hi everybody,
+I have an EC2 for handle the recording event with mount the S3 by ""s3fs"" for storage.
+I am using the s3fs for storage record file and use the ""dirent.h"" to find some files in directory, and because it is mount s3 by network, so it will create some tcp connection.
+But now I found sometimes the s3fs will report input/output error when the tcp connection is too much.
+I use the netstat to check the tcp connection status, and found there have a lot of tcp connection with ""CLOSE_WAIT"" status.
+Is there have any way to make the CLOSE_WAIT connection release immediately when the connection didn't use anymore?
+
+For detail,
+My code is just like below when write files:
+fopen() => fwrite() => fclsoe()
+
+And search for filename by:
+        DIR *dp = opendir(gPath);
+        chdir(gPath);
+        while((entry = readdir(dp)) != NULL) {
+            lstat(entry->d_name,&statbuf)
+            if(!S_ISDIR(statbuf.st_mode)) {
+                totalTsNumber += 1;
+            }
+        }
+        closedir(dp);
+
+The CLOSE_WAIT connection will keep in there even if my code is already exit.
+The connection will disappear only when I unmount the s3.
+
+20190318-1342 added:
+I try to use the local VirtualBox to mount my computer, and do the same thing as search filename above; The CLOSE_WAIT situation won't be happen on my local VirtualBox.
+So I think this is the s3fs issue?
+
+Thanks~
+
+Edited by: Starvedia on Mar 17, 2019 7:28 PM
+
+Edited by: Starvedia on Mar 17, 2019 10:41 PM"
+Amazon S3	"General access problem to my S3 buckets
+Hi,
+Today, I found out that I can not delete my S3 buckets from the console. I get the error : ""delete bucket not attempted""
+I thought it is something about my existing bucket. I created a new one, and I can not delete it, either.
+I tried to upload somefile into it : ""An unexpected error occurred.""
+I am on free tier right now, account is active. I can not understand what is going on. Please guide me. any comment is appreciated.
+BR"
+Amazon S3	"Access denied while trying to upload file to S3 bucket from linux server
+I have an S3 bucket (which i have kept public). I am calling the putObject function from my REST Api which uploads the file to S3 bucket. I get this error when a request is hit from the UI for file upload
+Access Denied (Service: Amazon S3; Status Code: 403; Error Code: AccessDenied
+My API war is deployed on a linux server(EC2 instance) and I have stored all the required credentials on the server (so it is not about invalid credentials)
+However, when i try to hit the same Api from my local system(Windows) using curl command the file is uploaded successfully.
+Is there anything else required here (linux) that i am missing. Pls help
+
+Edited by: rachana on Mar 16, 2019 6:42 AM"

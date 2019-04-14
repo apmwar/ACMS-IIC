@@ -1,0 +1,1381 @@
+label	description
+AWS IoT Analytics	"What services should I use if I want to do live monitoring the data?
+Hello,
+
+I'd like to make an IoT system and do live monitoring of data from the connected things.
+
+For example, I have an array of pressure sensors and want to gather the data from each pressure sensor with 10Hz frequency. I connected the pressure sensor array with my Raspberry Pi and used the embedded C SDK. Finally, I want to monitor the real-time data on a web dashboard and analyze the real time data.
+
+In this case, what services of aws should I use for the gathering, analyzing, and monitoring data?
+I heard that aws rule engine can be used to do those tasks at once, but have no idea what and how services should be used.
+
+Hope to hear your suggestions. 
+
+Thank you."
+AWS IoT Analytics	"Re: What services should I use if I want to do live monitoring the data?
+Thanks for a great question,
+
+You should send the data over MQTT to IoT Core [1] and yes, use Rules Engine [2] to direct the messages to the appropriate components.
+
+You absolutely could configure an action in Rules Engine to send the data to IoT Analytics and then explore and visualize [3] the datasets with Amazon Quicksight however if you really need the data in real-time, you may want to consider still sending the data to IoT Analytics, but using a Lambda function to route some of the traffic you are interested in to CloudWatch so that you can see it in real time and set alarms etc with CloudWatch [4]. This can give you a great mix of some real-time visualization combined with longer term storage and analysis with IoT Analytics.
+
+Another alternative from Rules Engine would be to route the data to Elastic Search [5] which has the built in Visualization / Dashboarding options from Kibana. Depending on your analysis requirements this can work well too, but it can be harder to operationalize your analysis (make it easy to do on a recurring schedule) which is where IoT Analytics can be helpful. IoT Analytics also has some powerful integrations with SageMaker and Jupyter Notebooks which make more advanced analysis and visualizations possible.
+
+Hope some of these references help. I note that you want to gather the data at 10Hz - whilst it's totally fine to send all of that to the cloud, you may want to consider maintaining a moving average (or min / max for the time period) on the device and only sending data to the cloud at a lower frequency.
+
+Roger
+
+[1] https://aws.amazon.com/iot-core/features/
+[2] https://docs.aws.amazon.com/iot/latest/developerguide/iot-rules.html
+[3] https://docs.aws.amazon.com/iotanalytics/latest/userguide/getting-started.html#aws-iot-analytics-explore-data
+[4] https://aws.amazon.com/blogs/iot/real-time-metrics-with-aws-iot-analytics-and-amazon-cloudwatch/
+[5] https://aws.amazon.com/elasticsearch-service/"
+AWS IoT Analytics	"Re: What services should I use if I want to do live monitoring the data?
+Thanks for your great and prompt reply. I will work with the IoT Analytics first.
+
+Regards,
+Geon-Hong"
+AWS IoT Analytics	"Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Hello,
+
+I have been struggling on this issue for 2 days and will much appreciate some help.
+
+I am sending dht sensor data from IoT to IoT Analytics. My data shows up when I click ""See Messages"" next to 'IOT Core Topic Filter' while creating a channel. Thereafter, I have created Pipeline, Datastore and Dataset. Upon running the SQL query, the result shows 'Succeeded' but only returns '_dt'.
+
+I do not have any filters in my pipeline. My IAM role has the AWSIoTFullAccess policy attached as well.
+
+Any guidance will be much appreciated.
+
+Thanks!!
+Zyncal"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Hi Zyncal,
+
+Let's double check two things. 
+
+1) The IoT Core rule has the right permissions in the IAM role it uses
+
+Open up the IoT Core console, go to Act and find the rule created by IoT Analytics to send messages to your channel. There's an IAM role associated with the action. Copy the name of that role and then go to the IAM console and find that role. The role must have two items for this to work. In the policies, it must have permission to invoke iotanalytics:BatchPutMessage for at least the IoT Analytics channel resource (if not all channels). In the trust relationship, it must have listed the service principal iot.amazonaws.com (this means the IoT Core service is allowed to use the role). If either of those is missing (double check the region and name in the channel ARN are correct!), this is likely the problem.
+
+2) The IoT Analytics channel has messages in it
+
+Go to the IoT Analytics and start the create flow for a new pipeline. Enter a temporary name, choose your channel from the source picker, then click Next. On the second step of the flow, ""Set attributes of your messages,"" the console tries sampling messages from your channel to give you a preview of what's going through your pipeline. If the console says something like ""Couldn't find any messages. retry inference?"" then we know messages aren't arriving in your channel and can continue investigating that angle.
+
+Try those troubleshooting steps and let me know what you find.
+
+Ryan"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+As an addition to Ryan's advice, there are also some general troubleshooting steps you can review at https://docs.aws.amazon.com/iotanalytics/latest/userguide/troubleshoot.html"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Hello,
+Thanks! I confirmed that IAM role and permission is not the issue. That is set up per your instructions. 
+That leads me to believe that data is being dropped between channel and pipeline. I see the data while creating the channel but nothing shows while creating the pipeline (""Couldn't find any messages. retry inference?"")
+Looking for further guidance.
+
+Thanks,
+Zyncal"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Hi Zyncal,
+
+If the ""channel preview"" is returning no results in the pipeline creation flow, then the issue is somewhere between the IoT Core rule and the IoT Analytics channel. Another way to be certain is if you look at the resource detail page for your channel; it probably says it is using 0 GB. 
+
+Could you please copy the Amazon resource name (ARN) of the channel here, as well as the Resource in the IAM role policy? 
+
+Example ARN:
+arn:aws:iotanalytics:us-west-2:083752595478:channel/cog_stampers
+
+
+Example snip from policy:
+
+""Statement"": [
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": ""iotanalytics:BatchPutMessage"",
+            ""Resource"": [
+                ""arn:aws:iotanalytics:*:083752595478:channel/*""
+            ]
+        }
+    ]
+
+
+Ryan"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Hello,
+
+Thanks for helping. Information is below
+
+Snip:
+arn:aws:iotanalytics:us-west-2:723620160584:channel/esp32iotthingchannel
+
+Policy:
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": ""iotanalytics:BatchPutMessage"",
+            ""Resource"": [
+                ""arn:aws:iotanalytics:us-west-2:723620160584:channel/esp32iotthingchannel""
+            ]
+        }
+    ]
+}"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+I agree those look good and not the issue. Do you have logs enabled for AWS IoT Core? You can check in the Settings page of https://console.aws.amazon.com/iot/
+
+I'd be interested to know if you are seeing any error logs from your rule attempting to put messages into AWS IoT Analytics.
+
+What's the format of messages you are publishing to AWS IoT Core? Are they using well-formed JSON?"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Logs were not enabled but I have enabled them now.
+
+Regarding message format, I am using the Hornbill arduino example to send humidity readings through Esp32. I see the message (""Humidity56.000000"") come through while creating a channel  in IOT Analytics and clicking ""See Messages"" after entering the IOT Topic Filter. 
+
+Here is portion of the arduino program:
+
+sprintf(payload,""Humidity%f"",h);//  Temperature:%f'C"",h,t);
+        if(hornbill.publish(TOPIC_NAME,payload) == 0)   // Publish the message(Temp and humidity)
+        {        
+            //Serial.print(""Publish Message:"");   
+            Serial.println(payload);
+        }
+        else
+        {
+            Serial.println(""Publish failed"");
+        }"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Ah ha, that's the issue. You can use the device gateway of IoT Core to send and receive messages of arbitrary content, but the rules engine and IoT Analytics require the JSON format to be processed correctly. This is why you can see the messages in the IoT Core console and the IoT Analytics channel create flow; these clients are receiving raw payloads from your ESP32. When it comes time to ingest the message into the channel, the message is being dropped because it doesn't match the JSON format. This is good feedback for the IoT Analytics team which I will pass on. 
+
+To get your project up and running, please update the ESP32 code to publish a JSON format message. You could try using a library like https://arduinojson.org/ or for now, update your sprintf to sprintf(payload,""{\""Humidity\"":%f}"",h);
+ to see messages arrive in your IoT Analytics solution.
+
+Ryan"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Thanks!!! That worked."
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+One point of clarification. IoT Analytics channels support ingestion and storage of non-JSON data. Unless non-JSON data is transformed into JSON data in a pipeline, it will not be sent from the pipeline to the data store. This is why your messages were not being processed. 
+
+The best way to transform arbitrary data into JSON data in a pipeline today is to add a Lambda activity in your pipeline to perform the transformation.
+
+If your solution can support publishing JSON messages natively, that will always be easiest!
+
+Hope this helps,
+Ryan"
+AWS IoT Analytics	"Can we support time-series queries in AWS IoT Analytics
+Hi,
+
+We are using Timescale for time-serial data store/query, and plan to use IoT analytics. Does IoT Analytics support queries like this ?
+SELECT
+    time_bucket('5 minutes', time) AS period,
+    container_id, avg(free_mem)
+  FROM metrics
+  WHERE time > NOW () - interval '10 minutes'
+  GROUP BY period, container_id
+  ORDER BY period DESC, container_id;
+
+
+We have plenty of data at around 10-30 seconds published to some topics, but want to have data aggrated by 5 minutes. Do you have any suggestions when using AWS IoT Analytics?"
+AWS IoT Analytics	"Re: Can we support time-series queries in AWS IoT Analytics
+Yes, we support time-series queries like this in AWS IoT Analytics. The concept of bucketing the data can be achieved by converting your time column into a unix timestamp (hence represented in seconds) and then dividing this into whatever bucket size you want. One way of doing this could be as follows (the detail may vary depending on the format of your time column);
+
+SELECT
+  period,
+  container_id,avg(free_mem)
+FROM 
+(
+  SELECT
+      truncate(to_unixtime(time) / (5*60)) AS period,
+      container_id,free_mem
+  FROM metrics
+  WHERE time > current_timestamp - interval '10 minutes'
+  AND __dt >= current_date - interval '1' day
+)
+  GROUP BY period, container_id
+  ORDER BY period DESC, container_id;
+ 
+
+
+Note the additional __dt constraint which is used to limit the query to the most recent date based partitions which will improve performance and lower the cost of queries when you have a large amount of data. 
+
+For scheduled queries, note that the minimum data set refresh interval is one hour but this is an adjustable limit if you raise a support ticket per the guidance at https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html
+
+There is more documentation on our SQL at https://docs.aws.amazon.com/iotanalytics/latest/userguide/sql-support.html"
+AWS IoT Analytics	"Re: Can we support time-series queries in AWS IoT Analytics
+Thanks for your reply, Roger.
+
+Your solution sounds good for a single query.
+
+What we'd like is to aggregate all the raw data for further processing, do not miss any data. A scheduled query would not achieve this, right? As scheduled query is not granted to run at the specified time, we cannot find the latest timestamp in last run. The query would miss some raw data, or have more data included. (Sorry for my pool English, not sure if I made things clear)
+
+Also, the query result is a csv file, I will not get notified when the result is ready. Can we populate the query result to another channel/pipeline when it's ready?
+
+Thanks,
+Yingmo"
+AWS IoT Analytics	"Re: Can we support time-series queries in AWS IoT Analytics
+Hi Yingmo
+
+You are correct that today you don't get directly notified about query completion.  Instead you can poll for the status using the get-dataset-content API [1] Notice that the state field in the status can be one of of ""CREATING"", ""SUCCEEDED"" or ""FAILED"". 
+
+This gives you an alternative to scheduled queries. You could use CloudWatch Scheduled Events [2] to trigger query execution from an AWS Lambda function and then in the same Lambda, you could poll waiting for the status to change. Once the status has changed to what you want to act on, you can then send an SNS notification for example. 
+
+I appreciate this takes some more work and so your thoughts (including your point around not missing data) are all great feature requests. We don't comment about our roadmap in the forums but we absolutely do use feedback like yours to prioritize what we do.
+
+Roger
+
+[1] https://docs.aws.amazon.com/cli/latest/reference/iotanalytics/get-dataset-content.html
+[2] https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html"
+AWS IoT Analytics	"Re: Can we support time-series queries in AWS IoT Analytics
+Hi,
+Can we use query while retrieves the data from the dataset in AWS IoT Analytics, I want data between 2 timestamps. Im using boto3 to fetch the data.
+response = client.get_dataset_content(
+datasetName='string',
+versionId='string'
+)
+Do you have any suggestions how to use query or how rerieve the data between 2 timestamp in AWS IoT Analytics?
+
+Thanks,
+Pankaj"
+AWS IoT Analytics	"Invalid field name Error
+Hi There,
+
+I am trying to process some data coming in from an IoT device. I currently have two rules:
+
+
+sends the data to dynamodb
+sends the data to iotanalytics
+
+
+The data is in the format:
+
+{
+  ""customerId"": 1,
+  ""timestamp"": 1537871160,
+  ""switches"": {
+    ""1234"": {
+      ""battery"": 1,
+      ""light"": 1
+    },
+    ""5678"": {
+      ""battery"": 0,
+      ""light"": 0
+    }
+  }
+}
+
+
+This goes into DynamoDB no problem but I get an error from IoT Analytics of:
+
+[ERROR] Invalid field name '1234'
+
+
+I am assuming that it is being rejected as the key is a number even though it is written as a string?
+
+I also tried adding an additional identifier before the number as follows:
+
+{
+  ""customerId"": 1,
+  ""timestamp"": 1537871160,
+  ""switches"": {
+    ""additional-identifier-1234"": {
+      ""battery"": 1,
+      ""light"": 1
+    },
+    ""additional-identifier-5678"": {
+      ""battery"": 0,
+      ""light"": 0
+    }
+  }
+}
+
+
+This also failed with the same error. However, if I have keys that are just alphabetic characters or use underscores instead of hyphens it works.
+
+I am sure I have missed the section in the documentation where it states what is/is not acceptable in field names.
+
+If anyone can point me in the right direction I would much appreciate it.
+
+Thanks."
+AWS IoT Analytics	"Re: Invalid field name Error
+Hi
+
+I'm sorry you've had to discover this by trial and error rather than via the documentation. We'll take note of this and correct the documentation to explain what the constraints are.
+
+The actual rule is that the field name can start only with an alphabetic character or a single underscore(""_"") followed by any number of alphanumeric and underscore combinations. Field names are not permitted to start with a double underscore as this is reserved for service usage.
+
+Technically, we match against the following regular expression;
+""^[a-zA-Z_]+[a-zA-Z0-9_]*$""
+
+
+Hope this helps clarify our omission,
+Roger"
+AWS IoT Analytics	"Using AWS CLI
+Hello,
+
+AWS CLI does not recognize iotanalytics service for me. Should I install something else?
+
+regards"
+AWS IoT Analytics	"Re: Using AWS CLI
+Hi,
+
+I see you found the solution (upgrading the AWS CLI version) in your post: https://forums.aws.amazon.com/message.jspa?messageID=868163 .
+
+Here is a relevant doc on how to upgrade the AWS CLI: https://docs.aws.amazon.com/cli/latest/userguide/installing.html 
+
+Thanks,"
+AWS IoT Analytics	"Recommendation on processing attributes with array of values
+Hello, I’m new to the AWS IoT platform and I have a IoT core topic successfully processing values from the data source and forwarding those onto IoT Analytics. Example of message:
+[
+  {
+    ""id"": ""power_01"",
+    ""v"": 0,
+    ""q"": true,
+    ""t"": 1534886476634
+  },
+  {
+    ""id"": ""temperature_01"",
+    ""v"": 20,
+    ""q"": true,
+    ""t"": 1534886476634
+  }
+]
+
+As you can see, this is an array of values. Ideally I’d like to store both of these with each having their own attributes of id,v(value),q(quality), and t(timestamp).
+
+When I try to select the attributes with a pipeline activity, the array poses an error since the attributes I want aren’t top level (the array iteration numbers are). Without a pipeline activity, the values go through to the data store, but the csv produced has the array under the values header with no timestamp attached and dt is always 00:00:0.
+
+Is there best practice or recommended way to process the JSON array so that each “data message” can be assigned to the appropriate attributes (id,v,q,t)? I’m guessing Lambda can be used but would it not also send back a JSON array itself after processing the source data?
+
+Thank you."
+AWS IoT Analytics	"Re: Recommendation on processing attributes with array of values
+Hi,
+
+Thanks for posting on our forums. Ideally, you'd want to submit single messages for each request that goes into IoT Analytics so that the attributes get detected properly. 
+
+If your current setup does not allow that or it would make it overly complex, I'd suggest using a Lambda function in the beginning of your pipeline to flatten your input into single messages. 
+
+I’m guessing Lambda can be used but would it not also send back a JSON array itself after processing the source data?
+
+That's true. The input of your Lambda function is an array with all the messages and you can control the size of the array by setting the batch size in your Lambda activity. Each entry within the Lambda input array represents a message that goes into IoT Analytics. In your case the Lambda input would look something like this:
+
+[
+    [
+        {""id"": ""power_01"",""v"": 0,""q"": true,""t"": 1534886476634},
+        {""id"": ""temperature_01"",""v"": 20,""q"": true,""t"": 1534886476634}
+    ]
+]
+
+
+The output of your lambda function is expected to be a list of single messages. If you return the values as shown below, then your pipeline should work as expected:
+
+[
+    {""id"": ""power_01"",""v"": 0,""q"": true,""t"": 1534886476634},
+    {""id"": ""temperature_01"",""v"": 20,""q"": true,""t"": 1534886476634}
+]
+
+
+And to achieve that, you might use the following Lambda function in your pipeline. Please keep in mind that it's only to showcase how it might look like and doesn't handle all the edge cases properly.
+
+def lambda_handler(event, context):
+    result = []
+    for message in event:
+        if isinstance(message, list):
+            for record in message:
+                result.append(record)
+        else:
+            result.append(message)
+    
+    return result
+
+
+Hope this helps. Please let me know if you have any further questions.
+
+Thanks,
+Jurgen"
+AWS IoT Analytics	"Re: Recommendation on processing attributes with array of values
+Hi Jurgen, thanks for the reply. 
+
+This makes sense. I will try out a lambda soon and let you know how it goes."
+AWS IoT Analytics	"AWS IoT Analytics Timestamp problem
+I am moving messages from the IoT core to a data store in IoT analytics.
+
+When I create a data set from the datastore in IoT analytics, it has the __dt column, but it is only recording the date without the time.
+
+How can I get a full timestamp with time in the datastore?"
+AWS IoT Analytics	"Re: AWS IoT Analytics Timestamp problem
+The __dt column helps you optimize queries for speed (and cost) by reducing the need for full table scans when you include __dt in a SQL query like this;
+select * from my_datastore where __dt >= current_date - interval '1' day
+
+As you mention, the granularity of __dt is by day, but if you want to have a query that looks between a finer range all you have to do is 1) send the timestamp with the message or in the rule and then 2) add your timestamp constraint to the query - something like this;
+select * from my_datastore where __dt >= current_date - interval '1' day and my_timestamp between <timestamp1> and <timestamp2>
+
+To send the timestamp to IoT Analytics from IoT Core, simply edit your Rule Engine Action to add the arrival time to the message before it is sent to the Action like this;
+SELECT *, timestamp() as my_timestamp FROM 'my_topic/#'
+
+Or of course, send the time inside the message itself. That's another approach that is useful if your devices are sending accurate times, but less useful when they are not - which is where the Rule Engine Action approach can help.
+
+Hope that helps point you in the right direction"
+AWS IoT Analytics	"Can't enrich message in AWS IoT Analytics console
+Hi, when i'm creating a pipeline, and try to enrich my message from my shadow, always when select Enrich from shadow or enrich from device, nothing happened and the drop-down component stop working, this is the error that I get when I click Enrich from shadow or enrich from device:
+
+*Uncaught (in promise) TypeError: Cannot read property 'attributes' of undefined
+    at t.findSelectedLabel (DropdownInput.tsx:69)
+    at t.render (DropdownInput.tsx:47)
+    at O (preact.esm.js:728)
+    at _ (preact.esm.js:676)
+    at D (preact.esm.js:856)
+    at v (preact.esm.js:397)
+    at C (preact.esm.js:516)
+    at v (preact.esm.js:439)
+    at b (preact.esm.js:348)
+    at O (preact.esm.js:769)*
+
+Edited by: leof23 on Aug 24, 2018 3:03 PM"
+AWS IoT Analytics	"Re: Can't enrich message in AWS IoT Analytics console
+Hi,
+
+My apologies for the inconvenience. Unfortunately, I wasn't able to reproduce the issue that you described. Would you mind adding some more details of your current setup that leads to this issue? If this includes info that you don't feel comfortable sharing in a public forum, please feel free to send me a PM with the details.
+
+If possible, the following information would be helpful:
+
+*What specific drop-down throws this error?
+*What is your current pipeline configuration?
+*Do you have an example pipeline processing JSON input that leads to this issue?
+
+Thanks,
+Jurgen"
+AWS IoT Analytics	"Migrate data from RDS (postres) to IoT Analytics
+Is there a suggested process for migrating into IoT Analytics?
+
+I have a couple of gigs of device data that I want to migrate.  I was looking at using Database Migration Service to move into DynamoDB but that doesn't seem to be available for IoT Analytics.
+
+The API is not very clear on how to actually do this.
+
+Right now, it looks like I'd need to run some kind of script to pull data from PostgreSQL and then send it into IoT Analytics API.  What I can't tell is:
+
+
+What's the API end-point?
+What's the messageId supposed to be in BatchPutMessage?
+What's the limit on how much data I can send in the BatchPutMessage?
+
+
+I can't find documentation on how to hook up Kinesis to IoT Analytics, as talked about on the site."
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Hi misham,
+
+There's a blog post here  https://aws.amazon.com/blogs/iot/ingesting-data-from-s3-by-using-batchputmessage-aws-lambda-and-amazon-kinesis/  that shows how to use the batch-put-message API. Although the blog post is written for migrating data from S3, it should also be helpful for your use case. As you mention, you would need to write a script to pull data from RDS and push into IoT Analytics.
+
+To address your specific questions;
+
+1) Iot Analytics has the following 4 endpoints that can be chosen based on the region of preference as follows;
+
+iotanalytics.us-east-1.amazonaws.com 
+iotanalytics.us-east-2.amazonaws.com 
+iotanalytics.us-west-2.amazonaws.com 
+iotanalytics.eu-west-1.amazonaws.com 
+
+2) As mentioned in our documentation https://docs.aws.amazon.com/iotanalytics/latest/APIReference/API_Message.html#iotanalytics-Type-Message-messageId, message id is a uniqueId within each batch of messages sent using BatchPutMessage. It doesn't have to follow any particular pattern, and the example in the blog above may help clarify this. The messageId simply helps you identify any messages that failed to be sent to Iot Analytics and is reflected in the response of BatchPutMessage https://docs.aws.amazon.com/iotanalytics/latest/APIReference/API_BatchPutMessage.html#API_BatchPutMessage_ResponseSyntax
+
+3) You could find the limits of BatchPutMessage api here https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html#limits_iot_analytics
+
+Roger"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Thanks for the links, that makes sense.
+
+So I could use the DB Migration Service to dump data into Kinesis and then have Kinesis Lambda function(s) dump data into IoT Analytics via BatchPutMessage?
+
+Thanks"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+I'm not super familiar with DMS, but from reading this AWS blog post [1] I think you might need to go DMS -> S3 and then have a Lambda trigger from S3 [2] which does the BatchPutMessage as you suggest.
+
+Your idea of using the Database Migration Service is a good one and we will take it as a feature request to explore more direct integration with IoT Analytics to make this sort of workflow easier in the future.
+
+Thanks,
+Roger
+
+[1] https://aws.amazon.com/blogs/database/using-the-aws-database-migration-service-amazon-s3-and-aws-lambda-for-database-analytics/
+[2] https://docs.aws.amazon.com/lambda/latest/dg/with-s3-example.html"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Hi Roger,
+
+Thank you for those pointers.  I've loaded some data into the data store and created a dataset.
+
+From my reading of the docs, the only way to get data out of a data store is through a dataset.  And the only way to get the readings out of a dataset is by calling GetDatasetContents API, then downloading the CSV file in the result of that call and then parsing that CSV data as needed.
+
+Does that sound right?
+
+I'm trying to figure out if I can get JSON data, a la DynamoDB.
+
+Thank you,
+
+Misha"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Hi Misha,
+
+Yes, that's correct - currently the way to query your data stored with IoT Analytics is through a data set. The GetDatasetContent API returns the pre-signed URIs which are currently in CSV format. 
+
+Thanks for bringing up the JSON support - I will add it as a feature request into our backlog and we will prioritize it accordingly. However, I can't provide you with an ETA on when this would be available.
+
+Hope this helps,
+Jurgen
+
+Edited by: Jurgen-AWS on Jul 2, 2018 1:33 PM"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+I'm trying to wrap my head around how I would use IoT Analytics.  Right now I'm migrating my time-series data from RDBMS to DynamoDB.  So a time-series storage engine, a la IoT Analytics, is perfect for what's needed, especially since one can run SQL queries against it.
+
+With DynamoDB, I have to create multiple aggregation tables that cache the data, since there is not aggregation query support.  Some of these need to exist only for a month and some in perpetuity.
+
+Most of this is for dashboard purposes, analytics or various algorithms (e.g. system health or alerts).
+
+I don't see how this is possible with IoT Analytics as it current stands since the user isn't going to wait for the CSV file to be generated, then imported, processed, etc.
+
+I feel like I'm missing what the point of IoT Analytics is and the white papers, docs, guides, etc. are not very clear on this either.
+
+Is there an expected workflow around the CSV files or IoT Analytics other then storage?
+
+I saw the QuickSight integration but we're not using QuickSight for our users.
+
+Thank you"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Hi Misha,
+
+IoT Analytics provides inbuilt integration of data sets with QuickSight, however, we recognize that customers may be using other visualization applications. For external applications, IoT Analytics provide the data set export capability through console or through APIs. Customers typically use DescribeDataset and GetDatasetContent APIs and automate the data set content refresh/export as and when it is created based on the Data set schedule.
+
+I recognize you would need JSON file support, however, it would also be good to know for us and will be a good feature request to understand what visualization tool you use, so that we can identify a seamless integration path from IoT Analytics Data sets and external visualization apps for dashboarding purposes.
+
+Thanks,
+Vikas"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Hi Vikas,
+
+I'm looking to use it as a DB.  Ideally, I'd like to replace DynamoDB with IoT Analytics.  So the API can be REST or some kind of DB driver.
+
+If the workflow is the same as CSV but returns a JSON file instead, it's the same problem of having to fetch the file and then process it.
+
+If IoT Analytics data can be accessed directly in the app, I can feed my dashboards, which are D3 charts running in an Angular and mobile apps."
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Hi Misha,
+
+The way customers achieve this sort of workflow today is to setup one or more datasets that produce the data required for their dashboards and then use the scheduling capability [1] of the dataset to refresh the dataset content every hour (for example). That way, your dashboard application can simply retrieve the dataset content when needed for display and the content is automatically refreshed without the application needing to explicitly query the datastore.
+
+We've taken the JSON request as a customer feature request along with more direct access to the data to make it easier to build operational dashboards.
+
+Many thanks for the feedback, it helps us prioritize our roadmap.
+
+Roger
+
+[1] https://docs.aws.amazon.com/iotanalytics/latest/APIReference/API_DatasetTrigger.html"
+AWS IoT Analytics	"IoT Analytics Pipeline - Error with ""Transform with Lambda Function""
+I am encountering two errors when adding this activity:
+
+1. Batch-Size
+
+If I set Batch Size > 1 (in the console) then I get the following error
+
+We could not run the pipeline activity. LambdaActivity batchSize should be equal to the number of messages
+
+
+This may only occur when using the console as I haven't checked this when running in batch
+
+
+2. Permissions
+
+No matter what permission I give the Lambda, I get the following error
+
+We could not run the pipeline activity. ERROR : Unable to execute Lambda function due to insufficient permissions; dropping the messages, number of messages dropped : 1, functionArn : arn:aws:lambda:us-west-2:xxxxx:function:iot_analytics_function
+
+
+I have given the Lambda admin access to test this and it still gives the error.
+
+
+Edited by: Clifford on Jun 15, 2018 4:04 AM"
+AWS IoT Analytics	"Re: IoT Analytics Pipeline - Error with ""Transform with Lambda Function""
+Hi Clifford,
+
+The batch size setting is primarily intended for run time operations of your pipeline. You can test the Lambda function from the console, but the console only sends one sample message at a time. My recommendation is to set the batch size to 1 while simulating the activity in the console. You can simulate sending multiple messages using the CLI and the RunPipelineActivity API: https://docs.aws.amazon.com/iotanalytics/latest/APIReference/API_RunPipelineActivity.html
+
+As for the Lambda permissions, the permission which must be updated is the Lambda function's resource policy. You'll need to indicate that the IoT Analytics service is allowed to invoke your Lambda function. A sample CLI command would be: aws lambda add-permission --function-name <lambda-function-name> --statement-id <your-statement> --principal iotanalytics.amazonaws.com --action lambda:InvokeFunction
+. We'll take a look at improving this experience in the console.
+
+RyanB@AWS"
+AWS IoT Analytics	"Cloudformation support for AWS IoT Analytics
+Hello,
+
+Please can you tell me if it's planed for Cloudformation to support AWS IoT Analytics ?
+
+Thanks, best regards."
+AWS IoT Analytics	"Re: Cloudformation support for AWS IoT Analytics
+This is a good feature request which we will add to our roadmap and prioritize as we hear more requests like this from customers like yourself. We typically don't comment on specific timelines in these forums though.
+
+Thank you for using IoT Analytics."
+AWS IoT Analytics	"Re: Cloudformation support for AWS IoT Analytics
+Thanks for the answer. It will made our work way easier"
+AWS IoT Analytics	"Re: Cloudformation support for AWS IoT Analytics
+We would also like to be able to express a IoT Analytics configuration through CloudFormation"
+AWS IoT Analytics	"IOT Analytics Pipeline - Error Adding SelectAttributes Activity
+Hi - when you go to the console and edit the pipeline, you can't add a ""selectAttributes"" activity.   To reproduce:
+1. Create Pipeline and select channel
+2. Click next on Attributes (or edit the json)
+3. Select Add Activity (step 3/4) 
+4. Select ""select Attributes"" from the dropdown.
+
+It doesn't allow this.
+
+I have tried to create/update the pipeline from the AWS CLI but have not managed to get the following json to be accepted.
+[
+  {
+    ""channel"": {
+      ""name"": ""iot_channel"",
+      ""channelName"": ""mansion_iot_channel"",
+      ""next"": ""iot_select""
+    },
+    ""selectAttributes"": {
+      ""name"": ""iot_select"",
+      ""attributes"": [""state.reported.value"",""state.reported.timestamp"",""state.reported.category""],
+      ""next"": ""iot_datastore""
+    },
+    ""datastore"": {
+      ""name"": ""iot_datastore"",
+      ""datastoreName"": ""mansion_iot_datastore""
+    }
+  }
+]"
+AWS IoT Analytics	"Re: IOT Analytics Pipeline - Error Adding SelectAttributes Activity
+Thank you for your question - this should be working as designed now."
+AWS IoT Analytics	"Re: IOT Analytics Pipeline - Error Adding SelectAttributes Activity
+Thanks - it is working now."
+AWS IoT Analytics	"IoT analytics IAM policy to create channel
+I cant figure out which IAM policy to attach to the role I'm using to create an IoT channel.
+Anyone know? Also will be creating pipelines. Thanks.
+
+Maurice"
+AWS IoT Analytics	"Re: IoT analytics IAM policy to create channel
+Hi Maurice,
+
+If you create your Channel using the IoT Analytics console, there is a helper for the IAM role name section where you can click 'Create new' when asked ""Choose or create a role to grant IoT Core access to put messages in this channel"".
+
+If you are using the AWS CLI, you can do the following;
+
+Step 1. Save the following trust policy document, which grants AWS IoT permission to assume the role, to a file called iot-role-trust.json:
+{
+    ""Version"":""2012-10-17"",
+    ""Statement"":[{
+        ""Effect"": ""Allow"",
+        ""Principal"": {
+            ""Service"": ""iot.amazonaws.com""
+        },
+        ""Action"": ""sts:AssumeRole""
+    }]
+}
+
+
+Then use the create-role command to create an IAM role specifying the iot-role-trust.json file like this;
+
+aws iam create-role --role-name my-iot-role --assume-role-policy-document file://iot-role-trust.json
+
+Step 2. Save the following JSON into a file named iot-policy.json.
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": [
+                ""iotanalytics:BatchPutMessage""
+            ],
+            ""Resource"": [
+                ""*""
+            ]
+        }
+    ]
+}
+
+Now use the create-policy command to grant AWS IoT access to your AWS resources upon assuming the role, passing in the iot-policy.json file like this;
+
+aws iam create-policy --policy-name my-iot-policy --policy-document file://my-iot-policy-document.json
+
+Step 3. Finally, use the attach-role-policy command to attach your policy to your role as follows;
+
+aws iam attach-role-policy --role-name my-iot-role --policy-arn ""arn:aws:iam::123456789012:policy/my-iot-policy""
+
+The steps above will let you send messages to the channel using both the batch-put-message API directly or via AWS IoT Core and Rule Engine, depending on your requirements.
+
+Roger"
+AWS IoT Analytics	"Re: IoT analytics IAM policy to create channel
+OK I'll try anything at this point, but I actually want to create the channel, not send messages.
+Will this work to create the channel?
+I'm trying to make the entire IoT set up completely automatic - including setting up the channel.
+I'm trying to make AWS user friendly."
+AWS IoT Analytics	"Re: IoT analytics IAM policy to create channel
+The ""Getting Started with AWS IoT Analytics"" section of our documentation contains a step by step guide to creating Channels, Pipelines, Datastores etc using the CLI which you may find helpful if you haven't already been following it;
+
+https://docs.aws.amazon.com/iotanalytics/latest/userguide/getting-started.html
+
+You will also find in this documentation more detail on how to use all the various commands and how to create pipeline activities using JSON. That should help with your automation goals.
+
+There is also a troubleshooting guide at https://docs.aws.amazon.com/iotanalytics/latest/userguide/troubleshoot.html 
+
+Hope the information is useful"
+AWS IoT Analytics	"Re: IoT analytics IAM policy to create channel
+We have same permission error when list channel on AWS console.
+""We could not load your channels. User: arn:aws:iam::{...} is not authorized to perform: iotanalytics:ListChannels on resource: *""
+
+Not sure if it's the correct way, but the error goes away when we add below policy to our user account
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Sid"": ""VisualEditor0"",
+            ""Effect"": ""Allow"",
+            ""Action"": ""iotanalytics:*"",
+            ""Resource"": ""*""
+        }
+    ]
+}
+
+
+Edited by: lhmt on May 2, 2018 8:22 PM
+
+Edited by: lhmt on May 2, 2018 8:23 PM"
+AWS IoT Analytics	"What services should I use if I want to do live monitoring the data?
+Hello,
+
+I'd like to make an IoT system and do live monitoring of data from the connected things.
+
+For example, I have an array of pressure sensors and want to gather the data from each pressure sensor with 10Hz frequency. I connected the pressure sensor array with my Raspberry Pi and used the embedded C SDK. Finally, I want to monitor the real-time data on a web dashboard and analyze the real time data.
+
+In this case, what services of aws should I use for the gathering, analyzing, and monitoring data?
+I heard that aws rule engine can be used to do those tasks at once, but have no idea what and how services should be used.
+
+Hope to hear your suggestions. 
+
+Thank you."
+AWS IoT Analytics	"Re: What services should I use if I want to do live monitoring the data?
+Thanks for a great question,
+
+You should send the data over MQTT to IoT Core [1] and yes, use Rules Engine [2] to direct the messages to the appropriate components.
+
+You absolutely could configure an action in Rules Engine to send the data to IoT Analytics and then explore and visualize [3] the datasets with Amazon Quicksight however if you really need the data in real-time, you may want to consider still sending the data to IoT Analytics, but using a Lambda function to route some of the traffic you are interested in to CloudWatch so that you can see it in real time and set alarms etc with CloudWatch [4]. This can give you a great mix of some real-time visualization combined with longer term storage and analysis with IoT Analytics.
+
+Another alternative from Rules Engine would be to route the data to Elastic Search [5] which has the built in Visualization / Dashboarding options from Kibana. Depending on your analysis requirements this can work well too, but it can be harder to operationalize your analysis (make it easy to do on a recurring schedule) which is where IoT Analytics can be helpful. IoT Analytics also has some powerful integrations with SageMaker and Jupyter Notebooks which make more advanced analysis and visualizations possible.
+
+Hope some of these references help. I note that you want to gather the data at 10Hz - whilst it's totally fine to send all of that to the cloud, you may want to consider maintaining a moving average (or min / max for the time period) on the device and only sending data to the cloud at a lower frequency.
+
+Roger
+
+[1] https://aws.amazon.com/iot-core/features/
+[2] https://docs.aws.amazon.com/iot/latest/developerguide/iot-rules.html
+[3] https://docs.aws.amazon.com/iotanalytics/latest/userguide/getting-started.html#aws-iot-analytics-explore-data
+[4] https://aws.amazon.com/blogs/iot/real-time-metrics-with-aws-iot-analytics-and-amazon-cloudwatch/
+[5] https://aws.amazon.com/elasticsearch-service/"
+AWS IoT Analytics	"Re: What services should I use if I want to do live monitoring the data?
+Thanks for your great and prompt reply. I will work with the IoT Analytics first.
+
+Regards,
+Geon-Hong"
+AWS IoT Analytics	"Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Hello,
+
+I have been struggling on this issue for 2 days and will much appreciate some help.
+
+I am sending dht sensor data from IoT to IoT Analytics. My data shows up when I click ""See Messages"" next to 'IOT Core Topic Filter' while creating a channel. Thereafter, I have created Pipeline, Datastore and Dataset. Upon running the SQL query, the result shows 'Succeeded' but only returns '_dt'.
+
+I do not have any filters in my pipeline. My IAM role has the AWSIoTFullAccess policy attached as well.
+
+Any guidance will be much appreciated.
+
+Thanks!!
+Zyncal"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Hi Zyncal,
+
+Let's double check two things. 
+
+1) The IoT Core rule has the right permissions in the IAM role it uses
+
+Open up the IoT Core console, go to Act and find the rule created by IoT Analytics to send messages to your channel. There's an IAM role associated with the action. Copy the name of that role and then go to the IAM console and find that role. The role must have two items for this to work. In the policies, it must have permission to invoke iotanalytics:BatchPutMessage for at least the IoT Analytics channel resource (if not all channels). In the trust relationship, it must have listed the service principal iot.amazonaws.com (this means the IoT Core service is allowed to use the role). If either of those is missing (double check the region and name in the channel ARN are correct!), this is likely the problem.
+
+2) The IoT Analytics channel has messages in it
+
+Go to the IoT Analytics and start the create flow for a new pipeline. Enter a temporary name, choose your channel from the source picker, then click Next. On the second step of the flow, ""Set attributes of your messages,"" the console tries sampling messages from your channel to give you a preview of what's going through your pipeline. If the console says something like ""Couldn't find any messages. retry inference?"" then we know messages aren't arriving in your channel and can continue investigating that angle.
+
+Try those troubleshooting steps and let me know what you find.
+
+Ryan"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+As an addition to Ryan's advice, there are also some general troubleshooting steps you can review at https://docs.aws.amazon.com/iotanalytics/latest/userguide/troubleshoot.html"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Hello,
+Thanks! I confirmed that IAM role and permission is not the issue. That is set up per your instructions. 
+That leads me to believe that data is being dropped between channel and pipeline. I see the data while creating the channel but nothing shows while creating the pipeline (""Couldn't find any messages. retry inference?"")
+Looking for further guidance.
+
+Thanks,
+Zyncal"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Hi Zyncal,
+
+If the ""channel preview"" is returning no results in the pipeline creation flow, then the issue is somewhere between the IoT Core rule and the IoT Analytics channel. Another way to be certain is if you look at the resource detail page for your channel; it probably says it is using 0 GB. 
+
+Could you please copy the Amazon resource name (ARN) of the channel here, as well as the Resource in the IAM role policy? 
+
+Example ARN:
+arn:aws:iotanalytics:us-west-2:083752595478:channel/cog_stampers
+
+
+Example snip from policy:
+
+""Statement"": [
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": ""iotanalytics:BatchPutMessage"",
+            ""Resource"": [
+                ""arn:aws:iotanalytics:*:083752595478:channel/*""
+            ]
+        }
+    ]
+
+
+Ryan"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Hello,
+
+Thanks for helping. Information is below
+
+Snip:
+arn:aws:iotanalytics:us-west-2:723620160584:channel/esp32iotthingchannel
+
+Policy:
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": ""iotanalytics:BatchPutMessage"",
+            ""Resource"": [
+                ""arn:aws:iotanalytics:us-west-2:723620160584:channel/esp32iotthingchannel""
+            ]
+        }
+    ]
+}"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+I agree those look good and not the issue. Do you have logs enabled for AWS IoT Core? You can check in the Settings page of https://console.aws.amazon.com/iot/
+
+I'd be interested to know if you are seeing any error logs from your rule attempting to put messages into AWS IoT Analytics.
+
+What's the format of messages you are publishing to AWS IoT Core? Are they using well-formed JSON?"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Logs were not enabled but I have enabled them now.
+
+Regarding message format, I am using the Hornbill arduino example to send humidity readings through Esp32. I see the message (""Humidity56.000000"") come through while creating a channel  in IOT Analytics and clicking ""See Messages"" after entering the IOT Topic Filter. 
+
+Here is portion of the arduino program:
+
+sprintf(payload,""Humidity%f"",h);//  Temperature:%f'C"",h,t);
+        if(hornbill.publish(TOPIC_NAME,payload) == 0)   // Publish the message(Temp and humidity)
+        {        
+            //Serial.print(""Publish Message:"");   
+            Serial.println(payload);
+        }
+        else
+        {
+            Serial.println(""Publish failed"");
+        }"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Ah ha, that's the issue. You can use the device gateway of IoT Core to send and receive messages of arbitrary content, but the rules engine and IoT Analytics require the JSON format to be processed correctly. This is why you can see the messages in the IoT Core console and the IoT Analytics channel create flow; these clients are receiving raw payloads from your ESP32. When it comes time to ingest the message into the channel, the message is being dropped because it doesn't match the JSON format. This is good feedback for the IoT Analytics team which I will pass on. 
+
+To get your project up and running, please update the ESP32 code to publish a JSON format message. You could try using a library like https://arduinojson.org/ or for now, update your sprintf to sprintf(payload,""{\""Humidity\"":%f}"",h);
+ to see messages arrive in your IoT Analytics solution.
+
+Ryan"
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+Thanks!!! That worked."
+AWS IoT Analytics	"Re: Data Query 'Succeeded' but returns  only '_dt' in Results Preview
+One point of clarification. IoT Analytics channels support ingestion and storage of non-JSON data. Unless non-JSON data is transformed into JSON data in a pipeline, it will not be sent from the pipeline to the data store. This is why your messages were not being processed. 
+
+The best way to transform arbitrary data into JSON data in a pipeline today is to add a Lambda activity in your pipeline to perform the transformation.
+
+If your solution can support publishing JSON messages natively, that will always be easiest!
+
+Hope this helps,
+Ryan"
+AWS IoT Analytics	"Can we support time-series queries in AWS IoT Analytics
+Hi,
+
+We are using Timescale for time-serial data store/query, and plan to use IoT analytics. Does IoT Analytics support queries like this ?
+SELECT
+    time_bucket('5 minutes', time) AS period,
+    container_id, avg(free_mem)
+  FROM metrics
+  WHERE time > NOW () - interval '10 minutes'
+  GROUP BY period, container_id
+  ORDER BY period DESC, container_id;
+
+
+We have plenty of data at around 10-30 seconds published to some topics, but want to have data aggrated by 5 minutes. Do you have any suggestions when using AWS IoT Analytics?"
+AWS IoT Analytics	"Re: Can we support time-series queries in AWS IoT Analytics
+Yes, we support time-series queries like this in AWS IoT Analytics. The concept of bucketing the data can be achieved by converting your time column into a unix timestamp (hence represented in seconds) and then dividing this into whatever bucket size you want. One way of doing this could be as follows (the detail may vary depending on the format of your time column);
+
+SELECT
+  period,
+  container_id,avg(free_mem)
+FROM 
+(
+  SELECT
+      truncate(to_unixtime(time) / (5*60)) AS period,
+      container_id,free_mem
+  FROM metrics
+  WHERE time > current_timestamp - interval '10 minutes'
+  AND __dt >= current_date - interval '1' day
+)
+  GROUP BY period, container_id
+  ORDER BY period DESC, container_id;
+ 
+
+
+Note the additional __dt constraint which is used to limit the query to the most recent date based partitions which will improve performance and lower the cost of queries when you have a large amount of data. 
+
+For scheduled queries, note that the minimum data set refresh interval is one hour but this is an adjustable limit if you raise a support ticket per the guidance at https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html
+
+There is more documentation on our SQL at https://docs.aws.amazon.com/iotanalytics/latest/userguide/sql-support.html"
+AWS IoT Analytics	"Re: Can we support time-series queries in AWS IoT Analytics
+Thanks for your reply, Roger.
+
+Your solution sounds good for a single query.
+
+What we'd like is to aggregate all the raw data for further processing, do not miss any data. A scheduled query would not achieve this, right? As scheduled query is not granted to run at the specified time, we cannot find the latest timestamp in last run. The query would miss some raw data, or have more data included. (Sorry for my pool English, not sure if I made things clear)
+
+Also, the query result is a csv file, I will not get notified when the result is ready. Can we populate the query result to another channel/pipeline when it's ready?
+
+Thanks,
+Yingmo"
+AWS IoT Analytics	"Re: Can we support time-series queries in AWS IoT Analytics
+Hi Yingmo
+
+You are correct that today you don't get directly notified about query completion.  Instead you can poll for the status using the get-dataset-content API [1] Notice that the state field in the status can be one of of ""CREATING"", ""SUCCEEDED"" or ""FAILED"". 
+
+This gives you an alternative to scheduled queries. You could use CloudWatch Scheduled Events [2] to trigger query execution from an AWS Lambda function and then in the same Lambda, you could poll waiting for the status to change. Once the status has changed to what you want to act on, you can then send an SNS notification for example. 
+
+I appreciate this takes some more work and so your thoughts (including your point around not missing data) are all great feature requests. We don't comment about our roadmap in the forums but we absolutely do use feedback like yours to prioritize what we do.
+
+Roger
+
+[1] https://docs.aws.amazon.com/cli/latest/reference/iotanalytics/get-dataset-content.html
+[2] https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html"
+AWS IoT Analytics	"Re: Can we support time-series queries in AWS IoT Analytics
+Hi,
+Can we use query while retrieves the data from the dataset in AWS IoT Analytics, I want data between 2 timestamps. Im using boto3 to fetch the data.
+response = client.get_dataset_content(
+datasetName='string',
+versionId='string'
+)
+Do you have any suggestions how to use query or how rerieve the data between 2 timestamp in AWS IoT Analytics?
+
+Thanks,
+Pankaj"
+AWS IoT Analytics	"Invalid field name Error
+Hi There,
+
+I am trying to process some data coming in from an IoT device. I currently have two rules:
+
+
+sends the data to dynamodb
+sends the data to iotanalytics
+
+
+The data is in the format:
+
+{
+  ""customerId"": 1,
+  ""timestamp"": 1537871160,
+  ""switches"": {
+    ""1234"": {
+      ""battery"": 1,
+      ""light"": 1
+    },
+    ""5678"": {
+      ""battery"": 0,
+      ""light"": 0
+    }
+  }
+}
+
+
+This goes into DynamoDB no problem but I get an error from IoT Analytics of:
+
+[ERROR] Invalid field name '1234'
+
+
+I am assuming that it is being rejected as the key is a number even though it is written as a string?
+
+I also tried adding an additional identifier before the number as follows:
+
+{
+  ""customerId"": 1,
+  ""timestamp"": 1537871160,
+  ""switches"": {
+    ""additional-identifier-1234"": {
+      ""battery"": 1,
+      ""light"": 1
+    },
+    ""additional-identifier-5678"": {
+      ""battery"": 0,
+      ""light"": 0
+    }
+  }
+}
+
+
+This also failed with the same error. However, if I have keys that are just alphabetic characters or use underscores instead of hyphens it works.
+
+I am sure I have missed the section in the documentation where it states what is/is not acceptable in field names.
+
+If anyone can point me in the right direction I would much appreciate it.
+
+Thanks."
+AWS IoT Analytics	"Re: Invalid field name Error
+Hi
+
+I'm sorry you've had to discover this by trial and error rather than via the documentation. We'll take note of this and correct the documentation to explain what the constraints are.
+
+The actual rule is that the field name can start only with an alphabetic character or a single underscore(""_"") followed by any number of alphanumeric and underscore combinations. Field names are not permitted to start with a double underscore as this is reserved for service usage.
+
+Technically, we match against the following regular expression;
+""^[a-zA-Z_]+[a-zA-Z0-9_]*$""
+
+
+Hope this helps clarify our omission,
+Roger"
+AWS IoT Analytics	"Using AWS CLI
+Hello,
+
+AWS CLI does not recognize iotanalytics service for me. Should I install something else?
+
+regards"
+AWS IoT Analytics	"Re: Using AWS CLI
+Hi,
+
+I see you found the solution (upgrading the AWS CLI version) in your post: https://forums.aws.amazon.com/message.jspa?messageID=868163 .
+
+Here is a relevant doc on how to upgrade the AWS CLI: https://docs.aws.amazon.com/cli/latest/userguide/installing.html 
+
+Thanks,"
+AWS IoT Analytics	"Recommendation on processing attributes with array of values
+Hello, I’m new to the AWS IoT platform and I have a IoT core topic successfully processing values from the data source and forwarding those onto IoT Analytics. Example of message:
+[
+  {
+    ""id"": ""power_01"",
+    ""v"": 0,
+    ""q"": true,
+    ""t"": 1534886476634
+  },
+  {
+    ""id"": ""temperature_01"",
+    ""v"": 20,
+    ""q"": true,
+    ""t"": 1534886476634
+  }
+]
+
+As you can see, this is an array of values. Ideally I’d like to store both of these with each having their own attributes of id,v(value),q(quality), and t(timestamp).
+
+When I try to select the attributes with a pipeline activity, the array poses an error since the attributes I want aren’t top level (the array iteration numbers are). Without a pipeline activity, the values go through to the data store, but the csv produced has the array under the values header with no timestamp attached and dt is always 00:00:0.
+
+Is there best practice or recommended way to process the JSON array so that each “data message” can be assigned to the appropriate attributes (id,v,q,t)? I’m guessing Lambda can be used but would it not also send back a JSON array itself after processing the source data?
+
+Thank you."
+AWS IoT Analytics	"Re: Recommendation on processing attributes with array of values
+Hi,
+
+Thanks for posting on our forums. Ideally, you'd want to submit single messages for each request that goes into IoT Analytics so that the attributes get detected properly. 
+
+If your current setup does not allow that or it would make it overly complex, I'd suggest using a Lambda function in the beginning of your pipeline to flatten your input into single messages. 
+
+I’m guessing Lambda can be used but would it not also send back a JSON array itself after processing the source data?
+
+That's true. The input of your Lambda function is an array with all the messages and you can control the size of the array by setting the batch size in your Lambda activity. Each entry within the Lambda input array represents a message that goes into IoT Analytics. In your case the Lambda input would look something like this:
+
+[
+    [
+        {""id"": ""power_01"",""v"": 0,""q"": true,""t"": 1534886476634},
+        {""id"": ""temperature_01"",""v"": 20,""q"": true,""t"": 1534886476634}
+    ]
+]
+
+
+The output of your lambda function is expected to be a list of single messages. If you return the values as shown below, then your pipeline should work as expected:
+
+[
+    {""id"": ""power_01"",""v"": 0,""q"": true,""t"": 1534886476634},
+    {""id"": ""temperature_01"",""v"": 20,""q"": true,""t"": 1534886476634}
+]
+
+
+And to achieve that, you might use the following Lambda function in your pipeline. Please keep in mind that it's only to showcase how it might look like and doesn't handle all the edge cases properly.
+
+def lambda_handler(event, context):
+    result = []
+    for message in event:
+        if isinstance(message, list):
+            for record in message:
+                result.append(record)
+        else:
+            result.append(message)
+    
+    return result
+
+
+Hope this helps. Please let me know if you have any further questions.
+
+Thanks,
+Jurgen"
+AWS IoT Analytics	"Re: Recommendation on processing attributes with array of values
+Hi Jurgen, thanks for the reply. 
+
+This makes sense. I will try out a lambda soon and let you know how it goes."
+AWS IoT Analytics	"AWS IoT Analytics Timestamp problem
+I am moving messages from the IoT core to a data store in IoT analytics.
+
+When I create a data set from the datastore in IoT analytics, it has the __dt column, but it is only recording the date without the time.
+
+How can I get a full timestamp with time in the datastore?"
+AWS IoT Analytics	"Re: AWS IoT Analytics Timestamp problem
+The __dt column helps you optimize queries for speed (and cost) by reducing the need for full table scans when you include __dt in a SQL query like this;
+select * from my_datastore where __dt >= current_date - interval '1' day
+
+As you mention, the granularity of __dt is by day, but if you want to have a query that looks between a finer range all you have to do is 1) send the timestamp with the message or in the rule and then 2) add your timestamp constraint to the query - something like this;
+select * from my_datastore where __dt >= current_date - interval '1' day and my_timestamp between <timestamp1> and <timestamp2>
+
+To send the timestamp to IoT Analytics from IoT Core, simply edit your Rule Engine Action to add the arrival time to the message before it is sent to the Action like this;
+SELECT *, timestamp() as my_timestamp FROM 'my_topic/#'
+
+Or of course, send the time inside the message itself. That's another approach that is useful if your devices are sending accurate times, but less useful when they are not - which is where the Rule Engine Action approach can help.
+
+Hope that helps point you in the right direction"
+AWS IoT Analytics	"Can't enrich message in AWS IoT Analytics console
+Hi, when i'm creating a pipeline, and try to enrich my message from my shadow, always when select Enrich from shadow or enrich from device, nothing happened and the drop-down component stop working, this is the error that I get when I click Enrich from shadow or enrich from device:
+
+*Uncaught (in promise) TypeError: Cannot read property 'attributes' of undefined
+    at t.findSelectedLabel (DropdownInput.tsx:69)
+    at t.render (DropdownInput.tsx:47)
+    at O (preact.esm.js:728)
+    at _ (preact.esm.js:676)
+    at D (preact.esm.js:856)
+    at v (preact.esm.js:397)
+    at C (preact.esm.js:516)
+    at v (preact.esm.js:439)
+    at b (preact.esm.js:348)
+    at O (preact.esm.js:769)*
+
+Edited by: leof23 on Aug 24, 2018 3:03 PM"
+AWS IoT Analytics	"Re: Can't enrich message in AWS IoT Analytics console
+Hi,
+
+My apologies for the inconvenience. Unfortunately, I wasn't able to reproduce the issue that you described. Would you mind adding some more details of your current setup that leads to this issue? If this includes info that you don't feel comfortable sharing in a public forum, please feel free to send me a PM with the details.
+
+If possible, the following information would be helpful:
+
+*What specific drop-down throws this error?
+*What is your current pipeline configuration?
+*Do you have an example pipeline processing JSON input that leads to this issue?
+
+Thanks,
+Jurgen"
+AWS IoT Analytics	"Migrate data from RDS (postres) to IoT Analytics
+Is there a suggested process for migrating into IoT Analytics?
+
+I have a couple of gigs of device data that I want to migrate.  I was looking at using Database Migration Service to move into DynamoDB but that doesn't seem to be available for IoT Analytics.
+
+The API is not very clear on how to actually do this.
+
+Right now, it looks like I'd need to run some kind of script to pull data from PostgreSQL and then send it into IoT Analytics API.  What I can't tell is:
+
+
+What's the API end-point?
+What's the messageId supposed to be in BatchPutMessage?
+What's the limit on how much data I can send in the BatchPutMessage?
+
+
+I can't find documentation on how to hook up Kinesis to IoT Analytics, as talked about on the site."
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Hi misham,
+
+There's a blog post here  https://aws.amazon.com/blogs/iot/ingesting-data-from-s3-by-using-batchputmessage-aws-lambda-and-amazon-kinesis/  that shows how to use the batch-put-message API. Although the blog post is written for migrating data from S3, it should also be helpful for your use case. As you mention, you would need to write a script to pull data from RDS and push into IoT Analytics.
+
+To address your specific questions;
+
+1) Iot Analytics has the following 4 endpoints that can be chosen based on the region of preference as follows;
+
+iotanalytics.us-east-1.amazonaws.com 
+iotanalytics.us-east-2.amazonaws.com 
+iotanalytics.us-west-2.amazonaws.com 
+iotanalytics.eu-west-1.amazonaws.com 
+
+2) As mentioned in our documentation https://docs.aws.amazon.com/iotanalytics/latest/APIReference/API_Message.html#iotanalytics-Type-Message-messageId, message id is a uniqueId within each batch of messages sent using BatchPutMessage. It doesn't have to follow any particular pattern, and the example in the blog above may help clarify this. The messageId simply helps you identify any messages that failed to be sent to Iot Analytics and is reflected in the response of BatchPutMessage https://docs.aws.amazon.com/iotanalytics/latest/APIReference/API_BatchPutMessage.html#API_BatchPutMessage_ResponseSyntax
+
+3) You could find the limits of BatchPutMessage api here https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html#limits_iot_analytics
+
+Roger"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Thanks for the links, that makes sense.
+
+So I could use the DB Migration Service to dump data into Kinesis and then have Kinesis Lambda function(s) dump data into IoT Analytics via BatchPutMessage?
+
+Thanks"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+I'm not super familiar with DMS, but from reading this AWS blog post [1] I think you might need to go DMS -> S3 and then have a Lambda trigger from S3 [2] which does the BatchPutMessage as you suggest.
+
+Your idea of using the Database Migration Service is a good one and we will take it as a feature request to explore more direct integration with IoT Analytics to make this sort of workflow easier in the future.
+
+Thanks,
+Roger
+
+[1] https://aws.amazon.com/blogs/database/using-the-aws-database-migration-service-amazon-s3-and-aws-lambda-for-database-analytics/
+[2] https://docs.aws.amazon.com/lambda/latest/dg/with-s3-example.html"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Hi Roger,
+
+Thank you for those pointers.  I've loaded some data into the data store and created a dataset.
+
+From my reading of the docs, the only way to get data out of a data store is through a dataset.  And the only way to get the readings out of a dataset is by calling GetDatasetContents API, then downloading the CSV file in the result of that call and then parsing that CSV data as needed.
+
+Does that sound right?
+
+I'm trying to figure out if I can get JSON data, a la DynamoDB.
+
+Thank you,
+
+Misha"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Hi Misha,
+
+Yes, that's correct - currently the way to query your data stored with IoT Analytics is through a data set. The GetDatasetContent API returns the pre-signed URIs which are currently in CSV format. 
+
+Thanks for bringing up the JSON support - I will add it as a feature request into our backlog and we will prioritize it accordingly. However, I can't provide you with an ETA on when this would be available.
+
+Hope this helps,
+Jurgen
+
+Edited by: Jurgen-AWS on Jul 2, 2018 1:33 PM"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+I'm trying to wrap my head around how I would use IoT Analytics.  Right now I'm migrating my time-series data from RDBMS to DynamoDB.  So a time-series storage engine, a la IoT Analytics, is perfect for what's needed, especially since one can run SQL queries against it.
+
+With DynamoDB, I have to create multiple aggregation tables that cache the data, since there is not aggregation query support.  Some of these need to exist only for a month and some in perpetuity.
+
+Most of this is for dashboard purposes, analytics or various algorithms (e.g. system health or alerts).
+
+I don't see how this is possible with IoT Analytics as it current stands since the user isn't going to wait for the CSV file to be generated, then imported, processed, etc.
+
+I feel like I'm missing what the point of IoT Analytics is and the white papers, docs, guides, etc. are not very clear on this either.
+
+Is there an expected workflow around the CSV files or IoT Analytics other then storage?
+
+I saw the QuickSight integration but we're not using QuickSight for our users.
+
+Thank you"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Hi Misha,
+
+IoT Analytics provides inbuilt integration of data sets with QuickSight, however, we recognize that customers may be using other visualization applications. For external applications, IoT Analytics provide the data set export capability through console or through APIs. Customers typically use DescribeDataset and GetDatasetContent APIs and automate the data set content refresh/export as and when it is created based on the Data set schedule.
+
+I recognize you would need JSON file support, however, it would also be good to know for us and will be a good feature request to understand what visualization tool you use, so that we can identify a seamless integration path from IoT Analytics Data sets and external visualization apps for dashboarding purposes.
+
+Thanks,
+Vikas"
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Hi Vikas,
+
+I'm looking to use it as a DB.  Ideally, I'd like to replace DynamoDB with IoT Analytics.  So the API can be REST or some kind of DB driver.
+
+If the workflow is the same as CSV but returns a JSON file instead, it's the same problem of having to fetch the file and then process it.
+
+If IoT Analytics data can be accessed directly in the app, I can feed my dashboards, which are D3 charts running in an Angular and mobile apps."
+AWS IoT Analytics	"Re: Migrate data from RDS (postres) to IoT Analytics
+Hi Misha,
+
+The way customers achieve this sort of workflow today is to setup one or more datasets that produce the data required for their dashboards and then use the scheduling capability [1] of the dataset to refresh the dataset content every hour (for example). That way, your dashboard application can simply retrieve the dataset content when needed for display and the content is automatically refreshed without the application needing to explicitly query the datastore.
+
+We've taken the JSON request as a customer feature request along with more direct access to the data to make it easier to build operational dashboards.
+
+Many thanks for the feedback, it helps us prioritize our roadmap.
+
+Roger
+
+[1] https://docs.aws.amazon.com/iotanalytics/latest/APIReference/API_DatasetTrigger.html"
+AWS IoT Analytics	"IoT Analytics Pipeline - Error with ""Transform with Lambda Function""
+I am encountering two errors when adding this activity:
+
+1. Batch-Size
+
+If I set Batch Size > 1 (in the console) then I get the following error
+
+We could not run the pipeline activity. LambdaActivity batchSize should be equal to the number of messages
+
+
+This may only occur when using the console as I haven't checked this when running in batch
+
+
+2. Permissions
+
+No matter what permission I give the Lambda, I get the following error
+
+We could not run the pipeline activity. ERROR : Unable to execute Lambda function due to insufficient permissions; dropping the messages, number of messages dropped : 1, functionArn : arn:aws:lambda:us-west-2:xxxxx:function:iot_analytics_function
+
+
+I have given the Lambda admin access to test this and it still gives the error.
+
+
+Edited by: Clifford on Jun 15, 2018 4:04 AM"
+AWS IoT Analytics	"Re: IoT Analytics Pipeline - Error with ""Transform with Lambda Function""
+Hi Clifford,
+
+The batch size setting is primarily intended for run time operations of your pipeline. You can test the Lambda function from the console, but the console only sends one sample message at a time. My recommendation is to set the batch size to 1 while simulating the activity in the console. You can simulate sending multiple messages using the CLI and the RunPipelineActivity API: https://docs.aws.amazon.com/iotanalytics/latest/APIReference/API_RunPipelineActivity.html
+
+As for the Lambda permissions, the permission which must be updated is the Lambda function's resource policy. You'll need to indicate that the IoT Analytics service is allowed to invoke your Lambda function. A sample CLI command would be: aws lambda add-permission --function-name <lambda-function-name> --statement-id <your-statement> --principal iotanalytics.amazonaws.com --action lambda:InvokeFunction
+. We'll take a look at improving this experience in the console.
+
+RyanB@AWS"
+AWS IoT Analytics	"Cloudformation support for AWS IoT Analytics
+Hello,
+
+Please can you tell me if it's planed for Cloudformation to support AWS IoT Analytics ?
+
+Thanks, best regards."
+AWS IoT Analytics	"Re: Cloudformation support for AWS IoT Analytics
+This is a good feature request which we will add to our roadmap and prioritize as we hear more requests like this from customers like yourself. We typically don't comment on specific timelines in these forums though.
+
+Thank you for using IoT Analytics."
+AWS IoT Analytics	"Re: Cloudformation support for AWS IoT Analytics
+Thanks for the answer. It will made our work way easier"
+AWS IoT Analytics	"Re: Cloudformation support for AWS IoT Analytics
+We would also like to be able to express a IoT Analytics configuration through CloudFormation"
+AWS IoT Analytics	"IOT Analytics Pipeline - Error Adding SelectAttributes Activity
+Hi - when you go to the console and edit the pipeline, you can't add a ""selectAttributes"" activity.   To reproduce:
+1. Create Pipeline and select channel
+2. Click next on Attributes (or edit the json)
+3. Select Add Activity (step 3/4) 
+4. Select ""select Attributes"" from the dropdown.
+
+It doesn't allow this.
+
+I have tried to create/update the pipeline from the AWS CLI but have not managed to get the following json to be accepted.
+[
+  {
+    ""channel"": {
+      ""name"": ""iot_channel"",
+      ""channelName"": ""mansion_iot_channel"",
+      ""next"": ""iot_select""
+    },
+    ""selectAttributes"": {
+      ""name"": ""iot_select"",
+      ""attributes"": [""state.reported.value"",""state.reported.timestamp"",""state.reported.category""],
+      ""next"": ""iot_datastore""
+    },
+    ""datastore"": {
+      ""name"": ""iot_datastore"",
+      ""datastoreName"": ""mansion_iot_datastore""
+    }
+  }
+]"
+AWS IoT Analytics	"Re: IOT Analytics Pipeline - Error Adding SelectAttributes Activity
+Thank you for your question - this should be working as designed now."
+AWS IoT Analytics	"Re: IOT Analytics Pipeline - Error Adding SelectAttributes Activity
+Thanks - it is working now."

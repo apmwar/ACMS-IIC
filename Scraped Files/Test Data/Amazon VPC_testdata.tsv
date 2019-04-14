@@ -1,0 +1,519 @@
+label	description
+Amazon VPC	"Front EC2 VPN with Load Balancer
+Is it possible to scale a VPN solution by putting a load balancer in front of an auto scaling group whose members are VPN appliances? (e.g., an autoscaling group comprised of instances that were launched using a pfsense or fortinet AMI)"
+Amazon VPC	"Re: Front EC2 VPN with Load Balancer
+Any help here?"
+Amazon VPC	"Feature Availability: Transit Gateway Integration w\ DirectConnect Gateway
+Hello,
+
+There is a feature that I am wondering about:
+
+Transit Gateway Integration with DirectConnect Gateway
+
+According to documentation:
+
+(https://medium.com/slalom-technology/next-generation-networking-with-aws-transit-gateway-and-shared-vpcs-9d971d868c65 )
+
+and
+
+(https://aws.amazon.com/blogs/aws/new-use-an-aws-transit-gateway-to-simplify-your-network-architecture/ )
+
+This feature is slated for release Q1 2019.
+
+As we are nearing the deadline for that, I'm curious if it will be released soon.
+
+Thank you."
+Amazon VPC	"Re: Feature Availability: Transit Gateway Integration w\ DirectConnect Gateway
+Any ideas here?"
+Amazon VPC	"Intermittent VPN connection from AWS VPN to Cisco ASA 5512
+We have created a site-to-site VPN connection from our AWS account to Cisco ASA 5512 firewall.
+The Cisco ASA 5512 firewall is policy based firewall. We have passed the downloaded configuration from AWS VPN management console and provided the same to the networking team who manages the firewall.
+
+They have configured the Firewall on their end and we have one tunnel with status UP.
+Though one of the tunnel is up, the networking team says that there is issue while bringing up the phase 2 of tunnel 1. Below are the issue details:
+
+Reference IPs used:
+AWS VPN Tunnel Outside IP: 34.250.X.X
+Firewall IP: 82.X.X.X
+
+The networking team had few queries:
+1) Regarding the ICMP Phase2 association, from Cisco firewall side, networking team can see Encaps and no Decaps
+
+      new-fw/sec/act#  show crypto ipsec sa peer 34.250.X.X
+      peer address: 34.250.X.X
+      Crypto map tag: Outside_map, seq num: 150, local addr: 82.X.X.X
+
+      access-list acl-vpn-xyz extended permit icmp any 10.0.11.0 255.255.255.0
+      local ident (addr/mask/prot): (0.0.0.0/0.0.0.0/1)
+      remote ident (addr/mask/prot): (10.0.11.0/255.255.255.0/1)
+      current_peer: 34.250.X.X
+
+
+      #pkts encaps: 120, #pkts encrypt: 120, #pkts digest: 120
+      #pkts decaps: 0, #pkts decrypt: 0, #pkts verify: 0
+      #pkts compressed: 0, #pkts decompressed: 0
+      #pkts not compressed: 120, #pkts comp failed: 0, #pkts decomp failed: 0
+
+    They need to verify that traffic is hitting the VPN process on the AWS side, as from this perspective they are sending ICMP traffic and not getting anything back.
+
+2) When Cisco Firewall is the initiator AWS is proposing 0.0.0.0 which Cisco firewall is specifically rejecting. Logs as follows:
+
+    Apr 05 09:54:44 IKEv1 Group = 34.250.X.X, IP = 34.250.X.X, Static Crypto Map check, checking map = Outside_map, seq = 150...
+Apr 05 09:54:44 IKEv1 Group = 34.250.X.X, IP = 34.250.X.X, Static Crypto Map check, map = Outside_map, seq = 150, ACL does not match proxy IDs src:0.0.0.0 dst:0.0.0.0
+Apr 05 09:54:44 IKEv1 Group = 34.250.X.X, IP = 34.250.X.X, Error: dynamic map SYSTEM_DEFAULT_CRYPTO_MAP: any any not permitted.
+Apr 05 09:54:44 IKEv1 Group = 34.250.X.X, IP = 34.250.X.X, Rejecting IPSec tunnel: no matching crypto map entry for remote proxy 0.0.0.0/0.0.0.0/0/0 local proxy 0.0.0.0/0.0.0.0/0/0 on interface Outside
+
+    As the initiator, we are proposing specific subnets in Cisco firewall, which AWS is accepting. This means that traffic only works when Cisco firewall is the initiator.
+
+So we have the following results:
+ Cisco Firewall as Initiator, AWS responder – Phase 2 success
+ AWS as initiator, Cisco Firewall responder – Phase2 Rejected
+
+When the tunnel is built successfully this is the point where network suspects things will start working more than they were before. The problem is every time they look at this issue, they bring the tunnel up as initiator. The Phase 2 remains up and works partially till it expires
+
+Edited by: iwise2martin on Apr 10, 2019 8:45 AM
+
+Edited by: iwise2martin on Apr 10, 2019 8:45 AM"
+Amazon VPC	"Same VPC, same security group, different DBs. Can only access one of them
+Hello,
+
+I have set up a VPC with three Subnets and one security group that is set to accept my inbound calls.
+
+The first RDS I have created works fine: I can connect from my client machine.
+However I have build a second RDS to which I somehow cannot connect, even though I set it to the exact same security group.
+
+Any idea on what I am missing?"
+Amazon VPC	"How to estimate my NAT gateway pricing
+All my instances have public IP to communicate with the internet. I am planning to move to NAT gateway for this, but I am not clear about the data processing pricing at https://aws.amazon.com/vpc/pricing/ which says 0.045 per GB. If I apply that pricing to our current bill assuming we are processing 1.5TB of data the bill just for VPC comes around 100$. What all parameter should I consider while estimating the bill for a NAT gateway. My example invoice snapshot is attached below."
+Amazon VPC	"Site-to-Site VPN -  On-prem network connectivity across AWS VPC subnets?
+I've configured a single Site-to-Site VPN connection between my on-prem lab network and my AWS VPC subnet (see sample diagram at https://docs.aws.amazon.com/vpn/latest/s2svpn/Examples.html#SingleVPN )
+
+Site-to-Site VPN Connection configuration details
+
+	On-Prem subnet:  192.168.0.0./24
+	AWS subnet:  172.31.32.0/20
+
+I'm able to ping private IP addresses both to/from EC2 instances residing in both subnets with no problems.
+
+192.168.0.0./24  <------>  172.31.32.0/20   GOOD
+
+However, I need to be able to also access my on-prem lab subnet from another AWS Subnet-- 172.31.64.0/20.
+
+192.168.0.0./24  <------>  172.31.64.0/20
+
+Is this supported or do I need another S2S VPN connection?  So far, I've seen and recorded inconsistent behavior. At one point, I was able to ping from 172.31.64.0/20 to the on-prem subnet 192.168.0.0/24.  It no longer works.  And as far as I know, I've never been able to ping from the on-prem subnet to the subnet 172.31.64.0/20.
+
+I've had trouble finding any support docs regarding what seems to be a very basic issue. I may be missing something simple here, so any advice would be greatly appreciated.  I realize there may be limitations due to my on-prem VPN device, Meraki MX60 (does not support BGP, nor active/standby tunnels).  
+
+Thanks in Advance.
+
+Edited by: djl2 on Apr 8, 2019 2:41 PM
+
+More info-- It appears my on-prem Meraki VPN device can support only 1 AWS subnet per VPN connection.  Final (dumb) question:  Is there any possible way to configure the network so that traffic from my on-prem network to the AWS subnet can be routed through to an additional AWS subnet?
+
+From the AWS S2S VPN configuration text file--
+
+! AWS hosted VPN solution is a route-based solution, since Cisco Meraki only supports policy-based solution you will need to limit to a single SA. So please make sure to 
+! select ""yes"" for just one subnet, if you have more than one subnet, consolidate them into a single subnet before proceeding with the VPN configuration.
+
+	Under Organization-wide settings --> Non-Meraki VPN peers
+	Name: ipsec-vpn-0xxxxxxxxxxx
+	Public IP: 18.x.x.x
+	Private subnets: <vpc_subnet>/<vpc_subnet_mask>
+	IPsec policies: Click “Default”, select “AWS” under the Preset menu and ""Update""
+	Preshared secret: t4xxxxxxxxxxxxxxx
+	Availability: All networks"
+Amazon VPC	"Re: Site-to-Site VPN -  On-prem network connectivity across AWS VPC subnets?
+I found the answer for my situation.  It's quite simple actually (as I figured it would be).
+
+On my on-prem network's VPN connection settings (Meraki device), I changed the ""private subnets"" value to use the entire VPC CIDR block value (172.31.0.0/16) instead of a single subnet CIDR blocK (172.31.32.0/20).  I'm now able to ping all AWS subnets from my on-prem lab network.
+
+Final note:  Even though I was originally attempting access another single subnet from my on-prem network, I'm fine with allowing S2S VPN connectivity to all other subnets on the VPC as well."
+Amazon VPC	"VPN that allow us maintain /rotate keys and password
+If one of our requirements is to have rotate keys and password, which model of VPN can I use? 
+
+Thanks in advance,"
+Amazon VPC	"cannot ping ec2 instance from specific ip
+Hello,
+
+I have an instance with an elastic ip attached to it.
+
+From an internet site (http://www.kloth.net/services/ping.php) I can successfully ping my instance but, from my home ip, I cannot ping the same instance. From my home ip, I can ping another instance with the same security group fine.
+
+I did try to turn off all firewall that could possibly be in the way.
+
+Any ideas?
+
+this is what I get from tracert :
+ 1     <LAN ROUTING>
+  2    <LAN ROUTING>
+  3    <LAN ROUTING>
+ 4    22 ms    19 ms    23 ms  52.46.166.120
+  5    18 ms    19 ms    22 ms  52.94.81.176
+  6    17 ms    18 ms    17 ms  52.94.81.165
+7     *        *        *     Request timed out.
+.
+.
+.
+30     *        *        *     Request timed out.
+
+Thank you
+
+Edited by: jplamarre on Apr 8, 2019 8:28 AM
+
+Edited by: jplamarre on Apr 8, 2019 8:34 AM
+
+Edited by: jplamarre on Apr 8, 2019 8:34 AM"
+Amazon VPC	"Reset Default VPC
+Account No: 802815951128
+Region: US-East (N. Virginia)
+
+The 1 VPC named DefaultVPC is not marked as default. I think it may be misconfigured (account was set up before VPC was available). Recently failed during a lab on Service Catalog; AWS presenter suggested the issue was with the VPC in this region for my account."
+Amazon VPC	"Re: Reset Default VPC
+Have you tried a cli call to make that the default?
+https://docs.aws.amazon.com/cli/latest/reference/ec2/modify-vpc-tenancy.html
+
+e,g
+aws ecs  modify-vpc-tenancy --vpc-id <vpcid> --instance-tenancy default"
+Amazon VPC	"Re: Reset Default VPC
+The tenancy is ALREADY default, but the VPC is not the Default VPC:
+VPC ID
+vpc-9f9475f9
+Tenancy  <==
+default    <==
+State
+available
+Default VPC <==
+No               <==
+IPv4 CIDR
+10.0.0.0/16
+Classic link
+Disabled
+IPv6 CIDR
+-
+DNS resolution
+Enabled
+Network ACL
+acl-c403a4a2
+DNS hostnames
+Enabled
+DHCP options set
+dopt-60ecff04
+ClassicLink DNS Support
+Disabled
+Route table
+rtb-1b672d7d
+Owner
+802815951128
+
+The table did not copy well from the console, but I've indicated the relevant properties and values."
+Amazon VPC	"Re: Reset Default VPC
+This may be the solution - I'll try it and see...
+
+https://aws.amazon.com/about-aws/whats-new/2017/07/create-a-new-default-vpc-using-aws-console-or-cli/
+Update:
+""If you delete your default VPC, you can create a new one. You cannot restore a previous default VPC that you deleted, and you cannot mark an existing nondefault VPC as a default VPC. If your account supports EC2-Classic, you cannot use these procedures to create a default VPC in a region that supports EC2-Classic.""
+
+It would appear that my account supports EC2-Classic (not really sure what that means), because the Create Default VPC action is greyed out on my console...
+
+Edited by: E. Flamm on Apr 6, 2019 2:10 PM"
+Amazon VPC	"VPN remote subnets on failover connections?
+My network
+AWS VPN Tunnel 1 = 6.6.6.6
+AWS VPN Tunnel 2 = 7.7.7.7
+AWS Remote Subnet = 172.16.0.0/16
+WAN1 = 4.4.4.4 = Fiber
+WAN2 = 5.5.5.5 = DSL (Failover only)
+LAN = 10.0.0.0/16
+
+AWS VPN Tunnel 1 Setup for WAN1
+Peer IP = 6.6.6.6
+Local WAN IP = 4.4.4.4
+Remote Subnets = 172.16.0.0/16
+
+AWS VPN Tunnel 2 Setup for WAN2 (Failover)
+Peer IP = 7.7.7.7
+Local WAN IP = 5.5.5.5
+Remote Subnets = ???
+
+VPN for WAN1 works perfectly, it routes 172.16.0.0/16 to AWS. When I attempt to setup the VPN for WAN2 it tells me I am already routing traffic over 172.16.0.0/16 on the VPN for WAN1. It's a Unifi Gateway USG-4 and I've already been to their forum with no luck.
+
+Is there some alternate way I am unaware of to connect to resources on AWS? The only thing I'm really trying to do is allow Windows 10 machines to login using Simple AD running in Amazon. I see something called ""Client VPN Endpoints"", which it would remove the need for the Site-to-Site VPN entirely, but I'm not sure how that would work for logins.
+
+Edited by: myfamilyhealth on Apr 6, 2019 12:31 PM"
+Amazon VPC	"2 Site-to-Site VPN connections to the same subnet
+Hi everyone,
+
+I want to archive redundant VPN connections to my client network. I want to have both VPNs on at the same time.  If one VPN has problem (hardware / connection) then the other is still functioning as the backup.  My client host is in 192.168.xxx.xxx/24 subnet.
+
+I've done setting up 2 VPNs to 2 different customer gateways. Each VPN has 2 tunnels up and has the same static route to 192.168.xxx.xxx/24 subnet.
+
+Testing:
+
+I enable VPN1 -> working
+I enable VPN2 & keep VPN1 => both VPNs are on => working
+I disable VPN1 & keep VPN2 => not working (I can't ping the IP in the destination subnet)
+
+
+Please advise how to archive this with static route (I don't want to use BGP).
+
+I can divide the destination subnet into 2 smaller subnets, host the service using 2 IPs and use load balancer in front of those IPs but then I need to pay for load balancer extra.
+
+Let me know if there is better way.
+Thank you."
+Amazon VPC	"Internal DNS not resolving AWS hostnames after deleting VPC Endpoint
+Hi, 
+After I deleted all the VPC Endopoints our EC2 Instances cannot resolve AWS hostnames using the internal DNS server.
+
+i.e. SQS Endpoint:
+
+ec2-user@ip-10-200-10-35 ~$ dig @10.200.0.2 sqs.us-east-1.amazonaws.com A
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-61.amzn2.1.1 <<>> @10.200.0.2 sqs.us-east-1.amazonaws.com A
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 24142
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;sqs.us-east-1.amazonaws.com.	IN	A
+
+;; AUTHORITY SECTION:
+sqs.us-east-1.amazonaws.com. 900 IN	SOA	ns-1536.awsdns-00.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400
+
+;; Query time: 2 msec
+;; SERVER: 10.200.0.2#53(10.200.0.2)
+;; WHEN: Wed Apr 03 22:03:56 -03 2019
+;; MSG SIZE  rcvd: 129
+
+It´s strange because if I run a trace it returns the IP:
+
+ec2-user@ip-10-200-10-35 ~$ dig @10.200.0.2 sqs.us-east-1.amazonaws.com +short +trace
+NS i.root-servers.net. from server 10.200.0.2 in 1 ms.
+NS k.root-servers.net. from server 10.200.0.2 in 1 ms.
+NS j.root-servers.net. from server 10.200.0.2 in 1 ms.
+NS d.root-servers.net. from server 10.200.0.2 in 1 ms.
+NS e.root-servers.net. from server 10.200.0.2 in 1 ms.
+NS c.root-servers.net. from server 10.200.0.2 in 1 ms.
+NS a.root-servers.net. from server 10.200.0.2 in 1 ms.
+NS b.root-servers.net. from server 10.200.0.2 in 1 ms.
+NS f.root-servers.net. from server 10.200.0.2 in 1 ms.
+NS m.root-servers.net. from server 10.200.0.2 in 1 ms.
+NS g.root-servers.net. from server 10.200.0.2 in 1 ms.
+NS l.root-servers.net. from server 10.200.0.2 in 1 ms.
+NS h.root-servers.net. from server 10.200.0.2 in 1 ms.
+CNAME queue.amazonaws.com. from server 52.19.138.45 in 71 ms.
+A 54.239.16.4 from server 52.19.138.45 in 71 ms.
+
+Could this be a bug or I missing something? I just deleted the VPC endpoints I don't know if there something else to reconfigure.
+
+Thanks.
+
+Edited by: accbrfv on Apr 4, 2019 8:32 AM"
+Amazon VPC	"Issues with S2S VPN using Cisco ASA 5525 (9.8)
+Hi,
+
+We are attempting to get a site-to-site IPSEC VPN tunnel running between our Cisco ASA 5525 CGW and a VGW attached to our VPC. We have everything configured using static routing which is propagated to the main route table associated with the subnet etc.
+
+Tunnel phase 1 and phase 2 negotiation all appear correct, and the tunnel comes up etc, however, we are experiencing an issue with traffic traversal between the two encryption domains. If we ping the EC2 instance from a host on-premise, the tunnel comes up and the EC2 instance responds - at this point we can ping the same host from the EC2 instance, but no other on-premise hosts.
+
+If we then ping the same EC2 instance from another on-premise host at the same time as ping #1 is running, ping #1 stops receiving any response from the EC2 instance, and ping #2 takes over - at this point we can no longer ping the first host from the EC2 instance, only being able to ping the second host that has taken over.  
+
+The same behaviour is also seen if we utilise another traffic source i.e. when pinging from host 1 if we attempt an RDP connection from host 2, the original ping fails.
+
+The network team have checked and double checked the Cisco configuration based on the VPN config that was downloaded from the AWS management console. They have also observed that traffic from both on-premise hosts is traversing (being sent) the tunnel, but that inbound traffic back through the tunnel is only seen on the active connection (as per the description above).
+
+Has anyone experienced behaviour similar to this? Is it a problem with the Cisco configuration or a problem with the AWS end of the VPN? We have noted some other threads discussing Cisco ASA CGW devices with various problems/issues being described, but nothing that fits directly with the way that our traffic is traversing and creating connections through the tunnel.
+
+Thanks."
+Amazon VPC	"Asymmetric Traffic in VPC
+Hi,
+
+I have an issue regarding asymmetric packet passing in VPC.
+
+I created VPC:
+ VPC: 10.2.0.0/16
+
+I created 2 subnets in VPC:
+ A: 10.2.1.0/24
+ B: 10.2.2.0/24
+
+I created 2 EC2-instance:
+ R1: Cisco CSR1000V with 2 ENIs:
+      Gi1: 10.2.1.181/24 in subnet A
+      Gi2: 10.2.1.254/24 in subnet B
+ R2: Cisco CSR1000V with 1 ENI:
+      Gi1: 10.2.1.253/24 in subnet B
+
+I got problem when trying to ping R2 to R1:
+     R2: ping 10.2.1.181 -> failed
+
+I think the traffic flow will be (asymmetric):
+    R2(Gi1) -> VPC Router -> R1(G1) -> R1 (G2) -> R2(G1)
+
+instead of (symmetric):
+    R2(G1) -> VPC Router -> R1(G1) -> VPC Router -> R2(G1)
+
+When I tried to trace the packet, I found that packet is reaching R1(G1) but I can't get the ping reply on R2(G1). 
+
+Does anyone have any idea about this issue?
+
+I really appreciate any help.
+
+Regards,
+Felix"
+Amazon VPC	"create-default-vpc
+Trying to create my default vpc but i'm receiving the following error.
+
+Default region name https://forums.aws.amazon.com/: us-east-1
+Default output format https://forums.aws.amazon.com/:
+
+aws ec2 create-default-vpc
+
+An error occurred (OperationNotPermitted) when calling the CreateDefaultVpc operation: Accounts on the EC2-Classic platform cannot create a default VPC.
+
+Can someone assist with this?
+
+Edited by: patnyc on Mar 29, 2019 3:36 PM"
+Amazon VPC	"VPC Flow logs log destination is not accessible
+Hello, 
+
+I have multiple VPC on the account and one of them says ""the log destination is not accessible"". I have checked the role, policy and the trust relationship and there seems to be no issue there can someone please guide to what the issue is? 
+
+Thanks"
+Amazon VPC	"Internal hostname for ec2 instances and DNS lookup in VPC peering
+Hi,
+I have few questions regarding  DHCP option sets and DNS in VPC peering.
+
+As per the documentation present here: https://docs.aws.amazon.com/vpc/latest/userguide/VPC_DHCP_Options.html, it is specified that If you want your instance to receive a custom DNS hostname as specified in domain-name, you must set domain-name-servers to a custom DNS server., even though I have specified custom DNS server and domain name option, the hostnames of the ec2-instances in the AWS console shows as ending with .ec2.internal.
+
+For a peered VPC, when I try to specify the DNS server of both the peered VPC as part of the domain-name-servers, I am not able to resolve the DNS hostanames of the other VPC from the peered VPC. Although when i specifically set the DNS server address present in the peered VPC, the resolution works e.g. nslookup mydomain.name dns-server-address-inpeered-vpc . The only way i am able to make it work by using Route53 Resolver outbound endpoint.
+All default options are enabled for VPC and VPC peering connection
+enableHostnames =  true
+enableDNSResolutions = true
+DNSResolution = true
+
+PS : I don't use a private hosted zone, but use a domain controller in a peered VPC.
+
+Please guide me on the correct behavior.
+
+Thanks,
+cloudraja"
+Amazon VPC	"NAT Gateway stopped working
+Hello,
+
+My VPC has a NAT Gateway that was setup via Cloudformation. I dont know exactly when it stopped working but when I used my app today the API calls to third parties were not going through. I tried to remove the NAT Gateway and redeploy but it still wasnt working even though the new NAT gateway was listed.
+
+I have a staging environment in AWS with all the same cloudformation templates and it was working there, too. So not sure whats going on.
+
+I would greatly appreciate any guidance on how troubleshoot this.
+
+Thanks,
+Dave"
+Amazon VPC	"VPC peering across regions doesn't seem to work.
+I've gone through this guide:
+https://docs.aws.amazon.com/vpc/latest/peering/working-with-vpc-peering.html
+
+My setup:
+VPC in ue2 using CIDR 10.10.0.0/16
+VPC in uw2 using CIDR 10.9.0.0/16
+Peered with AWS VPC peering (accepted peer)
+I want full routing between the subnets between the VPCs.
+
+
+I've confirmed the following:
+Peering Connection is in Active state
+NACL in both regions allow from 0.0.0.0/0 on all ports
+The Security Groups in both regions allow inbound 0.0.0.0/0 on port 22
+The outbound rules in the security groups allow all
+I've confirmed port 22 is reachable from another node within the same VPC in the same region.
+I've added the CIDR block (10.10.0.0/16) with the target the ID of the peer connection to routing table in uw2
+I've added the CIDR block (10.9.0.0/16) with the target the ID of the peer connection to the routing table in ue2
+I do NOT have multiple CIDRs attached to the VPC, only the ones listed above.
+There should be no overlapping IP space across VPCs
+
+But when I try to use netcat or ssh to try and reach the private IP nothing happens.
+
+Any help would be appreciated, to me it appears everything has been setup correctly, but somewhere something isn't happening."
+Amazon VPC	"Re: VPC peering across regions doesn't seem to work.
+We  went  through your issue and was able to setup similar VPC lab as yours at our end. All your setup seems to be  correct.
+    From our observation the issue  must be related to routes and subnet  associations  in route tables.
+       - We would suggest that check route tables in both VPC and confirm whether subnets are properly assign to route tables."
+Amazon VPC	"EC2 can't connect to instances on different subnets
+I have an instance running on subnet A (us-east-1c) and it can't connect to any instance on the other subnets I have in the same VPC (us-east-1b, us-east-1d). Connections inside the same subnet are working as expected. I double checked the Security Groups and they're not a problem -- one of the methods I used for isolating that SGs aren't the problem was to temporarily do a rule to allow traffic from anywhere on any port.
+
+All subnets involved are using the same Route Table and ACL, which has these rules:
+
+100
+ALL Traffic
+ALL
+ALL
+0.0.0.0/0
+ALLOW
+
+*
+ALL Traffic
+ALL
+ALL
+0.0.0.0/0
+DENY
+
+Any thoughts to what could be wrong? I'm out of ideas."
+Amazon VPC	"Re: EC2 can't connect to instances on different subnets
+Problem was at the VPN which had a different CIDR in the NAT settings."
+Amazon VPC	"Pfsense public IP address
+Hi all,
+I've set up a VPC with public/private subnets and attached a PFsense instance to the  subnet. I need to get its public IP address to log into its web GUI to configure it, but I can only see what appears to be its ""private"" subnet address. How can I go about getting its public IP address to configure it correctly?
+
+-Thanks!"
+Amazon VPC	"When will the VPC client VPN be available in Frankfurt?
+I would like to use the newly announced client VPN (https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html). However it's not available in the Frankfurt region, but it's available in Ierland. Is their a date or timeline when the client VPN service will be available in Frankfurt?
+
+Maybe it's possible to turn it on for our AWS account in this region?"
+Amazon VPC	"Re: When will the VPC client VPN be available in Frankfurt?
+The same question. I see no region limitations in documentation."
+Amazon VPC	"IPSEC Tunnel up but can't reach networks from either side
+We can ping both ends of the tunnel. AWS shows tunnel up and configuration looks good but pings or traceroute from either side fails. 
+
+This is from a mikrotik router to AWS. Not sure but I'm not certain the static routes in the VPC are setup correctly; this is one area where the documentation and interface are confusing. We have two route tables in the VPC (why two?). The main one has:
+
+Destination: 192.168.168.0/24	
+Target: local
+Status: active
+Propagated: no 
+
+On route propagation tab: 
+vgw-098a9408c7a7644ef | test gateway	
+propagation:Yes
+
+**Second route table has: 
+
+Destination: 192.168.168.0/24	
+Target: local
+Status: active
+Propagated: no
+
+Destination: 0.0.0.0/0	
+Target: igw-07f6a79ff6d669caf
+Status: active
+Propagated: no 
+
+On propagation tab:
+vgw-098a9408c7a7644ef | test gateway	
+propagate: Yes
+
+Could I get someone at AWS to review the setup? VPC ID is vpc-0f67bbadf9545712c"
+Amazon VPC	"Re: IPSEC Tunnel up but can't reach networks from either side
+Problem solved. Problem was on other end."
+Amazon VPC	"AMI Image from an Windows Snapshot it gets the Platform value ""Other Linux""
+Created an AMI Image from an Windows Snapshot it gets the Platform value ""Other Linux"" instead of ""Windows"". This is affecting windows license activation, since the AWS Systems Manager KMS process requires the image to have the 'windows' platform.
+
+Api ""DescribeInstances""
+PropertySelector ""$.Reservations[0].Instances[0].Platform""
+Property value from the API output is empty. Desired values: .
+
+How can you change the platform for the instance from ""blank"" to ""Windows"" to allow it to be activated?"
+Amazon VPC	"DNS propagation between VPCs with Transit Gateway
+Even when DNS checkbox is enabled on TG, DNS resolution doesn't work between VPC workloads. 
+Any suggestion ?"

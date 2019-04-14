@@ -1,0 +1,487 @@
+label	description
+Amazon CloudFront	"How to cache files forever using Cloudfront?
+I'm serving a Github pages site over Cloudfront.
+
+I'd like to have all javascript and css files cached forever, so I set a new behavior rule, with the pattern `js/*.js*, and for the object caching, I set a TTL of 31536000.
+
+But, according to google page speed insights, i'm still only seeing a TTL of 10m on /js/app.6ce7c83d.js and js/chunk-vendors.b4c237e0.js
+
+Any ideas what I'm doing wrong? The behavior rule for js files is at the top of all other rules, with precedence 0.
+
+Edited by: ali_akhtar on Apr 12, 2019 9:17 AM"
+Amazon CloudFront	"Origin Access Identity alongside AWS Signature Version 4
+Given a Cloudfront instance acting as a web distribution for an S3 bucket, what's the recommended approach to a public GET, authorised PUT?
+
+Is it possible to use a combination of Origin Access Identity and AWS Signature Version 4?
+
+Origin Access Identity for GET, unsigned, requests
+AWS Signature Version 4 for PUT, signed requests based on a IAM user.
+
+
+As far as I can see, once a Cloudfront Distribution uses ""Restrict Bucket Access"" with an Origin Access Identity, it is solely responsible for creating ""AWS Signature Version 4"" signed requests to S3."
+Amazon CloudFront	"CloudFront Logs Not Writing To Desired S3 Bucket
+I have several CloudFront distributions and two S3 buckets. The buckets were intended to be for ""non-production"" and ""production"" logs everything works great in non-production, but the logs will not write to the production bucket.
+
+If I modify the ""production"" distros to write logs to the non-production bucket, they are producing logs and everything works fine.
+
+Looking at the Permissions tab on each bucket they appear to be identical.  But there must be something I'm missing. I don't see any relevant IAM policies but I'm assuming there is something else.
+
+Any ideas where I should look for permissions or other issues?
+
+Edited by: BillH on Apr 11, 2019 7:49 PM"
+Amazon CloudFront	"CloudFront distribution creation time ... 20ish mins normal?
+Recently I have been playing around with CloudFormation templates for a project. As part of this I've noticed that CloudFront distributions are taking 20ish mins to be created/updated. I know they are not intended to be 'instant' but this seems on the extreme of what is expected (i've seen reference 'up to 15 mins').I've selected Price Class 100 in attempt to reduce the number of locations that CloudFront needs to provision but this seems not to have helped. 
+
+Is it simply CloudFront taking a long time to propagate or is there anything I can do with the setup of CloudFront distribution to make this step faster?"
+Amazon CloudFront	"Re: CloudFront distribution creation time ... 20ish mins normal?
+That is normal for CloudFront.  There's nothing you can do to decrease the time."
+Amazon CloudFront	"Re: CloudFront distribution creation time ... 20ish mins normal?
+Whenever I add a cname to my distribution it takes 15 minutes to be seen in my laptop but in my cellphone it is shown instantly and both devices are in the same LAN. How come? it should take 15min for all devices in the same network right."
+Amazon CloudFront	"Re: CloudFront distribution creation time ... 20ish mins normal?
+The behavior of the CloudFront distributions taking long time for deployment is normal. CloudFront delivers the content through a worldwide network of edge locations that provide low latency and high performance.
+
+The time it takes is for propagating the changes in configuration like certificates, origins, settings, etc to all the edge locations so that changes take effect everywhere. The changes are not propagated to every edge location instantaneously.
+
+Until the configuration is updated, CloudFront continues to serve your content from that location based on the previous configuration.
+
+It is unfortunate that we can't determine whether the given edge location is serving the content based on previous configuration or the new one."
+Amazon CloudFront	"CloudFront + Lambda - availability of GEO/Device headers in Viewer Request
+Hi,
+
+We are using CloudFront events for A/B testing, and specifically, Viewer-Request event to insert a cookie (A or B) in order to get the right cache version.
+Lately, we decided to take it another step and make a decision based on Country/Device in order to avoid un-necessary cookie insert and improve our cache stats (if A/B testing not relevant for the US for example, there is no reason to insert a cookie and divide the cache version even more).
+
+We faced a problem since the Country/Device headers don't available on this event (Viewer-Request). We found that a bit strange because the cache is based on Country/Device, so it makes sense that those headers will be available while we manipulating the request through the Lambda function.
+
+There is any future plan to make those headers available?"
+Amazon CloudFront	"Can a domain behind CloudFront receive emails?
+I had to set two CNAMEs for my domain behind CloudFront, one for the root domain and one for www that point to a CloudFront address, but MX records do not work when there is a CNAME for the root domain. Is there a way to receive emails sent to my domain?"
+Amazon CloudFront	"Virtual hosting an S3 bucket using Cloudfront + SSL
+I would like to virtual host an S3 bucket so that users can interact with
+https://mybucket.mydomain.com instead of mybucket.s3.amazonaws.com. Users would be interacting with the bucket using their own credentials via code or the s3 cli.  
+
+To do this, I created a CloudFront distribution with:
+
+an origin of mybucket.s3.amazonaws.com
+mybucket.mydomain.com and mydomain.com as CNAMEs
+an SSL certificate for mybucket.mydomain.com and *.mydomain.com and mydomain.com (created in ACM)
+
+
+However, when I try to interact with the bucket with the s3 cli, like so
+aws s3api list-objects --endpoint-url https://mydomain.com --bucket mybucket
+
+I get the following error:
+SSL validation failed for https://mybucket.mydomain.com/?encoding-type=url [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:600)
+
+Similarly when I try to put an object:
+aws s3api put-object --endpoint-url https://mydomain.com --bucket mybucket --key myfile.txt
+
+SSL validation failed for https://mybucket.mydomain.com/myfile.txt [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:600)
+
+However, when I visit https://mybucket.mydomain.com in a web browser, I do not get an SSL error. Why do I get this SSL error when I use the S3 cli, but not a web browser? 
+
+Note, I have the following in my ~/.aws/config to tell S3 to use the virtual addressing style
+s3 =
+  addressing_style = virtual
+
+
+Edited by: autumnbugs on Mar 21, 2019 1:51 PM"
+Amazon CloudFront	"Re: Virtual hosting an S3 bucket using Cloudfront + SSL
+Still having this issue, though when I try my request from a different box (the first was on a mac) I get a different failure:
+aws s3api put-object --endpoint-url https://mydomain.com --bucket mybucket --key myfile.txt
+
+An error occurred (SignatureDoesNotMatch) when calling the PutObject operation: The request signature we calculated does not match the signature you provided. Check your key and signing method.
+
+
+The same request works from both boxes when I use the standard s3 endpoint, so I still think this must be an issue with my cloudfront configuration.
+aws s3api put-object --endpoint-url https://s3.amazonaws.com --bucket mybucket --key myfile.txt"
+Amazon CloudFront	"Re: Virtual hosting an S3 bucket using Cloudfront + SSL
+The issue was: The client signs the request using the custom domain; but then when S3 gets the request from CloudFront it expects the request to be signed for s3.amazonaws.com, not the custom domain.
+
+Resolution: Depending on the client you use, you might be able to set the custom endpoint after the request (and signature) is created. See https://github.com/aws/aws-sdk-go/issues/826#issuecomment-247651352 for an example.
+Unfortunately, this is not possible with the Java SDK. Our solution will be to either write a wrapper around S3's Java Rest SDK, or:
+Skip CloudFront altogether and use an nginx proxy instead with a configuration that includes something like:
+proxy_set_header    Host mybucket.s3.amazonaws.com"
+Amazon CloudFront	"Hosting an S3 bucket with SSL support using CloudFront
+Hello,
+
+I'm having an issue where SSL is not working with one of my S3 buckets. I've tried following https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-procedures.html and https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3/ to no avail. Hoping someone can point out what I'm doing wrong here.
+
+I have two S3 buckets created, www.mywebsite.co and mywebsite.co, with mywebsite.co configured to redirect requests to the www.mywebsite.co bucket via http or https. www.mywebsite.co is configured to host a website. Both buckets are public. I have a CloudFront distribution with an origin of the www.mywebsite.co S3 bucket, an SSL certificate for *.mywebsite.co created through the AWS certificate manager, and alternate domain names of www.mywebsite.co and mywebsite.co. Viewer protocol policy is configured for http and https. On Route53, I have 4 records under mywebsite.co. Two of the records are for the domain name, and two are aliases for the CloudFront distribution. I have a www.mywebsite.co alias and a mywebsite.co alias to the same distribution.
+
+http://mywebsite.co is correctly redirecting to http://www.mywebsite.co, but https versions of both mywebsite.co and www.mywebsite.co do not work.
+
+Using curl https://www.mywebsite.co
+ gives me port 443: connection refused
+
+
+Using dig https://www.mywebsite.co
+ returns the following:
+; <<>> DiG 9.10.3-P4-Debian <<>> https://www.mywebsite.co
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 34430
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+ 
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;https://www.mywebsite.co.		IN	A
+ 
+;; ANSWER SECTION:
+https://www.mywebsite.co.	300	IN	A	75.126.100.23
+ 
+;; Query time: 20 msec
+;; SERVER: 192.168.0.1#53(192.168.0.1)
+;; WHEN: Mon Mar 25 15:24:26 DST 2019
+;; MSG SIZE  rcvd: 67
+
+
+Edited by: Mark95 on Apr 5, 2019 11:23 AM
+
+Edit: I've done some more looking into this issue, and I've found out that using the CloudFront url (i.e xxxxxxxxxxxxxx.cloudfront.net) displays my website with https. Does this mean that the issue will be with Route53?
+
+Edited by: Mark95 on Apr 8, 2019 12:36 PM"
+Amazon CloudFront	"Routing S3 and API Gateway through CloudFront
+Hi, I have been attempting to setup a CloudFront distribution like so:
+
+https://example.cloudfront.net > S3 Bucket
+https://example.cloudfront.net/api > API Gateway
+
+Currently I am experiencing issues calling the API Gateway. I have added the origin domain name as example.execute-api.eu-west-1.amazonaws.com (taken from the API Gateway invoke URL after deploying it) and I set the origin path as the API Gateway stage name (which I set as /test). In the cache behavior settings I have added the path pattern as /api/* and selected the origin. Because the api uses POST methods, I have selected the appropriate allowed http methods. Everything else is set to default.
+
+Under the current setup as described above, when I use an API Tester to call https://example.cloudfront.net/api/test/methodName I am currently receiving this:
+{""message"":""Missing Authentication Token""}
+
+To clarify, the API Gateway is working fine when calling it using the same setup but changing the invoke URL provided: https://example.execute-api.eu-west-1.amazonaws.com/test/methodName to https://example.cloudfront.net/api/test/methodName
+
+Edited by: jamesingham19888 on Mar 8, 2016 4:54 AM"
+Amazon CloudFront	"Re: Routing S3 and API Gateway through CloudFront
+The authentication token should be specified in an HTTP header. Make sure that the behavior has Forward Headers set to All so that all of the headers are passed on to the origin."
+Amazon CloudFront	"Re: Routing S3 and API Gateway through CloudFront
+In these current tests I have turned off authentication in my API Gateway methods.
+
+When I set ""Forward Headers"" to ""All"" in behaviours, I always get this response (in a HTML formatted page) when calling with my REST Tester:
+""The request could not be satisfied.""
+""This distribution is not configured to allow the HTTP request method that was used for this request. The distribution supports only cachable requests.""
+
+I find it interesting that the response above states that it only supports cachable requests, but when you turn on ""All"" for ""Forward Headers"", a warning box appears under ""Object caching"" saying that ""CloudFront does not cache your objects"" (see screenshot).
+
+Maybe I should use a Whitelist for ""Forward Headers""?"
+Amazon CloudFront	"Re: Routing S3 and API Gateway through CloudFront
+To anyone stumbling upon this in the future: whitelisting specific headers, rather than allowing all headers, worked for me. Your mileage may vary.
+
+This serverless S3 + API Gateway (Lambda) setup is becoming more common. Here's hoping AWS will support and even encourage it natively soon."
+Amazon CloudFront	"Re: Routing S3 and API Gateway through CloudFront
+Hi,
+I'm currently trying to setup the same thing but I don't know how exactly the cloud formation part has to be defined. Would it be possible to share the corresponding part of your cloud formation template? This would be really helpful. Thanks in advance."
+Amazon CloudFront	"Re: Routing S3 and API Gateway through CloudFront
+What headers did you whitelist? I'm having a very similar issue."
+Amazon CloudFront	"Getting {""message"":""Missing Authentication Token""} from CloudFront
+I have a public API (unprotected and exposed via AWS API Gateway) which can be accessed from the browser/ SoapUI/ Postmaster. Since I wanted to cache the API responses with Dynamic cache facility, I configured CloudFront.
+But when I access the API via CloudFront I am getting {""message"":""Missing Authentication Token""}
+
+How should I resolve this issue?
+
+Other question is, Can I enable dynamic cache on AWS API Gateway?
+
+Thanks in advance!"
+Amazon CloudFront	"Re: Getting {""message"":""Missing Authentication Token""} from CloudFront
+Did you resolve this issue? I'm having the same issue."
+Amazon CloudFront	"com.amazonaws.services.cloudfront.model.AccessDeniedException Error
+Hi, I am getting the following error when trying to create a new CloudFront Web distribution:
+
+com.amazonaws.services.cloudfront.model.AccessDeniedException: Your account must be verified before you can add new CloudFront resources. To verify your account, please contact AWS Support (https://console.aws.amazon.com/support/home#/) and include this error message. (Service: AmazonCloudFront; Status Code: 403; Error Code: AccessDenied; Request ID: e9bea59e-59e1-11e9-8565-338f08cb4caa)
+
+
+I have 5 other distributions I have previously created without issue. Also, I have contacted the billing support and they have confirmed my account is ""verified and ready to go"" (although not exactly sure what that means).
+
+My account has AdministratorAccess permissions and I am the one who created the previous distributions.
+
+Does anyone have any idea why this is happening?
+
+Best,
+Damien"
+Amazon CloudFront	"When will CF support true Origin Shield?
+I am wondering if there is a good reason why Amazon CloudFront has not implemented some resource to select a single pop as an origin shield so that other pops can fetch from it, instead of the origin. This is a critical feature to assure all assets are the same across all pops. It appears that virtually all other CDNs offer this in some fashion or another:
+
+https://www.cdnplanet.com/guides/origin-shield/ (see chart)
+
+I understand there is already a Regional Cache feature, but this is not the same in that: 
+1) I cannot pick a pop that is closest to my origin to act as primary.
+2) Users in different regions or those without a regional cache will get different versions of the same assets depending on when and where they are loaded.
+3) If my origin goes down, only users within a regional cached area will be unaffected.
+
+Perhaps there is some complexity that I do not understand here, but at least if I could specify CF to only offer a single pop, I could set two distros up (one as the shield and the other as a global cdn). 
+
+I appreciate any insights.
+
+Edited by: MaverickMaven on Apr 4, 2019 12:26 PM"
+Amazon CloudFront	"Signed URL fails with unicode filename
+I'm having trouble with signed URLs, when the filename contains unicode characters
+
+For example: ""Chopped locks ✂️.jpg""
+
+I'm currently doing this (node.js):
+const signer = new AWS.CloudFront.Signer(CLOUDFRONT_ID, privateKey);
+signedURL = signer.getSignedUrl({ url, expires });
+
+When I load the URL in the browser, I get an access denied message. All other signed URLs work properly. Is there some encoding I need to perform before or after obtaining the signature?"
+Amazon CloudFront	"Too many redirection issue!
+What I have is 
+
+Cloudfront with origin as EC2's public domain and CNAME as actual domains
+SSL generated from certificate manager and attached to the cloudfront
+Route53 to have a record of the domains to Cloudfront as Alias
+
+
+Whatever the combination I do within Cloudfront, I ended up with Too many redirects =( 
+
+And this too many redirects happens for both http and https.. and for some reason, naked url redirects to www as well..
+
+
+Does anyone have any idea where I could look into to get to the bottom of this?
+
+Also another question,, if I use Nginx in EC2 and cloudfront has SSL installed on it.. should I just Nginx listen on 80 and have Cloudfront origin's HTTPS Port to 80 as well?
+
+So all request whether it is http or https goes to port 80.. which doesn't work either..
+
+Any advice would be greatly appreciated!"
+Amazon CloudFront	"Problem on invalidating the cache of a Cloudfront distribution
+Hi there,
+
+I have some problem to invalidate the cache of my CloudFront distribution.
+
+I mapped a wildcard domain name to my CloudFront distribution and I create a Lamba@Edge that modify the request origin and for each subdomain it redirects to its subfolder; It works in this way:
+
+aaa.mydomain.com => mydomain.com/aaa
+bbb.mydomain.com => mydomain.com/bbb
+ccc.mydomain.com => mydomain.com/ccc
+...
+
+I'm not be able to invalidate the cache:
+if I invalidate the path /bbb/* it doesn't work. Instead with the path ""/*"" works, but in this way I invalidate all the S3 Bucket, and I would like to avoid it.
+
+Any help?
+
+Thanks!"
+Amazon CloudFront	"Cloudfront distribution has very slow HTTPs connection in UAE region
+We are experiencing very big HTTPS latency ( 2 ~ 3 minutes ) with most requests in the UAE region.
+
+1. We use Cloudfront to distribute JavaScript files stored in S3.
+2. Our domains and DNS are managed by Route53. Certificates are managed by AWS Certificate Manager.
+3. Requests from other region do not suffer from above-mentioned latency.
+4. Requests from UAE to the custom domain with HTTP are slow, with latency between 200ms ~ 500ms.
+5. Requests from UAE  to the custom domain with HTTPS are VERY slow, with latency between 2 ~ 3 minutes.
+4. Requests from UAE  to Cloudfront endpoint directly have latency around 40ms (fast).
+
+Would this be an Cloudfront networking issue or Certifiate issue or even local ISP issue ?
+
+Could you help me with suggestions please.
+
+Here is the result of running `curl -v https://t.effectivemeasure.net/tag.js > /dev/null` from UAE:
+
+
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 52.222.176.128...
+
+TCP_NODELAY set
+Connected to t.effectivemeasure.net (52.222.176.128) port 443 (#0)
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* ALPN, offering h2
+
+ALPN, offering http/1.1
+Cipher selection: ALL:!EXPORT:!EXPORT40:!EXPORT56:!aNULL:!LOW:!RC4:@STRENGTH
+successfully set certificate verify locations:
+CAfile: /etc/ssl/cert.pem
+
+  CApath: none
+
+TLSv1.2 (OUT), TLS handshake, Client hello (1):
+
+} https://forums.aws.amazon.com/
+
+TLSv1.2 (IN), TLS handshake, Server hello (2):
+
+{ https://forums.aws.amazon.com/
+  0     0    0     0    0     0      0      0 --:--:--  0:00:13 --:--:--     0* TLSv1.2 (IN), TLS handshake, Certificate (11):
+{ https://forums.aws.amazon.com/
+  0     0    0     0    0     0      0      0 --:--:--  0:00:15 --:--:--     0* TLSv1.2 (IN), TLS handshake, Server key exchange (12):
+{ https://forums.aws.amazon.com/
+
+TLSv1.2 (IN), TLS handshake, Server finished (14):
+
+{ https://forums.aws.amazon.com/
+
+TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
+
+} https://forums.aws.amazon.com/
+
+TLSv1.2 (OUT), TLS change cipher, Client hello (1):
+
+} https://forums.aws.amazon.com/
+
+TLSv1.2 (OUT), TLS handshake, Finished (20):
+
+} https://forums.aws.amazon.com/
+  0     0    0     0    0     0      0      0 --:--:--  0:00:16 --:--:--     0* TLSv1.2 (IN), TLS change cipher, Client hello (1):
+{ https://forums.aws.amazon.com/
+
+TLSv1.2 (IN), TLS handshake, Finished (20):
+
+{ https://forums.aws.amazon.com/
+
+SSL connection using TLSv1.2 / ECDHE-RSA-AES128-GCM-SHA256
+ALPN, server accepted to use h2
+Server certificate:
+subject: CN=*.effectivemeasure.net
+start date: May  7 00:00:00 2018 GMT
+expire date: Jun  7 12:00:00 2019 GMT
+subjectAltName: host ""t.effectivemeasure.net"" matched cert's ""*.effectivemeasure.net""
+issuer: C=US; O=Amazon; OU=Server CA 1B; CN=Amazon
+SSL certificate verify ok.
+Using HTTP2, server supports multi-use
+Connection state changed (HTTP/2 confirmed)
+Copying HTTP/2 data in stream buffer to connection buffer after upgrade: len=0
+Using Stream ID: 1 (easy handle 0x7ff229800400)
+
+GET /tag.js HTTP/2
+Host: t.effectivemeasure.net
+User-Agent: curl/7.54.0
+Accept: /
+
+
+Connection state changed (MAX_CONCURRENT_STREAMS updated)!
+
+  0     0    0     0    0     0      0      0 --:--:--  0:01:17 --:--:--     0< HTTP/2 200
+< content-type: text/javascript
+< content-length: 40546
+< date: Mon, 25 Mar 2019 06:13:24 GMT
+< cache-control: public, max-age=604800
+< last-modified: Mon, 25 Mar 2019 06:12:15 GMT
+< x-amz-version-id: HdydQdHrxcjzpHMsHbeBT57W6pogfIjk
+< etag: ""74d51932673dc4c9b44eef5cdbd03bba""
+< server: AmazonS3
+< vary: Accept-Encoding
+< age: 261003
+< x-cache: Hit from cloudfront
+< via: 1.1 d1072e52290a7034ad04c5d6d3a43975.cloudfront.net (CloudFront)
+< x-amz-cf-id: S_p48c_ATFdflzbZ7Tdcb3aowu2ZYAbntGch54obPAGR7tLdQexx1g==
+<
+{ https://forums.aws.amazon.com/
+
+129 data bytes written
+
+{ https://forums.aws.amazon.com/
+100 40546  100 40546    0     0    212      0  0:03:11  0:03:10  0:00:01  3640
+
+Connection #0 to host t.effectivemeasure.net left intact
+
+
+Edited by: davidlinau on Mar 28, 2019 4:58 PM"
+Amazon CloudFront	"Mapping S3 files with their corresponding cloudfront CDN URLs
+I have some files stored in an S3 bucket called XYZ with some complex directory structure.
+If I were to add some of the files in this bucket to CloudFront then by default it will add some random strings to the URL.(https://d73s21sad.cloudfront.net/path/file) I am fine with this setup.
+However in an external app, I am using AWS SDK(preferably PHP or JS) and I would like to map the URLs with the actual path in the S3 bucket along with the bucket name.
+There can be several different buckets where different files are present.
+Is there a way for me to fetch all the CloudFront URLs and their corresponding paths?"
+Amazon CloudFront	"Cloudfront taking 10 mins to deliver 28k file
+In the last 2 hours, our cloud front endpoint has taken longer than 10 mins to return 2 relatively small files 28k from the origin location anyone else seeing similar issues?
+
+origin is us-east-1 s3 bucket
+
+The attached was hitting our cloudfront URL this morning at 5AM MT below dial-up speed.
+
+Edited by: sw-waterford on Mar 27, 2019 5:07 AM
+
+Edited by: sw-waterford on Mar 27, 2019 5:09 AM
+
+Edited by: sw-waterford on Mar 27, 2019 9:01 AM"
+Amazon CloudFront	"Re: Cloudfront taking 10 mins to deliver 28k file
+We're seeing this is as well.  Extremely slow response times.  
+
+The origin for our CF distribution is US West (Oregon)."
+Amazon CloudFront	"Re: Cloudfront taking 10 mins to deliver 28k file
+I incorrectly stated our origin was us-east-1 our origin s3 bucket is us-west-1"
+Amazon CloudFront	"[Placeholder feature request] TLS 1.2 + forward secrecy (s2n)
+Ticket filed against the upstream Amazon ""s2n"" project requesting that they add the support that CloudFront relies on: https://github.com/awslabs/s2n/issues/1009
+
+For CloudFront distributions, it would be excellent to expose this cipher suite which focuses on TLS 1.2 + forward secrecy.
+
+Please add this as a feature request in your internal ticket tracker.
+
+----
+
+Cross-linking the matching request for ALB/ELB: https://forums.aws.amazon.com/thread.jspa?threadID=300824"
+Amazon CloudFront	"Conditional ""Restrict Bucket Access"" using Lambda function?
+Hi,
+
+We have a requirement where we want to ""Restrict Bucket Access"" for some S3 request paths, but not for others. Unfortunately there are around 10,000 paths for which we want to allow access to the requested content without signed cookies being sent, and 250,000 where we want to insist upon them. We obviously can't therefore set each of these paths up with their own CloudFront behaviours.
+
+I'm therefore thinking of using a Lambda function, but don't have much experience of them. I think what we'd need to do is as follows:
+
+1. Set the lambda function up to be called as part of the viewer request, i.e. when the request enters CloudFront.
+2. If the request has been sent with CF signed cookies then let it be processed as normal, as per the corresponding CF behaviour, with the signed cookies being checked by CF.
+3. If the request hasn't been sent with signed cookies then the lambda function would call an API to get a list of the paths for which signed cookies aren't required. If the request path matched one of those paths then the request would be processed as per the corresponding CF behaviour, but without the ""restrict bucket access"" requirement, so they could be given the object even though they didn't send signed cookies.
+
+It's worth noting that ideally the lambda function wouldn't be continually making those API calls. Ideally it would cache the API response for a period of time, but not sure whether Lambda could do that.
+
+Is this feasible? If so any relevant docs would be hugely appreciated."
+Amazon CloudFront	"Packet Loss
+Hello,
+
+I am seeing extremely slow image loading when using CloudFront with S3. The images load faster without CloudFront, but that significantly increases our bandwidth costs.
+
+Here is a sample waterfall: https://i.imgur.com/yRQhmr3.png
+tracert shows massive packet loss: https://i.imgur.com/MpORE1l.png
+tracert with VPN disabled: https://i.imgur.com/tEa9d8S.png
+
+I have confirmed from others in other geographic locations that they are encountering packet loss as well. Could this be the culprit?
+
+Customer GUID from the AWS CloudFront Testing Tool: 0957-3806-18078-1818"
+Amazon CloudFront	"403 error with Cloudfront setup
+I set up static S3 website buckets and created certificates.
+Then I tried to add CloudFront, but I get a 403 error.
+
+I turned on logging for the static bucket and didn't see an error.
+What else can I do to try to see what is wrong?
+
+Edited by: slenderbamboo on Mar 23, 2019 11:12 AM"
+Amazon CloudFront	"Migration of live service from one CF dist to another
+I'm sure this is a FAQ but can't find anything in Amazon docs or the internet.
+We're using CF as the front end for our web application with a route 53 record alias pointing to it (root apex mydomain.com)
+
+When we develop a new version we use cloudformation to create a complete setup fronted by CF (test.mydomain.com).  Once tested we'd like to promote that to live (so requests to mydomain.com go to it) by pointing the route 53 record alias to it.  In this way we can revert to the old distribution if anything goes wrong.
+
+However we can't have multiple distributions with the same cname (mydomain.com) - is there anyway around this? or alternative approach.
+
+Thanks for any help"
+Amazon CloudFront	"Not able to apply AWS Certificate
+I would like to create a static S3 site.
+I've set up the S3 buckets and applied for an SSL certificate.
+The certificate was successful and is marked as Issued but not in Use.
+
+In CloudFront, I am setting up a distribution and it asks for the SSL certificate.
+I want to use a custom domain name and associate the certificate that I created.
+The option ""Custom SSL Certificate"" is grayed out.
+
+What have I done wrong?"
+Amazon CloudFront	"Error Updating Cloudfront Distribution to include Whitelisted Headers
+We have a distribution that we are trying to include a couple of whitelisted headers.  Currently, the headers are set to ""*"".  When we update this setting to specify headers and save, we get an error.
+
+We keep getting the below error message: 
+error updating CloudFront Distribution (XXXXX): InvalidArgument: The parameter CNAME contains one or more parameters that are not valid. status code: 400""
+
+
+We have the same configuration working in a separate account for our test environment.  When we attempt to update in this separate production account (separate account from test), we get this error. 
+
+Updating the values manually in the console results in the same error.  Console steps:
+    1) select ""Default"" behavior on distribution
+    2) set ""Cache Based on Selected Request Headers"" to whitelist
+    3) add a value from ""Whitelist Headers""
+    4) click ""Yes, Edit""
+
+Any ideas?
+
+Edited by: gfssanchez on Mar 20, 2019 9:29 AM"

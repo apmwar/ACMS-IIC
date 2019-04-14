@@ -1,0 +1,1233 @@
+label	description
+Amazon DynamoDB	"Unable to delete an item from the table. Don't see any error in CW
+I am receiving below errors when I try to delete a user from users table.
+I am calling the api . API calls lambda (node js) which inturn makes delete item call to dynamodb. I call this api   from postman and receive this error in postman. But I don’t see any error in CW logs.
+Internal Server Error (HTTP 500), or Service Unavailable (HTTP 503)
+
+I don't see any error in CW logs, even though I have console.log for both response and error scenarios and have try catch stmt around it. 
+Record is not getting deleted.  
+
+Did any body experinece this behaviour? What is the root cause of this behavior and how to solve the problem of seeing the complete exception in CW log?"
+Amazon DynamoDB	"Re: Unable to delete an item from the table. Don't see any error in CW
+Are you able to make other DynamoDB API calls successfully?
+
+Edited by: ArturoAtAWS on Apr 11, 2019 4:04 PM
+
+Edited by: ArturoAtAWS on Apr 11, 2019 4:05 PM"
+Amazon DynamoDB	"DAX Performance issues with DynamoDB Scan
+Hi,
+
+We are trying DAX to see if it worth to integrate into the lambda function. We are trying to retrieve the list of 1000 items from DynamoDB.
+
+We tried to retrieve items using both DAX and without DAX. We found the performance of DynamoDB Without DAX is better compare to using it with DAX.
+
+We understand that cold start can be there but even the subsequent request to DAX is slower compare to dynamoDB.
+
+Performance without DAX
+Scanning 1000 items
+Average response time 400ms
+
+Performance with DAX
+Scanning 1000 items
+Average response time 500-600ms
+
+While DAX shows improvement in response time when we work with the smaller set of items
+
+Performance without DAX
+Scanning 50 items
+Average response time 60-80ms
+
+Performance with DAX
+Scanning 50 items
+Average response time 5-10ms"
+Amazon DynamoDB	"Re: DAX Performance issues with DynamoDB Scan
+imnirav,
+
+DAX uses a dedicated cache for queries and scans, which functions as a request/response cache and has its own TTL (time to live).  If a request does not exactly match a previous request, it won't be a cache hit. Consider parameters on your large requests like limit, projection expression, exclusive start key, and return consumed capacity that may be changing during your test.
+
+Other things to consider:
+
+Consistent read must be false (the default value), or DAX will go to DynamoDB to serve the request.
+Requests must follow another within the query cache's TTL.
+Check the EvictedSize metric. If it is greater than zero, then things are being evicted from the cache before their TTL. Your scan requests could be among them. If the EvictedSize is high relative to the EstimatedDBSize, that's even more likely.
+Check the ScanCacheHits and ScanCacheMisses metrics when running your tests to confirm that the high latencies are due to cache misses.
+
+
+The fact that small requests are performing better than large requests leads me to suspect eviction. Your test may be scanning enough data to begin eviction before it begins re-scanning. In that case your best bet is to increase the instance type of your cluster, which will increase the memory available to the scan and query cache. 
+
+Thanks for using DAX,
+Kevin C."
+Amazon DynamoDB	"Re: DAX Performance issues with DynamoDB Scan
+Hi KevinCAtAWS,
+
+We looked through the cloud-watch stats and below is what we found.
+Even though we scan around 1000 items cloud-watch shows only 45-50 items in ScanScanHits.
+Image attached.
+
+Thanks,
+Mahendra"
+Amazon DynamoDB	"Re: DAX Performance issues with DynamoDB Scan
+ScanCacheHits (as well as ScanCacheMisses and ScanRequestCount) show requests, not items. Based on your total request count and scan cache hits, your scan cache hit ratio is fine. I can't tell from the screenshot whether these were large or small scans, or what the latencies were."
+Amazon DynamoDB	"Creating DynamoDB tables in local instance of DynamoDB?
+Hi.
+
+I have DynamoDB tables that were created in AWS via the AWS Console.  I would like to have the same tables in my local instance of DynamoDB.  Is it possible to easy create them locally based on the tables in AWS (perhaps through an export method?)"
+Amazon DynamoDB	"Re: Creating DynamoDB tables in local instance of DynamoDB?
+This is not possible today, but we will consider this request for our roadmap. Thanks for the feedback!
+
+Edited by: ArturoAtAWS on Apr 5, 2019 2:34 PM"
+Amazon DynamoDB	"How to read data values published in DynamoDB?
+How can one track abnormal data that is being pushed to the DynamoDB table if PutItem doesn't create a stream record?
+
+For example I have a DynamoDB table connected to the IoT core. My device publishes sensor data every 5 seconds, including the location of the device (latitutde and longitude). I want to be able to ""catch"" the device when it goes outside certain geographical area (e.g. I want to see when lat/long values change from the route). I was planning on using the DynamoDB streams to trigger Lambda to send an e-mail about the device location if it's outside the range. But I noticed this:
+
+If you perform a PutItem or UpdateItem operation that does not change any data in an item, then DynamoDB Streams will not write a stream record for that operation.
+
+How can one track data values if they are not modified, but simply added to the table?"
+Amazon DynamoDB	"Re: How to read data values published in DynamoDB?
+Hello - I am not quite sure I am following your question. Are you saying that the lat/lon attributes are new? Adding new attributes to an item will trigger a stream record."
+Amazon DynamoDB	"DynamoDB ProjectionExpression exclude attribute (all fields except one)
+I have a requirement where my dynamodb table has many attributes, and i need all of them in the projection expression except one or two columns which i dont need in response. (I am scanning the table).
+Is there a way how can i define this in ProjectionExpression (all except this one column).
+I have seen examples where ProjectionExpression only takes what all ""is required"" and not the other way."
+Amazon DynamoDB	"Re: DynamoDB ProjectionExpression exclude attribute (all fields except one)
+There is not an ""all but X attributes"" type of filter or syntax for projections, you have to list out all the attributes you want to project if you only want a subset."
+Amazon DynamoDB	"Question about DynamoDB billing
+Greetings
+I'm completly new to DynamoDB and I'm trying to understand if it fits my needs, but I don't understand how the billing is calculated.
+I have an app which will run only a few hours each month, but will generate let's say 1000 write request each second during the use hours.
+What cost should I expect?
+
+Thanks in advance"
+Amazon DynamoDB	"Re: Question about DynamoDB billing
+greg wrote:
+Greetings
+I'm completly new to DynamoDB and I'm trying to understand if it fits my needs, but I don't understand how the billing is calculated.
+I have an app which will run only a few hours each month, but will generate let's say 1000 write request each second during the use hours.
+What cost should I expect?
+Hi Greg,
+
+You can use the simple monthly calculator to estimate your bill.
+https://calculator.s3.amazonaws.com/index.html
+
+-Jeff"
+Amazon DynamoDB	"Re: Question about DynamoDB billing
+Thanks for your answer.
+I checked the online calculator before asking my question, but my understanding of the product is not good enough to be able to use it.
+Regards"
+Amazon DynamoDB	"Re: Question about DynamoDB billing
+DynamoDB offers two billing modes: provisioned and on-demand. More info here: https://aws.amazon.com/dynamodb/pricing/
+
+With provisioned mode, we meter your throughput settings every hour and you are billed based on the amount of WCUs and RCUs you provision to your table. WCUs and RCUs define how many reads and writes per second your table can support. This model works really well if you know your workload characteristics. We also offer auto scaling for provisioned mode so the provisioned throughput settings adjust automatically based on your actual workload traffic.
+
+With on-demand mode, you pay for the actual reads and writes to your tables. On-demand mode works really well for spiky workloads, or new workloads that you do not yet have a lot of history on.
+
+In your scenario, it sounds like on-demand mode may be better fit if the traffic bursts are spiky and short-lived.
+
+Edited by: ArturoAtAWS on Apr 3, 2019 12:29 PM"
+Amazon DynamoDB	"DynamoDB stuck on ""Restoring""
+I tried backup/restore process of my DynamoDB table. One of my tables is being restored for 4 months now (definitely something stuck). Is there anything I can do about it? I do not see any ""force delete"" functionality in cli/boto. Anything I can do about it?"
+Amazon DynamoDB	"Re: DynamoDB stuck on ""Restoring""
+A restore could be stuck for different reasons – one of the major buckets is insufficient permissions to complete the restore.  IAM policies involving source IP restrictions/VPCE restrictions for accessing the target restore table or modifying policies while a restore is in progress can cause restores to get stuck. Find more details on restore https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Restore.Tutorial.html
+
+You should reach out to customer support to get the table fixed. Note that stuck restores are not charged to the customer."
+Amazon DynamoDB	"Searching Dynamo table items by List attribute value
+Hi all,
+Suppose I have the following Item structure in my table:
+
+https://github.com/aws-samples/lambda-refarch-imagerecognition/blob/master/Workshop/images/4c-ddb-imagemetadata-item.png
+
+Pay attention on the 'tags' attribute, this is a List with various numbers of String values.
+Now, I want to find all items whose 'tags' attribute contains , for example, a 'Plant' value (and possible other values too: 'Plant', 'Cactus' and 'Flora' - It's only known at runtime).
+
+I am just considering a Global Secondary Index, as described here:
+https://aws.amazon.com/blogs/database/querying-on-multiple-attributes-in-amazon-dynamodb/
+
+But  I do not understand why it can be applied, and in what way?
+Is there any other way beside GSI?
+
+P.S. I am using Java SDK"
+Amazon DynamoDB	"Re: Searching Dynamo table items by List attribute value
+Any suggestion?
+Interestingly, very few answers are given to questions, in general.
+Wondering, what is the reason?
+Is there another forum that is dedicated to Dynamo? Anywhere?"
+Amazon DynamoDB	"DynamoDB LSI vs GSI in On Demand
+Hello, 
+
+So I been wondering for a time now that with the new feature On Demand released for DynamoDB the use case of LSI ( local secondary index ) vs GSI ( global secondary index ) it's a bit different ( thinking price ). 
+As I have understood from the documentation LSI have to be created on table creation,  they share the write and read capacity from the main table and they have a 10gb limit. In the other hand GSI can be created after table creation, they don't have a 10GB limit and they not share the write and read capacity of the table.
+In a setting where I am using the new on demand feature I can avoid using LSI because as I only will pay for what I use there is no difference between LSI and GSI, right?
+
+Is there any benefit using LSI when using on demand?"
+Amazon DynamoDB	"AWS DynamoDB tables and GSI
+I'm trying to understand how DynamoDB tables work with GSI and I'm very confused by their documentation.
+
+From this https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-gsi-aggregation.html, a music library table looks like this in a JSON-like format (if I understand it correctly):
+
+// Music Library Table
+[
+    {
+        ""song_id"": ""song-129"", // Partition Key
+        ""details"": { /** details is a Sort Key */
+            ""title"": ""Wild Love"",
+            ""artist"": ""Argyboots"",
+            ""downloads"": 15000,
+            // etc.
+        },
+        ""month-2018-01"": { /** Also a Sort Key? */
+            ""month"": ""2018-01"", /** GSI Primary Key */
+            ""month_total"": 1000 /** GSI Secondary Key */
+        },
+        ""download_id_1"": { /** Also a Sort Key? */
+            ""time"": ""timestamp""
+        },
+        ""download_id_2"": { /** Also a Sort Key? */
+            ""time"": ""timestamp""
+        },
+        ""download_id_3"": { /** Also a Sort Key? */
+            ""time"": ""timestamp""
+        },
+    }
+]
+
+
+It seems like there are several combinations of Primary Keys = (Partition Key + Details / Month / DownloadID). But they wrote
+
+and Sort-Key=DownloadID
+
+Also from this https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-gsi-overloading.html, an HR table looks like this:
+
+// HR Table
+[
+    {
+        ""employee_id"": ""hr-974"", /** Partition Key */
+        ""employee_name"": { /** Also a Sort Key? */
+            ""name"": ""Murphy, John"",
+            ""start_date"": ""2008-11-08"",
+            // etc.
+        },
+        ""YYY-Q1"": { /** Also a Sort Key? */
+            ""order_total"": ""$5,000"",
+            ""name"": ""Murphy, John""
+        },
+        // ...
+        ""v0_job_title"": { /** Also a Sort Key? */
+            ""job_title"": ""operator-1"",
+            ""start_date"": ""2008-11-08"",
+            // etc.
+        },
+        ""v1_job_title"": { /** Also a Sort Key? */
+            ""job_title"": ""operator-2"",
+            ""start_date"": ""2008-11-10"",
+            // etc.
+        }
+    }
+]
+
+
+But it seems like it doesn't because:
+
+Use the global secondary index to find all employees working in a particular warehouse by searching on a warehouse ID (such as Warehouse_01).
+
+It seems like warehouses have their own entries with their own IDs.
+
+So how should the tables look like in JSON format?"
+Amazon DynamoDB	"DynamoDB Table Stuck Updating
+I have several DynamoDB tables that have been stuck updating for at least an hour.  These tables do use auto scaling and I am using Oregon, so I assume they might have been affected by today Oregon auto scaling and cloudwatch mishap.  In any case, one of these stuck tables is severely under provisioned causing major throttling to my service.  However, because the table is stuck updating, I can't do anything to increase capacity units.  If I could please get some help ASAP, that would be greatly appreciated."
+Amazon DynamoDB	"Re: DynamoDB Table Stuck Updating
+We're having the same issue, it seems.  Two tables in two different accounts, both in the us-west-2 region.  Stuck in updating for at least 20 minutes now.
+
+We do seem to be able to make read calls to these dbs."
+Amazon DynamoDB	"Re: DynamoDB Table Stuck Updating
+We are also able to still read and write to our tables that are stuck updating.  Unfortunately, we just can't update the tables that are under-provisioned."
+Amazon DynamoDB	"Re: DynamoDB Table Stuck Updating
+We are having the same problem in us-west-2."
+Amazon DynamoDB	"Re: DynamoDB Table Stuck Updating
+Same here.  Stuck ""Updating"" on US West 2..."
+Amazon DynamoDB	"Re: DynamoDB Table Stuck Updating
+Seems like some of my tables just got unstuck on their own (after several hours).  Hopefully the issue resolves itself soon and doesn't come back."
+Amazon DynamoDB	"Lock dynamodb table during batch processing
+Hi,
+
+I have a dynamodb table which is exposed to frontend as well as used during batch (nightly processing). I want to make sure when the batch begins (and might run for quite some time), the db is in some kind of locked status such that any updates done via frontend doesn't get updated in db. What would be a good design pattern to solve this ? Appreciate any help regarding this."
+Amazon DynamoDB	"Create backup on local Dynamo DB
+I'm suspecting that creating and restoring backups doesn't work with Dynamo DB Local but to be sure I'm asking.
+
+When running DynamoDB local I get the following error when trying to create a backup.
+
+An error occurred (UnknownOperationException) when calling the CreateBackup operation: An unknown operation was requested.
+
+
+Is createBackup supported in DynamoDB local?
+
+The reason I want to handle backups locally is that I'm running AWS SAM and Lambda that will handle backups."
+Amazon DynamoDB	"Re: Create backup on local Dynamo DB
+Correct - DyanmoDB Local does not currently support the backup and restore APIs.
+This is something we are considering for the roadmap. Can you share a little more info about your use case? Are you looking to test a backup and restore workflow or if you are just trying to back-up a local instance of your table?"
+Amazon DynamoDB	"fine grained access control dynamodb based on userid partition, old data
+Hi, 
+
+I want to implement fine grained access control dynamodb based on userid table partition, which is working fine for data added by the user, so when the user is logged-in, i get the 'identityid' from credential and store it as userid.
+
+Now i want to add old data for multiple users, how to calculate the 'identityid' to store it?"
+Amazon DynamoDB	"AWS DynamoDB Insert Failing
+I am trying to insert data in a DynamoDB table through an IoT Rule.   No data is appearing in the table, and here is the error I am seeing in the CloudWatch logs:
+
+2019-03-19 23:48:31.442 TRACEID:d8492023-b550-f663-65ec-cb51d7b6fcfd PRINCIPALID:9c22ae7bd91b4fa68c85faa64959c62f637e7ef6de488a8a64e43cd150cb17c9 https://forums.aws.amazon.com/ EVENT:DynamoActionFailure TOPICNAME:$aws/things/Volume/shadow/update/accepted CLIENTID:N/A MESSAGE:Dynamo Insert record failed. The error received was One or more parameter values were invalid: An AttributeValue may not contain an empty string (Service: AmazonDynamoDBv2; Status Code: 400; Error Code: ValidationException; Request ID: CAA6OFGRNRDDEI538I865IEGJRVV4KQNSO5AEMVJF66Q9ASUAAJG). Message arrived on: $aws/things/Volume/shadow/update/accepted, Action: dynamo, Table: VolumeTable, HashKeyField: Row, HashKeyValue: , RangeKeyField: Some(PositionInRow), RangeKeyValue:
+
+How do I know which column in the table is causing this?
+
+Thanks,
+
+Steve
+
+Edited by: Albright on Mar 19, 2019 5:24 PM"
+Amazon DynamoDB	"Batch for DynamoDB Stream
+I'm having a table as below
+
+Key                                 | Value
+
+Client_123_UNIQUE_ID                | s3://abc.txt
+Client_123_UNIQUE_ID                | s3://xyz.txt
+Client_456_UNIQUE_ID                | s3://qaz.txt              
+Client_456_UNIQUE_ID                | s3://qwe.txt
+Client_789_UNIQUE_ID                | s3://asd.txt
+Client_789_UNIQUE_ID                | s3://zxc.txt
+
+The data will be inserted consistently to this table from a AWS Lambda function. (maybe millions items).
+
+I have an use case which I need to have a trigger when there is 100 items available in the table to perform some batch processing. In other mean, as soon as we have 100 new items created in this table, I would like to have a trigger to Lambda function to perform a batch processing on 100 items.
+
+I have used Dynamo Stream with batch size is 100 but actually the lambda got a batch about 6,7 or some random number of records.
+
+In AWS do we have any way to perform a minimum batch size?"
+Amazon DynamoDB	"Re: Batch for DynamoDB Stream
+The GetRecords API does not support a minimum batch size. To achieve the desired behavior, you can build a client application that fetches records from GetRecords iteratively, and only processes the results if it sees 100 records (or desired batch size). Once the batch is processed you can update the checkpoint with the sequence number of the last record in the processed batch. The downside of this kind of approach: (1) you'll do duplicate reads; and (2) you may not see 100 records in a 24 hour period in a stream shard and end up not processing any data before it gets trimmed."
+Amazon DynamoDB	"DynamoDB streaming to s3 with lambda
+Hi,
+
+Can we trim/drop/skip one attribute during the streaming data from dynamodb? If possible can you please guide me how to do it?
+
+Thanks"
+Amazon DynamoDB	"Re: DynamoDB streaming to s3 with lambda
+There is no service-side support for dropping/hiding a single attribute from the GetRecords response. You'll have to implement this kind of filtering in your application."
+Amazon DynamoDB	"BatchGetItem fails (400) after switching from KMS to Default CMK
+We changed a DDB table from KMS (using aws/dynamodb key) to the DEFAULT CMK following this announcement:
+https://forums.aws.amazon.com/ann.jspa?annID=6617
+
+However, we get 400 errors (com.amazonaws.dynamodb.v20120810#ResourceNotFoundException) when calling BatchGetItem. 
+
+All other API calls appear to be working. When we switched back to KMS, we stopped receiving the errors. We are using the .NET SDK ==> AWSSDK.DynamoDBv2.3.3.10.2."
+Amazon DynamoDB	"Re: BatchGetItem fails (400) after switching from KMS to Default CMK
+Apparently any Batch operation fails after switching from KMS to AWS CMK. There’s definitely an issue on the AWS side. The documentation says :
+
+`When you access an encrypted table, DynamoDB decrypts the table data transparently. You can switch between the AWS owned CMK and AWS managed CMK at any given time. You don't have to change any code or applications to use or manage encrypted tables. DynamoDB continues to deliver the same single-digit millisecond latency that you have come to expect, and all DynamoDB queries work seamlessly on your encrypted data.`
+
+Is this only an issue in the SDK?"
+Amazon DynamoDB	"High User Error Count in Metrics
+Hello,
+
+We are getting consistent User Errors metrics on a newly created table. The data is being written properly, but the CW metrics are not correct. The attached screenshot shows metrics going back 2 weeks on a table that is less than an hour old. What is interesting is the sudden drop earlier this week. I have checked other tables and they also show this same pattern.
+
+The table is using BillingMode: PAY_PER_REQUEST as it is very spiky in usage. 
+
+This situation is making it impossible to use the user errors metric for monitoring.
+
+Does anyone have any ideas?
+
+Thanks
+
+J."
+Amazon DynamoDB	"Re: High User Error Count in Metrics
+Hello there,
+
+Please note that the UserErrors metric represents the aggregate of HTTP 400 errors for DynamoDB or Amazon DynamoDB Streams requests for the current region and the current AWS account:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html
+
+An HTTP 400 usually indicates a client-side error such as an invalid combination of parameters, attempting to update a nonexistent table, or an incorrect request signature and these will show up in your application logs as well. 
+
+Once you have the error code from logs, you could refer to the below document which describes error codes and their possible causes:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html#Programming.Errors.MessagesAndCodes.http400
+
+I hope this helps!"
+Amazon DynamoDB	"Re: High User Error Count in Metrics
+Hello,
+
+I'm sorry but that answer does not answer my question.
+
+If you notice I said the table was less than 1 hour old and had no activity but yet the User Error metric is getting fed as if there are multiple actions every second. And the metrics have data going back 2 weeks. The screen shot I supplied show this activity.
+
+This is on a brand new table. Had not even put it into prod yet. I finally did and graphs show same pattern even though the activity at this time is very low.
+
+Other tables show the same activity, even ones with zero activity.
+
+There is no errors in my app logs and all data is being deposited correctly in the tables.
+
+Is this related to using the on-demand model for the table?
+
+I have attached 2 more screen shots. Please note the similarity in patterns. The second is from a table that is used once a day. The first from a table that is no longer in production. Both follow the same patterns.
+
+Thanks 
+
+J.
+
+Edited by: ferio38 on Mar 11, 2019 8:38 PM"
+Amazon DynamoDB	"Sporadic no response from dynamodb request
+Hi dynamodb experts 
+
+I have an infrequent issue:
+Sometimes (one of thousands or more of requests) a dynamodb call (no matter which table or what kind of request, get, query, put, del, etc...) is not responding (in time).
+
+I call dynamodb from my lambda functions and track it like this (I track the calls with iopipe):
+  const ddb = new AWS.DynamoDB.DocumentClient({ region: settings.region });
+ 
+  const params = {
+    TableName: 'my-table-for-user-projects',
+    Key: {
+      projectId: projectId,
+      userId: userId
+    }
+  };
+ 
+  settings.track('database').start();
+  ddb.get(params, (err, ret) => {
+    settings.track('database').end();
+    if (err) return callback(err);
+    callback(null, ret.Item);
+  });
+
+
+in iopipe I see ""NO TRACE END DETECTED"" for my custom metric and also for the dynamodb call, i.e:
+
+REQUEST HEADERS
+Authorization
+AWS4-HMAC-SHA256 Credential=ASIA************G3Y/20190222/eu-west-1/dynamodb/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-security-token;x-amz-target, Signature=ca368c**************************************************bb6ac670
+Content-Length
+160
+Content-Type
+application/x-amz-json-1.0
+Host
+dynamodb.eu-west-1.amazonaws.com
+User-Agent
+aws-sdk-nodejs/2.406.0 linux/v8.10.0 exec-env/AWS_Lambda_nodejs8.10 callback
+X-Amz-Content-Sha256
+132956**************************************************220b3d9f
+X-Amz-Date
+20190222T145758Z
+X-Amz-Target
+DynamoDB_20120810.GetItem
+x-amz-security-token
+FQoGZXIvY*****************************************************xsfm9zKPPyv+MF
+No Response Headers
+
+
+Has there been any internal changes to dynamodb? Or any known network issues? Not resolving the correct dns name or similar?
+
+Maybe other useful hints: Have these timeouts since 1-2 weeks and I switched the dynamodb plan to on-demand since last month. And also important: seems there are no big workload peaks when the timeouts are triggered (no special dynamodb capacity increase and no throttled request).
+
+I hope anyone can help, because my customers starts to notice it. 
+
+Have a nice day."
+Amazon DynamoDB	"Re: Sporadic no response from dynamodb request
+Hi adrai,
+
+I am not sure if this is the case for your but we have encountered a similar problem recently. Basically, we were experiencing an unexpected delay (100ms to 300ms, depending on the memory allocated for the corresponding Lambda) for some dynamodb calls we made in our Python function and this was happening randomly. 
+
+In our case since we had a bigger timeout value set in our Lambda, functions didn't timeout. However, we were using Thundra to monitor our Lambda function and it has an AWS SDK integration shows the individual dynamodb call's duration. We saw in the Thundra console that some random dynamodb calls experience an extra latency.
+
+We eventually found out the reason was the connection timeout value that AWS SDK uses while making API calls. It was set to the 60s by default for Python AWS SDK. Basically, whenever there is a gap between two dynamodb calls greater than the 60s, AWS SDK creates a new connection and that was causing unexpected latency I have mentioned above. As long as the time between two dynamodb calls does not exceed the 60s, AWS SDK uses the same connection, so there is no extra latency for creating a new connection. Also, note that this is not something related to cold-start. Even if your Lambda is warm, once the connection that AWS SDK uses to make API calls is timed out; same latency is occurring again.
+
+I don't know if this was the exact issue you faced with, but maybe that gives you a clue about one of the possible causes. Also, I suggest you have a look at Thundra (https://www.thundra.io). It helps a lot to deal with that kind of problems."
+Amazon DynamoDB	"Re: Sporadic no response from dynamodb request
+Thanks for your reply.
+I see the same stuff you mentioned for thundra also in iopipe...
+See screenshot here: https://twitter.com/adrirai/status/1099224045365669888
+My setup with lambda + dynamodb is like for more than 2 years now... and the timeouts just appeared a couple of weeks ago... (but as said, really just very rare. Perhaps some dynamodb nodes react differently?)"
+Amazon DynamoDB	"Re: Sporadic no response from dynamodb request
+Changing the default http timeout in the aws-sdk seems to solve my problem.
+
+AWS.config.update({httpOptions: {timeout: 5000}}); // default is 120000 => 2 mins
+// or
+const ddb = new AWS.DynamoDB.DocumentClient({ region: settings.region, httpOptions: { timeout: 5000 } }); // default is 120000 => 2 mins"
+Amazon DynamoDB	"Global Table replication stream event issues
+We are encountering a situation where if we have a table globally replicated but also use the tables stream to process records on insert/update we are seeing double events in our stream for the region the insert/update was performed.
+
+E.g. We have a table replicated between eu-west-1 and us-east-1 with a lambda connected to each tables stream in their region. 
+When an update is performed in the eu table the eu lambda is invoked with the updated record information then invoked again with the `aws::` updated fields. With the us lambda only invoked once with the record update and the `aws::` fields. 
+
+We have implemented logic on our lambdas to drop the `aws::` specific events but we're wondering if this is the expected behaviour for using streams on globally replicated tables? 
+
+It seems that due to this logic not only are we being charged for the global replication but also the cost of our lambda functions being invoked twice per insert/update"
+Amazon DynamoDB	"Re: Global Table replication stream event issues
+Yes this is an expected behavior. Global Table uses DynamoDB streams to replicate records from one region to another.
+
+When you use Global Table, you will see two types of records within DynamoDB streams:
+1> One stream record is created when application performs Put/Update/Delete to item (same as regular tables)
+2> Second stream record is created when Global Tables internal replication engine either adds or updates special attributes ‘aws:rep:deleting’, ‘aws:rep:updatetime and ‘aws:rep:updateregion’ on item
+
+Stream record produced by replication will always have different values for aws:rep:updatetime attribute in the old and new images on the stream. So if you discard the stream records for which the aws:rep:updatetime attributes are different, then you will be left with the Put/Update/Delete records that you would have in the stream for regular DynamoDB tables. You can skip these records while processing records using lambda function 
+
+From cost perspective for Global tables, you should be charged based on details specified in this page: https://aws.amazon.com/dynamodb/pricing/provisioned/
+
+Hope it helps. Let us know if you have any additional questions"
+Amazon DynamoDB	"Re: Global Table replication stream event issues
+Can tell me how to skip these records while processing records using lambda function?"
+Amazon DynamoDB	"Asking for Guidance
+I have started exploring the possibilities of DynamoDB.
+I'm building an application which includes the need of listing all Items. I've read that scans are expensive operations at DynamoDB and I understand this. My question is that, then how should we list all items to ""do it in the dynamo way""?
+
+My example:
+Let's say I have 800 items, each of them 0.5KB. That's 400KB. That means 100 RCUs if I understood correctly. Which costs $36.60 / year in Frankfurt. This price is not bad, but what if I had 8000 items? I'm sure there's a better way to do this.
+
+Best,
+Markus"
+Amazon DynamoDB	"Re: Asking for Guidance
+Hello Markus,
+
+If you have a requirement to list all items in DynamoDB, scan is the correct approach to proceed. You could also consider caching the list if there aren't frequent changes to your data. 
+
+Scan is expensive as compared to Query or GetItem operations because it reads the entire table, as opposed to Query/GetItem which only reads data pertaining to a specific partition key.
+
+We recommend using Query rather than Scan only in case the partition key's value is known. You could draw an analogy in terms of MySQL as follows:
+running select * with a where clause = query
+running select * = scan
+
+I hope this helps address your question."
+Amazon DynamoDB	"Allow @DoNotEncrypt on field in addition to classes and methods
+Why is ElementType.FIELD not included in the @Target values for a @DoNotEncrypt?
+
+For people using frameworks like Lombok this requires additional code.
+
+Also I am wondering why use of @Encrypt in conjunction with @DoNotEncrypt might reduce the amount of annotations required on the code.
+/**
+ * Prevents the associated item (class or attribute) from being encrypted.
+ * 
+ * @author Greg Rubin 
+ */
+@Target(value = {ElementType.TYPE, ElementType.METHOD})
+@Retention(value = RetentionPolicy.RUNTIME)
+public @interface DoNotEncrypt {
+ 
+}"
+Amazon DynamoDB	"An AttributeValue may not contain an empty string
+Why DynamoDB doesn't allow empty strings for attributes other than keys? and how do you suggest I handle an empty string"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+AttributeValues and attribute names may not contain empty strings, whether they are part of the primary key or not.  More details are available in this documentation.  Were you able to insert an item with an empty string in any place in an item?  If so, which client library were you using?  Did our documentation seem to imply otherwise?  If you would prefer not to discuss the specifics of the data in your table on the forum, I would be happy to follow up with you off thread.
+
+As a broader question, do you have a specific use case for having an empty string in an AttributeValue?  If so, we are interested in hearing more about it.  As a workaround, would it be possible to encode an empty string as some other string?  Perhaps a space character “ “?"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+I am using the Java SDK. I would expect the auto marshalling of String would know how to handle null/empty string by it self.
+
+I did manage to make a workaround for my self by simply use a EMPTY_STRING constant like you suggested. 
+
+Thanks."
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+I don't understand why an empty string isn't allowed. An empty string has a different meaning than null. You are saying that we must differentiate the two by using a special constant?"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+I think DynamoDBMapper not knowing how to handle null or empty string values is a huge design flaw.  The mapper should know that if DynamoDb doesn't have a value for that specific attribute for a given key, to set it as null.  Also, the mapper should know that to save an item, if an attribute is empty or null to skip it entirely.
+
+The reason that this sucks:  let's say I have a class that represents a person...
+
+class Person {
+  String firstName;
+  String middleName;
+  String lastName;
+
+  @DynamoDbAttribute(attributeName = ""firstName"")
+  public String getFirstName() {
+  ...
+}
+
+Now, when I go to serialize a person to DynamoDB -- if they don't have a middle name, it fails with this error message: ""AWS Error Code: ValidationException, AWS Error Message: Supplied AttributeValue is empty, must contain exactly one of the supported datatypes""
+
+So now, the workaround is to start using some ugly constant instead of the natural null or empty strings OR change the mapper code myself -- neither of which are ideal."
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+I just ran into this same problem.  I'm not using the mapper. I'm using AttributeValue maps.  I'm using the DynamoClient directly. The way I got around this one. Is to check for empty string value, and not add it to the map.
+
+(Java)
+
+if ( !StringUtils.isBlank(attrVal.getS()))
+	attrValMap.put(baseName, attrVal);"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+The error message is abismal. You might want to state WHICH attribute value? Duh."
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+Just figured out my error. DynamoDB doesn't like an empty Set either. Very annoying bug / limitation. It's a common Java practice to initialize a variable to an empty set so as not to have to check for Null or get NullPointerExceptions. Especially when a bean has getters/setters for a set. They way you add to the set is getMySet().add(""myValue""). AWS makes for awkward code. 
+
+PLEASE FIX THIS!
+
+Where do I file a bug?"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+maybe u could try removing the column instead of setting a null value to it:
+
+if (currentOpponents.size() == 0){
+        updateItems.put( ""current_opponent"",
+                        new AttributeValueUpdate().withAction(AttributeAction.DELETE) );
+} else {
+        updateItems.put( ""current_opponent"",
+	                new AttributeValueUpdate().withValue( new AttributeValue().withSS( currentOpponents ) ) );
+ 
+}"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+I'd like to upvote a change in this behaviour. Erring for an empty set is highly undesirable, and not concordant with Java semantics."
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+We have a use case:
+
+We store information in Dynamo that is actually override data for another data store.
+For instance we have in our DB nickName = ""Mr. Jenkins"".
+
+We then would want an override of nickName = """" with retaining the original (which isn't stored in Dynamo).
+
+An empty string here would be useful and semantically correct.
+
+Echoing below, """" = String, not null."
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+One can deal with replacing a special character when the empty string is in top level attribute . While saving a JSON document as a M data type it does the marshaller in PHP AWS SDK does not even work if there is an empty string """" at any level of a JSON. I could recursively replace all of them and put the """" back while doing a get but this would be expensive in case of complex nested JSON structures."
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+That's true. this should be consider a bug not limitation. It has no reason to error on just empty string. Even null should just be treat as removing (so should just remove the update REMOVE keyword and let people set that value to null)
+
+This is design flawed actually
+
+However dynamoDB is such a whole pile of design flawed that amazon just leash us with the bait of free and auto replicate DB from the start anyway"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
++1 for this. Having to get around this issue by using an empty character is a huge mess. It forces us to do exception at various places of our code to check if it's an empty string, which kinda break semantic. Please consider this as a bug!"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
++1 Please change this. It's an unnecessary constraint and very awkward to write these exceptions in the consuming application."
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
++1
+
+This is disappointing, and counter to the marketing of DynamoDB as a general purpose database. What database doesn't support empty strings??"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
++1 for getting this fixed"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
++1"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
++1 do not understand the design"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+I just ran into the same error - this is a maintenance nightmare. """" is not null. This is clearly a bug and not a feature."
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+This is a bug. You can call a bug ""intended behavior"" but it's still a bug. When I see things like this, I wonder what other bugs are lurking in AWS that they refuse to fix."
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
++1"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
++1 indeed"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
++1; this is silly, unless someone can explain why?"
+Amazon DynamoDB	"Re: An AttributeValue may not contain an empty string
+This is a really bad flaw that makes me want to use a different DB. It breaks compatibility with simple JSON objects like {""a"":""""}"
+Amazon DynamoDB	"Throttled read/write events metrics show empty graph
+When viewing the ""Throttled read events"" or ""Throttled write events"" metrics, they are always empty even though I am getting the throttled throughput response from Dyanmodb. Also, even if there is no throttled event, the graph should show 0 instead of empty (no data point).
+
+Am I missing something? Or do I have to enable this monitoring somewhere?"
+Amazon DynamoDB	"How to reference the PK in a query expression?
+Hello
+
+I am playing around with the Materialized Graph pattern described here: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-adjacency-graphs.html. I am having a hard time figuring out how to effectively query this table structure using DynamoDB, particularly when you do not know all the NodeIDs before-hand.
+
+Take this specific use case: Say I want to return only distinct Places in the system. Or even querying for a single, specific Place based on the data - without knowing the NodeID. How would I go about doing this?
+
+Pseudo-boto3 Python below:
+client.query(
+    TableName=""test_graph"",
+    IndexName=""gsi_data"",
+    KeyConditionExpression=""type_target = :type_target_value"",
+    ExpressionAttributeValues={
+        "":type_target_value"": ""PLACE|<Reference to the NodeID PK itself>""
+    })
+
+
+I feel like no matter what I hit some kind of constraint or limitation - ""Filter Expression can only contain non-primary key attributes"", ""Invalid condition in KeyConditionExpression: Multiple attribute names used in one condition"", etc.
+
+Any ideas?
+
+Edited by: gaffney on Feb 28, 2019 4:32 PM"
+Amazon DynamoDB	"Bug in DynamoDb Update Item with Condition Check
+I have ran into some weird behavior by dynamodb when I try to update an attribute and I include a conditional check for that same attribute.
+
+I attempt to update an attribute value, from ACTIVE to PAUSED
+SET attributeName = attributeValue
+
+, with the condition that the attribute is not EXPIRED
+attributeName (enter less/large then symbols here) :attributeCheckValue
+
+
+The expected behavior is to update the value, with no exceptions thrown.
+
+The actual behavior that the value IS successfully updated, BUT a condition exception is also thrown:
+com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException: The conditional request failed (Service: AmazonDynamoDBv2; Status Code: 400; Error Code: ConditionalCheckFailedException; Request ID: Q3R06LPMHOJ88OCCKO6IDHC9VNVV4KQNSO5AEMVJF66Q9ASUAAJG)
+
+I have repeated this many times, and I keep getting the same behavior.
+
+Perhaps AWS could look into this by referring to the above request id.
+
+Edited by: JOHN TSIOKOS on Feb 26, 2019 1:54 AM
+
+Edited by: JOHN TSIOKOS on Feb 26, 2019 1:55 AM
+
+Edited by: JOHN TSIOKOS on Feb 26, 2019 1:56 AM"
+Amazon DynamoDB	"Exporting Table to CSV without AWS Data Pipeline
+My home AWS Region is eu-north-1 (Stockholm), and I have a DynamoDB table with the following statistics. As you can see, the average record size is only ~100 bytes.
+
+Table name	BreakoutMoves
+Primary partition key	OriginalState (String)
+Primary sort key	Move (Number)
+Read/write capacity mode	Provisioned
+Provisioned read capacity units	30 (Auto Scaling Disabled)
+Provisioned write capacity units	50 (Auto Scaling Disabled)
+Storage size (in bytes)	1.74 GB
+Item count	11,320,384
+Region	EU North (Stockholm)
+
+I would like to export table contents to S3 with the ultimate aim of training a SageMaker machine learning model with it. For this reason, CSV export format would be preferred, but JSON is also ok. I am planning to use XGBoost algorithm, so libsvm format is also an option.
+
+With these data sizes, I believe creating a AWS Data Pipeline would be the recommended option. However, AWS Data Pipeline service is unavailable in my region, as is SageMaker. I plan to use eu-west-1 region for SageMaker service. At this stage, a one-time export is enough, I am not planning on setting up a regular data transfer schedule just yet.
+
+Question: Given these item counts, data sizes and RCUs, what option do you recommend for getting the data out and preparing it for model training?"
+Amazon DynamoDB	"Re: Exporting Table to CSV without AWS Data Pipeline
+For those who may be interested, here are some statistics for the brute force approach.
+
+With a single-threaded java program performing scan operation on the forementioned table, I was able to scan (load) 2521 items per second, which translates to data rate of 400 kB per second. Throttling is the main constraint here; the throughput was remarkably better for the first 30 seconds, when the throughput burst to ten times the steady-state rate.
+
+The table was downloaded in an hour and a half. This performance was feasible for the one-time operation, but I am leaving the question unanswered, as this option may not be satisfactory in all situations."
+Amazon DynamoDB	"Increasing capacity unit settings takes long (>30min) times
+Setting provisioned capacity, RCU:7000, WCU:4000 takes more than 30 minutes.
+The table status keeps ""Updating""
+Is it usual, intended behavior?"
+Amazon DynamoDB	"Dynamo Db issue with migrating the existing table to global table
+Hi,
+
+Can anybody help me with an issue in regards to dynamodb recently launched global tables?
+
+Use case:
+
+I have an existing dynamodb table approx 8gb in size, i have want convert it into global table without any downtime to my application. Is it possible and how?
+
+Thanks in advance!!"
+Amazon DynamoDB	"Allow DynamoDB create_table to support tags during creation
+Right now the Dynamodb API does not allow the creation of tags when invoking `create_table`.
+
+I was hoping that this would be able to be implemented.
+
+Thanks.
+
+API Reference: https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_CreateTable.html"
+Amazon DynamoDB	"Re: Allow DynamoDB create_table to support tags during creation
+Hi,
+
+I can confirm that it is not possible to tag resources at the time of table creation[1] and that this is not an anomaly, but a known restriction on tagging for DynamoDB. 
+
+A recommended way to tag the resources is using the TagResource[2] API call currently. Having said that I have also reached out to our internal team to check the feasibility of adding tags while table creation time. 
+
+Having said, I will not be able to comment on whether this feature will be implemented or provide any timeline around this, but this will make sure that Development teams are aware of our customer requirements.
+
+Hope this helps. Let us know if you have any additional questions. 
+
+Reference:
+
+1. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TaggingRestrictions.html
+2. https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_TagResource.html"
+Amazon DynamoDB	"DynamoDB Adaptive Capacity on older tables
+We have some tables that were created prior to adaptive capacity being added to DynamoDB. Specifically, we have a table that was created in 2014. Is adaptive capacity enabled for these tables? Or is the functionality only available for tables created after a specific date? If the latter, what was the cutoff date?"
+Amazon DynamoDB	"Re: DynamoDB Adaptive Capacity on older tables
+Hi mostman1043,
+
+Adaptive capacity is enabled by default for all DynamoDB tables. There is no cutoff date.
+
+-Kai"
+Amazon DynamoDB	"DynamoDB's replication type
+What is the replication type of DynamoDB? Is it peer to peer, master slave, multi master, or something else?"
+Amazon DynamoDB	"Re: DynamoDB's replication type
+Hi whaatxd2,
+
+DynamoDB global tables use active-active replication. In other words, any changes made to any item in any replica table will be replicated to all of the other replicas within the same global table.
+
+To learn more, please see the DynamoDB documentation: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/globaltables_HowItWorks.html
+
+-Kai"
+Amazon DynamoDB	"Updates in DynamoDB
+Using Spring Data I am trying to perform an update to DB. we are using the same modal object for the CRUD operation. The problem here is I need to ignore some fields and those with null values during update. I couldnt find some out of the box solution so I tried using DynamoDBMapper. 
+Below is the code I want to return entity like repo.save  I dont like to load it . is there any better approach ? 
+JSON or Modal Object.
+{
+    ""id"": ""123"",
+    ""displayName"": ""P123"",
+    ""frmsId"": ""PFRMSL123"",
+    ""eventsId"": ""PEVENTS123"",
+    ""harmonyId"": ""PHA123"",
+    ""uniteId"": ""PUNITE123"",
+    ""kyloUrl"": ""https://kylo1.epsilon.com"",
+    ""CategoryID"": ""d5914c54-a27e-419f-ba39-568d549052f0"",
+    ""NiId"": ""0e1d6d50-43d4-476e-9b99-0147c6bba081"",
+    ""nifiBuildUrl"": ""https://nifi1.build.epsilon.com"",
+    ""nifiExecUrl"": ""https://nifi1.exec.epsilon.com"",
+    ""active"": true,
+    ""createts"": 1550684180829,
+    ""createby"": null,
+    ""updatets"": 1550684180834,
+    ""updateby"": null
+}
+
+	@Override
+	public TenantInfo update(TenantInfo entity) {		
+		entity.setUpdatets(new Date().getTime());
+              // assigned null to ignore it during the update
+		entity.setCategoryID(null);
+		entity.setNiId(null);
+		AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
+		DynamoDBMapperConfig mapperConfig = new DynamoDBMapperConfig.Builder()
+				.withSaveBehavior(DynamoDBMapperConfig.SaveBehavior.UPDATE_SKIP_NULL_ATTRIBUTES).build();
+		DynamoDBMapper mapper = new DynamoDBMapper(client, mapperConfig);
+		mapper.save(entity);
+		return mapper.load(TenantInfo.class, entity.getId());
+	}
+
+Edited by: snatarajan on Feb 20, 2019 12:56 PM"
+Amazon DynamoDB	"DynamoDB reserved capacity still billing even switched to pay-per-request?
+I purchased DynamoDB reserved capacity on last October, then switched all the tables to use pay-per-request type, however I'm seeing the reserved capacity is still charging for my tables.
+
+For example, this is the latest bills recorded in AWS Service Charges.
+
+Amazon DynamoDB PayPerRequestThroughput
+
+$0.25 per million read request units (N. Virginia) 82,554 ReadRequestUnits $0.02
+$1.25 per million write request units (N. Virginia) 21,758 WriteRequestUnits $0.03
+
+
+Amazon DynamoDB TimedStorage-ByteHrs
+
+USD 0.000016 hourly fee per Amazon DynamoDB, Reserved Read Capacity used this month 67,200 ReadCapacityUnit-Hrs $1.08
+USD 0.000081 hourly fee per Amazon DynamoDB, Reserved Write Capacity used this month 67,200 WriteCapacityUnit-Hrs $5.44
+
+
+Since no tables are running in reserved capacity, I assume the correct pricing would be $0.05, but why reserved read/write capacity is billed?
+It would be great AWS team clarify whether it is a duplicated charge."
+Amazon DynamoDB	"Re: DynamoDB reserved capacity still billing even switched to pay-per-request?
+Hi tomodian,
+
+Thanks for reaching out. I have private messaged you a response to your billing question.
+
+-Kai"
+Amazon DynamoDB	"How to use put_item in lambda to pass variables to dynamoDB
+I'm trying to learn how to pass a variable to dynamoDB. I'm trying to use the following code to pass ""sum"" where sum just equals 10, but I can't seem to get it working.
+
+import boto3
+
+def lambda_handler(event, context):
+    sum = 10
+    # this will create dynamodb resource object and
+    # here dynamodb is resource name
+    client = boto3.resource('dynamodb')
+
+    # this will search for dynamoDB table 
+    # your table name may be different
+    table = client.Table(""AverageTest"")
+    print(table.table_status)
+
+    table.put_item(Item= {'Value': {'N': 'sum'}})"
+Amazon DynamoDB	"DynamoDB SDK for dotnet..
+So I'm developing an interface for extracting data from a dynamoDB table, everything is fine but two things.
+I'm using query for finding the values I need but I'm concerned about two things:
+1. I've read somewhere that there's a limit of 1MB per query, and that the query results return a LastEvaluatedKey that can be used to finish the query, But I haven't seen any use example of that and I have no clue on how to use it, Is there any example i'm missing?
+2. I want to limit the number of results that the query returns, I'm aware of the limit parameter but from what I've read it limits the items to query not the actual items that it returns, I'm I wrong here?
+Is there a way to achieve what i want?
+
+I'm using the dotnet sdk for c# if that matters
+
+Edited by: Arturo on Feb 8, 2019 9:43 AM"
+Amazon DynamoDB	"Re: DynamoDB SDK for dotnet..
+bumpity bump. Im mostly interested on how to use the lastevaluatedkey"
+Amazon DynamoDB	"AccessDeniedException:while trying to get item from Dynamo using aws-amplif
+Hello,
+I am following the instruction described in https://aws.amazon.com/blogs/mobile/building-fine-grained-authorization-using-amazon-cognito-user-pools-groups/ and have a test table called UserProfile (It is a simple table with paritionkey userID(set to cognito sub).
+
+I am using aws-amplify sample code to get the item
+
+    Auth.currentCredentials()
+      .then(credentials => {
+        const dynamodb = new AWS.DynamoDB({
+          apiVersion: '2011-12-05',
+          credentials: Auth.essentialCredentials(credentials)
+        });
+
+        var params = {
+          Key: { /* required */
+            HashKeyElement: { /* required */
+              S: 'XXXX'
+            },
+            RangeKeyElement: {
+              N: '1'
+            }
+          },
+          TableName: 'UserProfile', /* required */
+          AttributesToGet: [
+            'userId',
+            'updatedAt'
+          ],
+          ConsistentRead: false
+        };
+        dynamodb.getItem(params, function(err, data) {
+          if (err) console.log(err, err.stack); // an error occurred
+          else     console.log(data);           // successful response
+        });
+
+My IAM policy has following
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": [
+                ""dynamodb:GetItem"",
+                ""dynamodb:PutItem"",
+                ""dynamodb:Query""
+            ],
+            ""Resource"": [
+                ""arn:aws:dynamodb:us-west-2:XXX:table/UserProfile""
+            ],
+            ""Condition"": {
+                ""ForAllValues:StringEquals"": {
+                    ""dynamodb:LeadingKeys"": [
+                        ""${cognito-identity.amazonaws.com:sub}""
+                    ]
+                }
+            }
+        }
+    ]
+}
+
+When i execute the above i get the following error
+
+AccessDeniedException: User: arn:aws:sts::xxx:assumed-role/awsreactAuth_Role/CognitoIdentityCredentials is not authorized to perform: dynamodb:GetItem on resource: arn:aws:dynamodb:us-west-2:xxx:table/UserProfile
+
+I am trying to look for any logs in cloudtrail and cloudwatch and don;t see any logs. Can someone please provide pointers on how to debug this issue?
+
+Thanks
+-Ckm"
+Amazon DynamoDB	"Re: AccessDeniedException: Row-Level Access to DynamoDB Based on Cognito ID
+If i remove the ""Condition"" from IAM policy I am able to getItem, I am not sure if i am missing any settings in Cognito. Can someone provide any hints on what settings to check or enable logs (400 error code with AccessDenied Exception is not very useful)
+
+I have the following policy in IAM with correct values for REGION, Account number and TableName
+{
+     ""Version"": ""2012-10-17"",
+     ""Statement"": [
+         {
+             ""Effect"": ""Allow"",
+             ""Action"": [
+                 ""dynamodb:DeleteItem"",
+                 ""dynamodb:GetItem"",
+                 ""dynamodb:PutItem"",
+                 ""dynamodb:Query"",
+                 ""dynamodb:UpdateItem""
+             ],
+             ""Resource"": [
+                 ""arn:aws:dynamodb:<REGION>:<ACCOUNTNUMBER>:table/<TABLE-NAME>""
+             ],
+             ""Condition"": {
+                 ""ForAllValues:StringEquals"": {
+                     ""dynamodb:LeadingKeys"": [
+                         ""${cognito-identity.amazonaws.com:sub}""
+                     ]
+                 }
+             }
+         }
+     ]
+ }"
+Amazon DynamoDB	"Re: AccessDeniedException:while trying to get item from Dynamo using aws-amplif
+https://stackoverflow.com/questions/38731723/how-to-use-dynamodb-fine-grained-access-control-with-cognito-user-pools
+
+Has details, key thing i missed was that i was creating entries with sub instead of IdentityID"
+Amazon DynamoDB	"Re: AccessDeniedException:while trying to get item from Dynamo using aws-amplif
+Could you give a code example? That would help greatly."
+Amazon DynamoDB	"Dynamodb local image - Current sha256  is empty
+Hello,
+
+The current sha256 of the frankfurt/dynamodb_local_latest.tar.gz image is empty.
+
+This link can be found here: 
+
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html 
+
+This is the empty link:
+https://s3.eu-central-1.amazonaws.com/dynamodb-local-frankfurt/dynamodb_local_latest.tar.gz.sha256"
+Amazon DynamoDB	"how are GSIs billed?
+If I have a table and I create 3 GSIs does that automatically make that table more expensive than if I had created none even if I never use the GSIs to perform a query?
+Or am I only charged for when I use that index to perform a query or get?
+
+In other words does that index cost me money when I write items to the table since those items also need to be copied over into the index? 
+
+Is the process of maintaining the index something that consumes WCUs and something you are charged for or are you charged only when you explicitly access the index?"
+Amazon DynamoDB	"Re: how are GSIs billed?
+Hi,
+
+I understand that you have some questions relating to GSI pricing for DynamoDB. 
+
+I've done some research into this and I can confirm that Global Secondary Indexes are not billed as an individual line item. Instead, any queries or scans on a global secondary index consume capacity units which will then contribute to your overall read/write capacity billing for DynamoDB.
+
+For more information about working with GSIs, please see the following link: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html
+
+Since GSI is essentially a DynamoDB table, it is charged the same way as a DynamoDB table is charged which is dependent on the region of use.
+
+Pricing on DynamoDB can be confirmed in the link below:
+https://aws.amazon.com/dynamodb/pricing/
+
+I hope this information helps. Have a AWSome day"
+Amazon DynamoDB	"DynamoDB UpdateItem error with array attributes
+I am getting the following error while invoking update for the following object. 
+
+""ValidationException: The document path provided in the update expression is invalid for update""
+
+Update Expression Looks like this:
+
+""set testArr[4].attrib3 = :s""
+
+The object in DB looks like this.
+
+{
+  ""testArr"": [
+    {
+      ""attrib1"": ""0"",
+      ""attrib2"": ""LOW"",
+      ""attrib3"": ""Test"",
+      ""attrib4"": {}
+    },
+    {
+      ""attrib1"": ""1"",
+      ""attrib2"": ""LOW"",
+      ""attrib3"": ""Test"",
+      ""attrib4"": {}
+    },
+    {
+      ""attrib1"": ""2"",
+      ""attrib2"": ""LOW"",
+      ""attrib3"": ""Test"",
+      ""attrib4"": {}
+    },
+    {
+      ""attrib1"": ""3"",
+      ""attrib2"": ""LOW"",
+      ""attrib3"": ""Test"",
+      ""attrib4"": {}
+    },
+    {
+      ""attrib1"": ""4"",
+      ""attrib2"": ""LOW"",
+      ""attrib3"": ""Test"",
+      ""attrib4"": {}
+    },
+    {
+      ""attrib1"": ""5"",
+      ""attrib2"": ""LOW"",
+      ""attrib3"": ""Test"",
+      ""attrib4"": {}
+    }
+  ],
+  ""userId"": ""test123""
+}
+
+Basically I am trying to update the value of attrib3 in the 5th element in the testArr array.
+
+Any pointers?"
+Amazon DynamoDB	"DynamoDb Java - ScanRequest not returning all results and hangs
+DynamoDB table has ~7500 items in it.
+
+The following code snippet gets endlessly caught in a loop, logger output shows it is stuck after 1895 items:
+
+2019-02-07 13:10:50 defaulthttps://forums.aws.amazon.com/  13:10:50.057 https://forums.aws.amazon.com/ DEBUG com.spotonresponse.webservices.GetData - Reading DB entries - count: 1895
+2019-02-07 13:10:50 defaulthttps://forums.aws.amazon.com/  13:10:50.710 https://forums.aws.amazon.com/ DEBUG com.spotonresponse.webservices.GetData - Reading DB entries - count: 1895
+2019-02-07 13:10:51 defaulthttps://forums.aws.amazon.com/  13:10:51.298 https://forums.aws.amazon.com/ DEBUG com.spotonresponse.webservices.GetData - Reading DB entries - count: 1895
+...
+...
+
+What am I missing???
+
+And here is my code snippet:
+BasicAWSCredentials awsCreds = new BasicAWSCredentials(aws_access_key_id, aws_secret_access_key);
+
+        client = AmazonDynamoDBClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(amazon_endpoint, amazon_region))
+                .build();
+        myDynamoDB = new DynamoDB(client);
+
+        // Get all the keys and store them in an array
+        Map<String, String> currentItems = new HashMap<String, String>();
+        ScanResult scanResult = null;
+        Map<String, AttributeValue> lastEvaluatedKey = null;
+        do {
+            ScanRequest scanRequest = new ScanRequest()
+                    .withTableName(DynamoDBTableName);
+            scanResult = client.scan(scanRequest);
+
+            if (scanResult != null) {
+                scanRequest.setExclusiveStartKey(scanResult.getLastEvaluatedKey());
+            }
+
+            scanResult = client.scan(scanRequest);
+
+            for (Map<String, AttributeValue> item : scanResult.getItems()) {
+                currentItems.put(item.get(""title"").getS(), item.get(""md5hash"").getS());
+            }
+            lastEvaluatedKey = scanResult.getLastEvaluatedKey();
+            logger.debug(""Reading DB entries - count: "" + currentItems.size());
+        } while (lastEvaluatedKey != null);"
+Amazon DynamoDB	"Trying to connect to DynamoDB through VPC from Lambda/Python/Boto3
+Hello all,
+
+I am following a few forum posts and documents to try and get this done, but no matter what I do, I keep timing out when creating the connection to DynamoDB.
+
+The forum posts/documents I am reading are:
+https://forums.aws.amazon.com/message.jspa?messageID=705389
+https://aws.amazon.com/blogs/aws/new-vpc-endpoints-for-dynamodb/
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/vpc-endpoints-dynamodb.html
+
+The code to connect to DynamoDB is:
+dynamoDbClient = boto3.client('dynamodb', region_name='us-east-1')
+    paginator = dynamoDbClient.get_paginator('query')
+    response_iterator = paginator.paginate(
+        TableName='[TABLE_NAME]',
+        IndexName='[INDEX_NAME]',
+        KeyConditionExpression = '[COLUMN_NAME] = :consKey AND [COLUMN_NAME] BETWEEN :minTS AND :maxTS',
+        ExpressionAttributeValues={"":consKey"":{""S"":""[VALUE]""}, "":minTS"":{""N"":""[VALUE]""}, "":maxTS"":{""N"":""[VALUE]""}}
+    )
+
+
+The error I keep getting is:
+2019-02-05 18:00:12,158 [INFO] Starting new HTTPS connection (1): dynamodb.us-east-1.amazonaws.com
+18:00:21
+END RequestId: 1cc51a0c-f866-4316-9c71-b05922e0818f
+18:00:21
+REPORT RequestId: 1cc51a0c-f866-4316-9c71-b05922e0818f	Duration: 10010.29 ms	Billed Duration: 10000 ms Memory Size: 128 MB	Max Memory Used: 100 MB
+18:00:21
+2019-02-05T18:00:21.529Z 1cc51a0c-f866-4316-9c71-b05922e0818f Task timed out after 10.01 seconds
+
+
+I can confirm that my endpoint is created and seemingly mapped correctly:
+aws ec2 describe-vpc-endpoints
+{
+    ""VpcEndpoints"": [
+        {
+            ""VpcEndpointId"": ""[VPCE_ID]"",
+            ""VpcEndpointType"": ""Gateway"",
+            ""VpcId"": ""[VPC_ID]"",
+            ""ServiceName"": ""com.amazonaws.us-east-1.dynamodb"",
+            ""State"": ""available"",
+            ""PolicyDocument"": ""{\""Version\"":\""2008-10-17\"",\""Statement\"":[{\""Effect\"":\""Allow\"",\""Principal\"":\""*\"",\""Action\"":\""*\"",\""Resource\"":\""*\""}]}"",
+            ""RouteTableIds"": [
+                ""[RTB_ID1]"",
+                ""[RTB_ID2]"",
+                ""[RTB_ID3]""
+            ],
+            ""SubnetIds"": [],
+            ""Groups"": [],
+            ""PrivateDnsEnabled"": false,
+            ""NetworkInterfaceIds"": [],
+            ""DnsEntries"": [],
+            ""CreationTimestamp"": ""2019-02-05T17:47:03.000Z""
+        }
+    ]
+}
+
+
+I can get this call to work by opening my VPC to all incoming ports and IP addresses, but this is clearly not desirable.  Please help."
+Amazon DynamoDB	"DynamoDB Local now supports Transactions
+2019-02-04
+
+  * Add on-demand implementation
+  * Add support for 20 GSIs (up from 5)
+  * Add transaction API implementation
+  * Update AWS SDK for Java to version 1.11.475
+
+Nice!"
+Amazon DynamoDB	"DynamoDBLocal maven repository broken?
+Trying to load DynamoDBLocal using maven as described here: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.Maven.html 
+
+Getting errors like this:
+
+[ERROR] Failed to execute goal on project yummly-mobile-api: Could not resolve dependencies for project com.yummly:yummly-mobile-api:jar:1.0.12-SNAPSHOT: Failure to find com.amazonaws:DynamoDBLocal:jar:1.11.475 in https://s3-us-west-2.amazonaws.com/dynamodb-local/release was cached in the local repository, resolution will not be reattempted until the update interval of dynamodb-local-oregon has elapsed or updates are forced -> [Help 1]
+
+
+The maven-metadata.xml says 1.11.475 but there are no artifacts for this version in the repo.
+
+Pom attached."
+Amazon DynamoDB	"Re: DynamoDBLocal maven repository broken?
+This has been fixed"
+Amazon DynamoDB	"Re: DynamoDBLocal maven repository broken?
+Looks like DynamoDB Local now supports the new transaction API!!!!
+
+👍🏻"
+Amazon DynamoDB	"Stream Reading and throttling
+Reading into DynamoDB stream document and it says ""No more than 2 processes at most should be reading from the same Streams shard at the same time. Having more than 2 readers per shard may result in throttling"" 
+
+As far as I know, the stream doesn't consume the provisioned throughputs so what exactly is getting throttled?
+
+Edited by: aac on Feb 4, 2019 10:08 PM"
+Amazon DynamoDB	"DynamoDB Global Table Replication System
+Hi everyone, 
+I am working on Benchmarking Dynamodb's performance as part of a project at the university and have been looking for more details on the replication system when setting up Global tables as i want to understand its impact on latency / Throughput. 
+I end up by finding 2 confusing Concept, Regions and Availability zones. From what i understood here:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.CrossRegionRepl.html 
+By Creating 2 Tables, one in Frankfurt and one in Ireland let's say, This means that i now have 
+2 multi-master read/write Replicas. 
+
+But then i found those links: 
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.Partitions.html
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html
+https://aws.amazon.com/blogs/aws/new-for-amazon-dynamodb-global-tables-and-on-demand-backup/
+explaining that the data is stored and automatically replicated across multiple Availability Zones in an AWS region but not mentioning the number of replicas and whether they can be used for read / write requests and are also multi-master or slaves or just for recovery purposes.
+From what i understood here if going back the example i am using (Frankfurt / Ireland)
+I will be having:
+3 multi-master read/write Replicas in Frankfurt 
+3 multi-master read/write Replicas in Ireland 
+
+Please let me know which one is correct. Thanks in Advance"
+Amazon DynamoDB	"multiplayer game data model design
+Here is my initial table design for a game in pending state that has two players. Game state can change form pending -> live -> over
+
+PK      SK      State     Name
+gid1	state	pending	
+gid1	pid1              alex
+gid1	pid2              john
+
+
+Now I want to query what pending games specific user is part of. In order to do so I have to duplicate Game State to each game player item and create GSI like this.
+
+GSIPK  GSISK   PK
+alex   pending gid1
+john   pending gid1
+
+
+This game state duplication works fine until I want to update game state to live. That means I must update all game's users State as well and if game has a lot of players that might be slow and expensive.
+
+Is there a better design to model that parent/child relation where child depends on parent's attribute value?
+
+Edited by: aleru on Jan 31, 2019 11:37 AM
+
+Edited by: aleru on Jan 31, 2019 11:44 AM"
+Amazon DynamoDB	"Support for RangeKeyConditions in dynamodb-local
+The docker hub image amazon/dynamodb-local released about 5 months ago does not support this feature.
+Are there plans to release dynamodb-local supporting this? When a release could be expected?"
+Amazon DynamoDB	"DynamoDB stream - Clean stream
+Hi everybody
+
+I have linked a lambda function (LAMBDA STREAM) to my DynamoDB stream of a table. 
+When I want to disable the trigger I use the following command with AWS CLI:
+aws lambda update-event-source-mapping --uuid UUID_LAMBDA --function-name DynamoDbStreamTest --no-enabled
+
+But, when I want to enable the trigger with the command:
+aws lambda update-event-source-mapping --uuid UUID_LAMBDA --function-name LAMBDA_STREAM --enabled
+
+the lambda function is triggered with events happened in the meanwhile it was disabled.
+
+I tried to use a different approach with the commands:
+aws lambda create-event-source-mapping --function-name LAMBDA_STREAM --event-source-arn arn:aws:dynamodb:REGION:ACCOUNT_ID:table/TABLE_NAME/stream/*???*
+aws lambda delete-event-source-mapping --function-name LAMBDA_STREAM
+
+But I don't understand how to define the correct stream arn:
+arn:aws:dynamodb:REGION:ACCOUNT_ID:table/TABLE_NAME/stream/*???*
+
+
+I don' know which stream label to put(I know it is a datetime string), ideally I want to connect the lambda with all the future streams, not old one. How to get this stream label?
+
+Any idea?
+
+Edited by: EduBic on Jan 30, 2019 5:56 AM"

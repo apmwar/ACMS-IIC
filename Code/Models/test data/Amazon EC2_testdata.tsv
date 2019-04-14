@@ -1,0 +1,1258 @@
+Amazon EC2	"UserData not running in OnDemand instances
+I have a launcher script that works perfectly with SpotInstances, but fails to start UserData with Ondemand instances.
+
+/var/init/cloud_init.log gives:
+Traceback (most recent call last):
+ 
+  File ""/usr/lib/python3/dist-packages/cloudinit/util.py"", line 806, in runparts
+ 
+    subp(prefix + [exe_path], capture=False)
+ 
+  File ""/usr/lib/python3/dist-packages/cloudinit/util.py"", line 1847, in subp
+ 
+    cmd=args)
+ 
+cloudinit.util.ProcessExecutionError: Unexpected error while running command.
+ 
+Command: ['/var/lib/cloud/instance/scripts/part-001']
+ 
+Exit code: 127
+ 
+Reason: -
+ 
+Stdout: -
+ 
+Stderr: -
+
+
+/var/log/cloud-init-output.log only gives SSH Key generation output
+
+I tried adding the following to the UserData bash, but still nothing gets printed:
+
+        sio.write(""set -x \n"")
+        sio.write(""set -o xtrace \n"")
+        sio.write(""exec > >(tee /var/log/user-data.log|logger -t user-data ) 2 >&1"")
+        sio.write(""echo BEGIN"")
+
+How do I diagnose or fix this issue? Also, I should note that there is no file at /var/lib/cloud/instance/scripts, is that part of the problem? I am sure I am passing UserData with the base64 encoded script into the botocore3 run_instances API call"
+Amazon EC2	"Rebooting instances in Load Balancers
+Hi! We have been faced with issues lately wherein our CPU spikes to 100%. As we have 2 servers in Load Balancing, i am thinking of setting up a cloudwatch alert to automatically reboot the server if they hit 100% CPU for an extended period of time.
+
+My question though is, will any of our users currently logged in be affected, or will they be seamlessly moved to the other server while the server they are in is rebooted?"
+Amazon EC2	"Re: Rebooting instances in Load Balancers
+When your one of the servers is rebooted, at that time the load balancer will transfer the load to other server with no interruption and the application running over the server will work seamlessly. But if the users are logged in into the server e.g.SSH, their server session will stop responding for few minutes and will be back again once the server is up. And the users will have to restart their session."
+Amazon EC2	"EC2 Ubuntu VM fails to start
+Hi,
+
+I have an ec2 instance that I have been using for a little over a year and earlier today it stopped working.  Grabbing a screenshot of the instance shows the following:
+
+Booting from Hard Disk...
+error: unknown filesystem
+Entering rescue mode...
+grub rescue> _
+
+Is there any way that I can connect to the instance to fix it?
+
+Thanks
+AJ"
+Amazon EC2	"VM Export create-instance-export-task Produces invailid ova files. >8gChunk
+tldr; Unable to import .ova into VMWare Workstation. ova export not segmenting vmdk , wrong filesize(10323891968) in tar header, ovf seems correct.
+
+Hello,
+Im trying to use ""aws ec2 create-instance-export-task"" to export a ova/vmdk for vmware from a running ec2 instance to s3. Both are running in eu-central-1
+The task switches to ""State"": ""completed"" after ~20h and results in a ova just under 80gb.
+
+When trying to import the ova into vmware workstation it throws ""system error unknown exception"".
+Trying to import the ova using ovftool results in
+Transfer Failed
+Error: System error: (Unknown exception)
+Warning:
+ - Wrong file size specified in OVF descriptor for 'export-i-000-disk-1.vmdk' (specified: 82591135744, actual 10323891968).
+
+Extracting the ova using 7z results in a 10gb file and the error ""some data after the end of the payload data""
+
+vmdk reference in ovf:
+  <References>
+    <File ovf:href=""export-i-0000-disk-1.vmdk"" ovf:id=""file1"" ovf:size=""82591135744"" />
+  </References>
+
+The size reported in the ovf seems plausible, my assumption is that something is breaking at the historical 11bit file-size limit of tar. 
+The problem seems to be in the way the tar/ova is created, when using vmware  --chunkSize=8G would be needed for this vm. 
+
+Any hints on how to properly export the instance?
+
+Command used:aws ec2 create-instance-export-task --instance-id i-000--target-environment vmware --export-to-s3-task DiskImageFormat=vmdk,ContainerFormat=ova,S3Bucket=foobar,S3Prefix=live --description ""....""
+
+
+describe-export-tasks result:
+{
+    ""ExportTasks"": [
+        {
+            ""Description"": ""vmware export"",
+            ""ExportTaskId"": ""export-i-000"",
+            ""ExportToS3Task"": {
+                ""ContainerFormat"": ""ova"",
+                ""DiskImageFormat"": ""vmdk"",
+                ""S3Bucket"": ""foobar"",
+                ""S3Key"": ""liveexport-i-000.ova""
+            },
+            ""InstanceExportDetails"": {},
+            ""State"": ""completed""
+        }
+    ]
+}
+
+
+checksums according to .mf SHA1(export-i-000-disk-1.vmdk)= 54a044f7196c4c9b1f90e7ea55fc9a150342de77
+SHA1(export-i-000.ovf)= de5cd28c369c7e9045811ce8bde03bf969e170b9
+
+actual
+f6a1d8bac6afb16a642c00c0a6ac24ebc1d24d0e export-i-000-disk-1.vmdk
+de5cd28c369c7e9045811ce8bde03bf969e170b9 export-i-000.ovf
+
+
+Edited by: gwcyber on Apr 12, 2019 10:47 AM"
+Amazon EC2	"Spot Request Terminated - Says I initiated the action, I DID NOT
+Just had a pretty critical spot request terminate. The event type is given as ""fleetRequest_Cancelled"" implying I manually requested that the spot request be cancelled. I DID NOT request that this spot request be cancelled. 
+
+I have also confirmed that the spot price did not exceed my max price, as my max price is set ABOVE the on-demand price. Furthermore I have the exact same type of instance on the exact same availability zone setup with the exact same max price which HAS NOT terminated. It is still running.
+
+I need to know why this happened and how to prevent it in the future. This particular spot request was pretty important and had we not been taking snapshots and have a fresh image ready to go we'd be up crap creek, so to speak.
+
+The spot request I.D was sfr-4d937268-aed5-4556-9dac-1df7fb4a32cf
+The instance I.D was i-0272c3f5e4ffd5b4a
+
+Regards,
+Matt"
+Amazon EC2	"Re: Spot Request Terminated - Says I initiated the action, I DID NOT
+Bump, this needs to be looked into."
+Amazon EC2	"Unable to update Amazon Linux instance via yum
+I have an instance running Amazon Linux v2 (2017.12).
+
+If I try to update via yum, I get the following-
+
+Could not retrieve mirrorlist http://amazonlinux.us-east-2.amazonaws.com/2017.12/core/$pointrelease/x86_64/mirror.list error was
+14: HTTP Error 403 - Forbidden
+
+
+The instance can access other hosts via http. 
+
+If I try something as simple as curl -I 'http://amazonlinux.us-east-2.amazonaws.com/'
+ I still get a 403 Forbidden response.
+
+I tried running yum clean all and deleted everything in /var/cache/yum, but that had no effect.
+
+Edited by: brunnock2 on Apr 12, 2019 7:49 AM
+
+Edited by: brunnock2 on Apr 12, 2019 7:51 AM"
+Amazon EC2	"Reboot instance and reboot the Operating system
+is there any difference between rebooting the actual instance and restarting (Start>Restart) the Windows Operating System residing in an instance?"
+Amazon EC2	"Root account unable to delete VPC due to ENI created by EKS
+I have a VPC I am unable to delete because there is an ENI attached that I do not have access to detach. It's been this way for more than a week and I don't expect it will resolve itself anytime soon.
+
+I created an EKS cluster with worker nodes. I deployed a LoadBalancer service in the cluster which caused EKS to spin up an ELB attached to my VPC.
+
+When I tried to tear down the cluster and VPC, I expected that any provisioned services, such as the ELB, would also be destroyed. However, when I attempted to do this, Terraform ran for hours (continuously failing to delete the VPC).
+
+When I tried manually deleting the VPC in the console and I get this message:
+The VPC contains one or more in-use network interfaces, and cannot be deleted until those network interfaces have been deleted.
+
+When I follow the given link, it showed two ENIs (now there is only one). I am not able to delete them manually in either the web console (with or without force) or the CLI. Here is the message I get from the CLI:
+An error occurred (AuthFailure) when calling the DetachNetworkInterface operation: You do not have permission to access the specified resource."
+Amazon EC2	"Re: Root account unable to delete VPC due to ENI created by EKS
+Nevermind, the issue is resolved.
+
+Originally there were originally 2 ENIs blocking the delete, then after several days, it went down to only one ENI. At that point, I was able to manually delete the ELB and subsequently the VPC."
+Amazon EC2	"SUSE SP4 upgrade block
+Hello,
+
+I'm trying to update a SUSE SP3 to SP4 and I'm having a block due to an extension not being available in SP4. For some strange reason, only the newest VMs I had created have this issue.
+
+When I do a zypper migration, I get the following:
+
+Unavailable migrations (product is not mirrored):
+ 
+        SUSE Linux Enterprise Server 12 SP4 x86_64
+        SUSE Linux Enterprise Software Development Kit 12 SP4 x86_64
+        SUSE Package Hub 12 SP4 x86_64 (not available)
+        Web and Scripting Module 12 x86_64 (already installed)
+        Toolchain Module 12 x86_64 (already installed)
+        Containers Module 12 x86_64 (already installed)
+        Public Cloud Module 12 x86_64 (already installed)
+        Advanced Systems Management Module 12 x86_64 (already installed)
+        Legacy Module 12 x86_64 (already installed)
+
+
+Here's the output of SUSEConnect:
+
+command 'zypper --non-interactive removeservice 'SMT-http_smt-ec2_susecloud_net'' failed
+Error: zypper returned (1) with 'Unexpected exception.
+[SMT-http_smt-ec2_susecloud_net|file:/usr/lib/zypp/plugins/services/SMT-http_smt-ec2_susecloud_net] Can't figure out where the service is stored.
+Please file a bug report about this.
+See http://en.opensuse.org/Zypper/Troubleshooting for instructions.'
+
+
+It seems the SUSE Package Hub 12 SP3 x86_64 (Installed) extension is blocking the migration path as it's not available in SP4, but I'm unable to remove it...
+# SUSEConnect -d -p PackageHub/12.3/x86_64
+Error: Registration server returned 'Single product deactivation is not available when registration sharing is enabled' (422)
+
+
+If I try to enable the product extension in SUSEConnect, I get the following:
+# SUSEConnect -p PackageHub/12.4/x86_64
+Error: Registration server returned 'Product not (fully) mirrored on this server.
+Mirroring of the following repos has to be enabled on the SMT server:
+  * SUSE-PackageHub-12-SP4-Pool (PackageHub,12.4,x86_64)
+  * SUSE-PackageHub-12-SP4-Standard-Pool (PackageHub,12.4,x86_64)
+' (422)
+
+
+Thanks for your help
+
+Edited by: sbedard on Apr 11, 2019 12:30 PM"
+Amazon EC2	"Re: SUSE SP4 upgrade block
+Package Hub is not available on the On Demand servers, due to package conflicts. You could try cleaning up the registration, and then re-registering the system. I recommend backing up your system first.
+
+rm /etc/zypp/repos.d/*
+rm /etc/zypp/services.d/*
+rm /etc/zypp/credentials.d/*
+registercloudguest --force-new
+
+Edited by: JoelSUSE on Apr 11, 2019 6:00 PM"
+Amazon EC2	"Re: SUSE SP4 upgrade block
+HI Joel,
+
+I tried what you proposed but still get the same results. Package Hub is still part of my repositories and blocks my SP4 upgrade."
+Amazon EC2	"EC2 instance very slow
+Hi,
+
+Our EC2 instance i-2da0d8c1 became very slow (ssh access and processes) at around 2:55 UTC for nearly 2 hours today.
+The instance seems normal now, but ssh is still unusually slow occasionally.
+Monitoring shows everything has been normal.
+Can you please look into this?
+
+Thanks and Regards,
+Chandan"
+Amazon EC2	"Re: EC2 instance very slow
+Hello Chandan, 
+
+I have taken a look at your instance i-2da0d8c1.
+
+I can confirm the underlying host is healthy and not experiencing any issues. While looking at the CloudWatch Graphs of your instance, I do see that it is hitting 100% CPU spikes. 
+
+As we do not have insight into your instance on the Operating System level, I would recommend that you take a look at your logs as well as at the CloudWatch Graphs for CPU with the ""Maximum"" paramater, and see if you can determine what is causing the high CPU usage on your instance. 
+
+Should you require any further assistance, please don't hesitate to contact us. 
+
+Kind regards, 
+Belynda"
+Amazon EC2	"Re: EC2 instance very slow
+Hi 
+Mine ec2 instance is also running very slow my instance type is 	
+t2.micro and instance id is 	i-0fbceb36d10a355cd"
+Amazon EC2	"EC2 instance running very slow
+One of my EC2 instances is running extremely slow. It is an m3.large instance, instance ID i-537c058e. I am trying to tar a directory of 75,000 files with a total size of 27 GB. Doing this on my primary instance  (i-05546990, m3.large) takes less than 10 minutes, but on my backup instance (the problem instance) it takes hours. The backup instance is an exact copy of the primary instance, made from a fresh AMI this morning.
+
+I've tried stopping and starting, terminating then launching a fresh copy from a fresh AMI made minutes before, and running the command directly outside of my script. It takes hours each time. Memory utilization for both instances is maxed out, CPU utilization is under 3% (for both)."
+Amazon EC2	"Re: EC2 instance running very slow
+same issue i am facing here
+t2.micro and instance id is i-0fbceb36d10a355cd"
+Amazon EC2	"Unsupported Kernel version should be supported
+Hi there,
+
+After uploading an image (RAW format) to my AWS bucket, I am unable to convert the image into an AMI - I get a response saying ""ClientError: Unsupported kernel version 3.10.0-327.36.3.el7.25816.x86_64"". After checking what kernel versions are supported by AWS (here - https://s3.amazonaws.com/aws-agent.us-east-1/linux/support/supported_versions.json ), it lists my kernel version as being supported. Could you help with why I am receiving this response please?
+
+Many thanks,
+
+Joe"
+Amazon EC2	"Server stops at 11.00 a.m IST
+I have an aws instance(t2.micro). I have installed tomcat 8.0, PHP, mysql 5.7 in the server. For a week now I see that these servers stop working in other words I can't access my server by typing in the url(Like the public dns for php and :8080 port for tomcat). When I try to access them via putty I see no response or it is not asking me a user-id or password. This means that literally the instance is crashing. But when I look at the EC2 dashboard I see that all the status are okay. 
+
+I want to why this is happening? I have not enabled any backup crone jobs or any other jobs that would affect the server to stop and do those jobs. Remember I am not using a load balancer. I am using elastic ip address as well.
+
+Should i use load balancer? Should I have any settings changed? Please respond."
+Amazon EC2	"[BUG?] RunInstances call started failing in eu-west-1 with a strange error
+I have a boto3-based script that fetches the latest Ubuntu 16.04 AMI ID for the region and launches an instance. The instance is started with a BlockDeviceMappings specifying an encrypted root volume:
+'BlockDeviceMappings': [{
+    'DeviceName': '/dev/sda1',
+    'Ebs': {
+        'VolumeType': 'gp2',
+        'Encrypted': True,
+    },
+}]
+
+The script works in every region, but yesterday it started failing in eu-west-1.
+An error occurred (InvalidBlockDeviceMapping) when calling the RunInstances operation: the encrypted flag cannot be specified since device /dev/sda1 has a snapshot specified.
+The script used to work (and still works in other regions), and it did not change. I DO NOT specify a snapshot. I double-checked by enabling boto3 debug output and the request does not specify any snapshots.
+
+What is wrong here?"
+Amazon EC2	"Re: [BUG?] RunInstances call started failing in eu-west-1 with a strange error
+After reading the documentation, it seems like it should not be possible to create an encrypted root EBS volume from an AMI with unencrypted EBS snapshot. But for some reason this actually works in every region other than eu-west-1.
+
+I have checked the volume of an instance created in ap-southeast-2, it's marked as encrypted, and the AMI snapshot backing it is unencrypted?
+
+Or is there a bug and the volumes are actually not encrypted even though the console says they are?"
+Amazon EC2	"Re: [BUG?] RunInstances call started failing in eu-west-1 with a strange error
+Good talk"
+Amazon EC2	"Re: [BUG?] RunInstances call started failing in eu-west-1 with a strange error
+According to the documentation that I found, it should not be possible to boot an instance with encrypted volume from an AMI with unencrypted snapshot.
+
+But, using the following AMI in ap-southeast-2:
+ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20190406
+ami-074a2888bf09cab0a
+snap-0c44ca669187d9279
+
+I've tried doing the following:
+
+Trying to launch an instance in the web console does not let me select ""Encrypted"" (as expected).
+Launching an instance with boto3 works just fine and the console indicates that my volume created from snap-0c44ca669187d9279 is encrypted with aws/ebs key.
+
+Which, according to the documentation, should not be possible. It fails as expected in eu-west-1, but not in any other region I've tried (us-east-1, us-west-1, ap-southeast-2).
+
+Is the console lying about the encryption status, or is there a new feature that auto-encrypts the volume created from unencrypted snapshot that's not available yet in eu-west-1? Even worse, it used to work the same way in eu-west-1, but now it doesn't."
+Amazon EC2	"Re: [BUG?] RunInstances call started failing in eu-west-1 with a strange error
+We have pretty much the same code block as OP specified and reaching the same error when creating an instance in eu-west-1.
+
+Error in CloudFormation:
+the encrypted flag cannot be specified since device /dev/sda1 has a snapshot specified. (Service: AmazonEC2; Status Code: 400; Error Code: InvalidBlockDeviceMapping; Request ID: ........)"
+Amazon EC2	"Re: [BUG?] RunInstances call started failing in eu-west-1 with a strange error
+I really feel like I should reiterate this point:
+Is the console lying about the encryption status, or is there a new feature that auto-encrypts the volume created from unencrypted snapshot that's not available yet in eu-west-1?.
+If it's the latter, it's a bug. If it's the former it's a bug that is also a potential compliance nightmare (""oops, sorry, we said we encrypted your volume but we actually didn't"")."
+Amazon EC2	"Re: [BUG?] RunInstances call started failing in eu-west-1 with a strange error
+bump"
+Amazon EC2	"http redirect to https on EC2 AMI single instance
+Hi Everyone,
+
+I have enable SSL through ACM for my single instance EC2 where Apache is also installed.
+my domain e.g https://www.example.com is showing SSL verified but not other pages like https:www.example.com/abc
+
+Once I open the pages further it takes me to http insted of https
+
+Please some one can advice, what I am missing .
+Thanks in advance!
+
+Edited by: alis on Apr 11, 2019 3:00 PM"
+Amazon EC2	"packet_write_wait: Connection to X.X.X.X port 22: Broken pipe
+Hello,
+
+I've been trying to SSH into my EC2 instances but I can't stay in them for long. If I launch a new instance, I am able to SSH into the server if I do it immediately, but after like a minute or so I get a broken pipe error (the error message is in the title). If I stop the instance and start it again, I am able to SSH into the new instance but still run into the same issue after a minute. If I start a new instance and try to SSH in after about a minute, I am unable to do so and get a ""ssh: connect to host whatever.compute-1.amazonaws.com  port 22: Operation timed out"" error.
+
+I've tried so many different things to try and get it working but I haven't had any luck. I found a couple of threads where people have had the same issues as me where they also had their account suspended at one point and have the same connection issues. It seems like the AWS team had to do something to help ""release the servers"" or something along those lines. Could I get some assistance with this?
+This thread is an example of what I'm referring to: https://forums.aws.amazon.com/thread.jspa?threadID=228154"
+Amazon EC2	"ec2 instance no longer responding but status ok
+Hi there, this is the second time in a week now this has happened. Nothing has changed on the instance but I am unable to connect to it. The first time this happened I restarted the instance and it was working again. All of the help says to check firewall settings etc. This is an instance that I have been using for a long time that doesn't change. It is dyason.com and only has ssh/http/https open.
+
+After this occurred I enabled metrics. I find them slightly interesting as it shows something might have occurred today before 08:00 causing it to enter the current state. There was a CPU spike to 20% and then it's hovering at 2.5%, it usually idles at 1%. (Can't attach a png it seems) Unfortunately I can't get onto the instance without restarting it, and I would quite like to ascertain the fault before doing that.
+
+Any ideas on how I can find the root cause of this please?"
+Amazon EC2	"Re: ec2 instance no longer responding but status ok
+I rebooted and checked /var/log/messages. It looks like nothing happened between 07:47 until I restarted the instance.
+
+Apr 11 07:20:28 emerald dhclienthttps://forums.aws.amazon.com/: DHCPREQUEST on eth0 to 172.30.0.1 port 67 (xid=0x3c915e8a)
+Apr 11 07:20:28 emerald dhclienthttps://forums.aws.amazon.com/: DHCPACK from 172.30.0.1 (xid=0x3c915e8a)
+Apr 11 07:20:30 emerald dhclienthttps://forums.aws.amazon.com/: bound to 172.30.0.119 -- renewal in 1592 seconds.
+Apr 11 07:20:30 emerald ec2net: https://forums.aws.amazon.com/ Trying to get http://169.254.169.254/latest/meta-data/network/interfaces/macs/06:0f:41:b9:5a:07/local-ipv4s
+Apr 11 07:20:30 emerald ec2net: https://forums.aws.amazon.com/ Rewriting aliases of eth0
+Apr 11 07:47:02 emerald dhclienthttps://forums.aws.amazon.com/: DHCPREQUEST on eth0 to 172.30.0.1 port 67 (xid=0x3c915e8a)
+Apr 11 07:47:02 emerald dhclienthttps://forums.aws.amazon.com/: DHCPACK from 172.30.0.1 (xid=0x3c915e8a)
+Apr 11 17:33:46 emerald kernel: imklog 5.8.10, log source = /proc/kmsg started."
+Amazon EC2	"Cannot start EC2 instance after changing its type
+Hello,
+
+I have an instance i-0cd0f6d6361e14ec2, which was running okay. Decided to increase capacity.
+
+Stopped the instance, changed instance type. Now it no longer starts. When I try to start it, it goes to ""pending"" state for a while, then back to ""stopped"" after about 24 seconds.
+
+I tried changing instance type back and also to a couple of other, more capable types, no luck. Same behavior.
+
+Also tried de-attaching and then re-attaching both volumes vol-0f66f100f638f4fd2 and vol-0f66f100f638f4fd2. Still not able to start.
+
+Also tried creating an AMI out of stopped instance (which took about an hour but succeeded). Launching another instance from this AMI also fails, but instead of ""stopped"" the new instance ends ""terminated"" state after about 1 minute or so after launch.
+
+I see the following on the description page of the stopped instance:
+
+State transition reason: Server.InternalError
+State transition reason message: Server.InternalError: Internal error on launch
+
+Is this EC2 bug? As there are posts on this forum as of this March about similar errors. I don't think it is a storage size issue as my last full backup is about 50 GB while the volume is at 200 GB.
+
+I opened a developer support plan to resolve this problem sooner, case ID 5971375681, but nothing is happening there for over 8 hours now, I wonder if someone from AWS could comment, as our customers are beginning to panic.
+
+I need help as this is a small mail server, which is critical for our business. Any help?"
+Amazon EC2	"Re: Cannot start EC2 instance after changing its type
+Resolution: Save yourself money and trouble by checking and updating credit card with AWS.
+
+My issue was resolved using the following steps:
+
+1) First changed the support plan from Basic to Developer - this allowed me to create a technical support incident. This turned out to be not useful, as first response was received only after 13 hours. Apparently, this is outsourced to India, and their time zone is completely out  of sync with ours (Pacific Time).
+
+2) As customers started to panic, upgraded support plan again to Business, and was able to create another incident and chat online with a support person, who traced down the problem to the key used to encrypt our data volume. ""Key Management Service"" page in AWS console was inaccessible because it believed that I did not complete the registration (incorrectly). One of the links on the info page went to credit card page, with all my cards there showing as expired. After I updated the credit card expiration date, I was able to start the instance.
+
+I hope it helps someone."
+Amazon EC2	"AMI work in original region but not when copied to other
+Hi! 
+
+I've an instance rolling in Ohio and wants to create a copy of that server and place in europe (eu-north). I made an AMI and copied it to the new region. I set up the instance with initially no additional configuration where security groups and other stuff were handled automatically. The instance starts and it's perfectly fine to access with ssh but not by public ipv4 or public dns by http or any other port. 
+
+The error is simply a timeout after 60 seconds. No error logs in apache seems to register anything. I can run curl -i http://localhost/ with ssh and the server responds. I've disabled firewalls (sudo ufw disable) but no response.
+
+For a test a created a new instance (in exactly the same way except for t3 instead of t2 and the key pair is different) of the AMI on the original region which runs perfectly without problems. 
+
+What can I try next?"
+Amazon EC2	"Re: AMI work in original region but not when copied to other
+Hello,
+
+I have looked at the instance you have copied to a new region and I can see you are only allowing Port 22 on the security groups.
+
+For other services like HTTP or HTTPS you will need to allow them on the security groups of your instance.
+
+HTTP - Port 80
+HTTPS - Port 443
+
+https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html
+
+If you do not allow these ports to be open and try to connect you will time out."
+Amazon EC2	"EC2 instance regularly crashing; ""stop"" not working
+I recently deployed a t3.micro instance, running Debian 9, functioning mainly as a lightweight webserver. 
+
+In the last week or so, the instance has gone down on several occasions. There's nothing in any logs on the server itself. I have been unable to stop the instance using the regular ""stop"" command; I have to issue this and then do a ""force stop"". I can then restart the instance without difficulty, but after a few days it goes down again.
+
+The ""System"" and ""Instance"" status checks claim that everything is OK, but during this time the webserver stops responding, my SSH login freezes, a Twitter bot stops functioning, etc., so if everything is OK, I'm not sure why every service on the server fails at once.
+
+The need for a ""force stop"" suggests the problem might be with EC2 itself, but I'm at a loss for how to analyze this. This server is replacing a previous t2.small instance, set up identically, that ran for a year at a time without incident.
+
+What should I do to try to figure out what's going on?"
+Amazon EC2	"Instances stuck in shutting down
+These two instances are stuck in shutting down, can you please terminate them?
+
+i-022148dc4a9e9ed72
+i-0ab972fd462667a17
+
+I am unclear what the proper process is to get this fixed. I don't have access to post in these forums with that account, and I can't open a support ticket.  These machines can't be terminated because of a problem on AWS side, and we have been paying for them for about a month.
+
+What is the correct and fast process for dealing with this?"
+Amazon EC2	"Re: Instances stuck in shutting down
+Can I get a hand here from an amazonian?"
+Amazon EC2	"Re: Instances stuck in shutting down
+I can see that one of the instances is currently in a stuck stopping state.
+
+I have reached out internally to have this looked at."
+Amazon EC2	"Re: Instances stuck in shutting down
+Both instances are now in a stopped state."
+Amazon EC2	"What does ""frequency of interruption"" mean in Spot Instance Advisor?
+AWS's Spot Instance Advisor estimates the ""frequency of interruption"" for each instance type in each region.
+
+https://aws.amazon.com/ec2/spot/instance-advisor/
+
+For example, In us-west-2, the t2.large currently has a frequency of interruption of 5%, and the t3.large of 5-10%.
+
+But what does ""5%"" actually mean?
+
+I found one other reference to interruption percentages in AWS podcast ""#305: Saving Money with EC2 Spot"", published 2019-04-01.
+
+""In the last three months, 93% of the reason why spot instances got terminated is because the user was finished with them and just turned them off. However, they can also be terminated if the prevailing market price for the spot instance exceeds your bid price.""
+
+https://aws.amazon.com/podcasts/aws-podcast/#305
+
+So is Spot Advisor telling me that 5% of t2.large instances are interrupted because of spot market movements?
+
+Or is it that every hour that the t2.large instance runs, it has a 5% chance of being interrupted?
+
+Any clarification on how to interpret these numbers would be greatly appreciated!"
+Amazon EC2	"Can not release elastic IP
+Hi I cannot release elastic  IP,
+I got this error but b/c i was on basic plan so cannot contact technical
+
+Error
+52.76.61.211: The address with allocation id https://forums.aws.amazon.com/ cannot be released because it is locked to your account. Please contact AWS Support to unlock it."
+Amazon EC2	"Re: Can not release elastic IP
+Hello,
+
+I have looked into your account and I can see that you have reached out to us to have the reverse DNS record removed. This has been done.
+
+You should now be able to release the EIP."
+Amazon EC2	"BYOIP - RIPE - ASSIGNED PA
+I'm trying to test the newly announced BYOIP feature in eu-central-1.
+According to https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-byoip.html
+only ""ALLOCATED PA"", ""LEGACY"", and ""ASSIGNED PI"" type netblocks are allowed, and
+in fact, I get
+aws ec2 describe-byoip-cidrs 
+BYOIPCIDRS	x.x.x.0/24	failed-provision	The IP range is not an acceptable allocation type in the associated internet registry.
+for a ""ASSIGNED PA"" netblock.
+However, ASSIGNED PA is the only meaningful type I can set myself as LIR. ""ALLOCATED PA"" is reserved for the RIR (RIPE) for the netblocks handed out to LIRs. However, I don't want to give our full allocation to AWS, but just a slice of it.
+Anybody has an idea why this should not be possible, or what to do to work around?"
+Amazon EC2	"How to add RAM restrictions to EC2? Costing me an arm and a leg.
+I'm getting a HUGE expected forecast cost for my instance on EC2. Can I add RAM restrictions so I'm not charged as much? Thanks for your help, the bill is large. Somehow I'm going OV"
+Amazon EC2	"Re: How to add RAM restrictions to EC2? Costing me an arm and a leg.
+Hello,
+
+I understand you are expecting a large bill for your EC2 instance and you wish to know if you can add restrictions so you are not charged as much.
+
+To answer your question you cannot add such restrictions. When you launch an EC2 instance instance you are billed for the running of the EC2 instance.
+
+Ways around this would be to change instance type to a smaller instance type. For example if you are not fully utilizing a large instance type you can scale down.
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-resize.html
+
+If you are using On-Demand instances you can also look into using Reserved Instances, this applies a discount to your running instances.
+https://aws.amazon.com/ec2/pricing/reserved-instances/
+
+Pricing of On-Demand instances.
+https://aws.amazon.com/ec2/pricing/on-demand/"
+Amazon EC2	"can't reach ec2 instance via vpn
+Hi,
+
+We have 2 EC2 instances which are reachable via their public IP. We can log into them using SSH fine using their public IP addresses.
+We also have site-2-site vpn connections configured. From one of those sites (vpn-0165ff40e27267a7d) we can ping both the internal EC2 IP addresses, but we can't ssh into them. The EC2 instances can also ping our server in our own site.
+Using tcpdump on the EC2 instances we see the port 22 traffic arriving from our own site to the EC2 instances but the ec2 instances are not sending a response. When trying the other way around where the ssh session is initiated from the EC2 instance to our site we see our server receiving the traffic and sending a response, but the response doesn't end up at the EC2 instance.
+
+One of the instances is using a default aws supplied AMI and we have not made any changes to it regarding firewalling etc. The other is a redhat image.
+The EC2 instance IDs are i-02a53bda0e174d0a8 and i-0aecc8a50ade54dd9.
+
+Could you please help us understand (and fix) why we can't set up an SSH session using the private IP address? Because ICMP is working fine we think the routing and vpn tunnel are working fine.
+
+Thank you,
+
+tkops
+
+Edited by: tkops on Apr 11, 2019 12:38 AM"
+Amazon EC2	"ec2 instance unreachable
+Hi,
+
+I had a well running instance that I had to create an AMI image from: ""i-0aa5f5a888dee7ffa"" in EU-Frankfurt region, after which it stopped being available by public IP, and neither newly launched instance ""i-060a5eb3e2265b950"" from that image can't be reached. The ip addresses are getting resolved into ""http://stop/"" somehow.
+System logs, status checks look fine to me, reboot and re-launche give no effect. What might cause such issue? Would appreciate any help.
+Thanks"
+Amazon EC2	"Re: ec2 instance unreachable
+Hello, 
+
+Thank you for showing your interest in AWS Forums.
+
+I could see that both the instance are terminated at the moment. 
+
+In such scenarios, we strongly recommend to investigate the cause by looking into web-server access/error logs (from the timeframe it stopped working). Also, In some cases you may find some sort of hard-coded links in your application code, or modified content in .htaccess or some sort of re-redirection (proxy or virtual-host configuration).
+
+I hope the above has provided some insight on the matter."
+Amazon EC2	"DB got hacked and dont have a backup
+Hi,
+I have a ec2 instance with an EBS volumne. My db got hacked and deleted yesterday. Any way that I can recover EBS volume from yesterday or a week back? I dont have snapshot and my db backup was from March. I was using a MySQL DB."
+Amazon EC2	"Logout from an ALB session that is authenticated by Cognito
+Hello!
+I'm failing with logging out from a Cognito authenticated ALB session. The authentication itself works perfectly.
+I want to logout the user from the session and understand I have to delete/expire the cookie (AWSELBAuthSessionCookie-0,...) and redirect to the /logout endpoint. I also understand that the auth session cookie is HttpOnly and must be deleted server-side.
+The authenticated application is hosted on a subdomain ""a.example.com"". My various server-side cookie deletion attempts failed. I had for example the following response header set:
+""set-cookie: AWSELBAuthSessionCookie-0=;Domain=a.example.com;Path=/;Max-Age=0;Secure""
+
+But none of my set-cookie headers did actually delete the auth session cookie.
+Any ideas how the cookie can be deleted/expired?
+Cheers Fabian"
+Amazon EC2	"Re: Logout from an ALB session that is authenticated by Cognito
+What did the trick is omitting the domain (although in my case the authentication was setup for a hostname with a subdomain).
+This worked for me:
+Set-Cookie ""AWSELBAuthSessionCookie-0=deleted;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT;"""
+Amazon EC2	"ALB - 400  Bad Request - Request Header Or Cookie Too Large
+When a request has a large query string or large set-cookie header, we're getting ""HTTP 400 - Bad Request Request Header Or Cookie Too Large"" from our Application ELB...however this only happens over SSL (443). The same request will be successfully pushed through to our EC2 instance over HTTP (80)
+
+We've confirmed that this response is being returned by the ALB and NOT by the EC2 instance/webserver it's pointing to.
+
+Does anyone have any idea why this might be or where we can increase our request limits for an Application Load Balancer?
+
+Edited by: dimi-it on Apr 10, 2019 10:54 PM"
+Amazon EC2	"Single Instance HTTPS Elastic IP
+Dears,
+
+Kindly note I have changed the my environments capacity to single, and currently I have created elastic Ips allocated to each instances, each instance has its own security group allowing HTTPS requests, I m able to open the site by elastic IP over http, i need it to work over https, did i missed anyting ?
+
+regards,
+SWAMIZ"
+Amazon EC2	"Re: Single Instance HTTPS Elastic IP
+Hello
+the NACL and Security groups are the ones that control the network access.  Maybe one of those need to be set for https port 443.
+*The webserver needs to have valid SSL certificates.
+
+hope this helps,
+RT"
+Amazon EC2	"Cannot SSH into Ubuntu Server instance, stuck on login screen
+I must admit, I am new to AWS and any help would be greatly appreciated. I finally got my instance i-0d7d7938872a0875f up and running (PHP+MySQL) running an e-commerce site. I was able to SSH into the instance and SFTP into it as well during the setup and installation process. I decided to create an image of the instance after the installation was completed so I can revert to if anything goes wrong. The AMI image was created successfully but that forced my instance to reboot. Since then, I was not able to SSH nor SFTP into the instance even though the site on a public IP is accessible. 
+
+The instance System Log shows the following:
+
+Ubuntu 18.04.2 LTS ip-172-31-16-7 ttyS0
+ip-172-31-16-7 login: 
+
+But I am not sure what to do next without any SSH access? And what is that login for?
+
+Thanks in advance!"
+Amazon EC2	"EC2 Spot fleet request stuck in pending_fulfillment for more than 10 hours
+One of my spot instances got terminated, and to maintain capacity, the spot fleet request automatically tries to bid for a new instance. My max price is high enough so that the request gets to the pending_fulfillment stage, but it has been stuck there for almost 10 hours.
+
+I can PM relevant identifiers should the support team need them.
+
+Thanks."
+Amazon EC2	"t3 availability in sa-east-1b
+Hi,
+
+We tried to launch a new t3.small instance in sa-east-1b and received the following launch error:
+
+""Description: Launching a new EC2 instance.  Status Reason: Your requested instance type (t3.small) is not supported in your requested Availability Zone (sa-east-1b). Please retry your request by not specifying an Availability Zone or choosing sa-east-1a, sa-east-1c. Launching EC2 instance failed.""
+
+According to the release post https://aws.amazon.com/blogs/aws/new-t3-instances-burstable-cost-effective-performance/, the new t3 instances should be available in South America (São Paulo). Is there some limitation regarding t3 instances in this region? If does, do you have a schedule date when the full t3 support will be available?
+
+Regards,
+Renato Neves"
+Amazon EC2	"Re: t3 availability in sa-east-1b
+Would be nice to know this. Plus it would be unfair to pay interconnetivity traffic between the AZ because of this."
+Amazon EC2	"Error on AWS Web Console on EC2->LB->Target Groups
+Hi.
+
+I'm using Firefox 66.0.2 (64-bit) on Ubuntu 17.10 to access to the AWS Web Console.
+
+But some days ago the access to EC2 -> Load Balancing -> Target Groups stops working.
+The page keep showing the loading indicator and never load (watch the screenshot).
+
+The url is:
+https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#TargetGroups:
+
+On developer tools console I found: uncaught exception: java.lang.IllegalStateException: Cannot load user data without non-empty aws-userInfo cookie elb.nocache.js:9:466
+
+I've tested it with private session and cleaning cookies, but it didn't work
+
+
+Developer tools full console trace
+GEThttps://console.aws.amazon.com/ec2/v2/home?region=us-east-1#TargetGroups:
+http://HTTP/1.1 200 OK 753ms
+
+URL solicitada:https://console.aws.amazon.com/ec2/v2/home?region=us-east-1
+Método de la petición:GET
+Dirección remota:54.239.31.83:443
+Código de estado:
+200
+Versión:HTTP/1.1
+
+Cabeceras de la respuesta (582 B)	
+Cabeceras sin procesar
+Cache-Control	
+no-cache
+Connection	
+keep-alive
+Content-Encoding	
+gzip
+Content-Type	
+text/html;charset=UTF-8
+Date	
+Wed, 10 Apr 2019 13:45:28 GMT
+Expires	
+Thu, 01 Jan 1970 00:00:00 GMT
+Pragma	
+No-cache
+Server	
+Server
+Set-Cookie	
+noflush_EC2ConsoleVersion=""""; …Jan-1970 00:00:10 GMT; Secure
+Strict-Transport-Security	
+max-age=47304000; includeSubDomains
+Transfer-Encoding	
+chunked
+vary	
+accept-encoding,X-Amzn-CDN-Cac…-Amzn-AX-Treatment,User-Agent
+x-amz-rid	
+KRD64X4Y533D9DMH65V7
+X-Frame-Options	
+SAMEORIGIN
+X-UA-Compatible	
+IE=edge
+Cabeceras de la petición (3,802 KB)	
+Cabeceras sin procesar
+Accept	
+text/html,application/xhtml+xm…plication/xml;q=0.9,/;q=0.8
+Accept-Encoding	
+gzip, deflate, br
+Accept-Language	
+es-CO,en-US;q=0.7,en;q=0.3
+Cache-Control	
+no-cache
+Connection	
+keep-alive
+Cookie	
+aws-creds=H8MbL0%2BFesEVQHVUIo…c-35a8-9986-b1d1-ced8121a0515
+DNT	
+1
+Host	
+console.aws.amazon.com
+Pragma	
+no-cache
+Upgrade-Insecure-Requests	
+1
+User-Agent	
+Mozilla/5.0 (X11; Linux x86_64…) Gecko/20100101 Firefox/66.0
+GEThttps://d2q66yyjeovezo.cloudfront.net/css/menu-2kjdfskljflksdfjk/globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css
+http://HTTP/1.1 200 OK 83ms
+
+GEThttps://d2q66yyjeovezo.cloudfront.net/css/mezz-35gbnwov975sjdhcbsf/custsat-84664cb572e6784c249bfd3cf57cfe92faaa15fb.gz.css
+http://HTTP/1.1 200 OK 586ms
+
+GEThttps://d2q66yyjeovezo.cloudfront.net/js/mezz-35gbnwov975sjdhcbsf/mezz-e0d99354e6762e505ab21f2fdf1ec415db772e64.gz.js
+http://HTTP/1.1 200 OK 377ms
+
+GEThttps://d2q66yyjeovezo.cloudfront.net/js/menu-2kjdfskljflksdfjk/globalnav-98072ff95d8d064c20cb087e263d835b72ac60d2.gz.js
+http://HTTP/1.1 200 OK 493ms
+
+GEThttps://d2q66yyjeovezo.cloudfront.net/js/mezz-35gbnwov975sjdhcbsf/mezz-39ae1ec10a35e98cd5be3b5d70b70ed283129b6c.gz.js
+http://HTTP/1.1 200 OK 394ms
+
+GEThttps://d2q66yyjeovezo.cloudfront.net/js/mezz-35gbnwov975sjdhcbsf/custsat-02771dbad49888818bc521353ede94db4c8980ef.gz.js
+http://HTTP/1.1 200 OK 605ms
+
+Unknown property ‘zoom’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:407
+Expected ‘none’, URL, or filter function but found ‘Alpha(’.  Error in parsing value for ‘filter’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:496
+Unknown property ‘zoom’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:1378
+Unknown property ‘-moz-border-radius-topleft’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:3084
+Unknown property ‘-moz-border-radius-topright’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:3273
+Unknown property ‘-moz-border-radius-bottomleft’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:3469
+Unknown property ‘-moz-border-radius-bottomright’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:3673
+Expected ‘none’, URL, or filter function but found ‘Alpha(’.  Error in parsing value for ‘filter’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:3985
+Expected ‘none’, URL, or filter function but found ‘Alpha(’.  Error in parsing value for ‘filter’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:4235
+Unknown property ‘-moz-border-radius’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:4272
+Error in parsing value for ‘box-shadow’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:8713
+Error in parsing value for ‘box-shadow’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:9536
+Expected ‘none’, URL, or filter function but found ‘dropshadow(’.  Error in parsing value for ‘filter’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:11763
+Unknown property ‘zoom’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:18970
+Unknown pseudo-class or pseudo-element ‘-ms-input-placeholder’.  Ruleset ignored due to bad selector. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:23695
+Unknown property ‘user-select’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:26941
+Unknown pseudo-class or pseudo-element ‘-ms-input-placeholder’.  Ruleset ignored due to bad selector. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:49716
+Unknown property ‘align’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:51727
+Error in parsing value for ‘font-weight’.  Declaration dropped. globalnav-82c8ceed0e5063851c5d338ea27dab179102715f.gz.css:1:57667
+Error in parsing value for ‘background’.  Declaration dropped. custsat-84664cb572e6784c249bfd3cf57cfe92faaa15fb.gz.css:1:380
+Error in parsing value for ‘background’.  Declaration dropped. custsat-84664cb572e6784c249bfd3cf57cfe92faaa15fb.gz.css:1:438
+Expected ‘none’, URL, or filter function but found ‘progid’.  Error in parsing value for ‘filter’.  Declaration dropped. custsat-84664cb572e6784c249bfd3cf57cfe92faaa15fb.gz.css:1:554
+GEThttps://d3h6vjalfnzkit.cloudfront.net/fea416255deea3077da1ab44d8fd9f54408fb67c/ec2/ec2.nocache.js
+http://HTTP/1.1 200 OK 576ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/img/icon-sprite-b71d3860bf9e25305fca18c85fb286a4.png
+http://HTTP/1.1 200 OK 754ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_pin-white-a982f659aa0bff623cac61ac381dde742a99904e.svg
+http://HTTP/1.1 200 OK 435ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_alertIconWhite-12913e91aedaabd196eb96fc419cbb11ef7c7ee7.svg
+http://HTTP/1.1 200 OK 706ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_compute-5a401f9b68b0c2aadb0176e620f677b29391f903.svg
+http://HTTP/1.1 200 OK 591ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_storage-11de1ddd13f96b5d26268cc21be33285d584bfe9.svg
+http://HTTP/1.1 200 OK 592ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_database-62b94013186a14394d97cd0dc32ab7f57fc9bfd7.svg
+http://HTTP/1.1 200 OK 416ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_migration-05da77a888554af0d3ec2e54d856614e7a5684e1.svg
+http://HTTP/1.1 200 OK 438ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_networking-1ed15fd46ce4953bfb863e3067d0222b2bda96eb.svg
+http://HTTP/1.1 200 OK 360ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_developer-6d9ffac50a031cc2e89ea621b38e1f4a8e3b048d.svg
+http://HTTP/1.1 200 OK 438ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_robotics-bf177e6221edcd7405dd5f43cbcbe7e5ad76ffe3.svg
+http://HTTP/1.1 200 OK 459ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_blockchain-d1ceea3130c949293ac141c594336c8fee4c0a6c.svg
+http://HTTP/1.1 200 OK 732ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_satellite-44d0d43888433d28808f35de493ba8737f080c3a.svg
+http://HTTP/1.1 200 OK 513ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_management-2bfc5f7cefaf4e0b159388917a02119bb21ca46c.svg
+http://HTTP/1.1 200 OK 514ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_media-12c4a8663d0c4fb3214da58abb821b40b9edc720.svg
+http://HTTP/1.1 200 OK 511ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_ai-5418f3420f4fac05ff847076e171350a292ed0ae.svg
+http://HTTP/1.1 200 OK 513ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_analytics-800e9405c1bc0d9b1d8e4e74c7f7ad3eefdd3ce6.svg
+http://HTTP/1.1 200 OK 760ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_security-2cd9a3e5b88bf3ed5d714a60014659403edf3f0f.svg
+http://HTTP/1.1 200 OK 582ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_mobile-96a2697d16e77f2541149412e6a6b0a482cf9b3d.svg
+http://HTTP/1.1 200 OK 591ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_reality-c0aaf2298aaf4a48d3c926ad91bbff22012ddaa6.svg
+http://HTTP/1.1 200 OK 588ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_applications-1ba57dbf11623a14087e9b85c149704b0da83e0e.svg
+http://HTTP/1.1 200 OK 587ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_costmanagement-44b29ffb4dfa2c3e77ce95d25793040b9b288dba.svg
+http://HTTP/1.1 200 OK 661ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_messaging-048ac74172057ee37ffdca49b42a4abfc48e2578.svg
+http://HTTP/1.1 200 OK 871ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_enterprise-06d152cef564289399724db951e701d76da7749d.svg
+http://HTTP/1.1 200 OK 661ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_desktop-6205d790bc2959f30e524773bffaa679121a624f.svg
+http://HTTP/1.1 200 OK 659ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_iot-ad4005f9dd95d8a03deaa5d50541558600ce05ed.svg
+http://HTTP/1.1 200 OK 947ms
+
+GEThttps://d34xub3ut0ooib.cloudfront.net/_game-5888453084ccaec3bdca325ec528b8fe7231d196.svg
+http://HTTP/1.1 200 OK 735ms
+
+GEThttps://phd.aws.amazon.com/phd/auth?state=hashArgs
+http://HTTP/1.1 200 OK 728ms
+
+XHRGEThttps://console.aws.amazon.com/feedback/custsat/1/popquestion?region=us-east-1&locale=es&service=ec2&_=1554903930110
+http://HTTP/1.1 200 OK 146ms
+
+GEThttps://d3h6vjalfnzkit.cloudfront.net/fea416255deea3077da1ab44d8fd9f54408fb67c/ec2/041ADBD37C5E14BBE6D9F4B1C95B5193.cache.js
+http://HTTP/1.1 200 OK 284ms
+
+The script from “https://phd.aws.amazon.com/phd/auth?state=hashArgs” was loaded even though its MIME type (“text/plain”) is not a valid JavaScript MIME type.https://forums.aws.amazon.com/ home
+XHRGEThttps://phd.aws.amazon.com/phd/status.json?mbtc=154419518&_=1554903930547
+http://HTTP/1.1 200 OK 495ms
+
+GEThttps://awsmedia.s3.amazonaws.com/favicon.ico
+http://HTTP/1.1 200 OK 313ms
+
+GEThttps://d3h6vjalfnzkit.cloudfront.net/fea416255deea3077da1ab44d8fd9f54408fb67c/ec2/clear.cache.gif
+http://HTTP/1.1 200 OK 75ms
+
+Wed Apr 10 08:45:31 GMT-500 2019 
+WARNING: Remote Logger enabled home:1:2322
+Wed Apr 10 08:45:31 GMT-500 2019 
+WARNING: Permutation for arn:aws:iam::873727435923:root is 041ADBD37C5E14BBE6D9F4B1C95B5193 home:1:2322
+XHRPOSThttps://console.aws.amazon.com/ec2/ecb?call=getNavigation?&mbtc=154419518
+http://HTTP/1.1 200 OK 139ms
+
+Error in parsing value for ‘outline’.  Declaration dropped. home:1:3176
+Error in parsing value for ‘outline’.  Declaration dropped. home:1:365647
+Unknown property ‘appearance’.  Declaration dropped. home:1:370498
+Error in parsing value for ‘outline’.  Declaration dropped. home:1:370558
+Error in parsing value for ‘outline’.  Declaration dropped. home:1:374917
+Unknown property ‘user-select’.  Declaration dropped. home:1:375526
+Error in parsing value for ‘transition’.  Declaration dropped. home:1:377325
+Unknown property ‘user-select’.  Declaration dropped. home:1:378364
+Error in parsing value for ‘display’.  Declaration dropped. home:1:381617
+Error in parsing value for ‘outline’.  Declaration dropped. home:1:386097
+Unknown property ‘user-select’.  Declaration dropped. home:1:387148
+Unknown property ‘user-select’.  Declaration dropped. home:1:388149
+Error in parsing value for ‘display’.  Declaration dropped. home:1:388425
+Unknown property ‘user-select’.  Declaration dropped. home:1:389470
+Unknown pseudo-class or pseudo-element ‘-ms-input-placeholder’.  Ruleset ignored due to bad selector. home:1:392773
+Unknown pseudo-class or pseudo-element ‘-ms-input-placeholder’.  Ruleset ignored due to bad selector. home:1:393516
+Expected ‘none’, URL, or filter function but found ‘alpha(’.  Error in parsing value for ‘filter’.  Declaration dropped. home:1:656
+Error in parsing value for ‘cursor’.  Declaration dropped. home:1:971
+Error in parsing value for ‘cursor’.  Declaration dropped. home:1:1358
+Error in parsing value for ‘background’.  Declaration dropped. home:1:2051
+Error in parsing value for ‘background’.  Declaration dropped. home:1:2117
+Error in parsing value for ‘background’.  Declaration dropped. home:1:3647
+Error in parsing value for ‘background’.  Declaration dropped. home:1:3707
+Unknown property ‘-moz-box-shadow’.  Declaration dropped. home:1:3844
+Error in parsing value for ‘background’.  Declaration dropped. home:1:4321
+Error in parsing value for ‘background’.  Declaration dropped. home:1:4381
+Unknown property ‘-moz-box-shadow’.  Declaration dropped. home:1:4518
+Error in parsing value for ‘background’.  Declaration dropped. home:1:5009
+Error in parsing value for ‘background’.  Declaration dropped. home:1:5069
+Unknown property ‘-moz-box-shadow’.  Declaration dropped. home:1:5206
+Error in parsing value for ‘background’.  Declaration dropped. home:1:5703
+Error in parsing value for ‘background’.  Declaration dropped. home:1:5769
+Unknown property ‘-moz-box-shadow’.  Declaration dropped. home:1:5906
+Error in parsing value for ‘background’.  Declaration dropped. home:1:6354
+Error in parsing value for ‘background’.  Declaration dropped. home:1:6417
+Unknown property ‘-moz-box-shadow’.  Declaration dropped. home:1:6557
+Error in parsing value for ‘background’.  Declaration dropped. home:1:6968
+Error in parsing value for ‘background’.  Declaration dropped. home:1:7034
+Error in parsing value for ‘background’.  Declaration dropped. home:1:9274
+Error in parsing value for ‘background’.  Declaration dropped. home:1:9324
+Unknown property ‘-moz-box-shadow’.  Declaration dropped. home:1:9455
+Error in parsing value for ‘background’.  Declaration dropped. home:1:9920
+Error in parsing value for ‘background’.  Declaration dropped. home:1:9970
+Unknown property ‘-moz-box-shadow’.  Declaration dropped. home:1:10100
+Error in parsing value for ‘background’.  Declaration dropped. home:1:10563
+Error in parsing value for ‘background’.  Declaration dropped. home:1:10613
+Unknown property ‘-moz-box-shadow’.  Declaration dropped. home:1:10744
+Error in parsing value for ‘background’.  Declaration dropped. home:1:11216
+Error in parsing value for ‘background’.  Declaration dropped. home:1:11272
+Unknown property ‘-moz-box-shadow’.  Declaration dropped. home:1:11409
+Error in parsing value for ‘background’.  Declaration dropped. home:1:11888
+Error in parsing value for ‘background’.  Declaration dropped. home:1:11938
+Unknown property ‘-moz-box-shadow’.  Declaration dropped. home:1:12069
+Error in parsing value for ‘background’.  Declaration dropped. home:1:12474
+Error in parsing value for ‘background’.  Declaration dropped. home:1:12527
+Unknown property ‘-moz-box-shadow’.  Declaration dropped. home:1:12661
+GEThttps://d1w1j8x6ga0t58.cloudfront.net/2019-03-27T17-20-49_e69feccb031ca519a607f6c5fc695123d62cef20d3060fdf7494c406b8204161/Static/elb.nocache.js
+http://HTTP/1.1 200 OK 382ms
+
+GEThttps://console.aws.amazon.com/p/log/1/ec2/1/OP/&k0=clogWarn&m0=1&d0=Event%20handlers%20modified:onbeforeunload%20&k1=clogPing&m1=1&k2=navFb&m2=0&k3=fst&m3=0&k4=initialLoad&m4=848&d4=&p4=v2_home_TargetGroups&u4=ms&k5=viewportWidth&m5=1920&k6=viewportHeight&m6=455&k7=user-role-lookup-failure&m7=0&k8=awsc-username-type-root&m8=1&k9=awsc-locale-served-es&m9=1&k10=awsc-locale-cookie-detected&m10=0&k11=stdelta-dec&m11=853&u11=ms&k12=stdelta-sim&m12=846&u12=ms&k13=awsc-exp-data-present&m13=0&k14=awsc-nav-company-cookie-present&m14=1&k15=awsc-nav-company-AWS&m15=1&k16=custsat-js-loaded&m16=1&p16=nav_CSATSurvey&k17=fallback_success_0&m17=1&k18=awsc-phd-auth&m18=698&d18=&p18=v2_home_TargetGroups&u18=ms&k19=ajaxStatus200&m19=424&u19=ms&k20=view_survey&m20=0&p20=nav_CSATSurvey&k21=pageReady&m21=1789&d21=&p21=v2_home_TargetGroups&u21=ms&k22=awsui-runtime-loaded&m22=1&k23=awsui-viewport-width&m23=1920&k24=awsui-viewport-height&m24=455&k25=moduleCount&m25=4&d25=%7B%7D&k26=ensemblePlace&m26=1&d26=%7B%7D&k27=elb_ensemblePlace&m27=1&d27=%7B%7D&k28=elb_ep_TargetGroups&m28=1&d28=%7B%7D&k29=switchModule&m29=1&d29=%7B%7D&k30=elb_switchModule&m30=1&d30=%7B%7D&k31=pageVisit_TargetGroups&m31=1&k32=moduleLoad&m32=1&d32=%7B%7D&k33=elb_moduleLoad&m33=1&d33=%7B%7D&k34=scriptLoadInitFback&m34=0&d34=%7B%7D&k35=scriptLoadInitFback_elbStatic&m35=0&d35=%7B%7D&cb=1554903931270&proxy-rid=c4a1d356fe3b6538cc082ca096c2afd1
+http://HTTP/1.1 200 OK 107ms
+
+GEThttps://d1w1j8x6ga0t58.cloudfront.net/2019-03-27T17-20-49_e69feccb031ca519a607f6c5fc695123d62cef20d3060fdf7494c406b8204161/Static/34CBC5AC1F299E6A3B8B4C6799612E34.cache.js
+http://HTTP/1.1 200 OK 1526ms
+
+GEThttps://console.aws.amazon.com/p/log/1/ec2/1/OP/&k0=ajaxStatus200&m0=810&u0=ms&k1=phd-ajax-call-success&m1=1&k2=phd-show-success&m2=1&k3=phd-show-error-general&m3=0&k4=phd-show-error-access&m4=0&k5=phd-show-unsupported&m5=0&k6=phd-show-error-auth&m6=0&k7=ajaxStatus200&m7=496&u7=ms&k8=getNavigation&m8=497&d8=&p8=v2_home_TargetGroups&u8=ms&k9=allLatencies&m9=497&d9=%7B%7D&k10=loadFinished&m10=2853&d10=&p10=v2_home_TargetGroups&u10=ms&k11=navigationStart&m11=0&d11=&u11=ms&k12=unloadEventStart&m12=558&d12=&u12=ms&k13=unloadEventEnd&m13=573&d13=&u13=ms&k14=fetchStart&m14=19&d14=&u14=ms&k15=domainLookupStart&m15=156&d15=&u15=ms&k16=domainLookupEnd&m16=156&d16=&u16=ms&k17=connectStart&m17=156&d17=&u17=ms&k18=connectEnd&m18=336&d18=&u18=ms&k19=secureConnectionStart&m19=244&d19=&u19=ms&k20=requestStart&m20=336&d20=&u20=ms&k21=responseStart&m21=413&d21=&u21=ms&k22=responseEnd&m22=730&d22=&u22=ms&k23=domLoading&m23=558&d23=&u23=ms&k24=scriptLoadingFailed_elbStatic&m24=0&d24=%7B%7D&k25=scriptFallbackFailed_elbStatic&m25=0&d25=%7B%7D&k26=scriptLoadSuccess&m26=1&d26=%7B%7D&k27=scriptLoadTimeout&m27=0&d27=%7B%7D&k28=scriptLoadTimeout_elbStatic&m28=0&d28=%7B%7D&k29=scriptLoadRetry&m29=0&d29=%7B%7D&k30=scriptTime&m30=712&d30=&p30=v2_home_TargetGroups&u30=ms&k31=elb_scriptTime&m31=712&d31=&p31=v2_home_TargetGroups&u31=ms&k32=scriptError&m32=0&d32=%7B%7D&k33=elb_scriptError&m33=0&d33=%7B%7D&k34=scriptError_elbStatic&m34=0&d34=%7B%7D&k35=elb_scriptError_elbStatic&m35=0&d35=%7B%7D&k36=moduleLoadTime&m36=713&d36=&p36=v2_home_TargetGroups&u36=ms&k37=elb_moduleLoadTime&m37=713&d37=&p37=v2_home_TargetGroups&u37=ms&k38=moduleLoadError&m38=0&d38=%7B%7D&k39=elb_moduleLoadError&m39=0&d39=%7B%7D&k40=moduleLoadAuthError&m40=0&d40=%7B%7D&k41=elb_moduleLoadAuthError&m41=0&d41=%7B%7D&cb=1554903933361&proxy-rid=c4a1d356fe3b6538cc082ca096c2afd1
+http://HTTP/1.1 200 OK 135ms
+
+uncaught exception: java.lang.IllegalStateException: Cannot load user data without non-empty aws-userInfo cookie elb.nocache.js:9:466
+XHRPOSThttps://console.aws.amazon.com/ec2/v2/ec2/remote_logging
+http://HTTP/1.1 200 OK 335ms
+
+GEThttps://console.aws.amazon.com/p/log/1/ec2/1/OP/&k0=ajaxStatus200&m0=356&u0=ms&cb=1554903936459&proxy-rid=c4a1d356fe3b6538cc082ca096c2afd1"
+Amazon EC2	"eu-west EC2 with Elastic IP China availability
+Hello,
+
+We have our EC2 instance running on eu-west and we use an elastic IP. The android app will need to contact this instance in order for someone from China to test our device.
+
+Although the posts i have read might have been a bit old i get the impression that they might not be able to access the IP without the use of VPN. Should them using a VPN on their android solve such an issue or is this not required at all nowadays? 
+
+Any input from similar experiences will be appreciated (we would prefer to avoid having to relaunch everything on a new Chinese account)
+
+Thanks,
+Con"
+Amazon EC2	"Terminal session hangs after SSHing to EC2 instances
+I have 2 EC2 instances and after I ssh into them, if I switch out of the window to any other application even for a few minutes, the SSH session hangs and im not able to do anything. The only recourse is to close that window and SSH again, which works fine again till the window is active, and hangs if I switch windows
+
+Edited by: kunalgupta on Apr 10, 2019 6:34 AM"
+Amazon EC2	"attachimg root volume to a new instance in order to modify permissions
+I changed the permissions to ec2user folder with 777 and I need to re-attach the root volume to different ec2 instance to revert those changes, yet I can't due to 
+Error attaching volume: The instance configuration for this AWS Marketplace product is not supported. Please see the AWS Marketplace site for more information about supported instance types, regions, and operating systems.
+
+https://forums.aws.amazon.com/thread.jspa?threadID=158998 Here I found out that it's locked, and I wonder what can be done"
+Amazon EC2	"Intermittent HTTPCode_ELB_5XX error on application load balancer
+We have a micro service application (developed in Go) running on multiple ecs tasks across several ecs host instances. The ecs task container has no nginx/apache, only running Go binary file.
+These ecs tasks are registered as targets of an internal application load balancer.
+
+Recently, we found there are intermittent HTTPCode_ELB_5XX errors on this application load balancer. However, at the same period, all targets in the group are healthy and there are no backend 5xx errors.
+But the Target connection errors of ELB and backend connection errors of target group always come together with the HTTPCode_ELB_5XX errors. Actually, same errors also happen on other micro services running on same ecs cluster.
+
+Load balancer dns name: internal-e-config-prod-1813074768.ap-southeast-1.elb.amazonaws.com
+
+Looking at the ELB access logs, we know the error log is:
+http 2018-07-19T10:47:23.186560Z app/e-config-prod/5a9cd8a8c6a5ba52 172.31.40.71:43568 172.31.34.190:32810 -1 -1 -1 504 - 602 308 ""GET http://e-config.eatigo.systems:80/api/v2/cities/1 HTTP/1.1"" ""Go-http-client/1.1"" - - arn:aws:elasticloadbalancing:ap-southeast-1:083584264446:targetgroup/e-con-Targe-E0QO5JC9VCGM/3396f93eba47bf63 ""Root=1-5b506c31-573a96561fd8da356f6c2efc"" ""-"" ""-"" 1 2018-07-19T10:47:13.185000Z ""forward"" ""-""
+
+Obviously, the error code is 504 gateway timeout. We understand it indicates that the load balancer closed a connection because a request did not complete within the idle timeout period. But it is wired. Even there is only a few requests on ELB, this error still exists and surprisingly it doesn't affect ELB latency metric. And this error seemed start to happen earlier this month.
+
+Some articles and aws doc suggest enabling keep-alive config on ec2 instance would help. But I am still not sure about the root cause. 
+
+Please provide any hints/solutions to investigate or resolve this issue. Thank you!
+
+Edited by: eatigo-liyan on Jul 19, 2018 5:48 AM"
+Amazon EC2	"Re: Intermittent HTTPCode_ELB_5XX error on application load balancer
+Appreciate some experts could assist. It is wired. It happens intermittently when there's only several requests on ELB. However, sometimes the errors disappear when running a high load on ELB with hundreds of requests per second."
+Amazon EC2	"Re: Intermittent HTTPCode_ELB_5XX error on application load balancer
+Add more information:
+After checking the monitoring history on CloudWatch, this kind of intermittent errors never happened before. However, it started to happen after around 7 Pm, 18 Jul 2018 UTC+8. See attached screenshot of CloudWatch.
+
+On that day, we didn't change anything on ELBs and target groups. There was no code change on backend application related to this. 
+
+The only change was that ECS host instances in the cluster were terminated and re-created. But there was no change on the launch configuration of ECS instance. They were re-created under same configuration and AMI.  
+
+I couldn't think of any changes we did might cause a 5XX error between ELB and backend ECS task. I suspect there might be some issues on AWS side, ELB, ECS or something else. Please, any AWS expert can help here.
+
+Edited by: eatigo-liyan on Jul 20, 2018 2:04 AM"
+Amazon EC2	"Re: Intermittent HTTPCode_ELB_5XX error on application load balancer
+Error was gone for the past few days without any solution applied, which made this issue much more wired. Hope someone from AWS could advice. So far, I didn't see any specific or effective solution for this elb 5xx error issue, either from aws forums or other tech forums."
+Amazon EC2	"Re: Intermittent HTTPCode_ELB_5XX error on application load balancer
+Same here. No backend errors, no code change and starting from august the 2nd we have a few 5XX every hour 
+I've noticed a couple of errors from the application itself but 95% of the 5xx are coming out the ELB itself, we do not even get the request at the application server level.
+
+I've enabled the ELB logs to have a deeper understanding but to me it is clearly ELB related and fairly new.
+
+Another option could be related to low load - due to summer holiday - resulting in ELB downscaling and upscaling frequently ?
+
+-> EDIT : Apparently there's only 2 weeks of data so, date / timing seems irrelevant so far.
+
+Edited by: vivien-ex-aws on Aug 17, 2018 9:18 AM"
+Amazon EC2	"Re: Intermittent HTTPCode_ELB_5XX error on application load balancer
+Exactly same here too.
+I really want to get tip & solution to find the cause of ELB 5xx Error.
+It always occur with Target Connection Error together.
+
+Please Let me know some checkpoints about this issue.
+
+Thanks."
+Amazon EC2	"Connection closed by *IP_ADDRESS* port 22
+Hi all
+I'm facing from yesterday with this issue that I can't connect to my Linux instance from ssh.
+I got inbound port 22 ssh is opened but still no connection.
+
+Here is my debug
+
+Edited by: alexkob on Apr 10, 2019 1:47 AM"
+Amazon EC2	"Question regarding AWS EC2 Snapshot cost calculations
+Hello
+
+I am trying to understand how AWS calculates snapshots a bit better.
+
+We have a scenario where we have a volume in EC2 that started as 1000GB with an old/original snapshot tied to this volume.
+Over time we have repeatedly extended this volume as needs required.
+Firstly by 250GB, then another 250GB and lastly by 500GB.
+We have various snapshots in the history at each point the volume was expanded.
+
+So the volume history is as follows with snapshots taken at each step of the expansion and then on a daily basis with a 7 day retention policy (for delta).
+1. 1000GB
+2. 1250GB
+3. 1500GB
+4. 2000GB
+
+My question is what is the total size of the snapshots that we are being charged for.
+
+Is the cost 1000 + 250 + 250 + 500 + (<= 7 days of  delta) = 2000GB + (<= 7 days of  delta)
+
+or are we being charged for 1000 + 1250 + 1500 +2000 = 5750GB + (<= 7 days of  delta).
+
+So the question is really does extending the volume count as delta for the total snapshot cost or is the cost calculated separately for each time we extend the volume? 
+If the latter situation is the case and we are being charged for 5.75TB than we will need to look at removing the older snapshots?"
+Amazon EC2	"LiteAgent.exe takes up ~1.5GB of memory on a t2.micro Windows instance
+I have a t2.micro Windows instance that gets unresponsive after a while and has to be hard rebooted from the console.
+
+The event log shows a series of messages like this before it goes completely unresponsive:
+
+Windows successfully diagnosed a low virtual memory condition. The following programs consumed the most virtual memory: svchost.exe (908) consumed 1375268864 bytes, LiteAgent.exea (1176) consumed 1084571648 bytes, and dns.exe (1196) consumed 97140736 bytes.
+
+The 97MB used by dns.exe is normal.  The 1.3GB used by svchost looks excessive and I'm investigating that as well.  What concerns me is the 1GB used by LiteAgent.exe, which seems to be the XenSource guest agent.  After a fresh reboot (about 24 hours ago), it showed a private byte count of about 4MB.  12 hours later, it was up to 32MB.  24 hours after startup it's at 94MB and continuing to slowly grow.
+
+Is this memory usage by LiteAgent.exe an expected part of the EC2 virtualization process (like some kind of memory-sharing thing or something)?  Any suggestions on how I can reclaim this memory without a reboot?  Or how I can have it trigger a reboot once it hits a certain threshold?"
+Amazon EC2	"Re: LiteAgent.exe takes up ~1.5GB of memory on a t2.micro Windows instance
+We have a c5.xlarge database server and this just happened to us last night:
+
+""Windows successfully diagnosed a low virtual memory condition. The following programs consumed the most virtual memory: svchost.exe (784) consumed 6698135552 bytes, LiteAgent.exe (872) consumed 5320093696 bytes, and sqlservr.exe (1164) consumed 917786624 bytes.""
+
+LiteAgent.exe was using 5G, and completely exhausted physical and virtual memory available to SQLServer and the OS, required a manual reboot from the AWS Console.
+
+@AWS any official word on this memory leak?"
+Amazon EC2	"Re: LiteAgent.exe takes up ~1.5GB of memory on a t2.micro Windows instance
+Same to me. Machine's up time is 72 hours. And i will have to reboot it only because LiteAgent.exe consumes 1.2 Gb RAM."
+Amazon EC2	"Re: LiteAgent.exe takes up ~1.5GB of memory on a t2.micro Windows instance
+For those who have had this issue for several weeks, did it continue to re-appear after rebooting? We just observed the LiteAgent.exe using >50% of the memory on a t3.medium we use as a fileserver."
+Amazon EC2	"Re: LiteAgent.exe takes up ~1.5GB of memory on a t2.micro Windows instance
+Hello, Thank You for contacting AWS Forums!
+
+I understand that your EC2 instances are facing memory issues caused by LiteAgent.exe
+
+Please make sure to upgrade the AWS PV Driver package installed on the EC2 instance(s) to the latest version (8.2.4) before trying to troubleshoot the issue on your own here. We did face an issue with an old version of LiteAgent (installed as part of the PV Drivers package) which affected a small subset of EC2 instances causing memory leakage. The fix for this issue was released soon after. 
+
+This is also the reason we recommend keeping the drivers on your EC2 instances always up to date.
+
+Follow the steps here to update the drivers: https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/Upgrading_PV_drivers.html#aws-pv-upgrade
+
+
+
+Make sure to take proper backups before attempting the update.
+
+
+
+
+Furthermore, you can also disable the LiteAgent.exe (Not Recommended) from services.msc to free up memory if needed. The downside would be that the Shutdown and Restart Lifecycle API requests will be ignored by the OS preventing clean reboots and shutdowns from the console. For more information around the LiteAgent, please refer: 
+https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/xen-drivers-overview.html#xen-driver-awspv
+
+Let us know if you have further questions or concerns."
+Amazon EC2	"Re: LiteAgent.exe takes up ~1.5GB of memory on a t2.micro Windows instance
+I created a little script that I scheduled to run every night at 11PM to restart the service.  This should hold me over until my next Maintenance window and I can run the update package (If that fixes the issue).  Once the script runs LiteAgent is back to ~1MB memory.  This also avoids the downsides that AmanAWS talks about (except for the 30 seconds it takes the script to run)
+
+
+Put the following into a batch file:
+net stop AWSLiteAgent
+net start AWSLiteAgent"
+Amazon EC2	"Re: LiteAgent.exe takes up ~1.5GB of memory on a t2.micro Windows instance
+Apparently updating just creates a new issue: https://forums.aws.amazon.com/thread.jspa?threadID=294504&tstart=0
+
+Has anyone found a solution?"
+Amazon EC2	"Can't SSH to Singapore EC2 instance
+Hi guys,
+
+I just created EC2 instance in Singapore region. However I still cannot SSH to the instance. I have been using Amazon instance for few years now and followed the same security rules. Only region is changed for this particular case. Appreciate your help.
+Instance ID - i-797235b5
+
+Thanks"
+Amazon EC2	"Re: Can't SSH to Singapore EC2 instance
+Hello,
+
+It looks like you're using a non-default VPC for instance i-797235b5. This VPC (vpc-c128e2a4) does not have an internet gateway associated with it. The following documentation should help you set it up: http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Internet_Gateway.html
+
+I hope this helps!
+
+Kind regards,
+Chris"
+Amazon EC2	"Re: Can't SSH to Singapore EC2 instance
+Hi,
+
+I can see internet gateway is associated with that VPC. Anyway I created new instance with different VPC, still issue persists. Instance name = i-8786c14b.
+Can you please help on this? I just need a reachable set up with same configuration. VPC configurations are not required for me.
+
+Thanks"
+Amazon EC2	"Re: Can't SSH to Singapore EC2 instance
+Hello,
+
+You need to manually add the internet gateway to your route table. A default VPC has subnets/route tables/internet gateways etc configured automatically whereas custom VPCs (like the ones you are using) need to be manually configured. 
+
+Your account does not have a default VPC in the Singapore region as it supports both EC2-Classic and VPC. We can create one for you if you have no EC2-Classic resources in this Region. However, once this is done you will no longer be able to launch resources within EC2-Classic in the Singapore region. If you're interested, let us know.
+
+See the following docs for more information: 
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-vpc.html
+http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/default-vpc.html
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-supported-platforms.html
+http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Internet_Gateway.html
+
+Kind regards,
+Chris"
+Amazon EC2	"Re: Can't SSH to Singapore EC2 instance
+i  have the same problem , you can check again to me"
+Amazon EC2	"Stopping and Starting EC2 instance wipes data
+Hello all,
+
+I recently launched an ec2 instance (m5a-large) and created an additional ebs volume for it at launch based on a snapshot. When I ssh to the instance, I can find all of the data on my home directory. When I stop the instance and start it again, I can no longer find any of my files in my home directory.
+
+I'm not sure why stopping my instance is wiping my data. I would like my files to be present when I stop and start the instance."
+Amazon EC2	"Re: Stopping and Starting EC2 instance wipes data
+Hello
+Your home directory is probably in the ephemeral storage and not on the new ebs volume.
+If you would like to keep it, you would need to move your home directory to the new ebs volume
+https://www.tecmint.com/move-home-directory-to-new-partition-disk-in-linux/
+
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Stop_Start.html
+hope this helps,
+RT"
+Amazon EC2	"AWS Lite Guest Agent stopping
+I was running into the memory leak issue discussed here:
+
+https://forums.aws.amazon.com/message.jspa?messageID=679574
+
+So followed the instructions to update the AWS Lite Agent service. That seems to be successful and version 8.2.4 is now installed.
+
+However, the service only runs 1-2 minutes before stopping. When this service stops, I cannot use the AWS console to shut down or reboot the server (can force a shutdown only). I cannot find any log files or events in Event Viewer that show what happened. ""sc query AWSLiteAgent"" shows 0 for all exit codes when in a stopped state. 
+
+What's more, I created a brand new instance from the default ""Microsoft Windows Server 2016 Base"" AMI (the one now called ami-02d273719aba0b0a8 but I can't be 100% sure it was on the day this happened), and it had the exact same issue right on startup. Logging into the server the first time, it had server manager up reporting that AWSLiteAgent stopped.
+
+So, if this is a problem in a brand new instance, others must have the problem, right? I have to connect via RDC to reboot."
+Amazon EC2	"Re: AWS Lite Guest Agent stopping
+I am having the same issue described here.  I am currently having some issues with some of my instance and the AWS Lite Agent service(Memory leak).  I cloned one of my instance and followed the instructions to update the aws lite agent service.  The update was successful and my version is now 8.2.5.39, but the service is stopping after 1 - 2 minutes.  
+
+I have include the install log file.
+
+Would appreciate any help in this matter.
+
+Edited by: bret on Apr 9, 2019 12:02 AM"
+Amazon EC2	"Re: AWS Lite Guest Agent stopping
+Also same issue.  This is a recently launched instance running Windows Server 2019 base with only IIS installed. The same thing is also happening with a Windows 2019 base with SQL 2016 installed. 
+
+How do I fix this?  Manually restarting it doesn't help, it just crashes again.
+
+https://i.postimg.cc/SxxD7D0c/1.png
+https://i.postimg.cc/sX7cDLSC/2.png
+
+I have not updated anything yet, but I can see from the previous reply that as of yesterday an update doesn't fix this issue."
+Amazon EC2	"Cant connect to Instance Stuck on Please wait 4 minutes
+These are the steps I have done for this instance 
+Create an ami from your server and copy that ami to a different region and then launch a new instance from that ami.
+
+But when trying to connect Its stuck on ""Please wait at least 4 minutes after launching an instance before trying to retrieve the auto-generated password.""  I can't get the password. 
+
+I have tried twice re creating the ami. Please advise 
+
+error:
+https://imgur.com/GjFQDCs"
+Amazon EC2	"Re: Cant connect to Instance Stuck on Please wait 4 minutes
+According to  https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/common-messages.html :
+To connect to a Windows instance using Remote Desktop, you must specify an account and password. The accounts and passwords provided are based on the AMI that you used to launch the instance. You can either retrieve the auto-generated password for the Administrator account, or use the account and password that were in use in the original instance from which the AMI was created.
+
+If it's been longer than four minutes and you still can't get the password, it's possible that EC2Config is disabled. Verify by checking whether the console output is empty. For more information, see  https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/troubleshooting-windows-instances.html#no-console-output .
+
+Also verify that the AWS Identity and Access Management (IAM) account being used to access the Management Portal has the ec2:GetPasswordData action allowed. For more information about IAM permissions."
+Amazon EC2	"Re: Cant connect to Instance Stuck on Please wait 4 minutes
+Yes I cant get any passwords at all. 
+Dont understand, this is what happens when I try getting console output
+https://imgur.com/aBcnAE6"
+Amazon EC2	"Re: Cant connect to Instance Stuck on Please wait 4 minutes
+If you are getting the empty console output, it indicates that there might be an issue with the EC2Config service, such as a misconfigured configuration file, or that Windows failed to boot properly. To fix the issue, download and install the latest version of EC2Config. 
+
+Try installing the Latest Version of EC2Config.
+You can refer this link for the same :
+https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/UsingConfig_Install.html"
+Amazon EC2	"Limit increase for IPv6 per instance possible?
+Hi there,
+I am looking for a way to increase the limit on IPv6s per Instance. Within the limit increase screens I cannot find any option.
+
+Does anyone know how to do this and if this is even possible?
+
+Best Regards
+  Chris"
+Amazon EC2	"Cannot Connect to Network Load Balancer upon initial creation
+Hello,
+
+We are seeing a consistent issue where whenever we spin up a new network load balancer, assign targets to the listeners (marked as ""initial""), and assign a DNS record to the load balancer, we are unable to issue any requests to the load balancer for at least 2 to 3 minutes, before requests start going through. We've tested this with an Application Load Balancer as well, and we do NOT see the same issue with Application Load Balancers.
+
+The DNS entry resolves successfully, but I'm unable to even open up a socket connection to the load balancer. Looking at wireshark, the TCP SYN packets are sent, but no ACK is received. As part of our load balancer creation process, we ensure that the instances are individually healthy and accepting traffic on all expected ports, before attaching them to the target group, so I am fairly sure that it is not an issue with the instances themselves.
+
+Any ideas?"
+Amazon EC2	"AMI creation: ""ClientError: Unsupported GRUB configuration""
+Hi,
+
+I have been trying to create an AMI out of a raw disk image but getting following error when I check the task. What things I need to check/correct to get this working?
+""ClientError: Unsupported GRUB configuration - Unable to determine kernel version""
+
+The raw image is created out of a VM with base OS Linux centos 7.4.1708 running on openstack.
+
+I uploaded this raw image to S3 bucket and used following aws cli command to create the AMI -
+""aws ec2 import-image --description ""raw disk"" --disk-containers file://containers.json""
+
+(rs) root@oak-vcs2991 rs# aws ec2 describe-import-image-tasks --import-task-ids import-ami-02de244e4a4975a15
+{
+    ""ImportImageTasks"": [
+        {
+            ""Status"": ""deleted"",
+            ""SnapshotDetails"": [
+                {
+                    ""Status"": ""completed"",
+                    ""UserBucket"": {
+                        ""S3Bucket"": ""testbalaji"",
+                        ""S3Key"": ""test.raw""
+                    },
+                    ""DiskImageSize"": 128849018880.0,
+                    ""Description"": ""raw disk"",
+                    ""Format"": ""RAW""
+                }
+            ],
+            ""Description"": ""raw disk"",
+            ""StatusMessage"": ""ClientError: Unsupported GRUB configuration - Unable to determine kernel version"",
+            ""ImportTaskId"": ""import-ami-02de244e4a4975a15""
+        }
+    ]
+}
+
+Edited by: rshrivastava on Apr 9, 2019 11:11 AM
+
+Edited by: rshrivastava on Apr 9, 2019 11:14 AM"
+Amazon EC2	"Instance in shutting down state indefinitely
+Hi,
+
+I have a instance in the eu-central-1 region with id i-031471db178b3ea5f that is stuck in shutting down state for about 24 hours now. Can someone assist?
+
+Thanks"
+Amazon EC2	"Re: Instance in shutting down state indefinitely
+Hello mohammedai,
+
+I am sorry to hear about the issue with your instance. We are currently investigating it and we will inform you about our findings asap.
+
+Regards,
+awstomas"
+Amazon EC2	"Re: Instance in shutting down state indefinitely
+Hi,
+
+We still have this instance that is stuck in the shutdown process."
+Amazon EC2	"Re: Instance in shutting down state indefinitely
+Hello mohammedai,
+
+Thank you for your patience while awaiting my follow up response. 
+
+I would like to confirm that our internal service team has resolved the issue with your instance which is now in terminated state.
+
+Once more, please accept our apologies for the inconvenience caused to you by this issue. Please let me know if you need any further help.
+
+Have a nice day,
+awstomas"

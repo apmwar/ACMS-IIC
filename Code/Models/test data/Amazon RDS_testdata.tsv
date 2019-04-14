@@ -1,0 +1,1278 @@
+Amazon RDS	"Postgres Migration 10.6 -> 11.1:  ""permission denied for schema public""
+We have increased our storage from 600GB to 1 TB and migrated from Postgres 10.6 to 11.1.
+After the migration all the Postgres roles including the master role cannot access objects in the public schema any more. 
+E.g.:
+select * from public.spatial_ref_sys;
+
+results in 42501 ERROR: permission denied for schema public
+
+This query executed as master shows false for create and usage permissions:
+WITH ""names""(""name"") AS (
+  SELECT n.nspname AS ""name""
+    FROM pg_catalog.pg_namespace n
+      WHERE n.nspname = 'public'
+) SELECT ""name"",
+  pg_catalog.has_schema_privilege(current_user, ""name"", 'CREATE') AS ""create"",
+  pg_catalog.has_schema_privilege(current_user, ""name"", 'USAGE') AS ""usage""
+    FROM ""names"";
+
+
+I have tried
+GRANT ALL ON DATABASE dwh TO master;
+ which is executing without errors. But
+GRANT ALL ON SCHEMA public TO master;
+ would result in permission denied error.
+
+Does anyone have an idea, how this can be resolved?"
+Amazon RDS	"Re: Postgres Migration 10.6 -> 11.1:  ""permission denied for schema public""
+Hello,
+
+Can you try running the following first as a role that has rds_superuser:
+
+ALTER SCHEMA public OWNER to master;
+
+
+And if that resolves your issue?
+
+Thanks!
+John H
+
+Edited by: awsatjohnh on Apr 12, 2019 6:15 PM"
+Amazon RDS	"RDS Replica stopped working with secure-file-priv error
+---
+
+Edited by: Wolfi8 on Jan 24, 2019 5:59 AM"
+Amazon RDS	"Re: RDS Replica stopped working with secure-file-priv error
+Hello Wolfi8,
+
+I found your read replicas and changed the secure-file-priv parameter on the back-end to allow LOAD DATA INFILE statements to successfully replicate in RDS MySQL 5.7.23. Please reboot your instances and send me a private message if you still experience the issue or have other replicas that needs the same configuration change.
+
+Note, that the change in question only applies to your existing RDS MySQL 5.7.23 replicas. New replicas will not have the same configuration change. We are aware of this breaking behavior in 5.7.23 and are working on a more permanent solution.
+
+Additionally another workaround is to enable row-based replication by creating a custom parameter group for your master and setting binlog_format = ROW.
+
+Regards,
+Jaime"
+Amazon RDS	"Re: RDS Replica stopped working with secure-file-priv error
+Hi
+
+We're experiencing the same issue on our MySQL replica.
+
+Can you please perform the fix on our account?
+
+Kind regards,
+Dan"
+Amazon RDS	"Re: RDS Replica stopped working with secure-file-priv error
+Hello danhunt,
+
+I applied the same fix on your 5.7.23 replica a few weeks ago and I believe your Solution Architect communicated this to you. Please send me a private message if there are any additional issues or new replicas that need the fix.
+
+Regards,
+Jaime"
+Amazon RDS	"Re: RDS Replica stopped working with secure-file-priv error
+Hi,
+
+Same issue here MYSQL replication breaks with LOAD DATA, i've setup binlog_format = ROW and the problem persists.
+
+Can you change secure_file_priv?
+
+Best regards,"
+Amazon RDS	"Re: RDS Replica stopped working with secure-file-priv error
+Hello lsvbparts,
+
+I applied a fix onto your replica. Please see the private message I sent with more details.
+
+Regards,
+Jaime"
+Amazon RDS	"Re: RDS Replica stopped working with secure-file-priv error
+Will upgrading to 5.7.24 or 25 fix this issue?   I am seeing the same problem on one of our test instance read replicas.
+
+Edited by: jrule on Mar 27, 2019 5:02 PM"
+Amazon RDS	"Re: RDS Replica stopped working with secure-file-priv error
+Dear Jaime,
+
+The replica was working fine, but since today we're experience the same issue.
+
+Could you please help? Our replica is showing replication error.
+
+Thank you"
+Amazon RDS	"Add pg_cron to RDS Postgres extensions.
+We rely on pg_cron for scheduled db jobs on most of our applications. It would be great if RDS Postgres supported it."
+Amazon RDS	"Re: Add pg_cron to RDS Postgres extensions.
+Can you add more details on what jobs are you expecting to run in the jobs? 
+Can they be executed from a client (EC2 based cronjob using psql)?
+
+Regards,
+Jignesh"
+Amazon RDS	"Re: Add pg_cron to RDS Postgres extensions.
+Speaking for my own organization:
+ • stats aggregation
+ • log table truncation, dropping off older entries
+ • refreshing materialized views
+ • creating new table partitions by date range
+
+To set up in MySQL, you would CREATE EVENT. This keeps database housekeeping in the database without outside and more complex dependencies like CloudFormation schedules or a separate dedicated EC2 host with a cron daemon running. pg_cron would allow for a similar level of flexibility and convenience in PostgreSQL that is already enjoyed by its MySQL counterpart in the RDS/Aurora family of products."
+Amazon RDS	"Re: Add pg_cron to RDS Postgres extensions.
+Hi Jignesh,
+
+This would be a great feature for RDS. Yes, crons can be run from outside rds and use a client to connect but pg_cron reduces the infrastructure overhead (the need to deploy and maintain separate containers to run trivial scheduled queries for example)
+
+Cheers"
+Amazon RDS	"Re: Add pg_cron to RDS Postgres extensions.
+Pg_cron is one of the feature that is in pipeline and should be available in RDS in future. Currently, there is no estimated date when this feature will be available because pg_cron needs to be tested thoroughly before making it available for customer.
+
+Meanwhile, you could use crontab from EC2 Linux instance until this feature is available in RDS."
+Amazon RDS	"Re: Add pg_cron to RDS Postgres extensions.
+AWS Support,
+Do we have any update on this ? 
+what are the options we have in order to schedule a job to be executed automatically on a schedule?
+Looking for alternative of MS SQL Server Agent-Job
+
+Thanks"
+Amazon RDS	"Re: Add pg_cron to RDS Postgres extensions.
++1 would love this feature"
+Amazon RDS	"Re: Add pg_cron to RDS Postgres extensions.
+Just an FYI that there is a AWS Database Blog entry describing how to replace SQL Server Agent Jobs with AWS Step Functions. https://aws.amazon.com/blogs/database/replace-sql-server-agent-job-with-aws-step-functions/"
+Amazon RDS	"Re: Add pg_cron to RDS Postgres extensions.
+Hello,
+pg_cron would be very much appreciated by the community of RDS postgres users I believe.
+Workarounds are welcome if there are no better solutions, but it does not seem like anything comes close to the user-friendly options pg_cron offers and given the fact that it only requires an extension to be installed there is little interest in using a workaround!
+Regards
+
+@AWS Support, any update of status/plans maybe?
+
+Edited by: aber on Apr 11, 2019 11:55 PM"
+Amazon RDS	"Pending maintenance not showing up?!
+Via the console, I modified my SQL Server RDS instance (single-az to multi-az), and chose to have the modification applied during the next maintenance window. Despite this, when I clicked on the ""Maintenance & backups"" tab to check for my change, I saw ""none"" for Pending maintenance. 
+Nothing shows up when I ran ""aws rds describe-pending-maintenance-actions,"" either.
+
+Fortunately, the modified value did show up when I ran ""aws rds describe-db-instances.""
+
+When my maintenance window arrived a few days later, my change was applied to my instance!
+
+Why doesn't my pending maintenance show up in the console or via the cli?"
+Amazon RDS	"RDS Aurora High CPU load
+Hi,
+We are having problems with an RDS Instance where the CPU load suddenly spiked about 2 hours from now. We haven't been able to get it down.
+
+We've tried to follow this, but cannot find anything suspicious right now.
+Can any AWS employees check the instance for us to see what is wrong?
+
+Regards,
+Eirik"
+Amazon RDS	"Re: RDS Aurora High CPU load
+What version and type (PostgreSQL or MySQL) of Aurora are you using ?
+Both types of Aurora support Performance Insights (PI) though on the MySQL type PI is limited to certain versions.
+If you enable PI, you will be able to see what SQL is putting CPU load on the database.
+Here is a quick demo of PI on Aurora PostgreSQL:
+https://www.youtube.com/watch?time_continue=6&v=yOeWcPBT458
+
+Kyle"
+Amazon RDS	"M3/R3 Oracle instances support ending - What does this mean?
+I received a notification stating that M3 and R3 instances for Oracle will no longer be supported later year:
+
+After September 30, 2019, we will end the support of the db.m3 and db.r3 instance families on Amazon RDS Oracle.
+
+But what exactly does that mean?  What will happen to M3 and R3 instances of RDS Oracle on that date?  Will they no longer function?"
+Amazon RDS	"Re: M3/R3 Oracle instances support ending - What does this mean?
+Bump.  Do I need to take action to keep M3 and R3 instances functioning after September 30?"
+Amazon RDS	"Aurora MySQL cluster showing no events
+I have an Aurora MySQL cluster in RDS with two instances (along with a staging cluster with single instance) but RDS is showing no events in the console or CLI.
+$ aws rds describe-db-clusters --db-cluster-identifier prod-cluster
+{
+    ""DBClusters"": [
+        {
+            ""MasterUsername"": ""..."", 
+            ""ReaderEndpoint"": ""..."", 
+            ""HttpEndpointEnabled"": false, 
+            ""ReadReplicaIdentifiers"": [], 
+            ""VpcSecurityGroups"": [
+                {
+                    ""Status"": ""active"", 
+                    ""VpcSecurityGroupId"": ""...""
+                }
+            ], 
+            ""CopyTagsToSnapshot"": false, 
+            ""HostedZoneId"": ""..."", 
+            ""EngineMode"": ""provisioned"", 
+            ""Status"": ""available"", 
+            ""MultiAZ"": true, 
+            ""LatestRestorableTime"": ""2019-04-11T16:26:44.252Z"", 
+            ""PreferredBackupWindow"": ""06:00-06:30"", 
+            ""DBSubnetGroup"": ""default"", 
+            ""AllocatedStorage"": 1, 
+            ""BackupRetentionPeriod"": 7, 
+            ""PreferredMaintenanceWindow"": ""fri:03:25-fri:03:55"", 
+            ""Engine"": ""aurora-mysql"", 
+            ""Endpoint"": ""..."", 
+            ""AssociatedRoles"": [], 
+            ""EarliestRestorableTime"": ""2019-04-04T06:07:29.128Z"", 
+            ""IAMDatabaseAuthenticationEnabled"": true, 
+            ""ClusterCreateTime"": ""2018-09-19T15:10:30.288Z"", 
+            ""EngineVersion"": ""5.7.12"", 
+            ""EnabledCloudwatchLogsExports"": [
+                ""audit"", 
+                ""error"", 
+                ""general"", 
+                ""slowquery""
+            ], 
+            ""DeletionProtection"": true, 
+            ""DBClusterIdentifier"": ""prod-cluster"", 
+            ""DbClusterResourceId"": ""cluster-..."", 
+            ""DBClusterMembers"": [
+                {
+                    ""IsClusterWriter"": false, 
+                    ""DBClusterParameterGroupStatus"": ""in-sync"", 
+                    ""PromotionTier"": 1, 
+                    ""DBInstanceIdentifier"": ""prod""
+                }, 
+                {
+                    ""IsClusterWriter"": true, 
+                    ""DBClusterParameterGroupStatus"": ""in-sync"", 
+                    ""PromotionTier"": 1, 
+                    ""DBInstanceIdentifier"": ""prod-us-east-1d""
+                }
+            ], 
+            ""DBClusterArn"": ""arn:aws:rds:us-east-1:...:cluster:prod-cluster"", 
+            ""StorageEncrypted"": true, 
+            ""DatabaseName"": ""level"", 
+            ""DBClusterParameterGroup"": ""prod-rds"", 
+            ""AvailabilityZones"": [
+                ""us-east-1c"", 
+                ""us-east-1d"", 
+                ""us-east-1a""
+            ], 
+            ""Port"": 3306
+        }
+    ]
+}
+
+
+However absolutely no events: 
+$ aws rds describe-events
+{
+    ""Events"": []
+}
+
+
+Anyone have any ideas what could be going on?"
+Amazon RDS	"Aurora Instance Restarts on large queries
+Hi,
+
+tl;dr: We have two aurora instances running. One of the instances frequently restarts citing memory errors whenever a specific large query is executed.  
+
+Engine - Aurora 5.6.10a.31.19, Class - db.r3.large - 2 vCPU , 15 GB Ram
+
+As mentioned above, we have two Aurora instances running (PR and DEV). We have identified a single query which when issued against the PR instance always causes the instance to reboot (we know this because the RDS error logs capture the same query every time). The incident is characterized by a rapid drop in freeable memory and a spike in cpu utilization before the instance restarts.
+
+The query in question is about 3.3 MB in size. The query is issued by an ORM engine - so there is little we can do to tune it.  Every time the query is issued, Aurora restarts and an malloc() error is logged (see below).
+
+We were unable to replicate the problem in our DEV instance. An larger version of the same query on the DEV instance returns an appropriate error code and error message (""1064, ""memory exhausted near.."" ). This never happens with our PR instance. 
+
+I get that we can probably tune max_allowed_packet, but why is Aurora's query parser not gracefully returning an error code in our PR instance as it does on the DEV instance?  We have other applications running on other databases in this instance and we cannot have it bring down all our applications everytime. Any help is appreciated!
+
+Error Log:
+<jemalloc>: Error in malloc(): out of memory
+05:29:47 UTC - mysqld got signal 6 ;
+This could be because you hit a bug. It is also possible that this binary
+or one of the libraries it was linked against is corrupt, improperly built,
+or misconfigured. This error can also be caused by malfunctioning hardware.
+We will try our best to scrape up some info that will hopefully help
+diagnose the problem, but since we have already crashed, 
+something is definitely wrong and this may fail.
+
+key_buffer_size=16777216
+read_buffer_size=262144
+max_used_connections=110
+max_threads=1000
+thread_count=93
+connection_count=93
+It is possible that mysqld could use up to 
+key_buffer_size + (read_buffer_size + sort_buffer_size)*max_threads = 542446 K bytes of memory
+Hope that's ok; if not, decrease some variables in the equation.
+
+Thread pointer: 0x2ac905092000
+Attempting backtrace. You can use the following information to find out
+where mysqld died. If you see no messages after this, something went
+terribly wrong...
+stack_bottom = 2ac6bc7c8c18 thread_stack 0x40000
+/rdsdbbin/oscar/bin/mysqld(my_print_stacktrace+0x2c)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(handle_fatal_signal+0x6a6)https://forums.aws.amazon.com/
+/lib64/libpthread.so.0(+0xf5b0)https://forums.aws.amazon.com/
+/lib64/libc.so.6(gsignal+0x39)https://forums.aws.amazon.com/
+/lib64/libc.so.6(abort+0x148)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/lib/libjemalloc.so(malloc+0x52c)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(my_malloc+0x25)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(alloc_root+0x8f)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z10sql_memdupPKvm+0x15)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_ZN11QUICK_RANGEC2EPKhjmS1_jmj+0x4c)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x1f8)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x4a)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x277)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x4a)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x4a)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x277)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x277)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x277)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x4a)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x277)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x4a)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x4a)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x277)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x4a)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x2e3)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x4a)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x277)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x277)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x277)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x277)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x2e3)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z14get_quick_keysP5PARAMP18QUICK_RANGE_SELECTP11st_key_partP7SEL_ARGPhjS7_j+0x2e3)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z16get_quick_selectP5PARAMjP7SEL_ARGjjP11st_mem_root+0x12b)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_ZN9TRP_RANGE10make_quickEP5PARAMbP11st_mem_root+0x25)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_ZN10SQL_SELECT17test_quick_selectEP3THD6BitmapILj64EEyybN8st_order10enum_orderE+0x25d5)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqldhttps://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_ZN4JOIN8optimizeEv+0x878)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z12mysql_selectP3THDP10TABLE_LISTjR4ListI4ItemEPS4_P10SQL_I_ListI8st_orderESB_S7_yP13select_resultP18st_select_lex_unitP13st_select_lex+0x21f)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z13handle_selectP3THDP13select_resultm+0x127)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqldhttps://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z30mysql_execute_command_internalP3THD+0x38a7)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z21mysql_execute_commandP3THD+0x30)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z11mysql_parseP3THDPcjP12Parser_state+0x3b8)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_Z16dispatch_command19enum_server_commandP3THDPcj+0xf1c)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_ZN22OscarSchedulerConsumer7consumeEjj+0x87)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_ZN22OscarSchedulerConsumer5startEv+0xa0)https://forums.aws.amazon.com/
+/rdsdbbin/oscar/bin/mysqld(_ZN22OscarSchedulerConsumer11drain_queueEPv+0x6a)https://forums.aws.amazon.com/
+/lib64/libpthread.so.0(+0x7f18)https://forums.aws.amazon.com/
+/lib64/libc.so.6(clone+0x6d)https://forums.aws.amazon.com/
+
+Edited by: Pras-gd on Feb 24, 2017 8:47 AM"
+Amazon RDS	"Re: Aurora Instance Restarts on large queries
+Hello Pras-gd, 
+
+Apologizes for reply taking this long. Is the issue still present? Could you please get back to us with a Private Message and provide your account ID, region and an instance name? We'll have someone on the team to have a look at this.
+
+Hope this helps, 
+Aurora team"
+Amazon RDS	"Re: Aurora Instance Restarts on large queries
+Alex,
+
+I have sent you a private message with information.
+
+Thanks
+Anand"
+Amazon RDS	"Re: Aurora Instance Restarts on large queries
+Hello analogGD,
+
+Thank you for the provided details. We're going to have a look and get back to you as soon as we can, some more information might be required regarding a query which causes these crashes.
+
+Aurora Team"
+Amazon RDS	"Re: Aurora Instance Restarts on large queries
+Hi, I am having the same issue. Have you found the root cause of this error?"
+Amazon RDS	"Re: Aurora Instance Restarts on large queries
+Hello Eysa, 
+
+Is the still an issue ? Could you please get back to us with a Private Message and provide your account ID, region and an instance name?"
+Amazon RDS	"Re: Aurora Instance Restarts on large queries
+I am also having similar issue with my Aurora RDS instance crashing with error :
+
+Available memory is low. Trying to avoid OOM crash:  system KB: 62920240  available KB: 590824  low-threshold KB: 3146012  decline query: no  tune caches: no  kill query: no  kill connection: no
+<jemalloc>: Error in mmap(): err: 12, msg: Cannot allocate memory
+<jemalloc>: Error in mmap(): err: 12, msg: Cannot allocate memory
+<jemalloc>: Error in malloc(): out of memory
+<jemalloc>: Error in malloc(): out of memory
+<jemalloc>: Error in mmap(): err: 12, msg: Cannot allocate memory
+<jemalloc>: Error in malloc(): out of memory
+<jemalloc>: System-wide: MemTotal: 62920240kb, MemFree: 504032kb, Buffers: 240kb, Cached: 151932kb, Active: 17587744kb, Dirty: 512kb, Inactive: 96kb, Mapped: 64464kb
+<jemalloc>: terminating process due to out of resources
+<jemalloc>: System-wide: MemTotal: 62920240kb, MemFree: 499396kb, Buffers: 236kb, Cached: 154420kb, Active: 17591052kb, Dirty: 244kb, Inactive: 940kb, Mapped: 66988kb
+<jemalloc>: terminating process due to out of resources
+<jemalloc>: System-wide: MemTotal: 62920240kb, MemFree: 504032kb, Buffers: 240kb, Cached: 151932kb, Active: 17587744kb, Dirty: 512kb, Inactive: 96kb, Mapped: 64464kb"
+Amazon RDS	"Re: Aurora Instance Restarts on large queries
+Having the same issues please provide ticket support to AWS"
+Amazon RDS	"Aurora Serverless Current Units Capacity of CPU
+How to query the current capacity units of CPU usage using AWS CLI in Aurora serverless database?"
+Amazon RDS	"RDS Multi-AZ Instance CF Error
+Can anyone help me with deploying a MultiAZ RDS Instance?
+I have created a Subnet Group with 2 Subnets (in different AZ's), if I create a MultiAZ RDS Instance using the web console, it creates fine. However if I try deploying using CloudFormation passing in the same subnet group I get the following error:
+Cannot create a db.t3.small Multi-AZ instance because at least 2 subnets must exist in availability zones with sufficient capacity for VPC and storage type : standard for db.t3.small, so 1 more must be created in other availability zones
+
+If I create another Subnet Group with subnets from 3 AZ's, I can deploy via CF. But.. What if I want to deploy into a region with only 2 AZ's? (e.g. Canada).
+I have also tried using different instance types in case one region was exhausted of instance types (even though they create through the Web Console).
+
+The A and B subnets are as follows:
+ap-southeast-2a (apse2-az1), Available IPv4 Addresses: 246
+ap-southeast-2b (apse2-az3), Available IPv4 Addresses: 247
+
+I have attached my CF Template (cut down to try troubleshoot, removed replicas etc). If I pass in the exact same params except one, the RDS instance being created with DataBaseMultiAZ=false deploys, the one with DataBaseMultiAZ=true fails as per the above italicized message."
+Amazon RDS	"Re: RDS Multi-AZ Instance CF Error
+Update: It seems making a Subnet Group with only 2 subnets, but this time in Availability Zones A (ap-southeast-2a (apse2-az1)) and C (ap-southeast-2c (apse2-az2)) works. Something seems dodgy with Availability Zone B (ap-southeast-2b (apse2-az3))."
+Amazon RDS	"IAM RDS Token Auth only working sometimes
+I'm encountered an issue that I've pretty much slammed my head against for a solid day or so. I enabled token based auth for our RDS instances. For testing reasons when I went about enabling I took a snapshot from an already existing db (let's call it db1). 
+
+With db1's snapshot I created db2. 
+
+Within db2 I created a user for token access and opened proper grants.
+I created the IAM reference to that user and db2.
+I enabled Token based auth on db2. 
+
+When testing this works great. I am able to log in with multiple accounts.
+
+Fast forward to the next day, I go to implement the same steps on db1. 
+After creating the proper user in the db, after ensuring the db reference maps in IAM
+and after enabling token based auth on db1 I cannot connect.
+
+I thought maybe this was specific to the instance so I started to test other `devel` type DBs and none of them worked.
+
+I decided to make another test instance off of another currently running db's snapshot (let's call it db3). 
+
+I created db4 off of that db3 snapshot. Went thru all of the steps and this works. 
+I am able to log in fine with token based auth.
+
+To conclude, it seems like I can use this token based auth on any new DB I spin up off of a snapshot, but enabling it on current DBs does not work. I have tried a reboot and a stop/start for sanity reasons after enabling to no avail. 
+
+I'm pretty stuck at this point and wondering if there is something that's not obvious?"
+Amazon RDS	"Re: IAM RDS Token Auth only working sometimes
+This was alleviated by doing a minor version upgrade on all currently running DBs. Why this was required is still beyond us. it seems like only newer DBs 2019+ work with the token auth despite matching mysql versions across our dbs. If you have a similar issue where you have long running older DBs (even if on the proper version) consider doing a minor upgrade."
+Amazon RDS	"RDS Postgres Tablespaces - Opinions Sought
+Hello All,
+
+I've come to Postgres from a strong Oracle background, and am seeking some insights with respect to tablespaces and planning them.
+
+I'm aware that in RDS, the tablespace files are written to the same EBS volume, so there's nothing to be gained from segregating storage to separate mountpoints. Having said this, I still feel it might be a useful exercise from a schema management perspective/logical separation of schema data at disk folder level. Based on the reading I've done, I've found the following Stackoverflow post, which shows it can be done:
+
+https://stackoverflow.com/questions/39616672/create-tablespace-on-postgresql-rds
+
+However, opinion does seem to be divided on this, with some leaning towards just storing all table data in the pg_default tablespace on RDS Postgres instances. In the AWS documentation, referenced below, the only guidance I can find regarding tablespaces is this:
+
+""Tablespaces are supported in PostgreSQL on Amazon RDS for compatibility; since all storage is on a single logical volume, tablespaces cannot be used for IO splitting or isolation. We have benchmarks and practical experience that shows that a single logical volume is the best setup for most use cases.""
+
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts.General.FeatureSupport.Tablespaces
+
+The above kind of implies there is no point using tablespaces on new databases, and I may as well just use pg_default. I just wondered if any forum readers have any strong opinions here?
+
+Thanks in anticipation"
+Amazon RDS	"Aurora MySQL and PCI compliance
+Hello there,
+
+As we are currently using Amazon Aurora and I noted the version of MySQL within there are fixed (5.6.10a and 5.7.12 if I am not mistaken), could I get confirmed that listed MySQL vulnerabilities for these version actually DO NOT impact on PCI compliance and a properly updated Aurora database will always be PCI compliant (if properly configured of course as per the shared responsibility model).
+
+I would like to validate this for both versions, Aurora MySQL 5.6 and Aurora MySQL 5.7. As we are running some security assessment our consultant came back with a list of vulnerabilities impacting these versions of MySQL and if Aurora is actually impacted, we would want to revert back to MySQL or other database engines.
+
+Thanks in advance."
+Amazon RDS	"Re: Aurora MySQL and PCI compliance
+To be more specific on my enquiry, I would like to ensure those vulnerabilities are actually not applicable to Aurora."
+Amazon RDS	"Deleting Read replica stuck
+Figured out
+
+Edited by: cmuench on Apr 10, 2019 6:23 AM"
+Amazon RDS	"incompatible-restore: your MySql memory setting is inappropriate for the us
+Hi, we've been unable to use `create-db-instance-read-replica` in our main RDS MySQL 5.6.39 database for a few days.
+
+We've used it reliably for years and do it weekly, but starting this week it has consistently failed to produce a replica. The instance created by the API call lands on the ""incompatible-restore"" state. This is what we see:
+
+
+Summary > Info
+
+    * Incompatible-restore
+
+Logs & Events > Recent events
+
+    * Database instance put into incompatible-restore. Your MySql memory setting is inappropriate for the usages
+
+We haven't found anyone reporting this specific scenario, only a thread mentioning ""memory setting is inappropriate"" for Aurora, but with ""incompatible-parameters"", not ""incompatible-restore.""
+
+We found this thread https://forums.aws.amazon.com/thread.jspa?messageID=537144 for a different ""incompatible-restore"" scenario with pointers to:
+
+
+Temporary tables: We don't have any long-running sessions that could be clinging on to temporary tables (from querying sys.session) nor any MEMORY tables listed in `information_schema.TABLES`.
+MyISAM: We don't have any MyISAM tables outside the mysql/information_schema Table Schemas
+
+
+Someone also jumped in there to say they managed to clone some time later, but we've been trying for 3 days with no success.
+
+I'd love some help understanding what's happening or pointers into how I could dig further and solve this problem.
+
+ps: the instance is `temp-staging-reports-replica`
+
+Edited by: julianobsnri on Mar 29, 2019 12:24 PM"
+Amazon RDS	"Re: incompatible-restore: your MySql memory setting is inappropriate for the us
+Having exactly the same problem. In one account where we had this issue the first time it started working somehow after a few days/tries. Setting up a secondary account now with the same setup and issues are back.
+
+Did you by any chance create the RDS and removed it again, then recreated it? The Logs&Events tab show some DB info from days before even though I just created the database. Also changing the name makes it deploy with no issues. Seems that the replica technology does not clean up well.
+
+Also, see this post over at stackexchange:
+
+https://dba.stackexchange.com/questions/233717/mysql-rds-incompatible-restore-while-creating-read-replica"
+Amazon RDS	"Re: incompatible-restore: your MySql memory setting is inappropriate for the us
+Did you by any chance create the RDS and removed it again, then recreated it?
+
+Yeah, we do this every week and have been doing so for more than a year.
+
+Also, see this post over at stackexchange:
+
+Thanks, I will test different params later this week. I hope they don't have to be set on the primary because doing that for our scenario is pretty risky."
+Amazon RDS	"Re: incompatible-restore: your MySql memory setting is inappropriate for the us
+Hello julianonri,
+
+Can you please attempt another read replica creation and send me a private message if it fails? We recently deployed a change that should allow you to create read replicas again without the instance being placed into incompatible-restore due to memory settings.
+
+Regards,
+Jaime"
+Amazon RDS	"Re: incompatible-restore: your MySql memory setting is inappropriate for the us
+I can confirm we can successfully create read replicas again =]"
+Amazon RDS	"RDS instances do not auto upgrade minor versions
+Hi,
+
+I have two RDS instances, both of which are currently running MariaDb 10.3.8. Both have ""Auto minor version upgrade"" configured to ""yes"", but neither have ever done an automatic upgrade. Currently, MariaDb 10.3.13 is available, but no automatic upgrades have happened or show any sign of happening soon.
+I have seen the same (lack of) behaviour in 10.2.x as well as MySql instances I've had in the past.
+
+If I do describe-pending-maintenance-actions, it outputs an empty list (even if I manually configure a change to be applied during the next maintenance window):
+{
+    ""PendingMaintenanceActions"": []
+}
+
+
+Is there anything else I have to do to activate this? Maybe something on the account level?"
+Amazon RDS	"RDS > Create Event Subscription : UI does not load
+AWS Console does not load RDS > Event Subscriptions > ""Create event subscription"" view. It happens in Chrome/Firefox in public/private mode. The same functionality works (in the same browser) for another AWS account that I own."
+Amazon RDS	"Re: RDS > Create Event Subscription : UI does not load
+I can confirm that you are definitely right: this wasn't isolated to your account, but constituted a wider situation instead. Our internal teams were already aware about this and they have already fixed this condition and the service is operating normally."
+Amazon RDS	"max_wal_senders invalid setting
+Hi guys, 
+
+We have a single Postgresql 10 rds instance replicating to another instance and haven't changed any default parameters
+We had a brief outage on Sunday, looking at the event logs on the main server we see the following:
+
+Sun, 10 Mar 2019 13:11:11 GMT   Recovery of the DB instance has started. Recovery time will vary with the amount of data to be recovered.
+Sun, 10 Mar 2019 13:15:27 GMT   The parameter max_wal_senders was set to a value incompatible with replication. It has been adjusted from 10 to 15.
+Sun, 10 Mar 2019 13:16:01 GMT   Recovery of the DB instance is complete.
+Sun, 10 Mar 2019 13:16:28 GMT   The parameter max_wal_senders was set to a value incompatible with replication. It has been adjusted from 10 to 15.
+Sun, 10 Mar 2019 13:16:31 GMT   DB instance restarted
+
+I'm not entirely sure from this what the cause of the outage was... looking at the default parameters our max_wal_senders is set to 10 still
+
+Does anyone have any ideas how a) i can work out what happened? and b) if 10 is actually a valid value for that setting?
+
+thanks!
+
+Dan"
+Amazon RDS	"Re: max_wal_senders invalid setting
+Message: ""The parameter max_wal_senders was set to a value incompatible with replication. It has been adjusted from 10 to 15."",""
+
+Please be assured the above message is a known message when an RDS instance is restarted, this event is harmless and has no performance impact on the instance. Kindly note that the internal team is aware of this event occurrence and is working on rolling out a fix. 
+Hence, currently, there is no requirement of setting up the above parameter and you can safely ignore this Warning message until the internal team rolls out a fix at the backend. 
+
+Unfortunately, I do not have a valid ETA for when the fix will be rolled out by internal team, however please be assured that this message is harmless and it's level is ""Warning"" and no action is required from your end."
+Amazon RDS	"Unable to upgrade RDS postgres instance from 9.5.15 to 9.6.11
+Hi,
+We are testing a RDS posgres upgrade from 9.5.15 to 9.6.11 and are running in the following error message when performing the upgrade:
+
+Database instance is in a state that cannot be upgraded: PreUpgrade checks failed: The instance could not be upgraded because one or more databases have views or materialized views which depend on 'pg_stat_activity'. Please drop them and try again.
+
+The upgrade is being performed with the following AWS cli command:
+
+aws rds modify-db-instance \
+  --apply-immediately \
+  --allow-major-version-upgrade \
+  --db-parameter-group-name ... \
+  --engine-version ... \
+  --db-instance-identifier ...
+
+The problems appears to be that there are some views that are owned by rdsadmin that we cannot drop:
+
+scp=> drop view pg_stat_activity;
+ERROR:  must be owner of relation pg_stat_activity
+
+Anyone run into this before or has some tips howto resolve it?"
+Amazon RDS	"Re: Unable to upgrade RDS postgres instance from 9.5.15 to 9.6.11
+Resolved via AWS technical support."
+Amazon RDS	"Re: Unable to upgrade RDS postgres instance from 9.5.15 to 9.6.11
+We are glad that AWS Premium Support was able to help you in upgrading the instance from 9.5.15 to 9.6.11."
+Amazon RDS	"Aurora Read Replica Stuck in Creating State
+I have a cross region read replica in eu-west-1 that is stuck in a ""Creating"" state for over 3 hours."
+Amazon RDS	"Re: Aurora Read Replica Stuck in Creating State
+Resolved after 5 hours..."
+Amazon RDS	"Re: Aurora Read Replica Stuck in Creating State
+We are glad that the aurora replica was finally created. Please reach out to AWS Premium Support in case of any further concerns."
+Amazon RDS	"Copy snapshot in same region stuck at Creating 0%
+I am trying to copy an unencrypted snapshot to an encrypted snapshot.  It has been stuck at ""Creating 0%"" for 7 hours.  I tried again but same results.
+
+Thanks for any help you can provide."
+Amazon RDS	"Re: Copy snapshot in same region stuck at Creating 0%
+I am all set now.  It appears that the RDS snapshot functionality was backed up on that date.  Overnight all my stuck snapshots eventually completed successfully.  These took somewhere around 12-18 hours to complete.  However, the next day everything was fast again."
+Amazon RDS	"Re: Copy snapshot in same region stuck at Creating 0%
+Between Mar 7 9:07 PM and 11:33 PM PST we faced an issue due to which some of the customers experienced delayed snapshot creation in the US-EAST-1 Region. The issue has been resolved and the service is operating normally."
+Amazon RDS	"Aurora with PostgreSQL -- ETA support for higher-memory instance classes?
+Hi,
+
+We're currently running on a db.r4.16xlarge for our primary Aurora for PostgreSQL instance.  I'm interested in when you will provide access to the next-generation instances such as r5.25xlarge (ballpark timeline).
+
+Thank you for your time."
+Amazon RDS	"Re: Aurora with PostgreSQL -- ETA support for higher-memory instance classes?
+I understand that you wish to have a higher instance class, such as  r5.25xlarge for Aurora Postgres database. RDS Aurora team are working towards adding support for higher instance class in the future, however, I'm unable to provide an ETA.  Please keep an eye on the following page for product update announcements:
+
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/WhatsNew.html
+https://aws.amazon.com/new/#database-services"
+Amazon RDS	"Connecting to PostgreSQL using boto3 Python
+Hello,
+
+I am trying to connect to PostgreSQL RDS using boto3 in python. The code I am using 
+
+    client = boto3.client('rds-data',region_name=""us-east-1a"")
+    response = client.execute_sql(
+        awsSecretStoreArn='secret ARN',
+        database=db_name,
+        dbClusterOrInstanceArn='Instance ARN',
+        schema='test',
+        sqlStatements='select * from test_table'
+    )
+I am using the code provided in boto3 documentation. But I am getting the error EndpointConnection Error: Could not connect to the endpoint URL: ""https://rds-data.us-east-1a.amazonaws.com/ExecuteSql"".
+
+can anyone please suggest how to connect to database using python. My endgoal is to deploy the code in lambda and use API Gateway to call the function.
+
+The database accepts connections from all IP addresses.
+
+Edited by: bxdemo on Apr 9, 2019 10:38 PM"
+Amazon RDS	"Re: Connecting to PostgreSQL using boto3 Python
+I got through the Endpointurl error by fixing the region. The console says availability zone as us-east-1a' but when I changed it to 'us-east-1'. The endpoint url worked. But now I am getting the BadRequestException for cluster id : arn:aws:rds:us-east-1:692303975045:db:sacmanagement . That is the ARN in the console and the documentation asks to use InstanceARN."
+Amazon RDS	"Modifying an Amazon RDS DB Instance and first-touch penalties
+Hello,
+
+I was wondering how modifying an Amazon RDS DB Instance works internally. Is the old volume reused? Is a snapshot loaded from S3?
+
+Namely, what I really want to know if changing the instance type lead to first-touch penalties on the first queries or not?
+
+Best regards.
+João Costa"
+Amazon RDS	"Re: Modifying an Amazon RDS DB Instance and first-touch penalties
+RDS Instance type modification does not require ""pre-warming"" the storage, since the storage volumes are reutilized and reattached to the new instance."
+Amazon RDS	"Performance Insights - Download Full SQL limited to 1000 chrs
+When I go into performance insights and inspect specific queries, the snippet provided only shows the first 1000 chrs. however when I use ""Download full sql"", the downloaded text file also only contains 1000 chrs.
+
+How can I inspect the full query?"
+Amazon RDS	"Re: Performance Insights - Download Full SQL limited to 1000 chrs
+SQL Text limit depends on the database engine you are using.
+
+Here are the documentation links:
+
+RDS
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.UsingDashboard.html#USER_PerfInsights.UsingDashboard.SQLTextSize
+
+Aurora
+https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_PerfInsights.UsingDashboard.html#USER_PerfInsights.UsingDashboard.SQLTextSize
+
+Currently the only engines that support more than a thousand characters are RDS PostgreSQL and Aurora PostgreSQL and the limit can be moved up using the parameter track_activity_query_size.
+
+There is work being done to raise the limit on all the platforms.
+
+Kyle"
+Amazon RDS	"DBName must be null for engine: sqlserver-web??? Huh?
+I am trying to use the AWS web interface to create a simple RDS SQLServer instance and I get this error:
+
+DBName must be null for engine: sqlserver-web (Service: AmazonRDS; Status Code: 400; Error Code: InvalidParameterValue; Request ID: 54a3c294-c8ca-4826-8603-31c296c00039)
+
+I get this error with both SQL-Server web edition AND Express edition.
+
+WTF?  Where do I specify the DBName?  There is NO selection for this.  No matter what I try, I always get this error.  Am I seriously this stupid?  How can I create a SQL Server instance in RDS via web interface?"
+Amazon RDS	"MySQL Event: 'Recovery of the DB instance has started.'
+Hello.
+I ran into a strange problem with MySQL RDS instance, and I hope someone can shed a light on it.
+
+Sometimes, during backup process, the following events are generated for few of our instances:
+""Recovery of the Multi-AZ instance has started. Recovery time will vary with the amount of data to be recovered.""
+It wouldn't be a big deal, but databases are not available during recovery, so this leads to unscheduled downtime of the instances.
+
+I enabled log steaming from the instances to the CloudWatch, but so far, there is nothing that might indicate the cause of recovery. 
+Is there any way to find the cause of this behavior?
+
+Events from one of the instance:
+Tue, 09 Apr 2019 09:08:08 GMT	Backing up DB instance
+Tue, 09 Apr 2019 09:24:34 GMT	Backing up DB instance
+Tue, 09 Apr 2019 09:26:57 GMT	Recovery of the DB instance has started. Recovery time will vary with the amount of data to be recovered.
+Tue, 09 Apr 2019 09:31:01 GMT	DB instance restarted
+Tue, 09 Apr 2019 09:31:31 GMT	Recovery of the DB instance is complete.
+
+Edited by: GlazovVladimir on Apr 9, 2019 5:32 AM"
+Amazon RDS	"bcp and unicode
+I have a large CSV file (250K rows) that I am uploading to a table on AWS RDS Sql Server Express v12.0 using bcp running on an EC2 Linux instance. The CSV is utf-8. After playing with lots of settings, I have minimized errors to about 150 out of 250K. However, it seems to trip over the symbol for trade mark - tm with a circle superscript. To get the upload to work so far I have had to use a format file with an empty collation field and set up a staging table on the AWS end with columns that are nvarchar. It works well except for the few rows that have the trade mark symbol. Would appreciate any suggestions.
+
+Thanks!"
+Amazon RDS	"RDS Postgres Replication Failure
+Hello -- We had an outage last week on Friday morning with RDS Postgres. One of our app reads from a replica  instance and for some reason it was not able to find any data in one of tables. We confirmed that manually as well where we were able to query that particular table on master database and other replica except one. 
+
+What could be the cause of this? I am happy to send you more DB info in private if that helps?
+
+Edited by: WootricDev on Apr 8, 2019 2:04 PM"
+Amazon RDS	"Postgres Logical Repl can't ALTER/DROP subscriptions or publications.
+postgres=> select subid, subname, pid from pg_stat_subscription;
+ subid |   subname    | pid  
+-------+--------------+------
+ 20065 | processdbsub | 6245
+ 21392 | masterdbsub  | 6481
+ 21948 | labsdbsub    | 9216
+postgres=> DROP SUBSCRIPTION ""labsdbsub"";
+ERROR:  subscription ""labsdbsub"" does not exist
+postgres=> DROP SUBSCRIPTION labsdbsub;
+ERROR:  subscription ""labsdbsub"" does not exist
+
+
+Clearly the subscription exist and no spelling mistake.
+
+ALTER SUBSCRIPTION has the same issue. The subscriptions can't be found.
+
+The same thing is happening on the publisher. The publications can be listed but not alter/drop.
+This user is a part of rds_superuser and was able to create both the SUBSCRIPTION and PUBLICATION on different nodes. The tables were replicated from the publisher. But need to delete the subscription after to cleanup resources.
+Thank you!"
+Amazon RDS	"Re: Postgres Logical Repl can't ALTER/DROP subscriptions or publications.
+Tried both postgres 10 and postgres 11 on RDS with same issue. 
+
+If using logical replication to upgrade for pg 10 to pg 11, it's assumed that you will remove your pg10 host at some point. And you need to be able to drop or alter the subscription to prevent servers running out of memory. 
+
+From PG docs:
+When dropping a subscription, the remote host is not reachable. In that case, disassociate the slot from the subscription using ALTER SUBSCRIPTION before attempting to drop the subscription. If the remote database instance no longer exists, no further action is then necessary. If, however, the remote database instance is just unreachable, the replication slot should then be dropped manually; otherwise it would continue to reserve WAL and might eventually cause the disk to fill up. Such cases should be carefully investigated."
+Amazon RDS	"Re: Postgres Logical Repl can't ALTER/DROP subscriptions or publications.
+Hey benirving,
+
+Can you try dropping/altering the subscription or publication when you're connected to the database the slot resides in?
+
+You can find the database of the slot through the following query:
+
+SELECT d.datname, s.subname FROM 
+pg_database d, 
+pg_subscription s 
+WHERE 
+d.oid = s.subdbid;
+
+
+Thanks!
+
+
+John H"
+Amazon RDS	"MySQL RDS instance purging binary logs every second
+My RDS instance is maxing out the CPU, despite having low load, and the only unusual thing I can see in the query log is ""PURGE BINARY LOGS TO 'mysql-bin-changelog.194901'"", which is repeated every second, as per attached screenshot. 
+
+Is this normal or is this the cause of the max CPU usage?
+
+Edited by: EOJames on Apr 4, 2019 11:35 PM"
+Amazon RDS	"Re: MySQL RDS instance purging binary logs every second
+If anyone else has this problem, I created a read replica and promoted it, destroyed the original instance and the issue is resolved"
+Amazon RDS	"Aurora: Table is Full: over instance size
+Hi,
+
+We are running a largish database on Aurora RDS. We need to execute an ALTER TABLE with lock=none over a table that contains nearly 1TB of data (data + indexes). We are getting 'table is full' errors, as described in https://forums.aws.amazon.com/thread.jspa?threadID=216645
+
+The proposed workaround is to use a large instance size. I understand temporary tables are stored in the instance's ephemeral storage, but since r3.8xlarge is that largest instance type available in Aurora and it only has just 640GB I gather even using this instance type is not going to work. Is this correct? Is there any workaround? 
+
+-Thanks"
+Amazon RDS	"Re: Aurora: Table is Full: over instance size
+Have you tried something like pt-online-schema-change?"
+Amazon RDS	"Re: Aurora: Table is Full: over instance size
+Well, that's an interesting option, will take a look into it. Thank-you."
+Amazon RDS	"Re: Aurora: Table is Full: over instance size
+Just want to know whether pt-online-schema-change worked for you or not? If so, please let me know how you have done it? Similar kind of problem I am facing for 1.6TB table size"
+Amazon RDS	"@Mods: Please Delete
+Please delete this post"
+Amazon RDS	"AWS RDS mysql Reboot not completing
+Hi,
+Roughly 45 mins ago I rebooted our main DB, but it still hasnt returned. 
+Please advise what is going on.
+xxxxxxxxxxx.ckfpjgakogez.eu-west-1.rds.amazonaws.com (database name replaced by xxxxxx, you should know it from your end  ).
+Thanks
+Rob"
+Amazon RDS	"Re: AWS RDS mysql Reboot not completing
+Came back after 90 mins. No idea why it takes that long."
+Amazon RDS	"Access non-public RDS with specific IP
+Hi, I have tried in vain to get this to work but assume I am missing something. I can access my RDS endpoint when it is set to public, but to make it more secure I would like it to be non-public and allow a connection through a specific IP address. I tried adding my IP to the rds security group for the required port but it does not work.
+
+Is it possible to access a non-public instance of SQL server via SQL management studio and if so what step are required to allow a specific IP to connect? Can it be done through a security group or do I need to involve subnets and internet gateways?
+
+Thanks in advance"
+Amazon RDS	"RDS Aurora Announcements
+Watch this thread to receive notice of forum announcements. We will post notices here when announcements are updated. Old notices do age out but a record of releases can be found at:
+
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Aurora.DatabaseEngineUpdates.html"
+Amazon RDS	"Re: RDS Aurora Announcements
+We are now ready with a new Aurora release. We will patch all Amazon Aurora database clusters in all regions starting at midnight on Tuesday, April 26th, 2016 UTC. 
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=3645 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+Update: We have extended the opt-in period for our latest patch to Tuesday, May 10th, 2016 UTC. At that time we will begin the process of auto-patching Aurora clusters, during their maintenance windows, if they have not yet applied the latest patch. 
+
+
+The latest patch is already available. If you would like apply the patch yourself, you can log into the  AWS Management Console , select “Instance Actions”, then click “Upgrade Now”. 
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=3645  for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+We are announcing a new version (1.6.5) of Amazon Aurora starting on Wednesday, June 1, 2016. This is an opt-in version and will NOT be used to patch your database instances. You may apply the patch immediately using the AWS Management Console under “Instance Actions” -> “Upgrade Now.”
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=3793 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+We are announcing a new version (1.7) of Amazon Aurora starting on Tuesday, August 30, 2016. This is an opt-in version and will NOT be used to patch your database instances. You may apply the patch immediately using the AWS Management Console under “Instance Actions” -> “Upgrade Now.”
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4003 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+We are announcing a new version (1.7.1) of Amazon Aurora starting on Tuesday, September 20, 2016. This is an opt-in version and will NOT be used to patch your database instances. New clusters will automatically pick up this version; for existing customers, we will enable the upgrade option next week (the week of 9/26). When the upgrade is available we will make another announcement.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4041 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+We are announcing a new version (1.8) of Amazon Aurora starting on Tuesday, October 18, 2016. We will patch all Amazon Aurora database clusters with this version in all regions over a week, starting at Midnight GMT 11/15/2016.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4108 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+We are announcing a new version (1.8.1) of Amazon Aurora starting on Wednesday, October 26, 2016. We will patch all Amazon Aurora database clusters with this version in all regions over a week, starting at Midnight GMT 11/15/2016.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4127 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+We are announcing a new version (1.9.0) of Amazon Aurora starting on Friday, Nov 11, 2016. This is an opt-in version and will NOT be used to patch your database instances. New clusters will automatically pick up this version shortly; for existing customers, we will enable the upgrade option in the following weeks.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4159 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+We are announcing a new version (1.10.0) of Amazon Aurora starting on Wednesday, Dec 14, 2016. This is an opt-in version and will NOT be used to patch your database instances. New clusters will automatically pick up this version shortly; for existing customers, we will enable the upgrade option in the following weeks.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4294 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+We are announcing a new version (1.10.1) of Amazon Aurora starting on Thursday, Jan 12, 2017. This is an opt-in version and will NOT be used to patch your database instances. New clusters will automatically pick up this version shortly; for existing customers, we will enable the upgrade option in the following weeks.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4349 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+We are announcing a new version (1.11) of Amazon Aurora starting on Thursday, February 23, 2017. We will patch all Amazon Aurora database clusters with this version in all regions over a week, starting in coming weeks.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4444 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+We are announcing a new version (1.12) of Amazon Aurora starting on Friday, March 31, 2017. This is an opt-in version and will NOT be used to patch your database instances. New clusters will automatically pick up this version shortly; for existing customers, we will enable the upgrade option in the following weeks.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4529 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+We are announcing a new version (1.13) of Amazon Aurora starting on Monday, May 15, 2017. This is an opt-in version and will NOT be used to patch your database instances. New clusters will automatically pick up this version; for existing customers, upgrade option is available right away.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4630 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+Amazon Aurora 1.14 is generally available. All new database clusters, including those restored from snapshots, will be created in Aurora v1.14. Aurora v1.14 is also a mandatory upgrade for existing Aurora DB clusters. We will send a separate announcement with the timeline for deprecating earlier versions of Aurora.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4864 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+Update: We have extended the opt-in period for our latest patch to October 22, 2017 at 23:59 UTC. At that time we will begin the process of auto-patching Aurora clusters, during their maintenance windows, if they have not yet applied the latest patch.
+
+The latest patch is already available. If you would like apply the patch yourself, you can log into the AWS Management Console , select “Instance Actions”, then click “Upgrade Now”.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4983 for more details about this extension.
+Please see https://forums.aws.amazon.com/ann.jspa?annID=4864 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+Amazon Aurora 1.14.1 is generally available. All new database clusters, including those restored from snapshots, will be created in Aurora v1.14.1. Aurora v1.14.1 is also a mandatory upgrade for existing Aurora DB clusters.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=5007 for details of this release."
+Amazon RDS	"Re: RDS Aurora Announcements
+Amazon Aurora 1.15 is generally available. All new database clusters, including those restored from snapshots, will be created by default in Aurora 1.15. You have the option, but are not required, to upgrade existing database clusters to Aurora 1.15. If you wish to create new clusters in Aurora 1.14.1, you can do so using the CLI or API and specifying the engine version.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=5088 for more details.
+
+Edited by: PiyushKadam-AWS on Oct 25, 2017 10:48 AM"
+Amazon RDS	"Re: RDS Aurora Announcements
+Amazon Aurora 1.16 is generally available. All new database clusters, including those restored from snapshots, will be created by default in Aurora 1.16. You have the option, but are not required, to upgrade existing database clusters to Aurora 1.16. If you wish to create new clusters in Aurora 1.14.1 or 1.15.1, you can do so using the CLI or API and specifying the engine version.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=5283 for more details."
+Amazon RDS	"Re: RDS Aurora Announcements
+Amazon Aurora MySQL 2.01 is generally available. Going forward, Aurora MySQL 2.x versions will be compatible with MySQL 5.7.12 and Aurora MySQL 1.x versions will be compatible with MySQL 5.6.10. When creating a new Aurora MySQL database cluster, including those restored from snapshots, you have the option of choosing compatibility with either MySQL 5.7.12 or MySQL 5.6.10. 
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=5424 for more details."
+Amazon RDS	"Re: RDS Aurora Announcements
+Amazon Aurora 1.14.4, 1.17 and 2.01.1 are now generally available.
+
+Forum Announcements:
+https://forums.aws.amazon.com/ann.jspa?annID=5533
+https://forums.aws.amazon.com/ann.jspa?annID=5532
+https://forums.aws.amazon.com/ann.jspa?annID=5534
+
+Release notes:
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/AuroraMySQL.Updates.2011.html
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/AuroraMySQL.Updates.117.html
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/AuroraMySQL.Updates.1144.html"
+Amazon RDS	"Re: RDS Aurora Announcements
+Amazon Aurora 1.17.3 is generally available. All new database clusters, including those restored from snapshots, will be created by default in Aurora 1.17.3. You have the option, but are not required, to upgrade existing database clusters to Aurora 1.17.3. If you wish to create new clusters in Aurora 1.14.4, 1.15.1, 1.16 you can do so using the CLI or API and specifying the engine version.
+
+Forum announcement: https://forums.aws.amazon.com/ann.jspa?annID=5804"
+Amazon RDS	"Re: RDS Aurora Announcements
+Amazon Aurora 1.17.4 is generally available. All new database clusters, including those restored from snapshots, will be created by default in Aurora 1.17.4. You have the option, but are not required, to upgrade existing database clusters to Aurora 1.17.4. If you wish to create new clusters in Aurora 1.14.4, 1.15.1, 1.16 or 1.17.3, you can do so using the CLI or API and specifying the engine version.
+
+Forum Announcement: https://forums.aws.amazon.com/ann.jspa?annID=6015"
+Amazon RDS	"Re: RDS Aurora Announcements
+Amazon Aurora 1.17.5 is generally available. All new database clusters, including those restored from snapshots, will be created by default in Aurora 1.17.5. You have the option, but are not required, to upgrade existing database clusters to Aurora 1.17.5. If you wish to create new clusters in Aurora 1.14.4, 1.15.1, 1.16 or 1.17.4, you can do so using the CLI or API and specifying the engine version.
+
+Forum Announcement: https://forums.aws.amazon.com/ann.jspa?annID=6038"
+Amazon RDS	"Re: RDS Aurora Announcements
+Amazon Aurora MySQL 2.02.3 is generally available. Please note that Aurora MySQL 2.x versions are compatible with MySQL 5.7 and Aurora MySQL 1.x versions are compatible with MySQL 5.6.
+
+Please see https://forums.aws.amazon.com/ann.jspa?annID=6070 for more details."
+Amazon RDS	"PostgreSQL: specific ciphers and protocols and openssl version?
+Hi,
+
+the ssl_ciphers parameter is currently read-only in RDS PostgreSQL parameter groups. Firing up an instance and running show ssl_ciphers shows it to have the value HIGH:MEDIUM:+3DES:!aNULL — but which specific ciphers that resolves to depends on the openssl version in play. So ...
+
+1. which openssl version is present on AWS RDS PostgreSQL instances?
+
+2. if that can't be divulged, then which specific ciphers and protocols are supported?
+
+3. in particular, is there a way (current or planned) to configure an RDS instance to accept TLS 1.2 only, or at least disable SSL v3.0 and TLS v1.0?
+
+Cheers,
+Gulli"
+Amazon RDS	"Re: PostgreSQL: specific ciphers and protocols and openssl version?
+Hi,
+
+Has there been any progress on this request from AWS?
+
+We need to disable SSLv3 and TLSv1.0 / 1.1, but still do not have an option to do this via the parameter groups."
+Amazon RDS	"Re: PostgreSQL: specific ciphers and protocols and openssl version?
+Hello,
+
+Thanks for the post, for time being the ability to force only TLSv1.2 from the RDS side is a feature request but we would not be able to provide an ETA at the moment on this.  But our team is already aware and working on it.
+
+But for the interim you could use TLSv1.2 currently against RDS Postgres instances using a compatible client.
+
+--
+Thank you,
+Prashanna"
+Amazon RDS	"Re: PostgreSQL: specific ciphers and protocols and openssl version?
+Still waiting for an answer? This is important. We need a way to set ssl_ciphers for PostgreSQL RDS instances."
+Amazon RDS	"Re: PostgreSQL: specific ciphers and protocols and openssl version?
+Hi - Checking in on current status of this feature.
+
+Almost all penetration tests will identify allowing weak ciphers as a high level vulnerability, and will request us to disable weak ciphers as remediation. Without this capability - companies who need to comply will be forced to move off of RDS. Client side policy/procedure enforcement of using strong ciphers won't be enough to mitigate this vulnerability - the ciphers need to be disabled.
+
+The relevant CVE:
+https://www.cvedetails.com/cve/CVE-2015-2808/"
+Amazon RDS	"Postgres extension request: pgxn-natural-sort-order
+G'day.
+
+It would be nice if pgxn-natural-sort-order was supported on Postgres. See https://github.com/Zeleo/pg_natural_sort_order and https://pgxn.org/dist/pg_natural_sort_order/ for details.
+
+Cheers"
+Amazon RDS	"Can't revoke Postgres pg_catalog tables to hide user info if multitenant
+In a multitenant setup where multiple databases are created within a single Postgresql RDS instance, users in ANY database can look into pg_database or pg_user and see what other customers are running within that same instance. This is undesirable.
+
+ie. if we have DatabaseA, DatabaseB, DatabaseC , users in DatabaseC can select from pg_database and see DatabaseA and DatabaseB listed. Similar with pg_users.
+
+In non-RDS instances of Postgres visibility can be hidden using a technique that includes:
+
+REVOKE ALL ON pg_database FROM public;
+REVOKE ALL ON pg_user FROM public;
+
+This can be accomplished because the postgres user owns the pg_catalog schema/tables so REVOKE is valid. 
+
+On RDS however, the pg_catalog tables are owned by rdsadmin. Because the master user is not a true superuser and not the owner of pg_catalog, an error is returned when trying to revoke privileges:
+
+REVOKE ALL ON pg_database FROM public;
+
+WARNING:  no privileges could be revoked for ""pg_database""
+
+Is there any clever way to revoke privileges (or simply disassociate them from  PUBLIC ) on pg_database in a Postgresql RDS instance to eliminate this visibilty ?"
+Amazon RDS	"Aurora Serverless AppSync error: invalid cluster id
+Hi,
+
+I am trying to use Aurora Serverless as a datasource for AppSync but I am unable to get it to work. Every time I try to run a query or mutation I get this error;
+
+RDSHttp:{\""message\"":\""ERROR: invalid cluster id: app-develop-aurora-rds\""}
+
+I don't know why it's saying this as I've looked on the RDS console and the cluster ID is definitely correct
+
+I am running this on us-east-1 and have manually enabled the Data API on the console but I just cannot seem to get this working
+
+Edited by: mogzilla on Mar 30, 2019 6:10 AM"
+Amazon RDS	"Re: Aurora Serverless AppSync error: invalid cluster id
+That combination should work (Data API in us-east-1).
+
+What database engine are you running in your cluster?"
+Amazon RDS	"Re: Aurora Serverless AppSync error: invalid cluster id
+I'm running Aurora MySQL"
+Amazon RDS	"Re: Aurora Serverless AppSync error: invalid cluster id
+Thanks. Can you PM me your AWS Account ID and your AppSync API ID and I'll have a look at your configuration."
+Amazon RDS	"Re: Aurora Serverless AppSync error: invalid cluster id
+Sure thing, message has been sent. Thanks!"
+Amazon RDS	"Re: Aurora Serverless AppSync error: invalid cluster id
+Thanks! I followed up via PM as well."
+Amazon RDS	"Re: Aurora Serverless AppSync error: invalid cluster id
+For anyone else who has this issue, the dbClusterIdentifier value in your cloudformation needs to be the ARN of the DB cluster rather than a reference to it"
+Amazon RDS	"Timescale DB support
+Hi,
+Is there any plan to support https://www.timescale.com/ as Postgre extension?"
+Amazon RDS	"Re: Timescale DB support
+Hello,
+
+At this time, searches for the timescale extension in RDS PostgreSQL come up empty.  However, I am happy to put in a feature request to add incorporate it into RDS PostgreSQL.
+
+Please be sure to check again for timescale in future RDS releases.  You can view a list of all PostgreSQL extensions supported on RDS on the AWS User Guide.
+
+Best Regards,
+albertpataws
+
+Edited by: JigneshAWS on Aug 15, 2017 10:08 AM"
+Amazon RDS	"Re: Timescale DB support
+Can you please put feature request? We want to use this extension in production together with RDS."
+Amazon RDS	"Re: Timescale DB support
+I'll second this..."
+Amazon RDS	"Re: Timescale DB support
++1 for sure! I know this is direct competition to CloudWatch but the ability to keep time series data in a SQL data store is highly desired!"
+Amazon RDS	"Re: Timescale DB support
+How does this compete with Cloudwatch?"
+Amazon RDS	"Re: Timescale DB support
+Any news on this ? Was there any success at all in getting any RDS extension supported by Amazon ?"
+Amazon RDS	"Re: Timescale DB support
+Amazon adds a new extension or two with almost every release of RDS PostgreSQL.  For example, today's launch added support for orafce and prefix extensions.
+
+I don't know where their thinking is with Timescale DB.  Unless customers (and I don't mean the occasional request here in the forum) are asking for it then it may not be getting much attention.  I'm also concerned with much of the wording around Timescale.  It isn't an extension, it's a new database engine that happens to be packaged into an extension.  What does that mean?  What does it imply for all of the automation in RDS?  What are its security implications?  Supporting it could be a very large project."
+Amazon RDS	"Re: Timescale DB support
+Ok, point taken. Means i'll probably go back to normal partition tables as i'm not a heavyweight customer. Any news on Postgresql10 support for that matter ?
+
+Kind Regards,
+Jan"
+Amazon RDS	"Re: Timescale DB support
+I haven't heard anything, but based on historical precedent they may have decided there was a reason (i.e., required bug fix) to wait for 10.2.  Or potentially for one of the extensions included in the RDS PostgreSQL AMI to drop a new release.  For example the plv8 extension is impacted by Spectre according to https://aws.amazon.com/security/security-bulletins/AWS-2018-013/v11/.  They may be waiting for an update to plv8 before launching PostgreSQL 10 support.
+
+Google was supposed to drop a new version of V8 with appropriate mitigations, I think this week.  I don't know what the process is for the plv8 community to pick up the new engine, test, re-release and then for RDS to pick it up.  Judging from the low activity level on GitHub I'm concerned about the support of the plv8 extension.  It may be that AWS is facing the choice of dropping support for the plv8 extension or undergoing their own effort to integrate and test the new version of V8 into plv8.  Thus illustrating why they are cautious about releasing every extension that customers ask for.  If the extension doesn't have a long-term vibrant development community behind it, AWS can be stuck between the customer unfriendly action of pulling support or the expensive option of taking over development support for something that is not core to their business."
+Amazon RDS	"Re: Timescale DB support
+This is needed +1"
+Amazon RDS	"Re: Timescale DB support
++1 on this as well"
+Amazon RDS	"Re: Timescale DB support
++1. This type of time series database would be very helpful for many use cases (IoT, monitoring, etc)."
+Amazon RDS	"Re: Timescale DB support
++1. Please add timescaledb. Use case is for time-series geolocation data."
+Amazon RDS	"Re: Timescale DB support
++1. Please add timescaledb support; we are very eager to use it for our IoT data."
+Amazon RDS	"Re: Timescale DB support
++1, this would be very useful to have the relational data in the same schema as the time-series data. We have been using PostgreSQL + Timescale locally for testing and would love to move it over to RDS."
+Amazon RDS	"Re: Timescale DB support
+Please support this extension. It is now almost 2 years since it was requested here, and we are still waiting. 
+DigitalOcean supports Timescale DB, you are falling behind Amazon!!"
+Amazon RDS	"aurora postgres major upgrade - pg_dumpall
+Hello, I am planning for Aurora postgres (aurora - 1.3.1, pg engine 9.6) to Aurora postgres (aurora 2.2, pg - 10.6). Since there is no native aws method of doing the upgrade, manual upgrade has to be done for which will use pg_dump on old version and pg_restore on new version. Before this I want to extract all users and roles and create them on the target so that pg_restore does not complain about user/group not found. But when I am trying to use pg_dumpall with -g, it complains saying no permission on pg_authid table.
+
+Researching on this looks like rds does not provide access to this table, so what are my options to extract users/roles and their corresponding passwords. I would want to avoid a situation where I would have to create users with new passwords. Kindly advice how to deal with this.
+
+Edited by: nmakb on Apr 4, 2019 8:08 PM"
+Amazon RDS	"Write IOPS increased by over 10x since upgrade to db.r5.2xlarge
+After a recent upgrade of a mysql 5.6 instance from db.m4.2xlarge to db.r5.2xlarge we're seeing Write IOPS being reported in 2k-4k range instead of 100-200. The application load has had not changed. I can't see anything in the slow query log or show processlist.
+
+Is this an artefact of the way Nitro instances report Write IOPS or something unhealthy at the EC2 or EBS layer? There's ""Some of these metrics have differences on Nitro-based instances"" on https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-volume-status.html but nothing I've read sounds like it would explain this massive increase.
+
+The write throughput metric is basically unchanged from before and after upgrade. This suggests there's a Write IOPS accounting difference between the m4 (xen) and r5 (nitro/kvm/hardware) instance?"
+Amazon RDS	"Re: Write IOPS increased by over 10x since upgrade to db.r5.2xlarge
+Perhaps related? https://mydbops.wordpress.com/2019/01/21/will-io-size-affect-your-rds-performance/
+
+Is this really possible?
+When comes to the IO sizing, There is no guarantee that we could be getting same IO size instance on the creation of an RDS instance, Even RDS team has no control over it. As of writing today, It’s based on luck.
+
+The increased write IOPS but unchanged write throughput is a symptom that matches this rather unsatisfying (and terrifying) explanation. Guess it's only terrifying if this reported write IOPS figure is used to throttle the provisioned IOPS we've paid for on this io1 volume."
+Amazon RDS	"Re: Write IOPS increased by over 10x since upgrade to db.r5.2xlarge
+Same as https://forums.aws.amazon.com/thread.jspa?messageID=877494? Can anybody from AWS confirm? Please and Thanks!
+
+Is this now 20x higher number reported to cloudwatch what we'll actually be throttled on for a provisioned IOPS volume? Guess the bug helps sell quite a few IOPS.."
+Amazon RDS	"Re: Write IOPS increased by over 10x since upgrade to db.r5.2xlarge
+I don’t have time to make it through that blog post in detail, but some of the claims don’t make sense and I don’t see how they are related to your issue.
+
+Generic discussion: Applications, including database systems, issue read and write operations of multiple sizes. As long as those operations are less than 16KB in size they will count as a single IO. If they are larger than 16KB then they will count as more than one IO. So if you have an application doing all 32KB IOs then you would see more IOPS then IOs. If they are smaller than 16KB you should see  1 IOPS per IO, but total throughput will be lower than if you were doing all 16KB IOs. The size of the IOs generated by a database engine is determined both by the database engine itself and the application behavior. For example a highly concurrent transaction database will get more grouping of log records between log flushes resulting in larger but fewer IOs. A single stream application will cause a log flush on every transaction with no grouping, so usually a lot of small IOs. Parameters such as those that determine the checkpoint intervals will have a similar effect. The checkpoint processing will try to coalesce multiple adjoining dirty pages into fewer larger IOs, but the more frequent the checkpoints the less likely this is to happen. This is also true on reads, where sequential scans may (again, engine dependent) cause multiple pages per IO to be read vs random access where only a single page may be brought in.
+
+Changing instance type without changing other parameters shouldn’t normally result in a significant change in behaviors, though certainly having larger amounts of memory or more concurrent threads could both impact the number and size of IOs required by an application and database engine. But when this happens I would also expect a difference in throughput, not a dramatic change in IOPS with no change in throughput.
+
+The forum is for community discussion not technical support, so if you really need help with this then you’ll need to open a support case."
+Amazon RDS	"Re: Write IOPS increased by over 10x since upgrade to db.r5.2xlarge
+Thanks Hal! So to report a bug one must buy a support contract from AWS 😀
+
+I wonder if changing the RDS instance type brings a new linux kernel. I'm thinking under the hood RDS has an EC2 instance running some AMI provisioned by the RDS team. Probably Amazon Linux. Presumably when I changed the instance type RDS launched a new EC2 instance for me. Maybe a difference in the new linux kernel, drivers, whatever changes this interaction between mysql writes and IOPS observed by EBS..
+
+Other teams I work with have had the same unexplained problem. They've tried rolling back their instance type. The write IOPS stayed high. Suggesting perhaps newer EC2 instances managed by RDS display this higher write IOPS behaviour. Occasionally when they switch instance type back and forth when they get back to a db.m4 instance they'll see a figure closer to the low original IOPS number. Does RDS perhaps have a pool of EC2 instances allocated to customers? Older ones have the low number. Newer the high.
+
+Or it's a difference at the xen/kvm/nitro/hardware level. Total speculation. Either way it's fun times.
+
+Edited by: will321 on Apr 4, 2019 3:02 PM"
+Amazon RDS	"Re: Write IOPS increased by over 10x since upgrade to db.r5.2xlarge
+It likely isn’t a bug with RDS, but effectively yes.  A few members of the service team look at the forum periodically and occasionally will respond, particularly if something looks like a bug. But you can’t count on that. And with what you are experiencing it is likely other customers with support contracts would see it and report it. But the most likely scenario is that it isn’t an AWS bug and they will put a lot of time and effort into tracking it down only to find it isn’t a bug. They don’t include those costs in the price of the service, so that investigation is what you are paying for.
+
+https://hal2020.com/2017/11/04/does-per-incident-support-make-sense-in-the-cloud/"
+Amazon RDS	"Re: Write IOPS increased by over 10x since upgrade to db.r5.2xlarge
+Thanks for explaining Hal!
+
+Digging into (the maybe totally wrong) io size theory. We have Cloudwatch metics exported to datadog. Some metric math on our instance suggests the average size of each write operation went down from ~8/9kb to 400 bytes after upgrade (new instance).
+
+avg:aws.rds.write_throughput{name:prod-master}.as_rate() / avg:aws.rds.write_iops{name:prod-master}.as_rate()
+
+Basically Write Throughput / Write IOPS for our instance. The same math for read implies it has remained at ~16kb. I don't think my math is broken.
+
+At least one other post in this forum suggests we're not the only customer to observe this behaviour https://forums.aws.amazon.com/thread.jspa?messageID=877494&#877494 😀"
+Amazon RDS	"RDS MySQL serverless: Master password reverts?
+I'm observing the following behavior. Am I nuts?
+
+-Create a serverless RDS instance running Aurora MySQL 5.6. Specify ""pause instance after 5 minutes of inactivity.""
+-Set a master password at creation time. Call it ""password1"".
+-From command line on development machine (connected to the RDS's VPC via VPN) demonstrate that I can connect to the new instance as user ""master"" with password ""password1"".
+-In Secrets Manager, create a secret ""master"", for RDS credentials, referencing my instance.
+-At creation time, enable password rotation and allow the console to create a Lambda to do the work, specifying ""Use this secret."" It uses the CloudFormation template SecretsManagerRDSMySQLRotationSingleUser.
+-Note: I find that I have to configure the generated Lambda function so that it runs in the VPC in order to have access to the RDS instance. I also have to configure a VPC endpoint for Secrets Manager. Did all that.
+-In Secrets Manager, click ""Rotate secret immediately.""
+-Wait for the rotation to complete successfully.
+-Observe no errors in the Lambda's CloudWatch logs.
+-Get the new secret value of the rotated password. Call it ""password2"".
+-From my development machine command line, demonstrate that I can connect to the database as ""master"" using ""password2"".
+
+Now here's the crazy part...
+
+-Wait five minutes for the RDS instance to pause.
+-Attempt to connect to the database as user ""master"" and ""password2"".
+-When the RDS resumes, I get ""ERROR 1045 (28000): Access denied"".
+-But I CAN connect as user ""master"" and ""password1"".
+
+The master password has reverted to its initial value! I can repeat this process at will.
+
+Am I doing something wrong? Can I not rotate the master password in this way? Or is this a bug in RDS?
+
+-JEastman"
+Amazon RDS	"Wordpress php_network_getaddresses: getaddrinfo failed: Temporary failure
+I get the following message when I access a wordpress server hosted on EC2 with a security group that has access to the RDS instance.
+
+Warning: mysqli_real_connect(): (HY000/2002): php_network_getaddresses: getaddrinfo failed: Temporary failure in name resolution in [...]/wp-includes/wp-db.php on line 1531
+ 
+Deprecated: mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in [...]/wp-includes/wp-db.php on line 1562
+ 
+Warning: mysql_connect(): php_network_getaddresses: getaddrinfo failed: Temporary failure in name resolution in [...]/wp-includes/wp-db.php on line 1562
+ 
+Warning: mysql_connect(): php_network_getaddresses: getaddrinfo failed: Temporary failure in name resolution in[...]/wp-includes/wp-db.php on line 1562
+
+
+If I create a test file using the same login info but mysqli instead of wordpress to connect I get a successful connection, similarly, using the same login info but with the mysql cli tool, I get a successful connection.
+
+<?
+$mysqli = new mysqli(""xxx.cluster-xxx.us-east-2.rds.amazonaws.com"", ""root"", ""xxx"", ""dbname"");
+if ($mysqli->connect_errno) {
+    echo ""Failed to connect to MySQL: ("" . $mysqli->connect_errno . "") "" . $mysqli->connect_error;
+}
+echo $mysqli->host_info . ""\n"";
+?>
+
+
+Looking for guidance as to why the mysql connection through wordpress fails like this?"
+Amazon RDS	"RDS bug re: nondeterministic results?
+Hello everyone,
+
+Found something interesting... Might anyone know why this useless but illustrative query returns non-deterministic results on Amazon's RDS MySQL, but is deterministic on non-Amazon MySQL?
+
+Setup:
+CREATE TABLE T1 (id int);
+CREATE TABLE T2 (id int);
+INSERT INTO T1 values (1), (2), (3), (4), (5);
+INSERT INTO T2 values (1), (2), (3), (4), (5);
+
+
+Test Query:
+SELECT COUNT(*) FROM T1 LEFT JOIN T2 on T2.ID = (SELECT ID from T2 ORDER BY T1.ID LIMIT 1);
+
+
+Result:
+Running this query multiple times on Amazon RDS MySQL produces seemingly random counts (3, 4 or 5) each time.
+
+Regardless of what value for T1.ID is chosen for the join, shouldn't the count always and reliably be 5 each time it is run, as it is on a standard (non-RDS) MySQL install? 
+
+Seeing random and incorrect counts like 2, 3 or 4 seems like a bug, no?
+
+Thank you all in advance!"
+Amazon RDS	"Re: RDS bug re: nondeterministic results?
+SQL like that always gives me a headache because it is so hard to think through what it really should do.  There should be no difference between RDS MySQL and MySQL running elsewhere, RDS just runs community edition MySQL (the only code changes being some security checks). You do need to make sure the version numbers are identical however, because the (Oracle) MySQL team may have patched a bug or otherwise made changes between releases.
+
+What I would do to look at this is use EXPLAIN to look at the plan being generated and see how MySQL is interpreting the query. You could do it on both the version showing consistent results and the one showing unexpected results and compare them. 
+
+Now if you are comparing Aurora MySQL to other MySQLs then the discussion gets more interesting. But I’d still expect the EXPLAIN to give an indication of what is going on."
+Amazon RDS	"Oracle RDS 12.1.0.2 missed libraries after update to Patch v13\v14
+Hello everyone! 
+
+Accidentally, I found that after installation latest minor upgrade on my RDS Oracle instance, in my application (.net) the full text search feature was broken, and I found that only search through the PDF documents is not working correctly. 
+
+I have this error when I`m trying to use search:
+DRG-11207: user filter command exited with status 127
+
+Restored oracle instance from the snapshot is working perfectly until the minor upgrade is not installed. 
+I`ve googled a bit, and found that it might be the issue with missed libraries in linux.
+
+https://stackoverflow.com/questions/31070477/oracle-text-user-filter-command-exited-with-status-127
+
+compat-libstdc++-33 libstdc++.so.5 
+
+If someone from AWS support is reading this post, please take a look on it. 
+
+Regards"
+Amazon RDS	"Re: Oracle RDS 12.1.0.2 missed libraries after update to Patch v13\v14
+There is another one interesting point. 
+
+Fresh restored instance from the snapshot (even with the latest patch) is working correctly. 
+
+The steps are:
+1) update oracle instance from patch 12 to patch 14. (The search stops to work)
+2) create a snapshot of this instance.
+3) delete.
+4) restore it from previously created snapshot = the search is working again. 
+
+It looks like there is some different procedures or scripts on the backend for basic instance preparing. In case of update or restore from the snapshot.
+
+If AWS is reading this post - please take a look, and ask if you need more info. 
+
+Thanks
+
+Edited by: deadpanda1 on Nov 15, 2018 6:11 AM"
+Amazon RDS	"Re: Oracle RDS 12.1.0.2 missed libraries after update to Patch v13\v14
+up"
+Amazon RDS	"Re: Oracle RDS 12.1.0.2 missed libraries after update to Patch v13\v14
+Thank you for bringing this to our attention. We are aware of an issue affecting certain components of Oracle Full Text Search after a minor version upgrade. As you have observed, restoring a snapshot of an affected instance will restore functionality. We hope to resolve this in a future release."
+Amazon RDS	"Re: Oracle RDS 12.1.0.2 missed libraries after update to Patch v13\v14
+Hi! 
+I`ve tried to install a new patch (v15), and this problem is still not solved!
+Do you have any information regarding this issue?
+
+Thank you in advance for the answer!
+
+Edited by: deadpanda1 on Feb 19, 2019 12:34 AM"
+Amazon RDS	"Re: Oracle RDS 12.1.0.2 missed libraries after update to Patch v13\v14
+up"
+Amazon RDS	"Re: Oracle RDS 12.1.0.2 missed libraries after update to Patch v13\v14
+up"
+Amazon RDS	"RDS MySQL suddenly used up 50GB storage for 30minutes
+Hi,
+
+Our production server suddenly stopped responding and when i checked that MySQL RDS instance suddenly full and it used up 50GB storage for 30 minutes. I'ts only 1 database running to this instance and not much data to write.
+
+I ran some queries also to check the size. Hope from AWS Support can check this.
+
+Thanks.
+
+PS. why i cannot attached the file here?"
+Amazon RDS	"Re: RDS MySQL suddenly used up 50GB storage for 30minutes
+If you want AWS Support to look at this you need to open a support case. They don’t normally participate in the forum, which is for community discussion not individual technical support."
+Amazon RDS	"Load Aurora from S3 Performance Issue
+Hello,
+
+I am executing a simple load command from S3:
+
+LOAD DATA FROM S3 PREFIX 's3://xxx/xx/xx'
+INTO TABLE Database_name.Table_name
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+(column1, column2, column3)
+
+I am getting approximately 7 records a second for the load. I am connected via JDBC on DbVisualizer and testing out my LOAD syntax.
+
+I have tried appending ""&rewriteBatchedStatements=true"" to my database url, but I am not seeing any performance improvements. 
+
+My source s3 is broken into several directories s3/dir1/dir2/dir3. At most I will have up to 500 directory combinations for my LOAD command to parse through. However, even when I tested the load command on a direct s3 path to my data ""s3/dir1/dir2/dir3"", I am still average 6.5-7 records a second. 
+
+Any feedback would be greatly appreciated."
+Amazon RDS	"internal server error connecting to Aurora
+In VS 2017 I created a AWS Serverless Application (.NET Core - C#). I have a RDS (Aurora) with data in it. 
+
+I added MySql.Data to the project using NuGet. 
+Created a new controller to get the data out of the DB.
+Created a method and model to Get data.
+Built the project and ran it locally in VS.
+
+I was able to use Postman to Get data from the API. GREAT!
+
+Right clicked the project and selected Publish to AWS Lambda. Everything published and got the new URL. 
+
+when using the url/api/method. I get a 500 return. Tried another Controller that just returns values with no DB queries and that works. Any ideas?"
