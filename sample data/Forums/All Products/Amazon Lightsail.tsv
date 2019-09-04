@@ -1,0 +1,1476 @@
+label	description
+Amazon Lightsail	"Support Tier Scope
+I have a Lightsail instance running a Bitnami LAMP stack, and need support for the instance (site down, connectivity/throughput issues, etc.) and for the LAMP stack (configuration help mostly)... just the basic hosting-provider type support found at most hosting companies (Bluehost, Dreamhost, etc.).
+
+I've seen the premium support plan comparison at https://aws.amazon.com/premiumsupport/plans/  and am considering the Developer or Business tier, but the tier descriptions aren't quite clear about which components are covered. Can anyone fill me in a bit on what's covered by those plans?"
+Amazon Lightsail	"Re: Support Tier Scope
+Well since you are considering both plans anyway you could just start with Developer and upgrade if necessary, but based on your description that should be enough.
+
+According to the comparison chart the only relevant differences are response times/channel and Third-Party Software Support, meaning that as long as your support request relates to troubleshooting a base image (it does, no third-party software) then it's covered."
+Amazon Lightsail	"Proof Point blocking in IP range of 3.0.0.0 - 3.127.255.255
+Hello,
+I have a Lightsail server that I have attached an Amazon static IP in the 3.0.0.0 - 3.127.255.255  range.  Proof Point keeps blocking and doesn't respond even after 5 or so requests over 2-3 week time frame. 
+
+I have the email server locked down with a Sovereign email config (uses ansible) and it is not listed on any block lists.
+
+Does anyone have a strategy to get this resolved or is be better to move off of Lightsail or any other strategy that wouldn't be block on Amazon?
+
+Thanks,
+-gillhamg"
+Amazon Lightsail	"Re: Proof Point blocking in IP range of 3.0.0.0 - 3.127.255.255
+Thanks for using Lightsail. I think the ip address is just temporary blocked by ProofPoint. It is probably because you are either sending too many mails. If you have the ip address handy, you can verify with ProofPoint using the link below.
+
+https://ipcheck.proofpoint.com/"
+Amazon Lightsail	"Re: Proof Point blocking in IP range of 3.0.0.0 - 3.127.255.255
+Thanks Steve for the reply. I thought the same thing you just mentioned but has not helped contacting Proof Point.
+1)  I have used the Proof Point page you listed and submitted requests over a three week period so it doesn't' seem temporary. As you know, the Proof Point web page doesn't list anything about the IP you are requesting to be unblocked. It just says thanks and our team is investigating the IP.
+
+2) Sending too many emails doesn't seem like the issue as I've sent 41 messages since Dec 21, 2018 so I don't think that would be too many and only about half are to companies using Proof Point that are then getting blocked.  
+
+3) When I use Abuse IP DB or MX Toolbox, the IP address is good, my domain is good, I have a DMARC entry to Quarantine.
+
+4) Since all of the above items show that my server is fine and I have low email volume, and I don't send many messages to Proof Point customers, then there must be an issue between this block of IPs and Proof Point? Is there anything AWS can do to either check or make sure Proof Point isn't blocking AWS IPs without a reason?
+
+Thanks,
+-Greg
+
+MX Toolbox info - (some delay but my server is also looking up reputations so may delay).
+6.781 seconds - Warning on Connection time
+24.313 seconds - Not good! on Transaction Time
+220-<hostname removed> ESMTP Postfix
+220 <hostname removed> ESMTP Postfix https://forums.aws.amazon.com/
+EHLO keeper-us-east-1c.mxtoolbox.com
+250-<hostname removed>
+250-PIPELINING
+250-SIZE 51200000
+250-ETRN
+250-STARTTLS
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250 DSN https://forums.aws.amazon.com/
+MAIL FROM:<supertool@mxtoolbox.com>
+250 2.1.0 Ok https://forums.aws.amazon.com/
+RCPT TO:<test@mxtoolboxsmtpdiag.com>
+554 5.7.1 <test@mxtoolboxsmtpdiag.com>: Relay access denied https://forums.aws.amazon.com/
+
+LookupServer 27082ms
+
+OK - Reverse DNS is a valid Hostname
+OK - Reverse DNS matches SMTP Banner
+OK - Supports TLS.
+OK - Not an open relay.
+DMARC Record found
+
+mail.log
+postfix/smtpdhttps://forums.aws.amazon.com/: NOQUEUE: reject: RCPT from keeper-us-east-1c.mxtoolbox.comhttp://18.205.72.90: 554 5.7.1 <test@mxtoolboxsmtpdiag.com>: Relay access denied; from=<supertool@mxtoolbox.com> to=<test@mxtoolboxsmtpdiag.com> proto=ESMTP helo=<keeper-us-east-1c.mxtoolbox.com>
+
+Edited by: gillhamg on Feb 26, 2019 5:39 AM
+
+Edited by: gillhamg on Feb 26, 2019 5:40 AM"
+Amazon Lightsail	"Re: Proof Point blocking in IP range of 3.0.0.0 - 3.127.255.255
+Do you have a PTR record setup for your IP?
+
+https://lightsail.aws.amazon.com/ls/docs/en/articles/amazon-lightsail-configuring-reverse-dns
+
+That goes a long way to allowing your instance to send email."
+Amazon Lightsail	"Failure to Show Console
+I have created Ubuntu server in lightsail and enabled iptables for allowing ssh from office ip address only as followings. 
+
+iptables -F
+iptables -X
+iptables -Z
+iptables -P INPUT DROP
+iptables -P OUTPUT DROP
+iptables -P FORWARD DROP
+iptables -A INPUT -p tcp -s x.x.x.x --dport 22 -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -p tcp -s any/0 -j ACCEPT
+
+Still, the console in aws panel can only shows black screen now. Could anyone suggest some solutions?
+
+Edited by: simonleung on Feb 25, 2019 10:51 PM"
+Amazon Lightsail	"Re: Failure to Show Console
+Looks like you've blocked all SSH except the one IP (including the internal web client).
+
+I would suggest recovering from a previous snapshot.
+
+As far as restricting SSH access, I would suggest disabling password authentication (require key sets) and not worrying about restricting based on IP address.
+
+For most situations, key set authentication is more than sufficient.
+
+david"
+Amazon Lightsail	"Re: Failure to Show Console
+The web console is an SSH client that connects to port 22. If you limit access to that port, or you have SSH listening on a different port, you won't be able to use it, unfortunately. So if you ever lock yourself out of SSH, e.g. if your office IP changes, the console won't be of any help to you.
+
+You may be able to find out what the IP (range) used by the console and then allow that in iptables."
+Amazon Lightsail	"Feature Request - Power Off Option
+Would be nice if there was an option to power off a server (hard shutdown).
+
+Currently there is a ""Stop"" button, but this is akin to a graceful shutdown, and if a server has become unresponsive it can take a long time before the server stops all services.
+
+Being able to simply power off (i.e. pull the plug) the server would be really useful!"
+Amazon Lightsail	"Re: Feature Request - Power Off Option
+I've never really needed that, but I think it's a great idea.
+
++1"
+Amazon Lightsail	"Re: Feature Request - Power Off Option
+Yea it's pretty rare that it happens, only when I overload a tiny instance.
+
+Not super high priority"
+Amazon Lightsail	"Hosting multiple WordPress blogs on one Lightsail instance
+Hi,
+I'm using a Lightsail instance with Plesk to host several WordPress websites (I have a Web Pro License for Plesk, which allows me to host up to 30 domains). These are all simple, small WP websites, without much traffic.
+What would be the minimal recommended requirements for the instance to host up to 10 such websites, in terms of memory and processing? 
+
+Cheers"
+Amazon Lightsail	"Re: Hosting multiple WordPress blogs on one Lightsail instance
+Normally, even the cheapest Lightsail plan would be fine for a dozen low-traffic WordPress sites, especially combined with something like the W3 Total Cache plug-in. But since you're also running Plesk, you'll find that the configurator automatically selects the $5 plan as a minimum.
+
+Why are you asking? Is your current server not performing as well as you'd like?"
+Amazon Lightsail	"Re: Hosting multiple WordPress blogs on one Lightsail instance
+As RobMM said, hosting a number of basic Wordpress blogs on Lightsail is no big problem.  I host 4 on a 512mb instance and about 10 on a 1024mb instance.
+
+The only thing special I did was create swap partition (8gb swap for a 512mb instance, a bit overkill ya think?) for each one.  For an extra 80 cents a month, it resolved a number of problems (like mysql crashing due to OOM).
+
+I cant speak about Plesk, as I have zero experience with it."
+Amazon Lightsail	"Re: Hosting multiple WordPress blogs on one Lightsail instance
+Hi Rob, 
+thanks for your reply. 
+I currently run 2 WP blogs and 1 simple html website using a Plesk instance on the 5$ plan, and there are more WP blogs to come.
+
+The html site always run with no problems. The WP sites usually run OK, but every now and then they won't load, or run very, very slow (access to Plesk at this point is also very slow), and the only way I can resolve it is by rebooting the instance. Until now I was unable to pinpoint the issue - it seems to happen randomly.
+
+Would you recommend a different blueprint other than Plesk for hosting multiple WP-blogs? 
+I use Plesk because A) It's stable and user friendly, and B) I host websites for clients and want to allow them limited access to the control panel of their site. 
+
+I guess I could use WP-Multisite but I have no experience with it... 
+
+Cheers"
+Amazon Lightsail	"Re: Hosting multiple WordPress blogs on one Lightsail instance
+Hi David, 
+thanks for your reply. 
+Did I understand correctly, that you run several instances? Because this is exactly what I'm trying to avoid by running one Plesk-instance to host multiple websites.
+
+Any other thoughts regarding the optimal constellation for running multiple WP-sites? 
+
+Cheers
+Ishai"
+Amazon Lightsail	"Re: Hosting multiple WordPress blogs on one Lightsail instance
+A control panel can add quite a bit of bulk that, under the ""right"" circumstances, can cripple a server with limited resources. If Plesk runs a scheduled task, like a backup or some sort of maintenance, you may not have enough resources left to serve visitors to your WordPress sites, and things can start to pile up. Particularly on the lower-priced instances, if the task takes long enough, the CPU may also be throttled, and that can make a server unresponsive pretty quickly. Perhaps that's what you've been seeing. It's never ""random"", but if you don't have any insight into what's actually happening on the server, e.g. through server monitoring, it's hard to find the cause.
+
+Perhaps you'll fare better on a multi-CPU plan, like the $20 one."
+Amazon Lightsail	"Re: Hosting multiple WordPress blogs on one Lightsail instance
+Sous wrote:
+Did I understand correctly, that you run several instances? Because this is 
+exactly what I'm trying to avoid by running one Plesk-instance to host multiple websites.
+
+I run several lightsail instances for different purposes.
+
+One is a mailing list server I run for the professional niche I work in. Another is to host blogs, wiki, and other resources for that technical niche, a 3rd to host personal blogs (mine, my wife's, and my nephews, a few others).  The last instance I use for testing stuff.
+
+Theoretically I could run all of them on a single lightsail instance, but I like to keep things a bit separate.
+
+Any other thoughts regarding the optimal constellation for running multiple WP-sites? 
+
+You could use wordpress multi-user. I used that for a while, but came to the conclusion that I had more flexibility by using stand-alone wordpress instances (on the same apache server)."
+Amazon Lightsail	"Are internal IP's static?
+OK, this question may be on the dumb side ... but are internal IP's static for instances?
+
+If I have an instance with internal IP 172.1.1.1 (made up) and I shut the instance down, will I have the same 172.1.1.1 IP when it comes back up?
+
+In the network config script for eth0 I see it's assigned the IP with DHCP, but how persistent is that IP?
+
+Thanks!
+
+david"
+Amazon Lightsail	"Re: Are internal IP's static?
+The private IP address should persist if the instance is shutdown and start up again. Lightsail also supports static IP address. I have the link below for your reference.
+
+https://lightsail.aws.amazon.com/ls/docs/en/articles/understanding-public-ip-and-private-ip-addresses-in-amazon-lightsail"
+Amazon Lightsail	"Suggestion for managed DB: Provide phpMyAdmin for DB managment
+A few weeks ago I was playing around with the managed database offering and installed phpMyAdmin on one of my Linux instances.
+
+Because phpMyAdmin let's you manage all aspects of the database, I managed to screw up the permissions on the database and make the entire instance useless.
+
+I would suggest that Amazon offer a customized, or restricted, version of phpMyAdmin on the database instances that lets us do the necessary admin tasks without risking unrecoverable corruption."
+Amazon Lightsail	"Re: Suggestion for managed DB: Provide phpMyAdmin for DB managment
+Thanks for using Lightsail. Your feedback is valuable to us, I will bring it up to our product team."
+Amazon Lightsail	"Never mind, bad question
+Bad question"
+Amazon Lightsail	"Ubuntu lightsail 4 different snapshots all fail to restore the system?
+Hi
+
+I have had a test AWS Ubuntu 18 512MB Memory instance up and running for about 3 weeks.
+
+Over the past 3 weeks I created 4 different snapshots, restoring them at several points to create a combination of 2GB, 4GB and 1 GB instances to experiment with various configurations and all snapshots always restored fully working instances.
+
+Yesterday, the main instance failed for no reason. Rebooting, restarting won't bring it up.
+I tried restoring it using the snapshots but all four snapshots restore a system that doesn't startup. All i get is a black screen. It is really puzzling, and quite worrying too ( as I have a production light sail instance, albeit a windows one), that I can't trust any of the four snapshots.
+
+All four snapshots worked fine until yesterday. It just seems so bizarre that they are somehow corrupt.
+
+Anyone else came across this?
+I"
+Amazon Lightsail	"Re: Ubuntu lightsail 4 different snapshots all fail to restore the system?
+Lightsail instances can slow down and appear as unresponsive when the instance consistently consumes more CPU than the Lightsail plan provides as a baseline. Lightsail uses burstable instance types that allow you to consume more CPU than your baseline for short periods of time. However, if an application continues to use more CPU beyond the plan's resources for long periods of time, the performance of the instance may suffer. This can happen for large or CPU intensive applications that run on a small plan size. We are working on ways to make it easier to diagnose when this issue is happening.
+
+Here are two options on addressing the issue:
+Scale up your instance
+If you find your instances are encountering this scenario, you can scale up your instance to the next plan size for improved performance. You can increase your plan size by taking a snapshot of your instance and then recreating a new, larger instance from your snapshot:
+https://lightsail.aws.amazon.com/ls/docs/en/articles/how-to-create-larger-instance-from-snapshot-using-console
+
+Disable unnecessary resource consuming code
+You can try to pinpoint resource-intensive processes that are not essential to your application, but are consuming your CPU, and disable them. For example, in applications like WordPress, custom themes, WordPress plugins, or other processes may be unnecessarily consuming your CPU in the background. If these elements are not essential, you can turn them off."
+Amazon Lightsail	"managed databases vs. manual installed
+What are the major differences between managed databases and manual-installed databases in Lightsail beside disk usage and cpu compute power?
+
+Cheers!"
+Amazon Lightsail	"Re: managed databases vs. manual installed
+Thanks for using Lightsail. The major difference is that customer will not have to setup, configure, and maintenance the database. The managed database is configured and ready to use within a few clicks. After it is created, the maintenance is also managed by Lightsail as well. You can learn more about our managed database in the link below.
+
+https://aws.amazon.com/blogs/aws/new-managed-databases-for-amazon-lightsail/"
+Amazon Lightsail	"Copy/Transfer a LightSail Snapshot
+I am a developer wrapping up a web application built on a LightSail instance.  I would like to use my current instance as the ""test"" server for future upgrades and transfer the current snapshot of the server to another Amazon account for the production server.  (separate billing)
+
+Is this possible under LightSail as I don't see any options or forum threads about it.  
+Thanks for your help."
+Amazon Lightsail	"Re: Copy/Transfer a LightSail Snapshot
+That is an excellent use case. What you're describing would be a great way to set up a web site (or sites) in an image, developed, tested and ready to turn over to a client once payment is received."
+Amazon Lightsail	"Re: Copy/Transfer a LightSail Snapshot
+Hello,
+Thank you for using Lightsail.
+
+We've received feedback from customers that they would like to be able to copy snapshots between regions. We've added it to the list of features we're investigating for future releases.
+
+Thank you,
+Gabriel"
+Amazon Lightsail	"Re: Copy/Transfer a LightSail Snapshot
+That would be a nice feature to have but not really my question.  I am asking if its possible to share snapshots between different Amazon accounts, not just move the current snapshot to another region on the same account.  
+
+Let me know if that is currently possible or if it is in the works for a future release.  Thanks."
+Amazon Lightsail	"Re: Copy/Transfer a LightSail Snapshot
+I see what you mean now. We've had some discussions around customers who want to hand-off resources to their clients, but I haven't heard much discussion of transferring snapshots between AWS accounts. I'll send this feedback to our product team for future consideration.
+
+Thanks for the clarification,
+Gabriel"
+Amazon Lightsail	"Re: Copy/Transfer a LightSail Snapshot
+I have the same issue i.e. have a snapshot I would like to use in a different region, is there a workaround for lightsail, while Amazon looks at adding this feature? Thank you."
+Amazon Lightsail	"Re: Copy/Transfer a LightSail Snapshot
+I too would be interested in this feature. I'm surprised it doesn't exist already. If you have two accounts in an Organization why WOULDN""T you be able to use a snapshot in a different account ( in the same region)"
+Amazon Lightsail	"Re: Copy/Transfer a LightSail Snapshot
+This is the very feature I am looking for. Would like to transfer my servers from Ohio to Canada."
+Amazon Lightsail	"Re: Copy/Transfer a LightSail Snapshot
+This feature is absolutely necessary for web developers."
+Amazon Lightsail	"Re: Copy/Transfer a LightSail Snapshot
+Looks like they added it.
+
+Go Lightsail team!"
+Amazon Lightsail	"Re: Copy/Transfer a LightSail Snapshot
+You're right jjrabbit, I hadn't noticed the new options, very cool."
+Amazon Lightsail	"Re: Copy/Transfer a LightSail Snapshot
+This is a long awaited feature for me too! Unfortunately I cannot find it, would you be so kind to point me in the right direction?
+
+So, I do have this snapshot saved in Account_A/Lightsail and I'd like to run it in Account_B/Lightsail, which I can access as IAM Administrator (not Root).
+
+Where can I find the snapshot made in Account_A while I'm logged as Administrator in Account_B?
+
+I found an article explaining how to export a Lightsail snapshot into an EC2 instance:
+https://lightsail.aws.amazon.com/ls/docs/en/articles/amazon-lightsail-exporting-snapshots
+but I don't know how to trasnfer the EC2 instance back into Lightsail.
+
+Thanks in advance for your help!"
+Amazon Lightsail	"Re: Copy/Transfer a LightSail Snapshot
+Was this ever answered?  Can someone share the documentation please?"
+Amazon Lightsail	"SSH stops working after upgrade to Ubuntu 18.04 on AWS Lightsail
+I had a working ssh for my AWS lighsail instance.
+
+I upgraded by Ubuntu from 16.04 to 18.04 using $ sudo do-release-upgrade.
+
+Upgrade went smoothly and asked for reboot in the end to complete the upgrade After that I have lost the ssh connect and since then reconnect does not work.Tried both putty and web ssh.Not working. I can see even sftp FileZilla has stopped working.
+
+The instance is running (in AWS lighsail console) and I can also access the lightsail website that means upgrade has completed successfully and not crashed.
+
+I have checked the lightsail networking tab and port 22 for ssh is enabled.I did a remove and add but did not help.
+
+How can I fix this."
+Amazon Lightsail	"Re: SSH stops working after upgrade to Ubuntu 18.04 on AWS Lightsail
+What ssh client are you using?
+
+Have you tried ssh -vvv to enable debugging messages on the client? It might help to see what's going on.
+
+Can you click your instance in the Lightsail UI and click the large ""Connect using SSH"" orange button, does it work?
+
+You could try creating a custom launch script and figure out what commands would let you copy a new ssh key to the server. https://lightsail.aws.amazon.com/ls/docs/en/articles/lightsail-how-to-configure-server-additional-data-shell-script
+
+If all else fails, do you have a snapshot or other backup to go back to? If you do, then the next time you start the upgrade, make sure to use ""screen"", https://serverfault.com/questions/387547/how-do-i-reattach-to-ubuntu-servers-do-release-upgrade-process
+
+Edited by: smoothSailing on Feb 17, 2019 10:33 AM"
+Amazon Lightsail	"Re: SSH stops working after upgrade to Ubuntu 18.04 on AWS Lightsail
+Is SSH running? (sudo service ssh status)
+
+For other possible solutions, do a Google search for:
+ubuntu 18 upgrade no ssh site:askubuntu.com OR site:stackoverflow.com OR site:serverfault.com
+
+Seems to be a fairly common thing."
+Amazon Lightsail	"Re: SSH stops working after upgrade to Ubuntu 18.04 on AWS Lightsail
+I'm not super familiar with Ubuntu on Lightsail, but what memory does your instance have?
+
+Any chance you're running into an out of memory situation?
+
+Maybe a swap file / partition would help?"
+Amazon Lightsail	"Re: SSH stops working after upgrade to Ubuntu 18.04 on AWS Lightsail
+Thanks for your response.
+
+""Connect using SSH"" orange button does not work (It says connecting to instance and immediate says you have been disconnected) Nor does the putty work (Log says Network Error:Software Caused connection abort).
+Both ssh options were working until the Ubuntu upgrade and reboot.
+
+I dont have a snapshot before upgrade. I  created a snapshot after the  issue and created an instance out of the snapshot with below startup script ..this did not help..same issue persists.
+ufw allow ssh
+ufw allow 2222
+ufw -y enable
+
+I am not sure what other launching script command is suggested to trouble shoot this situation.
+Appreciate your support and feedback."
+Amazon Lightsail	"Re: SSH stops working after upgrade to Ubuntu 18.04 on AWS Lightsail
+AshD, you mentioned Putty so I assume a Windows client. I recommend installing a command line ssh client, https://git-scm.com/download/win comes with ssh.
+
+Then run Git Bash and in that window run  ssh -vvv <youruserid>@<your host ip or hostname> 
+ and see if it points you in the direction of the issue. If it can connect to the server you should get a certificate error so look into copying your certificate from your Putty installation to your Git Bash ssh client location, assuming it's still a valid certificate on your server for your ssh server.
+
+Another thought, you did well to create your launch script to diagnose the issue. You may want to disable ufw temporarily to see if something in its configuration is causing the issue.
+
+Further, if you suspect your ssh server configuration, you could re-install openssh, reboot, then try logging in on standard ssh port 22.
+
+Edited by: smoothSailing on Feb 18, 2019 12:39 PM"
+Amazon Lightsail	"Re: SSH stops working after upgrade to Ubuntu 18.04 on AWS Lightsail
+Hi
+
+I tried ufw disable and also apt install ssh in the startup script of create instance from snapshot.No success.
+
+I ran the bash git with ssh -vvv username@server
+
+$ ssh -vvv username@server
+OpenSSH_7.1p2, OpenSSL 1.0.2h  3 May 2016
+debug1: Reading configuration data /etc/ssh/ssh_config
+debug2: ssh_connect: needpriv 0
+debug1: Connecting to server https://forums.aws.amazon.com/ port 22.
+debug1: Connection established.
+debug1: key_load_public: No such file or directory
+debug1: identity file /c/Users/Ash/.ssh/id_rsa type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /c/Users/Ash/.ssh/id_rsa-cert type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /c/Users/Ash/.ssh/id_dsa type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /c/Users/Ash/.ssh/id_dsa-cert type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /c/Users/Ash/.ssh/id_ecdsa type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /c/Users/Ash/.ssh/id_ecdsa-cert type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /c/Users/Ash/.ssh/id_ed25519 type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /c/Users/Ash/.ssh/id_ed25519-cert type -1
+debug1: Enabling compatibility mode for protocol 2.0
+debug1: Local version string SSH-2.0-OpenSSH_7.1
+ssh_exchange_identification: read: Connection reset by peer"
+Amazon Lightsail	"Re: SSH stops working after upgrade to Ubuntu 18.04 on AWS Lightsail
+The good news is you can talk to your ssh server. It looks like your client doesn't have the key that you configured your Lightsail instance for. On the ssh page for you instance, the one with the large ""Connect using ssh"" button; at the bottom is an ""Account page"" link where you can manage ssh key pairs. There is an ""Upload new"" button but, if the ""Connect using ssh"" button doesn't work then that might not either but you can try.
+
+You can use your own ssh keys too. If you can find a way to create one then upload it in the launch script, perhaps using curl or wget to read from whereever you place the key, and make the script smart enough to update ~/home/userid/.ssh/authorized_keys or authorized_keys2 then you should be able to log in.
+
+Otherwise, it might be easier to start from scratch with a new instance and make sure to use the convenient snapshot feature in Lightsail before doing anything important with the instance.
+
+Edit: If you can't get it working, before dumping the instance and starting new, it might be worth it to in your launch script, use rsync to copy your files to a drive somewhere. Maybe create a temp instance and enough storage to hold them on Lightsail. Then you have your files at least. https://lightsail.aws.amazon.com/ls/webapp/home/storage
+
+Edited by: smoothSailing on Feb 18, 2019 7:46 PM"
+Amazon Lightsail	"How to upgrade PHP to 7.2 or 7.3
+Hello everybody,
+I already migrated my website from a shared hosting company to Amazon Lightsail. I created a Wordpress instance and moved all my data, but I have noticed that the PHP version is an old one: PHP 7.0.31. 
+
+How can I upgrade to a newer version of PHP like 7.2 or 7.3 safely? I haven't found many resources about it.
+
+Thanks for your support"
+Amazon Lightsail	"Re: How to upgrade PHP to 7.2 or 7.3
+Depends on the operating system.
+
+In general, you need to stop the web server, remove the version of php you have installed, install the version you want, and restart the web server.
+
+Personally, I keep a basic Lightsail instance available so I can run tests on this kind of thing.
+
+In Amazon Linux & Centos, you would use yum to erase all the php70 packages and install the corresponding php72 packages.
+
+In Debian based Linuxes you would use apt-get to do the same.
+
+I have no experience with FreeBSD or OpenSUSE and I'm allergic to Windows .
+
+FWIW: I just did this to upgrade from php 7.1 to php 7.2.  I just noted what php71 packages I had installed, removed them using yum, and installed the php72 versions of the packages I removed. Went very smoothly.
+
+david
+
+."
+Amazon Lightsail	"Re: How to upgrade PHP to 7.2 or 7.3
+Thanks for your answer.
+
+I'm using a Wordpress instance on Lightsail based on Ubuntu. I think I have to download the yum package because its not included in the instance.
+
+Do you have any useful link/guide for upgrading to PHP to 7.2 or 7.3?"
+Amazon Lightsail	"Re: How to upgrade PHP to 7.2 or 7.3
+If you're using Ubuntu, then you would need to use apt-get to install / upgrade packages.
+
+I just did a couple of quick tests ... looks like Ubuntu 16 tops out at PHP 7.0.
+
+Ubuntu 18 has php 7.2
+
+I'm not familiar enough with Ubuntu to give any qualified advice. I've only played around with it on my Raspberry PI's.
+
+If you're using Ubuntu 16, you might be able to upgrade to 18. Check out https://wiki.ubuntu.com/BionicBeaver/ReleaseNotes#Upgrading_from_Ubuntu_16.04_LTS_or_17.10
+
+ALWAYS BACK UP BEFORE DOING ANYTHING MAJOR.
+
+david"
+Amazon Lightsail	"Re: How to upgrade PHP to 7.2 or 7.3
+thanks David for your answer.
+
+I don't know whether I can upgrade Ubuntu version and PHP. 
+
+I'm using the Wordpress 4.9.8 blueprint provided by Bitnami on LightSail. I've upgraded to Wordpress 4.9.9 and right now I'm stuck with PHP version 7.0. I'm trying to figure out how to update the PHP version to 7.2."
+Amazon Lightsail	"How can I move application data from system disk to attached disk
+Hi - this is probably something very simple, however we could not figure it out ourselves.
+
+We started using Lightsail 3 months back, installed Plesk and setup a few websites, some using Wordpress. Looks pretty simple to manage so far.
+
+Now when I read about backups, I see the advise that it is better to keep application data on attached disks instead of system disk. 
+
+I see clear instructions on how to create an new disk and attach it to my instance. However, how do I move all the websites that exist on my system disk to the new attached disk?
+
+Thanks."
+Amazon Lightsail	"Re: How can I move application data from system disk to attached disk
+It depends on the operating system you are using but generally fairly technical.
+
+If you are using Linux, you will need to do the following...
+
+1. Create the external storage.
+2. Create a file system on the storage using the mkfs command (lots of file system options to consider).
+3. Mount the file file system in a temporary location use the mount command (also lots of options to consider).
+4. Copy (or move, if you're feeling lucky) the data to the file system temporary location.
+5. Move the data you just copied to a backup location (unless you're feeling lucky ... I never am, so I always backup).
+6. Unmount the file system from the temporary location.
+7. Choose a permanent location for the file system.
+8. Update the fstab file to automatically mount the file system at its permanent location (again, lots of options to consider).
+9. Run the 'mount -a' command to mount the file system to its permanent location (also verifies your fstab modifications work).
+10. Test your application to make sure it works the way you expect it to.
+11. Retest your application to make sure it works the way you expect it to (I'm a software developer, I never trust a single test).
+
+All this said, is there a clear requirement to move the files?  For backup purposes, you can use snapshots. This backs up your entire system (attached storage included) so you can restore to a point in time.  There are other posts about how to automate this process using lambda.
+
+david"
+Amazon Lightsail	"Re: How can I move application data from system disk to attached disk
+Thanks for the guidance.
+
+We are running Plesk on top of Linux (Plesk_Hosting_Stack_on_Ubuntu).
+
+I wish there was an easier more straightforward way to do it. We have to first figure out where exactly are all the current files under Plesk stored? And then follow the steps you mentioned below to do the move.
+
+The reason why we are contemplating this move is what we read at this post:
+
+https://awsinsider.net/articles/2017/11/17/aws-lightsail-block-storage.aspx
+
+""Attached disks are useful for applications or software that need to separate out specific data from their core service and to protect application data in case of a failure or other issue with your instance and system disk,"" 
+
+""The system disk included with your Lightsail plan is your instance's root device. If you terminate your instance, the system disk will be deleted as well. If you experience an instance failure, the system disk could be impacted. You also cannot detach your system disk or back it up separately from your instance,"" AWS said. ""Data stored on an attached disk persists independently of the instance. Attached disks can be detached and moved between instances and can be backed up independently from an instance using disk snapshot."""
+Amazon Lightsail	"Re: How can I move application data from system disk to attached disk
+What you're trying to do is not very common, nor easy or straightforward, so it makes sense that the solution isn't either. I would also expect attached storage to be somewhat slower than your system disk, so keep that in mind. I don't think what you're looking to do here is worth the hassle and increased complexity, to be honest, especially if you don't have the technical knowledge to maintain it or solve problems when they arise.
+
+What I would take from the quotes you posted is not to move everything over to attached storage, but instead: (1) don't terminate your instance (should be obvious), and (2) make sure you always have good back-ups in case of a system failure. Both points are not specific to Lightsail, of course, data loss can occur anywhere."
+Amazon Lightsail	"Re: How can I move application data from system disk to attached disk
+RobMM wrote:
+I would also expect attached storage to be somewhat slower than your system disk
+
+I'm not sure this is true. Storage is storage. Lightsail storage is all SSD based, so added storage should be as fast as system storage. As I think more about it, system storage might be slightly slower than added storage ... because the OS is accessing the system storage itself, taking IO activity away from the application. An application on added storage wouldn't be used for system activity.  The difference, however, would be negligible and imperceptible.
+
+make sure you always have good back-ups in case of a system failure. 
+Both points are not specific to Lightsail, of course, data loss can occur anywhere.
+
+Always good advice.
+
+david"
+Amazon Lightsail	"Re: How can I move application data from system disk to attached disk
+You're right, there doesn't really seem to be a different between the storage types. I figured maybe there would be additional latency for attached block storage, assuming block storage is hosted further away from the VM than the system disk, but I tested it just now and that doesn't appear to be the case; performance is pretty much identical."
+Amazon Lightsail	"Re: How can I move application data from system disk to attached disk
+Just curious ... how did you benchmark the performance?
+
+david"
+Amazon Lightsail	"Re: How can I move application data from system disk to attached disk
+I just ran some quick tests with dd, hdparm and ioping."
+Amazon Lightsail	"Re: How can I move application data from system disk to attached disk
+👍"
+Amazon Lightsail	"Lightsail RDS commands not an option?
+Hi,
+
+I've installed a Lightsail instance as well as a Lightsail database.  I'm now trying to update some parameters utilizing the aws cli bundled with the Lightsail instance.  Alas, the command, ""aws lightsail get-relational-database-parameters"" command and ""update-relational-database-parameters"" are not valid syntax.  It's like they're not part of the Lightsail command set.
+
+How can I update parameters on my db without them or how can I add 'em to the aws cli?"
+Amazon Lightsail	"Re: Lightsail RDS commands not an option?
+I was able to get this to work through getting the latest version of aws-cli, using pip3 instead of apt-get. Once on aws-cli-1.16.106 I was able to send the commands needed.
+
+https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html"
+Amazon Lightsail	"Re: Lightsail RDS commands not an option?
+Hi, 
+
+Thanks for using Lightsail. It is possible that the aws cli on your Lightsail instance is an old version which doesn't include the latest Lightsail features. You can run 'aws --version' to check its version. If it is outdated you should be able to upgrade it following https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html. 
+
+Thanks, 
+Michael"
+Amazon Lightsail	"Display Resolution and TeamViewer - Windows Server 2016 - Lightsail
+Good day - I access my servers with TeamViewer  which allows me to set my display to anything available on the remote server.  Unfortunately the remote server (Windows 2016) only lists:
+1280x1024
+1024x768
+800x600
+These are not acceptable for our use and results in a lot of wasted screen real estate on my end.  Is there anyway to increase the possible resolution options available on the server?  
+
+Thank you
+
+Edited by: luvz2fly on Feb 13, 2019 12:58 PM"
+Amazon Lightsail	"Re: Display Resolution and TeamViewer - Windows Server 2016 - Lightsail
+Hi, 
+
+Thanks for using Lightsail. 
+
+For the resolution of the windows server, it is set automatically based on the screen resolution of the device from which you are connecting. For the resolution of TeamViewer, you should be able to find related solution on TeamViewer's document and forum since it cannot be controlled by us. 
+
+Thanks, 
+Michael"
+Amazon Lightsail	"MSSQL Web Edition On Lightsail
+Is it possible to have MSSQL Web Edition licensed on Lightsail Windows 4 Vcpu package?
+
+If yes, what is the procedure and licensing cost to obtain it?"
+Amazon Lightsail	"Re: MSSQL Web Edition On Lightsail
+Can anyone help to answer this query?"
+Amazon Lightsail	"Re: MSSQL Web Edition On Lightsail
+You could just purchase a license from Microsoft or a reseller and then install the software on your instance?
+
+Or maybe consider using Amazon RDS for SQL Server instead, and connect to it from your instance either through a public IP or, preferably, through virtual private cloud (VPC) peering."
+Amazon Lightsail	"Re: MSSQL Web Edition On Lightsail
+Hi Rob,
+
+Thank you for your reply!
+
+Microsoft directly provide license to datacenter and they can only use those license on their datacenter network.
+
+Do you know providers who offer that license which can work on Amazon lightsail?"
+Amazon Lightsail	"Re: MSSQL Web Edition On Lightsail
+I don't see any datacenter limitations on the SQL Server product on the Microsoft site:
+https://www.microsoft.com/store/autogeodrop?promoid=sqlserver&prod=sqlserver
+
+Bit expensive though. Some digging around with Google will probably provide cheaper alternatives.
+
+I don't use any Microsoft products on my servers, but it seems the Web version is only made available through hosting partners, and Lightsail only offers a blueprint for the (free) SQL Server 2016 Express version."
+Amazon Lightsail	"Lightsail server and website become unaccessable for sometime
+I have a lightsail instance running Ubuntu with Static IP Address, and I am hosting website, I am facing issue that sometime the website and server become inaccessible, and I cannot access the server via any way not even ssh through the terminal and the website become unresponsive, even if I reboot the server the issue remains until I stop the entire server and start again (Not Reboot)
+
+this issue happens in a daily basis almost"
+Amazon Lightsail	"Re: Lightsail server and website become unaccessable for sometime
+Have you looked at your server logs for clues about what was happening when the server became unresponsive?"
+Amazon Lightsail	"Re: Lightsail server and website become unaccessable for sometime
+I have been running Magento 2 on LightSail and ran into the same issue. The bigger problem is that once the instance is unresponsive you cannot see the logs. I was lucky tonight to see some of the ""weird"" things.
+1. The memory was going too low.
+2. The CPU was hardly being used.
+
+To fix #1, I added swap to the instance. For details see https://xiaoxing.us/2018/09/04/creating_swap_on_lightsail/
+
+That kinda helped but ssh was VERY slow. puzzling... Then I think I found the real culprit.
+The cronjobs runs ""php magento cron:run"" jobs as daemon and there were tons of them running.
+
+I commented all of them out by adding a # in front of them. Took a snapshot and recreated a new instance and things look stable. Will find out in 24 hours if this works! But I don't understand why magento needs the process to be running every minute!!
+
+
+* * * * daemon /opt/bitnami/php/bin/php /opt/bitnami/apps/magento/htdocs/bin/magento cron:run -vvv 2>&1 >> /opt/bitnami/apps/magento/htdocs/var/log/magento-cron.log"
+Amazon Lightsail	"Re: Lightsail server and website become unaccessable for sometime
+FWIW: I suggest avoiding a swap FILE and use a swap PARTITION.
+
+Yes, it costs a bit ... as you have to create attached storage, but the performance improvement is signifiant.
+
+Also, depending on your memory size, the minimum attached storage (8gb) might be overkill if you use it all as swap space.
+
+I blogged about it (including basic instructions) at https://www.geekyramblings.net/2018/02/01/amazon-lightsail/
+
+david"
+Amazon Lightsail	"DNS issues with Lightsail and Route 53
+Greetings! I could really use some help here. I've gone through just about every help article I can find and it looks like everything should be working but I still cannot access my site:
+
+1. Started a LightSail Wordpress instance
+2. Purchased a domain at Route53
+3. Changed the NS of the domain in Route53 to the NS supplied by Lightsail
+4. Added www and non-www a records to both Route53 and the Lightsail DNS
+5. Using a DNS propagation checker, I can see that the correct IP is resolving for both non-www and www.
+
+However, after doing the steps above, I cannot access my site at the www or non www addresses. I am completely stuck now with no steps left to troubleshoot. Any help would be much appreciated."
+Amazon Lightsail	"Re: DNS issues with Lightsail and Route 53
+It can take some time for DNS changes to propagate, but are you sure it's a DNS issue? What's the error given by your web browser? Can you share the domain name?"
+Amazon Lightsail	"Re: DNS issues with Lightsail and Route 53
+It appears that the DNS has propagated as I am getting the correct IP from various worldwide sources when pinging the domain (PLEASE correct me if I am wrong). Browser is timing out without an error. I will DM you the domain."
+Amazon Lightsail	"Re: DNS issues with Lightsail and Route 53
+If the IP address of your Lightsail instance ends in 41, then DNS is working properly and it's likely a misconfiguration on the server that causes the connection to fail. The server accepts connections on port 80 at first, but then fails to send a response, and the connection is reset. Maybe check the error logs of your web server software (e.g. Apache or nginx) to find out what's happening there."
+Amazon Lightsail	"Moving Lightsail instance to another country
+Hi all,
+
+Am thinking of moving my Lightsail server from the US-East deployment server to the Singapore server.
+
+Please advise what's best practice – am running WP Bitnami at the moment.
+
+Appreciate any advice as I look to make my move.
+
+Cheers."
+Amazon Lightsail	"Re: Moving Lightsail instance to another country
+Hello,
+Thank you for using Lightsail.
+
+Currently, there is no way to transfer a snapshot between regions, so the best way to transfer your WordPress instance to another region is to use the All-in-One WP Migration plugin.
+Please note, this will only transfer WP-specific settings. If you've configured your server outside of WordPress you'll likely need to look into a solution like rsync to mirror all relevant files to the new server.
+
+You can find full migration instructions here https://lightsail.aws.amazon.com/ls/docs/how-to/article/migrate-your-wordpress-blog-to-amazon-lightsail
+
+
+Login to the original WordPress application
+Activate the 'All-in-One WP Migration' bundled with the Bitnami WordPress application
+Once activated, click on 'All-in-One WP Migration' navigation item on the left side menu
+Choose Export, as a file is probably easiest
+Create the new WordPress instance in the target region
+Activate the 'All-in-One WP Migration'
+If you already upgraded all the plugins in the original site, it's probably best to upgrade all your plugin before you import
+Choose the Import option from the 'All-in-One WP Migration' (there's a separate Import/Export under the tools menu but that will only transfer the posts without your other configuration settings)
+Verify the new site is like the old site (When you have to login, you'll use the password from the original region since the import overwrites all the user data)
+Transfer your DNS settings to point to the new site
+
+
+Regards,
+Gabriel"
+Amazon Lightsail	"Re: Moving Lightsail instance to another country
+Thanks for the reply Gabriel,
+
+Shame to hear that there's no way to transfer snapshots across regions - that would have been a brilliant feature.
+
+Cheers,
+Alvin"
+Amazon Lightsail	"Re: Moving Lightsail instance to another country
+Is the advice here still considered best practices?
+
+Can I, instead, create a new instance in a new region from a snapshot?
+
+What I'm thinking is the following:
+
+1. Create a new instance from snapshot into a new region
+2. Assign a static IP to the new instance
+3. update DNS my domain to the new IP
+4. ....
+5. Profit
+
+Does that make sense? Has anyone migrated this way?"
+Amazon Lightsail	"Re: Moving Lightsail instance to another country
+mikett,
+
+Snapshots are bound to the region in which they were created and cannot be used to create instances in other regions. This means that we need to provide a way for you to copy snapshots between regions to get you to ""#4 profit!"". This feature is on our short-term roadmap so I'll be sure to register your desire for this feature with the team.
+
+Thanks for using Lightsail!
+
+Donley"
+Amazon Lightsail	"Re: Moving Lightsail instance to another country
+Thanks Donley
+
+Quite happy with lightsail so far - I set up a production site right after you guys launched and now I'm stuck on Virginia - all in one migration plugin is great, but it's certainly not without it's issues. Server migrations are tough at the best of times - a snapshot transfer would be a great addition.
+
+Thanks again"
+Amazon Lightsail	"Re: Moving Lightsail instance to another country
+Do you have a ETA for this? Half year past. DigitalOcean has this feature, its very helpful and useful."
+Amazon Lightsail	"Re: Moving Lightsail instance to another country
+Just in case others search for how to do this: Lightsail server snapshots are no longer bound to their original region. To move my Lightsail Wordpress and Lightsail Node.js servers from Singapore to Frankfurt I simply did
+
+
+Create snapshot in Singapore
+Copy snapshot from Singapore to Frankfurt
+Create an instance (in Frankfurt) from the snapshot
+Delete the Singapore instance
+
+
+Done. In addition, you of course have to change any DNS entries if applicable. The process was super-smooth."
+Amazon Lightsail	"A newly created Linux Nginx Instance is stuck in pending state for hours...
+Hi,
+
+Today, I tried to create a Linux Ngnix Lightsail instance. The status of this instance is ""Pending"" and now it been more than 9 hours. I create a similar instance with the same configuration, which was created in seconds and I am using it. 
+
+The issue is that the instance that is pending can't be deleted because the instance is in ""InvalidResourceState"", this is what the error message says.
+
+How can this issue be fixed?
+
+Thank you"
+Amazon Lightsail	"Re: A newly created Linux Nginx Instance is stuck in pending state for hours...
+Apologies for the inconvenience. We just looked at the state of your instances and they look fine. Could you please confirm if this issue still exists? If so, kindly share the name of the instance with the region.
+
+Thanks."
+Amazon Lightsail	"gtmetrix reports high blocking time
+I do not know why GT Metrix reports high blocking time on my website on lightsail compared with my current website?
+
+Both of them are basically the same website, but only Lightsail hosting gets blocking time, I have tried to choose higher Ram and 2 vCPU plan but still same, do I need to move to EC2? 
+
+Lightsail hosting: www.aesthetic-laser.com.au
+Crazy Domain hosting: www.aesthetic-centre.com.au
+
+Edited by: Hobart on Feb 8, 2019 1:21 AM"
+Amazon Lightsail	"Re: gtmetrix reports high blocking time
+The same website, perhaps, but the configuration is very different. One runs nginx with PHP 7.2, the other Apache with PHP 7.0 and mod_pagespeed, and they're in different datacenters. It's apples and oranges, really.
+
+I don't see any blocking time reported by GTmetrix or Chrome. On average, while they're both quite slow, the Lightsail-hosted website appears to be slightly faster than the other one."
+Amazon Lightsail	"Re: gtmetrix reports high blocking time
+Thanks RobMM
+
+1, I don't think my both website slow as GTmetrix reports 1.6s Fully Loaded Time on Sydney AU server
+2, there are blocking time reported by gtmertrix please check https://imgur.com/a/QaVObrX"
+Amazon Lightsail	"mysql manual installation
+Is it possible to manually install mysql in my debian-instance?
+
+cheers!"
+Amazon Lightsail	"Re: mysql manual installation
+Should be... although, depending on what version, you may have to jump through a few hoops.
+
+Check out https://tecadmin.net/install-mysql-server-on-debian9-stretch/
+
+david"
+Amazon Lightsail	"Renewing letsencrypt certificates  on AWS Lightsail
+Hi
+
+Look in for help to renew ssl certificates provided by letsencrypt.
+
+I installed the certificate using these instructions
+https://lightsail.aws.amazon.com/ls/docs/en/articles/amazon-lightsail-using-lets-encrypt-certificates-with-wordpress
+
+There is nothing in there about renewing apart from the screenshot once the certificate is installed.
+
+I have tried running certbot renew and get this error
+
+Attempting to renew cert (xxxxx.co.uk) from /etc/l
+etsencrypt/renewal/xxxxx.co.uk.conf produced an un
+expected error: The manual plugin is not working; there may 
+be problems with your existing configuration.
+The error was: PluginError('An authentication script must be
+ provided with --manual-auth-hook when using the manual plug
+in non-interactively.',). Skipping.
+All renewal attempts failed. 
+
+Looking to be pointed in the right direction. 
+
+Reading the standard Bitnami install and renewal docs 
+
+https://docs.bitnami.com/aws/how-to/generate-install-lets-encrypt-ssl/
+
+it talks about using lego to handle the renewal but enabling lego this was not part of the initial install instructions.
+
+Thanks"
+Amazon Lightsail	"Re: Renewing letsencrypt certificates  on AWS Lightsail
+The answer's in the error message. Essentially, you can't run certbot non-interactively to renew your certificates if you've installed them interactively using the --manual parameter. To renew them, you'll have to run the original command again and go through the steps to verify domain ownership (certbot can't configure your DNS)."
+Amazon Lightsail	"Re: Renewing letsencrypt certificates  on AWS Lightsail
+Thanks for the answer, I was able to update the certificates.  It there away to automate this ?"
+Amazon Lightsail	"AWS Lightsail PHP Upgrade
+Hi, currently we are using Lightsail with Wordpress. Recently we had a security diagnosis on the website and it was found that the php version 7.0.27 used is already outdated and is vulnerable to attacks. We had tried to upgrade the php version 7.2.13 but after upgrading, the workpress site could not be started.
+
+Is there any way to upgrade?"
+Amazon Lightsail	"Re: AWS Lightsail PHP Upgrade
+What errors are you getting when you try to view your wordpress site?
+
+You're probably missing some required packages for the new PHP version.
+
+IIRC, I wasn't able to go to PHP 7.2 also ... I'm currently running PHP 7.1. I don't remember exactly what wasn't working though.
+
+david"
+Amazon Lightsail	"Re: AWS Lightsail PHP Upgrade
+Thanks for your reply. 
+
+I am new to this so I am not too sure what else is required for the upgrade. I had upgraded the php version to 7.2.13 and confirmed using php -v command. The whole website was down after starting the instance. I cannot remember the exact error as I had deleted the test instance a few days ago. I had used the free instance to do the testing.
+
+May I know the exact php version that you are using?"
+Amazon Lightsail	"Re: AWS Lightsail PHP Upgrade
+I'm using PHP 7.1 on the instance I use for my wordpress blogs.
+
+FWIW: The instance is running Amazon Linux."
+Amazon Lightsail	"Re: AWS Lightsail PHP Upgrade
+FWIW: I was able to upgraded to PHP 7.2 just recently ... to be honest, I can't remember what errors I got when I tried to upgrade to 7.2 in the past ... but now it works just fine."
+Amazon Lightsail	"How to disable file caching while in development environment
+I am in the process of setting up a new website on a Lightsail Wordpress instance but I am running into trouble where the website is caching the CSS and so changes I make take ~5 mins to be reflected on the website.
+
+I have not enabled any extra plugins / features so I am unsure where this caching may be coming from.
+
+Any advice or suggestions are greatly appreciated."
+Amazon Lightsail	"Re: How to disable file caching while in development environment
+Press F12 on your keyboard to open the Developer Tools in your web browser, go to the Network tab and make sure ""Disable cache"" is checked. Then reload the page in that browser window, keeping the Developer Tools open.
+
+Like images and Javascript files, stylesheets are often cached by the browser for extended periods of time, although this will also depend on the value of Expires header your web server sends to the browser.
+
+Sometimes you may also be able to burst the cache by reloading the page with Control + F5 (on Windows)."
+Amazon Lightsail	"Re: How to disable file caching while in development environment
+You might also be able to disable caching by modifying the web server configuration temporarily.
+
+In apache, it would be done by changing some of the headers being sent ... for example:
+
+<filesMatch ""\.(html|htm|js|css)$"">
+  FileETag None
+  <ifModule mod_headers.c>
+     Header unset ETag
+     Header set Cache-Control ""max-age=0, no-cache, no-store, must-revalidate""
+     Header set Pragma ""no-cache""
+     Header set Expires ""Wed, 11 Jan 1984 05:00:00 GMT""
+  </ifModule>
+</filesMatch>
+
+(copied from https://stackoverflow.com/questions/11532636/how-to-prevent-http-file-caching-in-apache-httpd-mamp)
+
+david"
+Amazon Lightsail	"Important: When posting a question, please indicate operating system
+Folks:
+
+When posting a question, please indicate what operating system you are using.  
+
+The answer is usually highly dependent on that critical piece of information.
+
+In the various flavors of Linux there are numerous ways to installing packages.
+
+Windows & Linux are dramatically different and the answer would be too.
+
+There are a number of people here willing to help, but we don't want to send you down the wrong route based on incorrect assumptions about the operating system you are using.
+
+Thanks!
+
+david
+(one of those willing to help)"
+Amazon Lightsail	"public_dns_name
+does lightsail instances have a 'public_dns_name'?
+
+cheers!"
+Amazon Lightsail	"Re: public_dns_name
+Yes.
+
+ec2-<public ip with dash instead of period>.compute-1.amazonaws.com
+
+Unless you have arranged for a PTR (reverse IP) dns entry to be setup (which you need if you're sending mail).
+
+If you're not sending mail, then there's no real need for a PTR dns entry.
+
+david"
+Amazon Lightsail	"Re: public_dns_name
+ec2-<public ip with dash instead of period>.compute-1.amazonaws.com
+
+isn't working when trying to log into terminal via SSH!
+
+the static-ip is working but not the public_dns_name.
+
+I'm using a debian-instance!
+
+Cheers!
+
+Edited by: tendouser on Feb 8, 2019 4:33 PM"
+Amazon Lightsail	"Re: public_dns_name
+All ssh needs is a hostname that will resolve to the correct IP or an IP.
+
+slogin ec2-user@<hostname> or slogin ec2-user@<ip address>
+
+If the public IP of your instance is 12.34.56.78, then you should be able to log in with
+
+slogin ec2-user@ec2-12-34-56-78.compute-1.amazonaws.com
+
+If you set up a DNS entry for your static IP, you would just do...
+
+slogini ec2-user@dnsentry.example.com"
+Amazon Lightsail	"Share lightsail with other developer
+Hello all,
+
+I am working on a flask project to be deployed in lightsail, I would like my friend to upload to have access to my lightsail domain and upload the project. would that be possible?"
+Amazon Lightsail	"Re: Share lightsail with other developer
+Create a new user, generate a ssh keypair for the new user, and give your friend the keys so they can log in."
+Amazon Lightsail	"Can't receive email, Lightsail / Plesk
+Any help appreciated..
+
+I have created a Plesk instance in Lightsail. I am successfully hosting a website in the instance. I have added an email account in plesk which can send emails...but I cannot receive emails. I suspect DNS settings issue, and am actually a little unclear re Lightsail server DNS vs Plesk DNS.
+
+Error for return emails:
+<darlene@kore.health>: Host or domain name not found. Name service error for name=mail.kore.health type=A: Host not found
+
+
+Lighsail server DNS (zone file, edited by me several times):
+A Record @.kore.health resolves to server
+A Record mail.kore.health resolves to server
+A Record webmail.kore.health resolves to server
+A Record www.kore.health resolves to server
+MX Record @.kore.health maps to kore.health
+
+
+Plesk dns settings (not all):
+    ipv4.kore.health.    A    35.182.130.76
+    kore.health.    MX (10)    mail.kore.health.
+    kore.health.    A    35.182.130.76
+    webmail.kore.health.    A    35.182.130.76
+    ns2.kore.health.    A    35.182.130.76
+    mail.kore.health.    A    35.182.130.76
+    ns1.kore.health.    A    35.182.130.76
+
+
+My domain nameservers are set to the Lightsail server provided ones. I looked for ones provided by Plesk but could not find any.
+
+Any ideas?"
+Amazon Lightsail	"Re: Can't receive email, Lightsail / Plesk
+The Plesk DNS settings are not used if you set your nameservers to Amazon's. If you want to use your Plesk nameservers, those would be ns1.kore.health and ns2.kore.health. You would have to register those with your registrar. Officially, however, the two nameservers need to have separate IP addresses, which isn't the case here.
+
+If you continue to use the Amazon nameservers, double-check the A record for the ""mail"" subdomain, because it's not resolving, as the error indicates. The records for ""webmail"", ""www"", etc. look fine, just not the ""mail"" one. The MX record is also not showing up; it would have to read something like ""10 mail.kore.health""."
+Amazon Lightsail	"High availability MySQL databases in LightSail
+Hi, I'd like to know the differences between normal RDS High availability databases and LightSail High availability. With RDS, High availability creates 2 databases in a cluster, each with it's own endpoint. In LightSail, I only see 1 database, and 1 endpoint. In the case of failure, how does it work, how can we access database replication ?"
+Amazon Lightsail	"Re: High availability MySQL databases in LightSail
+Hi,
+
+Thanks for reaching out. Here's the description for Lightsail high availability plan:
+Lightsail databases are available in Standard and High Availability plans. Standard and High availability plans have identical plan resources, including memory, storage, and data transfer allowance. High Availability plans add redundancy and durability to your database, by automatically creating standby database in a separate Availability Zone from your primary database, synchronously replicating data to the standby database, and providing failover to the standby database in case of infrastructure failure and during maintenance so that you ensure uptime even when databases is being automatically upgraded/maintained by Lightsail. Use High Availability plans for running production applications or software where high uptime is required.
+
+More information in the following link: 
+https://lightsail.aws.amazon.com/ls/docs/en/articles/amazon-lightsail-high-availability-databases
+https://lightsail.aws.amazon.com/ls/docs/en/articles/amazon-lightsail-frequently-asked-questions-faq
+
+Best wishes,
+Joy"
+Amazon Lightsail	"Lightsail Database Instance stuck at ""Storage Full"" state
+My lightsail mysql db instance has no storage space left. I don't know the reason why and it was a test db, so nothing important. But now I cannot perform any operation on it. I cannot not delete it, cannot stop it, cannot add additional storage.. So it is stuck at storage full status."
+Amazon Lightsail	"Re: Lightsail Database Instance stuck at ""Storage Full"" state
+Can you connect to it from the terminal in your account (or via SSH)?"
+Amazon Lightsail	"Re: Lightsail Database Instance stuck at ""Storage Full"" state
+Hi,
+
+Sorry about the inconvenience, we're currently working on this issue and it will be out soon. If it's urgent, please feel free to reach out to customer support and we are happy to help deleting the instance.
+
+Best wishes,
+Joy"
+Amazon Lightsail	"Re: Lightsail Database Instance stuck at ""Storage Full"" state
+Hello,
+
+thank you for the quick reply. It is not urgent, but what do you mean by soon? 1 week, 1 month, 3 months? Would you delete the instance, even If I don't have a support plan or should I buy one?"
+Amazon Lightsail	"Re: Lightsail Database Instance stuck at ""Storage Full"" state
+Hi,
+
+We are trying to fix it as soon as possible. I can't give a exactly time now, but it shouldn't be very long. You don't need to buy the support plan, but if it's not urgent, I suggest wait a little bit and delete it by yourself, then contact customer support so we can refund you for this unable-to-delete time.
+
+Best wishes,
+Joy"
+Amazon Lightsail	"error 111 lightsail  Can't connect to MySQL server on 'xx (111)
+Hi,
+
+Your connection attempt failed for user 'xx_stats' from your host to server at xxx :3306:
+Can't connect to MySQL server on 'xxxx3' (111)
+
+Please: 1 Check that mysql is running on server 35.183.209.143
+2 Check that mysql is running on port 3306 (note: 3306 is the default, but this can be changed)
+3 Check the matomo_stats has rights to connect to 35.183.209.143 from your address (mysql rights define what clients can connect to the server and from which machines)  4 Make sure you are both providing a password if needed and using the correct password for 35.183.209.143 connecting from the host address you're connecting from
+
+I have installed mysql in our lightsail Ubuntu instance.
+I opened port 3306 in Lightsail: manage- > netwoking > firewall  
+Firewall
+You can control which ports on this instance accept connections.
+Application
+Protocol
+Port range
+
+SSH
+TCP
+22
+
+HTTP
+TCP
+80
+
+HTTPS
+TCP
+443
+
+MySQL/Aurora
+TCP
+3306
+
+and in EC2 
+Network & SECURITY security group.
+Inbound: MYSQL/Aurora TCP 3306 0.0.0.0/0
+Outbound: All traffic All All 0.0.0.0/0
+
+ufw status
+status: inactive
+
+When I scan port from localhost ( lightsail) using nmap it says port opened. 
+
+nmap localhost
+
+Starting Nmap 5.21 ( http://nmap.org ) at 2012-02-28 08:38 EST Nmap scan report for localhost (127.0.0.1)
+
+Not shown: 995 closed ports
+PORT STATE SERVICE
+22/tcp open ssh
+80/tcp open http
+443/tcp open https
+3306/tcp open mysql
+
+Nmap done: 1 IP address (1 host up) scanned in 0.07 seconds
+
+But if I scan from remote it says closed
+
+Starting Nmap 7.70 ( https://nmap.org ) at 2019-02-01 12:16 EST Nmap scan report for ec2-xxx.ca-central-1.compute.amazonaws.com (35.183.x.x)
+Host is up (0.013s latency).
+Not shown: 994 closed ports
+PORT     STATE    SERVICE
+53/tcp   filtered domain
+80/tcp   open     http
+443/tcp  open     https 1935/tcp filtered rtmp 8008/tcp open     http
+8010/tcp open     xmpp
+
+I appreciate any help and advise.
+Regards,
+
+Dmitri"
+Amazon Lightsail	"Re: error 111 lightsail  Can't connect to MySQL server on 'xx (111)
+I can connect to that IP address on port 3306 just fine, it seems.
+
+ERROR 1045 (28000): Access denied for user 'root'@'xx.xx.xx.xx' (using password: NO)"
+Amazon Lightsail	"Lightsail CentOS private IP DHCP
+Hello,
+running default CentOS instance i see BOOTPROTO=dhcp in ""/etc/sysconfig/network-scripts/ifcfg-eth0"".
+It happens that somethimes instance eth0 private IP change.
+
+Can i change BOOTPROTO=none (or static) to make Lightsail instance private IP static?
+Is this supported?
+
+Thank you
+
+Best Regards,
+Claudio"
+Amazon Lightsail	"Unable to Delete Managed Databases - incompatible restore mode
+TL;DR
+We currently have a couple of Lighsail managed databases under incompatible restore states which we doubt are being billed upon us, the problem - We can't delete them either.
+
+Case Details - Production server
+We encountered a crash high availability DB Server hosted on lightsail managed DB  recently.
+We tried restoring to a new point in time the previous day, although the restore failed turning the instance to incompatible state. So here arises the problem, the instance states are inoperable and there exists a couple of incompatible restores of high availability $120 servers which we doubt  (after noting the billed hours and amounts) are costing us.
+
+Problem Statements :
+
+1. Unable to delete DB instances (high availability) that are no longer operable 
+https://drive.google.com/open?id=1JaHZ2EAGBA-fGS-hjBZLMyNrrKGeUPv7 
+
+Bonus Query:
+We run a wordpress blog and we are unable to emergency restore the DB server to times of the day we were publishing posts but successful during unused idle hours when we had no major posts or edits made to the server DB. Tedious to have blogs restored in production environments and we are ending up losing hours of work of around 10 bloggers.
+
+Any sort of insights and guidance are welcomed
+Thanks
+PFA
+
+Edited by: ed-tamil on Jan 29, 2019 10:18 PM
+
+Edited by: ed-tamil on Jan 29, 2019 10:27 PM"
+Amazon Lightsail	"Re: Unable to Delete Managed Databases - incompatible restore mode
+Hi,
+
+Thanks for reaching out to us and sorry about the inconvenience. We are currently working on the issue, in the meantime, we can delete the database for you and do the refund. Could you please confirm that you want the database to be deleted by us? Thanks very much!
+
+Best wishes,
+Joy"
+Amazon Lightsail	"Is it possible to use AWS CodePipeline with Lightsail?
+I'm working all the day and couldn't find the answer. So I'm asking you guys: is it possible to use AWS Pipeline with AWS Lightsail?
+
+My objective is to store the code inside CodeCommit and use CodeBuild, CodeDeploy, CodePipeline and S3 to create a Continuous Deployment inside a Lightsail instance.
+
+Those are the steps I think I have to follow to accomplish the task:
+[x] setup a Lightsail instance
+[x] create an IAM user and set permissions
+[x] transfer my repository to CodeCommit
+[x] create an S3 bucket to hold the build artifacts
+[x] create a CodeBuild project to build the artifacts
+[x] create a buildspec.yml file with my build steps
+[ ] create a CodeDeploy project to deploy my application
+[ ] create a CodePipeline project to trigger the build when I commit to certain branch
+
+As you can see, I'm almost there. But I couldn't find any way to use my Lightsail instance with CodeDeploy. So, my question is: is it possible? Is there some limitation? Did I miss something really basic? Is there any other way to make the CD with Lighsail? Sorry, I'm getting a little crazy right here ahhaha."
+Amazon Lightsail	"Re: Is it possible to use AWS CodePipeline with Lightsail?
+Hello,
+Thank you for using Lightsail.
+
+We haven't looked at integrating CodeDeploy with Lightsail yet – beyond thinking it would be a good idea – and there are probably a few hurdles to clear there because Lightsail resources are separate from your normal AWS account. It may be possible in the same way that on-premise installation is possible but I asked around an no one on our team has tried yet.
+
+Regards,
+Gabriel"
+Amazon Lightsail	"Re: Is it possible to use AWS CodePipeline with Lightsail?
++1"
+Amazon Lightsail	"Anyone else seeing personal email attacks from these AWS IP sources?
+Yesterday and today, I already reported these to abuse@amazonaws.com. Anyone else seeing their smpts servers attacked?
+
+54.149.104.54 and 52.14.166.188"
+Amazon Lightsail	"Re: Anyone else seeing personal email attacks from these AWS IP sources?
+No response, old post."
+Amazon Lightsail	"Re: Anyone else seeing personal email attacks from these AWS IP sources?
+FWIW: I've been running mailing lists on my own servers (previously in house, now in Lightsail) and I get gobs of spam (hundreds / day) from Amazon AWS resources.
+
+This is why they have an outbound smtp throttle on lightsail & EC2 resources that you have to request removal of if you're going to send more than a little email."
+Amazon Lightsail	"Renewing LetsEncrypt  certificate issue
+When I do...
+sudo lego --tls --email=""email@domain.us"" --domains=""domain.us"" --path=""/etc/lego"" renew
+
+Receive error;
+You have to pass an account (email address) to the program using --email or -m
+
+Please advice....
+
+Edited by: Sosadinho on Jan 30, 2019 10:02 AM"
+Amazon Lightsail	"Re: Renewing LetsEncrypt  certificate issue
+I would suggest asking that question on a lego support forum or logging an issue on their tracker.
+
+it really has nothing to do with Lightsail."
+Amazon Lightsail	"getting configuration file from my computer to Lightsail
+I need to send a few small files to lightsail instance. 
+With other VPS in the past I've used Filezilla. 
+IN this case, I dont know where I would find the information needed for sending a file, and, if I even can.  Or if there's a better way. 
+
+Anyone?
+
+Found the answer. 
+Quite simple really.
+Use Remote Desktop on local machine
+Use static IP  (set that up in AWS)
+use Administrator
+use default password for instance from AWS manage 
+Make sure to set sharing a drive from local machine before connecting
+Then use file explorer on remote system
+
+Edited by: jer19 on Jan 29, 2019 3:53 PM"
+Amazon Lightsail	"All mail sent form Wordpress goes to spam
+Hi,
+
+I've set up lightsail, installed wordpress and setup my site.
+
+I also have a gmail address which I use for my business emails. It's not a domain address, just address@gmail.com
+
+I enabled wordpress mail sending by installing sendmail through SSH.
+
+The problem is, every email wordpress sends goes to a spam folder.
+
+Does anyone know how I can resolve this?
+
+Thank you."
+Amazon Lightsail	"Re: All mail sent form Wordpress goes to spam
+Setting an SPF record in your DNS might help your e-mails pass through the spam filters.
+
+Here's a simple wizard for generating an SPF record:
+https://www.spfwizard.net/"
+Amazon Lightsail	"Re: All mail sent form Wordpress goes to spam
+This isn't unexpected with mail from AWS servers.
+
+A good start would be to have Amazon setup a reverse IP dns entry for you.
+
+As RobMM mentions, setting up SPF is a good idea. You should also consider configuring your mail server to use DKIM. Once both SPF & DKIM are working, publish DMARC policies.
+
+Even after that, you're still going to have issues with some mail providers flagging your messages as spam or outright blocking your mail server.
+
+You can also look into configuring your mail server to use authenticated sending through Gmail. This is something I haven't looked into much though.
+
+I blogged about some of this at https://www.geekyramblings.net/2018/12/06/more-on-amazon-lightsail/#sending-email"
+Amazon Lightsail	"setup HTTPS let's encrypt on aws lightsail
+hi, did anyone ever trying to setup HTTPS on lightsail using lets encrypt? 
+
+please inform me what the first step i need to do? and what is the requirement? i am begineer. 
+
+thank you"
+Amazon Lightsail	"Re: setup HTTPS let's encrypt on aws lightsail
+There are a couple of scenarios to consider.
+
+1) It depends how you plan to host. Apache and nginx are popular front end web servers. Installing a certificate in them allows you to run your site in them or in different servers on the back end but receiving the benefits of encryption at the front end. Search Google, there's a ton of documentation, probably the Letsencrypt site is best to start with.
+
+2) If you want to provide for scaling, you could run multiple instances and use a Lightsail Load Balancer on the front end and the Load Balancer is where you would store your Letsencrypt certificate. Search the site, they have documentation explaining this.
+
+For 1), Lightsail isn't really a concern at all. It would work the same with any VM/VPS provider.
+
+For 2), the Lightsail Load Balancer is additional cost.
+
+A third option would be if you need to scale beyond a few instances or need better control over when those instances are started/stopped to control costs and respond to user demand. For that, you might want to consider EC2, where you can set up dynamic controls for scaling.
+
+Beyond that, you could run an all static site in S3 and use a combination of API Gateway and Lambda for any dynamic content management. Or, containers might be useful.
+
+I recommend starting with either 1) or 2) and see how it goes."
+Amazon Lightsail	"Re: setup HTTPS let's encrypt on aws lightsail
+I use letsencrypt quite extensively on my sites hosted on lightsail.
+
+I blogged about it here: https://www.geekyramblings.net/2018/12/06/letsencrypt-certbot-and-lightsail/
+
+I'm using Amazon's Linux so I had to install the certbot program manually and that had a bit of hair on it.
+
+If you're using one of the other Linux distros, I suspect you can install the certbot client directly from the repository (which makes it easier).
+
+IMO, it's pretty easy to use if you have more than a passing familiarity with your web server & Linux."
+Amazon Lightsail	"Re: setup HTTPS let's encrypt on aws lightsail
+Hi,
+
+We have published a few tutorials for using Let's Encrypt with Lightsail that can be found here: https://lightsail.aws.amazon.com/ls/docs/en/search?s=let%27s%20encrypt
+
+Please let me know if your scenario isn't covered and I can make it a priority for documentation.
+
+RobL"
+Amazon Lightsail	"Re: setup HTTPS let's encrypt on aws lightsail
+It's good that you have the LetsEncrypt instructions, but those make pretty big assumptions about the linux distro that you're using.
+
+If you're using Amazon Linux those instructions won't work because the certbot client isn't in the repository.
+
+Also, the instructions for a wildcard certificate are very cumbersome due to the manual steps that are required.
+
+How about providing some instructions on how to update the Lightsail DNS using the aws cli?  That way the wildcard certificates can be updated automatically (as the certbot client is intended to be used)."
+Amazon Lightsail	"Re: setup HTTPS let's encrypt on aws lightsail
+The EPEL repository provides certbot, at least for distros based on RHEL 7. To install EPEL, see:
+https://aws.amazon.com/premiumsupport/knowledge-center/ec2-enable-epel/
+
+You can also install it manually, like so: (from https://certbot.eff.org/lets-encrypt/centos6-nginx)
+wget https://dl.eff.org/certbot-auto
+chmod a+x certbot-auto
+
+
+As for updating your DNS records through the AWS cli, it's all in the API reference documents. You can use CreateDomainEntry, UpdateDomainEntry and/or DeleteDomainEntry to manage your record set.
+
+https://docs.aws.amazon.com/lightsail/2016-11-28/api-reference/API_CreateDomainEntry.html"
+Amazon Lightsail	"Re: setup HTTPS let's encrypt on aws lightsail
+RobMM wrote:
+The EPEL repository provides certbot, at least for distros based on RHEL 7. To install EPEL, see:
+https://aws.amazon.com/premiumsupport/knowledge-center/ec2-enable-epel/
+
+Yes, but the EPEL repositories provided with Amazon Linux (at least the version used in Lightsail) are based on RHEL 6. 
+
+You can also install it manually, like so: (from https://certbot.eff.org/lets-encrypt/centos6-nginx)
+wget https://dl.eff.org/certbot-auto
+chmod a+x certbot-auto
+
+
+Yes, this is what I've done and got it working quite well.
+
+As for updating your DNS records through the AWS cli, it's all in the API reference documents. 
+You can use CreateDomainEntry, UpdateDomainEntry and/or DeleteDomainEntry to manage your record set.
+
+I found that ... but the documentation is sparse at best. I haven't been able to find any information on how to actually USE the commands.
+
+david"
+Amazon Lightsail	"Re: setup HTTPS let's encrypt on aws lightsail
+The docs are a bit confusing, yes. I would suggest adding a dummy domain to your Lightsail DNS, and then experimenting with that a bit, to make sure you don't make any unwanted changes to a production domain."
+Amazon Lightsail	"IPv6 support coming soon?
+EC2 got it: https://aws.amazon.com/about-aws/whats-new/2016/12/announcing-internet-protocol-version-6-support-for-ec2-instances-in-amazon-virtual-private-cloud/
+
+Will Lightsail? I have to admit I have no immediate need for it, it seems like it would be nice to have it as an option down the road."
+Amazon Lightsail	"Re: IPv6 support coming soon?
+Hi,
+Thanks for your interest in new Lightsail features.
+
+We've discussed adding IPv6 to our offering a few times as we've discussed new feature implementation. So far we see other features we're working on as higher priority and haven't yet heard any strong customer demand for it.
+
+Regards,
+Gabriel"
+Amazon Lightsail	"Re: IPv6 support coming soon?
++1 Vote For IPv6
+
+Edited by: HyperXPro on Jan 28, 2019 3:11 AM"
+Amazon Lightsail	"AWS LIghtsail - AWS Amplify
+Can i use aws amplify to make mobile apps for my lightsail (magento2) instance?  if not when will this be available?
+
+Thank you."
+Amazon Lightsail	"/home/webapp: No such file or directory elastic beanstalk
+When I deploy my ruby app on aws using elastic beanstalk. Following error occur.
+https://pastebin.com/MmzLRsQJ
+App 20278 stdout: intializing git
+App 20278 stderr: error: could not lock config file /home/webapp/.gitconfig: No such file or directory
+App 20278 stderr: sh: line 0: cd: /home/webapp: No such file or directory
+
+https://pastebin.com/mVn1iCWi
+
+log also says
+Please tell me who you are.
+ 
+Run
+ 
+  git config --global user.email ""you@example.com""
+  git config --global user.name ""Your Name""
+ 
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+ 
+fatal: empty ident name (for <webapp@ip-172-31-28-185.us-east-2.compute.internal>) not allowed
+
+
+https://pastebin.com/0gxu89r1) 
+https://pastebin.com/w63YER55
+Why it is saying ""/home/webapp: No such file or directory""
+
+Please tell me how to fix this"
+Amazon Lightsail	"How to enable ping
+I just created a Ubuntu 16.04 instance and I'm able to ssh to it both via the web and ssh. Now I'd like to enable ping. I've tried somethings like: http://askubuntu.com/questions/448087/how-do-i-configure-a-machine-to-respond-or-not-respond-to-ping-requests, but to no avail.
+
+Suggestions anyone?
+
+
+
+
+Wink"
+Amazon Lightsail	"Re: How to enable ping
+Hello,
+Thanks for using Lightsail.
+
+It is not currently possible to enable ICMP (the protocol required for ping) through Lightsail Networking > Firewall settings. Ping is generally disabled for security purposes and our team didn't prioritize implementing that feature in our initial release.
+Usually, you can replace ping with an http status check URL for automated monitoring or trying ssh locally if you're manually checking your configuration.
+
+If this is a feature you need, we're open to feedback.
+
+Regards,
+Gabriel"
+Amazon Lightsail	"Re: How to enable ping
+I like having ping as a common way to determine connectivity and a quick test of latency, so I'd certainly like to see it. Is icmp available on other compute services such as AWS EC2?
+
+
+
+
+Wink"
+Amazon Lightsail	"Re: How to enable ping
+ICMP is disabled by default on AWS services. In the AWS console, you can create/modify security groups to allow ICMP echo, but that has no effect on Lightsail resources (they're intentionally separated to avoid configuration issues).
+
+Regards,
+Gabriel"
+Amazon Lightsail	"Re: How to enable ping
+So it seems ICMP support isn't a fundamental problem, I'd really like to see a way to enable ICMP on lightsail. Is there a way for me to make a feature request?"
+Amazon Lightsail	"Re: How to enable ping
+I too would like to request that ping be an option that could be enabled in Lightsail. We have instruments out in the field that downloads firmware from our website, but it first pings the site to ensure it's available. It won't be an option to change how the equipment functions. We'd like to use Lightsail, but not having ping is a show-stopper."
+Amazon Lightsail	"Re: How to enable ping
++1"
+Amazon Lightsail	"Re: How to enable ping
++1
+
+Really need to be able to enable ICMP"
+Amazon Lightsail	"Re: How to enable ping
++1
+
+As RickStevens commented, I too have a number of uptime monitoring options that require ping and I'd really like to discover the availability and latency of a server long before I have set up web services to enable HTTP requests. Even before setting up SSH keys I'd like to know the availability and latency from a number of services around the world. Using ping is a basic industry standard for such things so dare I say shame on AWS for not only disabling it by default but not allowing it at all."
+Amazon Lightsail	"Re: How to enable ping
++1
+
+Really wish ICMP Ping could be enabled."
+Amazon Lightsail	"Enhancement request: How much storage is used by snapshots?
+I understand that snapshots are differential copies of our instances ... so the first snapshot will be big, subsequent snapshots will only include the data that's changed since the first one.
+
+I'd like to be able to see how much storage is used by each snapshot ... so I can get an idea of how much I'm going to pay at the end of the billing cycling.
+
+Also, i'd like to be able to exclude storage from the snapshot.  
+
+I have extra storage blocks attached to my instances configured as swap file (512mb instance with an 8gb swap partition!?!?!), and I don't need those to be backed up.  
+
+I'd like the definition of the storage to be backed up, but not the content.  
+
+Maybe give us the option to flag storage as transient, so the snapshot function doesn't back them up because the content is only temporary.
+
+Thanks!
+
+david"
+Amazon Lightsail	"Windows Server on Lightsail Metrics CPU Util 25%, Server CPU 100% =Unusable
+My t2micro VM (EU-West) that I've only just started using is running at 100% CPU, but the metrics on my console say <25%. 
+
+But I'm not running anything (because I can't). I just rebooted because I couldn't RDP to it, and it's still at 100% CPU. The Windows Modules Installer is consuming it all - even after reboot.
+
+This is pretty weird and a bit disappointing - it's the second LightSail VM I've started up - the last one did the same thing.
+
+Is there something questionable about the infrastructure? This is not a very impressive service. Not sure what to do about it except look for alternatives.
+
+Has anyone else experienced this?
+
+Edited by: EnterpriseMike on Jan 24, 2019 2:50 AM"
+Amazon Lightsail	"Re: Windows Server on Lightsail Metrics CPU Util 25%, Server CPU 100% =Unusable
+Because you've only just started using it, it probably needs to process a bunch of OS updates, which is what the Windows Modules Installer process is responsible for. I'd suggest you wait for the update process to finish. Any subsequent updates will likely be less invasive.
+
+If it doesn't resolve on its own, there's lots of advice available if you Google something like ""Windows Modules Installer high cpu"", since it's a common issue with Windows. (Though you'll get the same, i.e. lots of updates are available, with a Linux distro if the OS image used is old enough).
+
+I'm a bit confused by your mentioning of t2.micro, which is an EC2 instance type rather than a Lightsail plan. It's also an instance type that's not particularly powerful for a Windows server, which may be the reason why it's taking so long for these updates to install. Consider choosing a plan with more resources available (more RAM and CPU specifically), or just wait it for now and then see if the plan is sufficient for your intended use."
+Amazon Lightsail	"Re: Windows Server on Lightsail Metrics CPU Util 25%, Server CPU 100% =Unusable
+Hi, thanks for your reply.
+
+I'm not sure about the updates thing, the instance has been on and doing nothing for about 3 weeks. That should be enough time for updates to come down.
+
+I'm still coming up to speed on Lightsail/EC2 etc, but the instance lists in my LightSail console, and shows t2.micro in the config info on the desktop. Perhaps this isn't the right instance type for me, but I don't need a hefty VM. Just a windows machine to run a single app. I'm ok to up CPU/RAM if needed, but I wasn't expecting this kind of problems this early on in the setup.
+
+Anyway, thanks again for your help."
+Amazon Lightsail	"Re: Windows Server on Lightsail Metrics CPU Util 25%, Server CPU 100% =Unusable
+I agree that 3 weeks is too long. I wonder if the update process, which can be long and CPU-intensive, could have caused the host machine to throttle the CPU available to the instance. I believe this may occur with micro instances on EC2, and that seems to be what your Lightsail instance is based on. Not sure about this, though.
+
+Microsoft recommends a minimum of 2GB of memory and 32 GB of disk space for Windows Server 2016."
+Amazon Lightsail	"Lost RDP access due to user error in windows firewall settings
+I accidentally disabled a rule in my lightsail W2016 server firewall that limited RDP access to a few specific IP addresses.  Obviously I can't connect from those IPs, but I also can't connect from the web RDP in AWS management console.  
+
+Is there any way for Amazon to help me recover access to my instance?"
+Amazon Lightsail	"Re: Lost RDP access due to user error in windows firewall settings
+Dear Customer,
+
+I am not sure if you still need assistance with this query. 
+
+To answer your concern, as this is a LightSail instance, we are a bit limited in terms of repair.
+That being said, there is a way to create a snapshot from a Lightsail instance and launch an EC2 instance with the snapshot, this way - you can get the data of the volume.
+
+To create an EC2 instance from the snapshot, please see the below steps:
+
+High level overview:
+Create a snapshot on your LightSail instance, from the snapshot create an EC2 volume that contains your data you then assign the volume to an instance you have access to and transfer your data from the EC2 instance.
+
+Please follow these steps to create an EC2 volume from your LightSail instance:
+
+Step 1. Open your LightSail console : https://lightsail.aws.amazon.com and stop the lightsail instance.
+        (you can perform a snapshot while the instance is online, but I recommend performing the snapshot with the instance in the offline state to make sure nothing is missed.)
+Step 2. Click the three dot's for the instance and select manage
+Step 3. Click on Snapshots at the top and type in a name for the snapshot then click ""Create Snapshot"" and finally click Create when prompted again.
+Step 4. Once the Snapshot completes, you will see it listed at the bottom, click the three dots on the snapshot and select ""Export to Amazon EC2""  (You will see the gears at the top start to get animated, clicking on the gears will show you the process it's busy with and the export will be listed here)
+Step 5. When the export is complete click on the gears and select ""Open the Amazon EC2 console"" (blue text) associated with the export task.
+Step 6. Your EC2 console will open on the AMI's section - click on snapshots on the left and find your snapshot shared from Lightsail.
+Step 7. Select the snapshot and click on Actions, then select ""Create Volume""    P.S: important: Please make sure to specify the Availability zone where your temp/helper instance is located (for example if the instance resides in eu-west-1a please make sure to select eu-west-1a with the volume creation)
+Step 8. Next you select volumes on the left navigation pane and select the volume you just created (the instance can be in the online state for this.)
+
+Once the volume's status changes to ""available"" you can then click on Actions and select attach then select your temp/helper instance to attach to.
+
+As this is the system volume, you probably do not have to go through the normal process for mounting extra EBS volumes on a Windows Instance - but you can find the steps here for your reference:
+https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-using-volumes.html
+
+Once you have your volume mounted on the temp/helper instance, you will then be able to transfer your data.
+
+I hope this helps. Please feel free to contact AWS Support in case you need any assistance.
+
+Regards,
+Qais"
+Amazon Lightsail	"Feature request: Automatic snapshot
+I did a quick search and was surprised I couldn't find this ... so I'll submit it.  Apologies if it's a duplicate.
+
+I'd like to have the ability to schedule automatic snapshots on instances and specify how many snapshots to be retained.
+
+Based on previous comments, I suspect this would only work for Linux based instances."
+Amazon Lightsail	"Re: Feature request: Automatic snapshot
+Hi David,
+
+Thank you for submitting this request! I'll pass it on to the team for further consideration.
+
+In the mean time, I suggest you use the AWS SDK to make CreateInstanceSnapshot calls via an AWS Lambda function. I would take a look at this AWS Lambda function code that seems like it would do exactly what you need: https://github.com/amazon-archives/lightsail-auto-snapshots
+
+Thank you for using Amazon Lightsail!
+
+Best,
+Maxwell"
+Amazon Lightsail	"Re: Feature request: Automatic snapshot
+Maxwell:
+
+Thanks, but that github repo is pretty useless without some kind of documentation.
+
+Out of the box, it's non-functional.
+
+david"
+Amazon Lightsail	"Re: Feature request: Automatic snapshot
+See also:  https://forums.aws.amazon.com/thread.jspa?messageID=819988"
+Amazon Lightsail	"Let's Encrypt certs after instance upgrade
+Hello, I have an existing Lightsail instance that I need to upgrade to a slightly more powerful model. I am using Let's Encrypt for the cert.  When upgrading a snapshot to a more power instance, what do I need to do about the existing installation of the cert?  The new instance will obviously not have the same IP.  I know I will have to update the DNS and wait for it to propagate out to the interwebs but will I have to remove the old cert and reinstall a new one or will everything just ""work fine"" in the new instance?  Maybe I just need to manually update the cert?  Or maybe do nothing at all?  any insight anyone can provide would be great.  Thanks"
+Amazon Lightsail	"Re: Let's Encrypt certs after instance upgrade
+The Lightsail static IP can be assigned to the new instance. If the certificate works now it should work once the new instance is up. The DNS change will take time to propagate."
+Amazon Lightsail	"Re: Let's Encrypt certs after instance upgrade
+A certificate is not tied to an IP address, so it should work fine on the new instance. However, you might as well make sure the Let's Encrypt certificate generator is working properly on the new instance by generating a new certificate once DNS resolves to the new IP address (required for the domain validation process). But strictly speaking you can continue using the old certificate on the new instance (assuming it's still valid)."
+Amazon Lightsail	"Re: Let's Encrypt certs after instance upgrade
+smoothSailing,  thanks for your response.  This is helpful!"
+Amazon Lightsail	"Re: Let's Encrypt certs after instance upgrade
+Robmm, thank you for getting back to me.  I appreciate it and it is exactly what I am looking for."

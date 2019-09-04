@@ -1,0 +1,870 @@
+label	description
+Amazon SimpleDB	"Delete SimpleDB data from console?
+How can I delete my SimpleDB data?  I don't even remember how to use it and there's no option in the console. I'm being charged for it every month, but can't get rid of it."
+Amazon SimpleDB	"Re: Delete SimpleDB data from console?
+You can use SDBExplorer. SDBExplorer provides a simplified way to edit and manage your data from Amazon SimpleDB. SDBExplorer displays the Amazon SimpleDB data in a table view and it allows you to edit the contents of a cell directly and within the table. In addition, it is so easy to add, delete, edit and update your data by using SDBExplorer. Using SDBExplorer you can Delete Domain, Empty your domain, Delete selected rows and delete attribute value pairs. 
+
+You just need to download a SDBExplorer Version. http://www.sdbexplorer.com/simpledb-download.html
+
+It's free for 30 days so you can give it try 
+
+How to delete/update your data using SDBExplorer?
+
+http://www.sdbexplorer.com/documentation/simpledb--how-to-delete-domain-and-item-rows.html
+http://www.sdbexplorer.com/documentation/simpledb--add-delete-update-data-from-amazon-simpledb-using-sdbexplorer.html
+
+Edited by: Ashish Pancholi on Oct 12, 2015 10:06 AM"
+Amazon SimpleDB	"Re: Delete SimpleDB data from console?
+You can't do it from the web-console. But I managed to do it from the AWS CLI:
+
+$ aws sdb list-domains
+{
+    ""DomainNames"": [
+        ""php-sdk-getting-started""
+    ]
+}
+ 
+$ aws sdb delete-domain --domain-name php-sdk-getting-started
+ 
+$ aws sdb list-domains
+# Good - it's empty now"
+Amazon SimpleDB	"SimpleDB signature not match error for GET
+I am trying to perform a GET from SimpleDB by an Android app. I have gotten so far as to get the ""SignatureDoesNotMatch"" error. After reading, re-reading and re-re-reading over and over, I think I have tried just about every possible combination of Base64 and URL encodings and SHA256 HMACs as described in Making REST Requests and HMAC-SHA Signature.
+
+As I was browsing the threads in this forum it appears that you might be able to give me some clue about what you are seeing on the server side it you have a RequestID.
+
+My most recent attempt had the following ID:
+<RequestID>3d87b3f1-b569-d70a-def6-d9c2bdd5f6b8
+
+I would hugely appreciate any guidance you can give me."
+Amazon SimpleDB	"Name Resolution Failure:   sdb.us-east-2.amazonaws.com
+I am running the sample web console app and I get a NameResolutionFailure error on the last of these lines of code:
+
+                // Print the number of Amazon SimpleDB domains.
+                IAmazonSimpleDB sdb = new AmazonSimpleDBClient();
+                ListDomainsRequest sdbRequest = new ListDomainsRequest();
+
+                try
+                {
+                    ListDomainsResponse sdbResponse = sdb.ListDomains(sdbRequest);
+
+The inner exception is:  ""The remote name could not be resolved: 'sdb.us-east-2.amazonaws.com'""
+
+When I try to ping that name, I get ""Ping request could not find host sdb.us-east-2.amazonaws.com. Please check the name and try again.""
+
+So why would the sample app be trying to reach an address that doesn't resolve?   Is this address expected to resolve, or should the app not be trying to reach it?"
+Amazon SimpleDB	"Creating SimpleDB domain in Serverless framework using Serverless.yaml
+We have a serverless application that creates a stack that contains services like Lambda, API gateway and Dynamo DB.
+We now need to create SimpleDB domains to store some Logs. 
+I cant seem to find any help on how to create a SimpleDB domain in serverless framework.
+
+I am using the following code to create the domain
+
+LogSimpleDBTable:
+      Type: ""AWS::SDB::Domain""
+      Properties:
+        DomainName : ${self:provider.environment.SIMPLEDB}
+        Description: ""SDB Domain to store data log""
+
+
+And I have thee following variable defined in my serverless.yaml file as well
+
+ SIMPLEDB: git-pushr-processing-${opt:stage, self:provider.stage} 
+
+
+So when I deploy using the following command
+
+ serverless deploy --stage staging --awsaccountid XXXXX 
+
+
+The following domain gets created against my account
+
+git-pushr-api-staging-LogSimpleDBTable-1P7CQH4SGAWGI
+
+
+While I was expecting the following name
+git-pushr-processing-staging
+
+
+We are using the same principal to create our dynamodb table and they get are created with the right name.
+
+Can anyone tell me what I am doing wrong ?"
+Amazon SimpleDB	"Can't connect to MYSql server on RDS
+I created a MySql DB instance on RDS. I checked the security group, it is default. It set the connection type as CIDR/IP. Instance is available. I tried to to access it from my desktop using this command
+
+mysql -h airrtersvdb.ckkbqj0hqmxn.us-east-1.rds.amazonaws.com -P 3306 -u airrtersv -p
+
+After few seconds I get the error message:
+
+ERROR 2003 (HY000): Can't connect to MySQL server on 'airrtersvdb.ckkbqj0hqmxn.us-east-1.rds.amazonaws.com' (60)
+
+Any help is greatly appreciated.
+
+Thanks in advance."
+Amazon SimpleDB	"Re: Can't connect to MYSql server on RDS
+Please post your question on forum for Amazon RDS.  Here  is the path."
+Amazon SimpleDB	"Re: Can't connect to MYSql server on RDS
+I had the same problem, and found that I had to go to ""DB Security Groups"" in the Amazon RDS settings, and allow either my EC2 instances or specific IPs (through their CIDR/IP settings) access to the DBs. 
+
+Looks like RDS by default denies access to any outside machines, including your own EC2 instance until you set up the security settings properly.
+
+Also, if you are accessing RDS from an EC2 instance and specifying the IP address of the EC2 instance, make sure to specify the internal IP of the RDS instance, not the external one. You can find this info from the AWS console or typing ifconfig on your Linux EC2 instance shell. Add that IP address to the DB security group.
+
+Edited by: srs201201 on Jan 9, 2012 9:03 AM"
+Amazon SimpleDB	"Re: Can't connect to MYSql server on RDS
+Adding the internal IP from ifconfig on the EC2 instance worked for me. Thanks!"
+Amazon SimpleDB	"Re: Can't connect to MYSql server on RDS
+Check to make sure you're adding authorization to the correct security group.
+
+Edited by: Fmina on Feb 8, 2015 6:57 PM"
+Amazon SimpleDB	"Re: Can't connect to MYSql server on RDS
+Hello,
+     I want try same thing that you had error so can you please guide me to solve these issue by providing  some documentation or videos.
+
+Please reply me as possible as ,thanks and regard."
+Amazon SimpleDB	"Re: Can't connect to MYSql server on RDS
+Getting the AWS security group set up right is necessary but not sufficient.  It's only step 1.  Step 2: set the bind-address to 0.0.0.0 in my.cnf and restart mysql.  MySQL by default refuses all connections that do not come from localhost."
+Amazon SimpleDB	"90 Million rows (select and insert) what is the fastest way to do it
+Hi All,
+
+Am using AWS RDS postgres, I want to select 70 million from 600 million table and write to a new table in the same DB with the least possible time (target 3 secs)
+
+How can i do in AWS technology, Cost does not matter if we can fix this.
+For now I removed constraints and index and created only the required index and used the command 
+    Create table  table_name
+    as select Col from table2 where col = 1   
+It was able to do in 30 secs
+
+I need to improve further."
+Amazon SimpleDB	"SimpleDB appears in bill
+Hi,
+
+I noticed today that my monthly AWS bill shows some storage used in SimpleDB. This is curious because I have no recollection of ever using SimpleDB myself. However, it's even more curious that I see entries for EU (Ireland) - this would be my usual region - AND for US East (Northern Virginia). Both of the entries are for a small volume and charged at $0.00, but I'm wondering which app accesses this data.
+
+I understand that access to SimpleDB isn't possible via the console. Is there some way of activating or accessing logs for the service, that would allow me to find out what's going on?
+
+Thanks
+Oli"
+Amazon SimpleDB	"Looking for feedback on CloudAlly for SimpleDB Backups
+Hello,
+
+We are considering cloudally (https://www.cloudally.com/) for performing backups of our SimpleDB. Is anyone using them? What is your experience? 
+
+Thank you,
+Katya.
+
+Edited by: KatyaVerb on Oct 25, 2017 10:01 AM
+Probably won't go with the cloudally after all: I don't like having just one full backup initially, and then only having incremental backups (according to their support that is how they work). If we ever need to stop their service and want to download our backups before they delete them, we would have a very large number of files to download!"
+Amazon SimpleDB	"Data from API to database twice a year
+Hello,
+
+I would like to do the following every 6 month:
+
+_ download 5 GB data via an REST API
+_ import it into an AWS Database
+_ run a Database-Skript
+
+Does anybody know if there is one ore more AWS services to do that? 
+
+My ideas:
+_ using the console via a local script
+  OR
+_ using AWS Lambda or AWS Batch
+
+But i don't linke both ideas much... don't like it locally and Lambda and Batch are made for other purposes, right?
+
+Thanks! Greetings
+
+Edited by: no1 on Sep 3, 2017 8:08 AM"
+Amazon SimpleDB	"Problem forcing SecureTransport condition when using the REST API
+Hello,
+We use SimpleDB with the REST API from an EC2 instance with role. Our SimpleDB endpoint is https://sdb.eu-west-1.amazonaws.com
+A policy is attached to the role which defines the allowed SimpleDB actions. When we added the SecureTransport condition, even though we use https, we end up with the following error:
+
+<?xml version=""1.0""?>
+<Response><Errors><Error><Code>AuthorizationFailure</Code><Message>User (arn:aws:sts::***:assumed-role/***/***) does not have permission to perform (sdb:GetAttributes) on resource (arn:aws:sdb:eu-west-1:***:domain/***). Contact account owner.</Message><BoxUsage>0.0000093202</BoxUsage></Error></Errors><RequestID>f3843ad8-2e12-d898-ce6d-875930b7d1ff</RequestID></Response>
+
+
+Can you please advise how can we add the
+""Condition"": {
+                ""Bool"": {
+                    ""aws:SecureTransport"": ""true""
+                }
+            }
+
+to our role policy?
+
+Thanks"
+Amazon SimpleDB	"Re: Problem forcing SecureTransport condition when using the REST API
+Has anyone noticed this question ???"
+Amazon SimpleDB	"Re: Problem forcing SecureTransport condition when using the REST API
+Several months ago we upgraded the support plan and posted there a new case about this problem. It took a couple of months but eventually we got the following message:
+
+""Thank you for the patience.
+The changes were made available last week. I did a quick sanity check and was able to use SecureTransport.""
+
+In our tests it seems to work well. Hope it will assist additional SimpleDB users"
+Amazon SimpleDB	"Timeouts on SimpleDB requests.
+I am getting sporadic timeout errors when querying SimpleDB from the tooling in Visual Studio (Visual Studio .Net Tools and SDK) and our application is unable to perform a search on a specific table and instead simply spins without ever returning an error result.
+
+I believe the two are related, with the second problem (with the application) with code in the error marshaller. http://aws-sdk-net\AWSSDK_DotNet35\Amazon.Runtime\Internal\Transform\UnmarshallerContext.cs - the context of this issue is around line 38. It seems to be getting back a result somewhere from the service that starts ""Status Report"", while it appears to be looking for ""Error/Type"" in the response. Therefore the Unmarshall function enters an infinite loop and never returns (occupying significant CPU cycles).
+
+I believe the overall problem is the timeout I mentioned first. Can someone please let me know if there are any known issues currently, on SimpleDB, with timeouts? The second problem seems to be how whatever error is returned and I can open a ticket with the SDK group on that one.
+
+Thanks,
+
+Hal"
+Amazon SimpleDB	"Re: Timeouts on SimpleDB requests.
+The timeouts seem to have resolved and I am now able to search.
+
+I still believe there is a problem in the .Net sdk when deserializing the xml error payload, but I'll try to open an issue on the repo.
+
+Thanks,
+
+Hal"
+Amazon SimpleDB	"Re: Timeouts on SimpleDB requests.
+I often have timeouts when querying simpledb - no response is coming for 20 secs and even for 200 secs. I don't know how to solve this. The database I operate is very small, just several thousand records in one table.
+
+More details: the SimpleDB returns HTTP response headers, which specify chunked encoding, but then nothing comes in the body:
+
+HTTP/1.1 200 OK
+Content-Type: text/xml
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+Date: Wed, 15 Mar 2017 19:46:26 GMT
+Server: Amazon SimpleDB
+
+Retries do not help. I'm unable to retrieve my data for 5 days already.
+
+Over the years of using this code I've seen timeouts in rare cases, but now it's very bad. Also, this reproduces from different locations of client code - I've tried a remote server. The remote location is somewhat better than my current location, but the timeouts still happen.
+
+Edited by: avodonosov on Mar 15, 2017 8:30 PM
+
+Edited by: avodonosov on Mar 16, 2017 12:04 AM
+
+Edited by: avodonosov on Mar 17, 2017 12:48 PM"
+Amazon SimpleDB	"General question - trying to store values for easy retrieval
+I am fairly new to this area so thank you very much in advance for any thoughts that you can provide.
+
+I have a raspberry pi that collects a bunch of information from the location at which it resides.  I need a handful of these values (only the latest values) for retrieval from Alexa.  Is there a way that I can send these values to some kind of AWS storage via a URL?  I am trying to avoid installing AWS on the pi or installing a web service on the pi.  I would prefer to have a python script uploading the values   
+
+Alternatively, is there an example where someone is writing to an aws storage area using python?  I've spent a ton of time learning this stuff and this is the last piece that I am struggling with.  Thanks!"
+Amazon SimpleDB	"EU SimpleDB not answering large queries in the recent hours
+Hello,
+During the last 12 hours have noticed a problem with SimpleDB that we have not seen before with code that has been running for more than a year. When we execute a large query against one of our domains, and we use the limit of 2500 items, the query fails to receive a result from SimpleDB. Smaller limits (1000 or even 2000 for example) work and do get a response. We can also see in the network analysis that the connection was lost after 3.7 minutes(!)
+
+The query we use is pretty simple and we run it on a regular basis several times every hour.
+Are you aware of any problem SimpleDB EU currently has? The AWS service health dashboard shows green for SimpleDB EU but this is not what we experience
+
+Thanks"
+Amazon SimpleDB	"Re: EU SimpleDB not answering large queries in the recent hours
+And in the last 3 days the problem appeared again. It looks like there is a problem with SimpleDB. Has anyone in AWS seen this message?
+Thanks"
+Amazon SimpleDB	"un-delete a batch
+hi there
+I erroneusly deleted a batch and cannot access it anylonger in my 'manage' tab.
+is there a way of getting it back?  i need to access the 'results' section
+thx a lot!"
+Amazon SimpleDB	"HTTP 500 - cause and client response?
+On 15th June we received the following error while performing batchPutAttributes:
+com.amazonaws.AmazonServiceException: Request could not be executed due to an internal service error (Service: AmazonSimpleDB; Status Code: 500; Error Code: InternalError; Request ID: 6042a500-c626-62ff-fc9e-5c3fab35a502)
+        at com.amazonaws.http.AmazonHttpClient.handleErrorResponse(AmazonHttpClient.java:937)
+        at com.amazonaws.http.AmazonHttpClient.executeHelper(AmazonHttpClient.java:506)
+        at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:273)
+        at com.amazonaws.services.simpledb.AmazonSimpleDBClient.invoke(AmazonSimpleDBClient.java:964)
+        at com.amazonaws.services.simpledb.AmazonSimpleDBClient.batchPutAttributes(AmazonSimpleDBClient.java:835)
+
+
+As you can see in the stack trace, the request ID was 6042a500-c626-62ff-fc9e-5c3fab35a502.
+
+We rarely get HTTP 500s so wondered what the cause of this was?
+
+What should be the client behaviour in the event of a HTTP 500?"
+Amazon SimpleDB	"how to make sdb support Chinese Language
+does SDB support Chinese language encoding? thanks for any help"
+Amazon SimpleDB	"Re: how to make sdb support Chinese Language
+Sure, as long as you encode it as UTF-8You should be aware that attribute values can have a maximum length of 1024 bytes so in a worst case scenario you won't be able to store more than 256 characters in a single attribute."
+Amazon SimpleDB	"Re: how to make sdb support Chinese Language
+Hey, I'm facing the same problem with my MySql DB to store Chinese Language data to a table. We are facing problem to store data from Excel file to table through service. The same is working for the English data but for Chinese Data we're facing problem.
+
+Please let me know if you have some solution about the same. 
+
+Thanks in advance,"
+Amazon SimpleDB	"Errors saving to dynamodb
+We've had an application running consistently for 4 years with no issues and I am now getting a 503 error when saving new records.
+
+I'm using a GUID for my ID which I assume would be a good mechanism for distributing/sharding. Exponential backoff doesn't seem to resolve the issue either.
+
+Other tables, which do far more data throughput, don't seem to be exhibiting the same behavior. @AWS - is there some way to get metrics to see if something is hitting that particular table at a higher rate that what we are seeing in our app? We are logging on one or two writes per minute.
+
+Thanks and any suggestions for remedying this error code would be greatly appreciated.
+
+Hal"
+Amazon SimpleDB	"Re: Errors saving to dynamodb
+Hello,
+Thank you for reaching out to us. Could you please send me the below information to check more of your issue?
+
+1. Request ID(s)
+2. Table name
+3. Region
+4. Date time in UTC
+
+Regards
+Masudur Rahaman Sayem"
+Amazon SimpleDB	"Re: Errors saving to dynamodb
+I ended up solving this by creating a new table and migrating the data."
+Amazon SimpleDB	"Has SimpleDB been Deprecated?
+While SimpleDB continues to be visible as a service selection in the AWS service pages (but no longer in the AWS Products and Solutions menu!), the continued lack of investment in a console and relatively low key nature of its presence in the API documentation (with no recent example code, etc) makes me wonder about the utility of investing in a new application which uses the service.
+
+It is a good fit for the need that the application has for basic data services without necessarily using a full relational database.
+
+Has there been any indication from AWS that this is a deprecated service?
+
+Edited by: Wayne Anderson on Apr 10, 2013 9:39 AM"
+Amazon SimpleDB	"Re: Has SimpleDB been Deprecated?
+FYI - Your question has been asked and ignored many times before.
+
+Regards,
+Ashley"
+Amazon SimpleDB	"Re: Has SimpleDB been Deprecated?
+It seems pretty obvious that SimpleDB is on a quiet Amazon product roadmap death spiral... I definitely wouldn't bet my business/job on it's future availability...
+
+I think today's announcement of ""Secondary Indexes"" in DynamoDB is the final nail in the coffin for my purposes..."
+Amazon SimpleDB	"Re: Has SimpleDB been Deprecated?
+I couldn't disagree more that about the ""final nail"" or ""death spiral"" remarks. Here we are .. 3 years down the road from those remarks and nothing has changed.  AWS can't simply shoot the elephant while it still has a lot of its customers riding on it.
+
+It would seem to me .. and this is purely speculation by the way .. that DynamoDB simply provides a better product for sales purposes (for AWS) than SimpleDB.  With SimpleDB many customers are getting great performance without needing to set it up with WCUs and RCUs.  Honestly .. if I was selling SDB and Dynamo and profit was the goal ... obviously I would push the product where you have to may more to get incrementally better result.  And on top of that, tuning the product for the correct performance vs value usually ends up with the client wanting to err on the side of caution in terms of not wanting performance degradation vs not wanting to see a few more $ a month on their AWS bill.
+
+The path to mapping at correct performance setup vs value is certainly not straight forward and for many projects .. is in fact pretty muddled.
+
+SimpleDB lives  up to its name in being very simple and still fits many use cases for which DynamoDB is still an over-kill fluster cluck of complexity not qualified for many simple but critical tasks.
+
+I would venture to postulate that until DynamoDB can be significantly simplified, its complexity will keep SimpleDB alive.
+
+To be clear, I think they should have simply called it ComplexDB and then we would be clear on many things ..."
+Amazon SimpleDB	"is it possible to make our LOCAL servers (not EC2 instance) to USE aws simp
+I am curious to know , 
+is it possible to make our LOCAL servers (not EC2 instance) to USE aws simpleDB ?
+
+Means, 
+We have servers been hosted locally (in our Datacenter) and want them to use simpleDB,
+So  person must be authenticated against simpleDB to get into our servers.
+
+One more question , 
+we have LOCAL samba4 server , is there any possibility to sync them with Aws simpleDB?
+Idea here is, having two node (master - slave),  samba4 in Locally and SimpleDB ,
+So will simpleDB work with in-house samba4 server ?
+
+Any input is appreciated , Thanks for you time.
+Thanks,
+raj"
+Amazon SimpleDB	"Tool for moving data to another AWS account?
+Are there any tools available to move SimpleDB data from one AWS account to another?"
+Amazon SimpleDB	"Is SimpleDB here to stay?
+I know you shouldn't rely on Internet rumors and postings, but I keep seeing opinions that Aws probably plans to depreciate SimpleDB.  I am starting up a new project and SimpleDB would be perfect for several of my needs. Is there any real reason to expect that the service will end anytime in the next couple of years?"
+Amazon SimpleDB	"Re: Is SimpleDB here to stay?
+kagyau wrote:
+SimpleDb is used by Amazon and there are no plans to change that, so SDB is not going away. SimpleDb is no longer really ""iterated on"". Meaning that there is no new development in the future for simpledb. It is ""maintained and supported"", but it won't be getting any better. There is a throughput cap on SDB domains that won't be changing.
+
+https://forums.aws.amazon.com/message.jspa?messageID=376541#376541"
+Amazon SimpleDB	"Selecting the best date type
+I need to put a varying number of 5 digit numbers into a SimpleDB.  I will put them in with a very specific order and it is mission critical that I get them back in exactly that same order.  Other than the primary key,  this list of numbers will be the only data stored.. Maximum number of 5 digit numbers in each list would be less than 100.
+What is the best data type to use for this? 
+Also related to this is the question of whether or not SimpleDB is the best choice for this. I ask this because everything is indexed, and I can't understand the implications of indexing a list. 
+Any thoughts or suggestions will be appreciated."
+Amazon SimpleDB	"Re: Selecting the best date type
+Amazon SimpleDB does not support listing the attributes in the same order because SimpleDB provides flexibility to add new attributes applicable to certain rows only. As a result, each row may have different attributes and Amazon SimpleDB does not guarantee the order of records returned."
+Amazon SimpleDB	"Re: Selecting the best date type
+Could I put this sentence in a SimpleDB and then have it returned to me later?  If there is no preservation of the order in which items are inserted, then it stands to reason that instead of having the sentence returned as a sentence my response would be returned as just the same words, but in no particular order, or even worse as just the same letters and spaces randomly placed. If the answer is that you cannot store and retrieve a sentence in SimpleDB, then I will move on and find a different solution. Thanks."
+Amazon SimpleDB	"Re: Selecting the best date type
+Amazon SimpleDB has many limitations. Attribute Value length should not be exceeded from 1024 bytes so your sentence may NOT fit into this limit. 
+
+http://docs.aws.amazon.com/AmazonSimpleDB/latest/DeveloperGuide/SDBLimits.html"
+Amazon SimpleDB	"many ""The underlying connection was closed:"" errors this morning
+""The underlying connection was closed: A connection that was expected to be kept alive was closed by the server.""
+
+Not sure if this is an sdb or an ec2 connectivity type issue?  It is though from multiple instances (in different availability zones) so it suggests sdb is the issue...?
+
+Started happening within the last 5 hours, significant errors within the last hour."
+Amazon SimpleDB	"Getting 500 internal service error on sdb select?
+This morning we are seeing intermittent 500 internal service error responses on our attempts to select from one of our sdbs in eu-west-1. This has been happening since around 7am UTC."
+Amazon SimpleDB	"""Request could not be executed due to an internal service error""
+We're seeing about 10% of Select requests to SimpleDB (us-east-1) fail with an HTTP 500:
+
+<?xml version=""1.0""?>\n<Response><Errors><Error><Code>InternalError</Code><Message>Request could not be executed due to an internal service error</Message></Error></Errors><RequestID>63969312-59c2-7d80-01e0-7aa01fa2e01f</RequestID></Response>
+
+
+Per the documentation, our application only does backoff and retry in the case of an HTTP 503. Since this error is returned as an HTTP 500, we're passing the failure along to our customers and not retrying.
+
+The status page doesn't show problems for SimpleDB in N. Virginia. These errors began exactly at Feb 11 11:00AM UTC (see screenshot), and this is on a system we haven't changed or deployed in months.
+
+ Are there ongoing issues with SimpleDB? Does the documentation need to be updated to reflect that 500s should also be retried?"
+Amazon SimpleDB	"Re: ""Request could not be executed due to an internal service error""
+Hello There,
+
+I have engaged the SimpleDB team to check if the issue was related to anything in the infrastructure. I will update this thread as soon as we hear from them.
+
+Regards,
+Adolfo M."
+Amazon SimpleDB	"SimpleDB select query speed from AWS Lambda
+I'm running a function in Lambda that does a query on a db in SimpleDB.
+
+When I test the code locally (on my development machine) the query takes about 2,000ms. However, when I run the same code in a Lambda function the query takes about 7,000ms.
+
+It's very odd to me that this would be be case. I would have expected that code running inside the AWS network would be at least at fast as on my local machine, if not faster.
+
+I've configured the AWS Lambda function for maximum 'memory' so processing or network shouldn't be limited.
+
+Anyone have any ideas?"
+Amazon SimpleDB	"internal service error with SimpleDB
+<?xml version=""1.0"" encoding=""UTF-16""?>
+<Response><Errors><Error><Code>InternalError</Code><Message>Request could not be executed due to an internal service error</Message></Error></Errors><RequestID>9ddf4320-f56e-b871-4bbc-98564970f2b5</RequestID></Response>
+
+Is this an issue for other people?"
+Amazon SimpleDB	"Re: internal service error with SimpleDB
+Nevermind, it looks like my fault. I accidentally created a loop that was calling SimpleDB recursively that never exited, so I'm guessing that at some point it throws an Internal error."
+Amazon SimpleDB	"""Request could not be executed due to an internal service error""
+Hi,
+
+It's now been over 24 hours, we've already filed a developer support request.
+
+We're seeing a 100% error rate of all PUT operations against one of our domains. 
+
+The API Error is: 
+""Request could not be executed due to an internal service error""
+
+Region: US-East (N. Virginia)
+API: PUT
+Error Code: 500
+
+This is in a hot path of our production application. Please advise"
+Amazon SimpleDB	"Re: ""Request could not be executed due to an internal service error""
+We can also confirm a large percentage of SELECT's now failing with the same error.
+
+We have still not received a response on our support request.
+
+Case ID: 1506704961
+
+Please advise"
+Amazon SimpleDB	"SimpleDB Subscription check failed.
+Hi,
+
+I tried to create a domain in SimpleDB and got error subscription check fail.
+
+<?xml version=""1.0""?>
+-<Response>
+-<Errors>
+-<Error>
+<Code>SubscriptionCheckFailed</Code>
+<Message>Subscription check failed. Please sign up for Amazon SimpleDB service.</Message>
+</Error>
+</Errors>
+<RequestID>a126eb09-dc00-cd34-c3a5-93b9bd77427b</RequestID>
+</Response>
+
+I subscribed to AWS long time ago to check it out, but just start using it for real now. Do I have to subscribe to SimpleDB separately? When I tried the sign-up button on SimpleDB page, I got signed up for AWS Support instead. The next time I tried the same button, it sent me to my AWS Console.
+
+I used Amazon SimpleDB Scratchpad and put in my root Access and Secret Key that I just created today (I lost my previous secret key long ago.) But got the aforementioned error. Please help.
+
+Thanks."
+Amazon SimpleDB	"Re: SimpleDB Subscription check failed.
+Hi there, 
+
+Please contact our accounts and billing department regarding this issue. 
+
+They can be contacted via the following form: 
+https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/aws-account-and-billing
+
+Kind regards, 
+Belynda"
+Amazon SimpleDB	"Re: SimpleDB Subscription check failed.
+I am also having this issue, but I am using SdbNavigator."
+Amazon SimpleDB	"The remote certificate is invalid according to the validation procedure.
+Around 3pm PST my EC2 instances can no longer SimpleDB service. I am getting error ""The remote certificate is invalid according to the validation procedure."", 
+
+There were no changes to that EC2 instance/service in several months. This is a small instance running Windows Server 2003 R2 Service Pack 2
+
+Please advise
+
+Alex"
+Amazon SimpleDB	"Re: The remote certificate is invalid according to the validation procedure.
+Alex,
+
+You might check your root certificate authority file on the system. I am still waiting to hear back from AWS support but I believe  AWS updated their cert on Friday (17th). We also experienced SSL handshake issues on the 17th and traced it down to their certificate chain using a CA authority that wasn't present in our old cacerts file used by Java. I would be really interested to hear if this is the same cause of the problem you are experiencing.
+
+-Justin"
+Amazon SimpleDB	"Re: The remote certificate is invalid according to the validation procedure.
+Hello Alex,
+
+Thanks for posting on AWS Forum.
+
+I would like to confirm that we updated the certificate on us-east-1 and eu-west-1 SimpleDB endpoints on 17 Jul 2015 as part of deprecation of SHA1 in favor of SHA256.
+.
+You can find additional information on this two security bulletins:
+
+http://aws.amazon.com/security/security-bulletins/update-on-aws-switch-to-sha256-for-ssl-certificates/
+http://aws.amazon.com/security/security-bulletins/aws-to-switch-to-sha256-hash-algorithm-for-ssl-certificates/
+
+Regards,
+Giorgio"
+Amazon SimpleDB	"What to do when forum question remains unanswered
+Hello,
+More than a month ago I posted the following question under Amazon SimpleDB forum, but so far I got no reply at all:  https://forums.aws.amazon.com/thread.jspa?threadID=196797 
+This is a technical question concerning AWS security policies.
+
+Any suggestion what to do in such a case?
+Thanks!"
+Amazon SimpleDB	"SimpleDB Local install
+Curious to know if AWS provides SimpleDB for local installation, development and test purposes. Similar to DynamoDB Local.
+http://aws.amazon.com/about-aws/whats-new/2013/09/12/amazon-dynamodb-local/"
+Amazon SimpleDB	"Re: SimpleDB Local install
+Guess this is what comes closest:
+
+https://code.google.com/p/simpledb-dev/"
+Amazon SimpleDB	"Granting PutAttributes but prohibiting Replace?
+Is it possible to fashion a policy which would allow writes to the DB (ie: PutAttributes), but disallows overwrites of existing data?"
+Amazon SimpleDB	"SimpleDB Backup
+I realize that SimpleDB is designed to be very durable. I'm still having a problem switching my applications to it, even though in most respects it seems like the perfect solution. The reason is Data Backup.
+
+What happens if I right click on the wrong domain and delete 10M records? What if I have a typo in my code that drops the wrong domain or iterates irreversible changes with massive data loss?
+
+With a relational database I can roll-back anytime-- even if I drop a database. I can also very easily make backups and snapshots of my data. This gives me a lot of comfort knowing that if I screw up (human error)-- I can get my data back?
+
+This doesn't seem possible in SimpleDB at all. I know I could run SimpleDB requests to multiple domains and I could theoretically pull down full backups of SimpleDB. Maybe these are the right solutions-- just seems pretty limited compared to what I can do in MySQL. 
+
+I'm wondering how major services like Netflix deal with the human-error side of data reliability?"
+Amazon SimpleDB	"Re: SimpleDB Backup
+We are also very interested in having a backup/rollback functionality available in SimpleDB.
+
+ In order to avoid human error or faulty code, we extensively use the IAM capability. When signing into Bolso/SDB Explorer/any other client, we use credentials that do not have drop domain privileges. We use a similar tactic with our code and isolate permissions based on the domains the particular code needs to access. It has been very helpful since we have used it. 
+
+Nonetheless, there are numerous other situations where a backup would be very useful."
+Amazon SimpleDB	"Re: SimpleDB Backup
+You're right, lack of backup support for SimpleDB is a major gap, and we're proud to announce it's one that we've recently addressed. We've just added automated daily backups for SimpleDB to our growling list of backup solutions for leading online services such as Google Apps, Salesforce and more. 
+
+We automatically backup all domains within your SimpleDB account each day to unlimited Amazon S3 secure storage, and provide unlimited retention of your daily archives. Our one-click export and non-destructive restore allow you to quickly recover data from any point in time. You can even backup multiple SimpleDB accounts from a single CloudAlly account if needed. 
+
+For more info and a 15-day free trial (no credit card required) visit http://www.cloudally.com. 
+
+Thanks.
+
+Murray Moceri
+Marketing Director, CloudAlly"
+Amazon SimpleDB	"Re: SimpleDB Backup
+Elastic Clud Gate - SimpleDB offer product allows to transfer, backup and restore SimpleDB"
+Amazon SimpleDB	"Re: SimpleDB Backup
+SDBExplorer will help you backup, restore or copy the SimpleDB domain content much more efficiently. You will experience fast, multiple and parallel process to export the domain content of one or many Amazon SimpleDB domains to CSV file. This backed up CSV files can be imported back to the same or any other domain. You can perform multiple parallel data uploads. SDB Explorer uses Multithreaded BatchPutAttributes to achieve high write throughput while bulk uploading data to Amazon SimpleDB.  If you have the bandwidth, you can take full advantage by running number of BatchPutAttributes processes at once in parallel queue that will reduce the time spent in processing."
+Amazon SimpleDB	"AWS Toolkit + Visual Studio 2015RC
+Did anyone got it to work to publish from VS15RC to AWS EB services?"
+Amazon SimpleDB	"Questions regarding GetAttribute limits/performance inside AWS
+Hi folks,
+
+I'm looking for some average performance of simpledb regarding the GetAttributes calls from within AWS Lambda functions.  retrieving documents saved on simpledb by it's document ID (in other words using GetAttributes method only, there wont be any SELECT queries). In particular, I would like to know:
+
+
+What are the expected average response time for each GetAttributes call from within the same AWS region?
+Are there any limits on the amount of concurrent requests (multiple Lambda invocations in parallel each one issuing a GetAttribute call in a distinct document ID)?
+
+
+The idea is to store authentication tokens in simpledb with some custom attributes (permissions grants, app name, TTL, etc).
+
+Thanks in advance,
+
+Eric."
+Amazon SimpleDB	"Cloning Domain for backup -
+As there is no feature to backup/restore data into SimpleDB, I am wondering if a new feature could be added that would simply ""clone"" all the data in the domain X to domain Y for backup purpose.
+
+This feature would be accessible from the API."
+Amazon SimpleDB	"Re: Cloning Domain for backup -
+Any feedback from Amazon guys ?"
+Amazon SimpleDB	"Re: Cloning Domain for backup -
+You could use product like Elastic Clud Gate - SimpleDB to transfer, backup and restore SimpleDB"
+Amazon SimpleDB	"Method for duplicating SimpleDB data across regions?
+Is there an official way to replicate data stored under SimpleDB from one region to another (for the purposes of load-balancing an application that has grown in popularity in another region)?
+
+For example, if I have all my EC2 instances and SimpleDB data in US-EAST, and my use in Asia skyrockets so I deploy a collection of EC2 instances in the Japan region... is there an easy way to get a SimpleDB setup in the Japanese region setup as a slave of my US-EAST region or is that my responsibility to manually keep those in sync now with some syncing service I would have to write?
+
+Thank you."
+Amazon SimpleDB	"Re: Method for duplicating SimpleDB data across regions?
+Short answer: NO
+
+Even worse: there isn't even any ""official"" way to backup and restore data in SimpleDB (a couple of third-parties have taken stabs at this, but there isn't an industrial strength solution yet that I'm aware of)..."
+Amazon SimpleDB	"Re: Method for duplicating SimpleDB data across regions?
+Eric,
+
+That is a big disappointment, I appreciate the conclusive answer though so I don't need to keep digging around for an answer.
+
+Out of curiosity, if you are a SimpleDB users, how would you address this if you needed it? Move the data out into Mongo/Redis/whatever, load-balance those on EC2 or something else?"
+Amazon SimpleDB	"Re: Method for duplicating SimpleDB data across regions?
+If SimpleDB is a GREAT fit for your business problem I would consider ""rolling your own"" backup and replication tools...  a basic implementation could be pretty simple if you have total control of your environment and no third-party apps writing to your data...
+
+Otherwise I would take a hard look at more mature products like MongoDB that already have replication ""baked in""...
+
+Luck-
+
+-EAB
+
+Edited by: Eric Bowen on Apr 19, 2011 2:09 PM"
+Amazon SimpleDB	"Re: Method for duplicating SimpleDB data across regions?
+Eric,
+
+FWIW (for anyone finding this conversation later); my data model does fit SimpleDB extremely well, so I've spent some time this morning thinking through how I might do this and what I've come up with seems relatively straight forward assuming the case where there is an EC2 instance in each region a SimpleDB domain exists.
+
+Collisions/synchronizing would have some pain points I imagine, but nothing I can't work around using unicorn blood and moon stones 
+
+Thanks again.
+
+-R"
+Amazon SimpleDB	"Re: Method for duplicating SimpleDB data across regions?
+Any solution for replicating SimpleDB data across regions?"
+Amazon SimpleDB	"Re: Method for duplicating SimpleDB data across regions?
+Elastic Clud Gate - SimpleDB offer option to transfer SimpleDB accross regions"
+Amazon SimpleDB	"Is SimpleDB support auto backup to S3?
+It's said database backups are saved to S3 every 10 minutes, quoted from below link:
+
+http://support.rightscale.com/09-Clouds/AWS/02-Amazon_EC2/Designing_Failover_Architectures_on_EC2/00-Best_Practices_for_using_Elastic_IPs_%28EIP%29_and_Availability_Zones
+
+Does it automatic run in backend?"
+Amazon SimpleDB	"Re: Is SimpleDB support auto backup to S3?
+The article you linked to is Rightscales.
+
+The answer to your question is No.
+
+SimpleDB is not automatically backed up to s3 every 10 minutes.
+
+What you were reading was also more geared to a 3rd party db setups like MySQL and the sort.
+
+I would direct you to the SimpleDB overview for more information on SimpleDB.
+
+http://aws.amazon.com/simpledb/"
+Amazon SimpleDB	"Re: Is SimpleDB support auto backup to S3?
+got it. thanks!"
+Amazon SimpleDB	"Re: Is SimpleDB support auto backup to S3?
+Lack of backup support for SimpleDB is a major gap, but one that we have recently addressed. We've just added automated daily backups for SimpleDB to our growling list of backup solutions for leading online services such as Google Apps, Salesforce and more. 
+
+We automatically backup all domains within your SimpleDB account each day to unlimited Amazon S3 secure storage, and provide unlimited retention of your daily archives.  Our one-click export and non-destructive restore allow you to quickly recover data from any point in time. You can even backup multiple SimpleDB accounts from a single CloudAlly account if needed. 
+
+For more info and a 15-day free trial (no credit card required) visit http://www.cloudally.com. 
+
+Thanks.
+
+Murray Moceri
+Marketing Director, CloudAlly
+
+Edited by: murraymoceri on Jan 10, 2012 3:51 PM"
+Amazon SimpleDB	"Re: Is SimpleDB support auto backup to S3?
+You can schedule backup of SimpleDB using Elastic Clud Gate - SimpleDB"
+Amazon SimpleDB	"Copying items from one domain to another
+Hello,
+
+I need to move part of my data from a previous domain to another.
+
+I'm not sure of my syntax...
+INSERT newdomain SELECT * FROM previousdomain WHERE `attribute` = 'value'
+
+Bernard"
+Amazon SimpleDB	"Re: Copying items from one domain to another
+Hello Bernard,
+
+Amazon Simple DB does not support COPY operation. Your insert  query will not work.  You can use any Amazon SimpleDB tool that supports Backup & Restore feature."
+Amazon SimpleDB	"Re: Copying items from one domain to another
+In case you use a backup service like CloudAlly (www.cloudally.com) then you gain also capability to restore items from one domain to another (although the main reason for using such service is to gain backup and archive capabilities)."
+Amazon SimpleDB	"Re: Copying items from one domain to another
+You could use product like Elastic Clud Gate - SimpleDB to transfer, backup and restore SimpleDB"
+Amazon SimpleDB	"Advices on using simpledb as storage for simple user profile
+Hi guys,
+
+I'm working on a project of a website whose content are all rendered on browser (single page application) and I need to store some user data (eg, the user profile) on a back-end and I'm wondering if simpledb would fit our need.
+
+ We plan to have around 2M profiles stored on simpledb using the user-id as key so queries to locate a given profile would be excellent. When the user logs on with his user-id we would retrieve the correspondent profile from simpledb.
+
+However after reading the Simpledb documentation I was unsure if it's limitations would made our application not practical. We need to be able to handle dozens, sometimes even hundreds, of concurrent logins. Is this possible to be done with simpledb?
+
+What are the limits for concurrent select over a deterministic key?
+
+Thanks for any advice,
+
+Eric"
+Amazon SimpleDB	"Re: Advices on using simpledb as storage for simple user profile
+Amazon SimpleDB is made for storage of smaller, non-structural data. It has many  limits . You can take advantage of the support for concurrency by writing multithreaded programs for interacting with it but you can achieve much higher data access rates to multiple domains than to a single domain. Other links:  1,  2. Storage limitation is again the issue. You can put your data into Amazon S3 and can link with Amazon SimpleDB by putting virtual path onto Amazon SimpleDB. You cost may increase in this case.  
+
+Amazon DynamoDB may fit on your case. Amazon DynamoDB can be useful for those who need a fast, highly scalable non-relational database. There is no limit on the storage size per table and you can specify how much request capability you require. Amazon DynamoDB offers good performance and incremental scalability. 
+
+DynamoDB is really designed for high performance database but DynamoDB charge money by capacity of Read/Writes per seconds and NOT index your whole data.  link"
+Amazon SimpleDB	"Re: Advices on using simpledb as storage for simple user profile
+Hi Ashish,
+
+Thanks for your inputs however most of those articles and docs approach to write throughput or the query throughput (in the sense of selecting trough a data set). However very little to none information is found regarding simpledb performance for GettAttribute function. In my scenario the writing is not a problem. My concern is about reading since I'm planning to call simpledb GetAttribute directly from the browser (don't worry about the security aspects).
+
+For example, assuming that I'll have multiple simultaneous call of GetAttribute for a dataset on a single domain where each call is getting a distinct Item, how would it perform? What average timings can I expect? Are there any limits about how many items/sec can I read concurrently ?
+
+Cheers,
+
+Eric"
+Amazon SimpleDB	"Re: Advices on using simpledb as storage for simple user profile
+What Siddharth Anand said about read performance?:
+Reads are throttled at a much higher throughput threshold, perhaps 5x (i.e. 350 reads per second per > domain). However, as your data size grows, your read performance will degrade. 
+
+source
+
+You may find Amazon SimpleDB slow in your usecase as SimpleDB only returns back 2500 results at a time. When there are more results you cursor through the result set using a token mechanism. So you can only issuing requests one after another, with each request starting only when the previous one completes.  Please refer the ""Parallelizing queries by splitting the search range"" on  page if it can help in your case. 
+
+Other related limits:
+*Records are not returned in a sorted order
+*All data comparisons are done lexicographically
+*Maximum response size for SELECT is 1 MB.  
+
+Other links :  1,  2,  3,  4"
+Amazon SimpleDB	"Re: Advices on using simpledb as storage for simple user profile
+My advice: Dont.
+
+Not very helpful, but you will find DDB and Elasticache to be a much faster and usable solution. Albeit expensive."
+Amazon SimpleDB	"Some records are undeletable
+We have 3 records in one of our domain in us-east-1 region, they can't be deleted no matter what ways we use - Visual Studio AWS plugin, boto and .Net SDK.
+
+All the deletion operations can be finished successfully, but the records are still there.
+
+More strange thing is that if I change some values of those records in VS AWS plugin and click ""Commit Changes"" icon, then query the table again, the 3 records are not changed, and 3 new records are added! The new added records are deletable.
+
+This issue exists for almost 2 years, previously only 1 record has such problem, but now there are 3 undeletable records. Except those 3 records, all other records can be created/updated/deleted normally.
+
+I have updated the SDB and AWS plugin to latest version, but they does not work.
+
+I can provide the domain name if needed.
+
+Edited by: AmigoD on May 15, 2015 3:15 AM"
+Amazon SimpleDB	"Re: Some records are undeletable
+Can you please download SDB Explorer download - A tool for Amazon SimpleDB. Download Free for 30 day and let us know are you able to delete that attribute using SDB Explorer ? 
+
+Easy steps to download and install the SDB Explorer - 
+
+http://www.sdbexplorer.com/documentation/simpledb--how-to-install-simpledb-explorer.html
+
+Document to ADD, DELETE and UPDATE attribute values - 
+
+http://www.sdbexplorer.com/documentation/simpledb--add-delete-update-data-from-amazon-simpledb-using-sdbexplorer.html
+
+Quick steps you need to do following - 
+
+1. Run SDB Explorer application.
+2. Select domain from which you want to delete item row.
+3. Explore the domain by using the right click option, Explore Domain .
+4. Soon, you will see the list of item-rows in GRID/Table.
+5. Select the rows that you would like to delete. 
+6. Click on Delete Row icon from table tool bar.
+7. A queue will be started and items will get deleted.
+
+Please feel free to give us feedback -
+
+http://www.sdbexplorer.com/simpledb-support.html"
+Amazon SimpleDB	"Question on AWS Developer Support Plan Package
+Hello what is the difference between AWS Support Plan of Developer and Business? The site says that  only 1 user can create support tickets while the Business and Enterprise states ""Unlimited"" number of users and has (IAM supported). What does this mean?
+Does it mean that if i have the Developer plan, then only the root user can create unlimited numbers of support cases? If I have Business or Enterprise Plan, then anyone in my org, who has been given the right access using IAM, can create unlimited number of support cases>"
+Amazon SimpleDB	"Getting more of: The remote name could not be resolved: 'sdb.amazonaws.com'
+Getting more and more of these:
+
+The remote name could not be resolved: 'sdb.amazonaws.com'
+
+Affecting puts, gets, queries
+
+I run on several different servers, different availability zones, different domains..
+
+A few every now and then prior to yesterday and then they starting happening with much greater frequency.
+
+Any thoughts?
+
+Edited by: Rick S. on May 28, 2015 12:45 PM
+
+Edited by: Rick S. on May 28, 2015 12:46 PM- grammar"
+Amazon SimpleDB	"Many requests timing out on SimpleDB (Virginia)
+Hello - I've noticed a significant # of requests to SimpleDB timing out this morning.  The issue seems to have begun around 2:38am EST appears to be ongoing.  
+
+Thanks for anything you can do to help!
+
+Edited by: Craig Kapp on May 6, 2015 6:22 AM"
+Amazon SimpleDB	"Installing AWS Java SDK Plugin for Eclipse -- issues
+Eclipse is all up to date yet when I try to install the AWS Plugin from aws.amazon.com/eclipse I'm getting the following error:
+
+Cannot complete the install because one or more required items could not be found.
+Software currently installed: Amazon SimpleDB Management 1.0.0.v201201171605 (com.amazonaws.eclipse.datatools.enablement.simpledb.feature.feature.group 1.0.0.v201201171605)
+Missing requirement: Eclipse Data Tools Platform Amazon SimpleDB UI Plug-in 1.0.0.v201201171605 (com.amazonaws.eclipse.datatools.enablement.simpledb.ui 1.0.0.v201201171605) requires 'bundle org.eclipse.datatools.sqltools.sqlscrapbook 1.0.0' but it could not be found
+Cannot satisfy dependency:
+From: Amazon SimpleDB Management 1.0.0.v201201171605 (com.amazonaws.eclipse.datatools.enablement.simpledb.feature.feature.group 1.0.0.v201201171605)
+To: com.amazonaws.eclipse.datatools.enablement.simpledb.ui http://1.0.0.v201201171605
+
+I tried again, but first deselected SimpleDB (since I won't be using that part of the AWS Explorer anyway) and got the following error:
+
+Cannot complete the install because one or more required items could not be found.
+Software currently installed: Amazon RDS Management 1.0.0.v201201171605 (com.amazonaws.eclipse.rds.feature.feature.group 1.0.0.v201201171605)
+Missing requirement: RDS 1.0.0.v201201171605 (com.amazonaws.eclipse.rds 1.0.0.v201201171605) requires 'bundle org.eclipse.datatools.connectivity.ui.dse 1.1.0' but it could not be found
+Cannot satisfy dependency:
+From: Amazon RDS Management 1.0.0.v201201171605 (com.amazonaws.eclipse.rds.feature.feature.group 1.0.0.v201201171605)
+To: com.amazonaws.eclipse.rds http://1.0.0.v201201171605
+
+Any ideas what I'm doing wrong? I simply tried to follow the instructions at: aws.amazon.com/eclipse under ""Installing the Plug-In"".
+
+Thanks,
+     Lucas
+
+Edited by: LUCAS B DICKEY on Jan 21, 2012 6:35 PM"
+Amazon SimpleDB	"Re: Installing AWS Java SDK Plugin for Eclipse -- issues
+Hi Lucas,
+
+Sorry you're having trouble.  There are some errors in the way we declare dependencies in the plugins.  You can work around them by:
+
+1) Start with the J2EE distribution of eclipse. This contains almost all the dependencies required.
+2) Install the datatools plugins, available here: http://eclipse.org/datatools/downloads.php
+
+Let me know if that works,
+
+Zach"
+Amazon SimpleDB	"Re: Installing AWS Java SDK Plugin for Eclipse -- issues
+Hi Zach,
+
+I was having the same problem here. Your suggestion seems to have solved the problem.
+
+Thanks,
+
+Jamie"
+Amazon SimpleDB	"Re: Installing AWS Java SDK Plugin for Eclipse -- issues
+So, in order to manage AWS from Eclipse, I need to install a J2EE Eclipse? If so, kinda sucks. I already have J2SE Eclipse installed. Also, when I tried installing the datatools plug-in, I got an error:
+
+Could not find http://eclipse.org/datatools/downloads.php
+
+Looks like this code isn't ready for prime time."
+Amazon SimpleDB	"Re: Installing AWS Java SDK Plugin for Eclipse -- issues
+As I have Indigo installed (IDE without EE), I first had to install the Data Tools Platform on top of Indigo to avoid seeing this error (as mentioned above). 
+
+Details: Launch the new software installer in Eclipse (Help -> Install New Software...)
+Add on the DTP repository site (click 'Add' and I installed from this site: Link: http://download.eclipse.org/datatools/updates/  and name it something like ""DTP"")
+As I wanted the latest version of DTP so I selected the DTP 1.10.0 Extender SDK (Includes source and JavaDocs) If you want to see quickly what versions of DTP exist, go here: Link: http://eclipse.org/datatools/downloads.php as ZachM pointed to above.
+
+So that all worked for me, thanks ZachM."
+Amazon SimpleDB	"Re: Installing AWS Java SDK Plugin for Eclipse -- issues
+I followed these steps and also had success with DTP 1.10.0 Extender SDK. Thanks!"
+Amazon SimpleDB	"Re: Installing AWS Java SDK Plugin for Eclipse -- issues
+I was able to just need to install dataplugin"
+Amazon SimpleDB	"IOS SDK 2.1.1 - SimpleDB examples?
+It seems that the service has been updated with the rest of the iOS SDK, but I can't find updated examples.  eg. the 'high score' example is still using the old SDK, and the guthub test cases have gone.
+
+The documentation I've found doesn't cover usage patterns.  For example in the putAttributes, what does the attributes array look like?  or the expected field? also can that be nil or is there a class to mark that as empty?  And what do the getAttributes results look like?  Those are the first items I came across, but I'm sure there are others. Thanks. Peter."
+Amazon SimpleDB	"how to validate successful insertion method PutAttributes
+In sdk1 to php I use $ response-> Isok (); But in SDK2 not encounter similar return. I have to use getAttributes after put?"
+Amazon SimpleDB	"SimpleDB pricing for external service providers
+Hi
+
+I see that the traffic is free between SDB and 'AWS Services' within the same region. Does that mean it'd be free for Heroku, OpenShift, and other PaaS instances if they're in the same region? Or does it have to be services directly provided by AWS to the user of SDB?
+
+Thanks
+
+Edited by: Michael Chan on Mar 10, 2015 6:27 AM"
+Amazon SimpleDB	"Will SimpleDB be available in Frankfurt?
+I have read this thread. We are also interested in migrating from Dublin to Frankfurt. We don't just require ElastiCache, but SimpleDB as well. 
+
+In the mentioned thread, I've read that 'all services' will be made available in Frankfurt 'soon'. Can you confirm that SimpleDB will be made available as well?
+
+Thanks!"
+Amazon SimpleDB	"Re: Will SimpleDB be available in Frankfurt?
+Hello,
+
+Please monitor our announcement page for updates on Frankfurt region."

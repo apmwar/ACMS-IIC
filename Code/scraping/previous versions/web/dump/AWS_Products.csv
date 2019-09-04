@@ -1,0 +1,353 @@
+name,description,url
+Amazon Athena,Query data in S3 using SQL,https://aws.amazon.com/athena/faqs
+Amazon CloudSearch,Managed search service,https://aws.amazon.com/cloudsearch/faqs
+Amazon EMR,Hosted Hadoop framework,https://aws.amazon.com/elasticmapreduce/faqs
+Amazon Elasticsearch Service,Run and scale Elasticsearch clusters,https://aws.amazon.com/elasticsearch-service/faqs
+Amazon Kinesis,Analyze real-time video and data streams,https://aws.amazon.com/kinesis/faqs
+Amazon Managed Streaming for Kafka,Fully managed Apache Kafka service,https://aws.amazon.com/msk/faqs
+Amazon Redshift,"Fast, simple, cost-effective data warehousing",https://aws.amazon.com/redshift/faqs
+Amazon Quicksight,Fast business analytics service,https://aws.amazon.com/quicksight/faqs
+AWS Data Pipeline,"Orchestration service for periodic, data-driven workflows",https://aws.amazon.com/datapipeline/faqs
+AWS Glue,Prepare and load data,https://aws.amazon.com/glue/faqs
+AWS Lake Formation,Build a secure data lake in days,https://aws.amazon.com/lake-formation/faqs
+AWS Step Functions,Coordination for distributed applications,https://aws.amazon.com/step-functions/faqs
+Amazon MQ,Managed message broker for ActiveMQ,https://aws.amazon.com/amazon-mq/faqs
+Amazon Simple Notification Service (SNS),Managed message topics for pub/sub,https://aws.amazon.com/sns/faqs
+Amazon Simple Queue Service (SQS) ,Managed message queues,https://aws.amazon.com/sqs/faqs
+AWS AppSync,Build data-driven apps with real-time and offline capabilities,https://aws.amazon.com/appsync/faqs
+Amazon Sumerian,Build and run VR and AR applications,https://aws.amazon.com/sumerian/faqs
+AWS Cost Explorer,Analyze your AWS cost and usage,https://aws.amazon.com/aws-cost-management/faqs
+AWS Budgets,Set custom cost and usage budgets,https://aws.amazon.com/aws-cost-management/faqs
+AWS Cost and Usage Report,Access comprehensive cost and usage information,https://aws.amazon.com/aws-cost-management/faqs
+Reserved Instance Reporting,Dive deeper into your reserved instances (RIs),https://aws.amazon.com/aws-cost-management/faqs
+Amazon Managed Blockchain,Create and manage scalable blockchain networks,https://aws.amazon.com/managed-blockchain/faqs
+Amazon Quantum Ledger Database (QLDB),Fully managed ledger database,https://aws.amazon.com/qldb/faqs
+Alexa for Business,Empower your organization with Alexa,https://aws.amazon.com/alexaforbusiness/faqs
+Amazon Chime,"Frustration-free meetings, video calls, and chat",https://aws.amazon.com/chime/faqs
+Amazon WorkMail,Secure email and calendaring,https://aws.amazon.com/workmail/faqs
+Amazon EC2,Virtual servers in the cloud,https://aws.amazon.com/ec2/faqs
+Amazon EC2 Auto Scaling,Scale compute capacity to meet demand,https://aws.amazon.com/ec2/faqs
+Amazon Elastic Container Registry,Store and retrieve docker images,https://aws.amazon.com/ecr/faqs
+Amazon Elastic Container Service,Run and manage docker containers,https://aws.amazon.com/ecs/faqs
+Amazon Elastic Container Service for Kubernetes,Run managed Kubernetes on AWS,https://aws.amazon.com/eks/faqs
+Amazon Lightsail,Launch and manage virtual private servers,https://aws.amazon.com/lightsail/faqs
+AWS Batch,Run batch jobs at any scale,https://aws.amazon.com/batch/faqs
+AWS Elastic Beanstalk,Run and manage web apps,https://aws.amazon.com/elasticbeanstalk/faqs
+AWS Fargate,Run containers without managing servers or clusters,https://aws.amazon.com/fargate/faqs
+AWS Lambda,Run code without thinking about servers,https://aws.amazon.com/lambda/faqs
+AWS Outposts,Run AWS infrastructure on-premises,https://aws.amazon.com/outposts/faqs
+AWS Serverless Application Repository,"Discover, deploy, and publish serverless applications",https://aws.amazon.com/serverlessrepo/faqs
+Elastic Load Balancing (ELB),Distribute incoming traffic across multiple targets,https://aws.amazon.com/elasticloadbalancing/faqs
+VMware Cloud on AWS,Build a hybrid cloud without custom hardware,https://aws.amazon.com/vmware/faqs
+Amazon Connect,Cloud-based contact center service,https://aws.amazon.com/connect/faqs
+Amazon Pinpoint,Personalized user engagement across channels,https://aws.amazon.com/pinpoint/faqs
+Amazon Simple Email Service (SES),Email sending and receiving,https://aws.amazon.com/ses/faqs
+Amazon Aurora,High performance managed relational database,https://aws.amazon.com/rds/faqs
+Amazon DynamoDB,Managed NoSQL database,https://aws.amazon.com/dynamodb/faqs
+Amazon DocumentDB (with MongoDB compatibility),Fully managed document database,https://aws.amazon.com/documentdb/faqs
+Amazon ElastiCache,In-memory caching system,https://aws.amazon.com/elasticache/faqs
+Amazon Neptune ,Fully managed graph database service,https://aws.amazon.com/neptune/faqs
+Amazon Quantum Ledger Database (QLDB),Fully managed ledger database,https://aws.amazon.com/qldb/faqs
+Amazon RDS,"Managed relational database service for MySQL, PostgreSQL, Oracle, SQL Server, and MariaDB",https://aws.amazon.com/rds/faqs
+Amazon RDS on VMware,Automate on-premises database management,https://aws.amazon.com/rds/faqs
+Amazon Redshift,"Fast, simple, cost-effective data warehousing",https://aws.amazon.com/redshift/faqs
+Amazon Timestream,Fully managed time series database,https://aws.amazon.com/timestream/faqs
+AWS Database Migration Service,Migrate databases with minimal downtime,https://aws.amazon.com/dms/faqs
+AWS CodeStar,Develop and deploy AWS applications ,https://aws.amazon.com/codestar/faqs
+Amazon Corretto,Production-ready distribution of OpenJDK,https://aws.amazon.com/corretto/faqs
+AWS Cloud9,"Write, run, and debug code on a cloud IDE",https://aws.amazon.com/cloud9/faqs
+AWS CodeBuild,Build and test code,https://aws.amazon.com/codebuild/faqs
+AWS CodeCommit,Store code in private Git repositories,https://aws.amazon.com/codecommit/faqs
+AWS CodeDeploy,Automate code deployment,https://aws.amazon.com/codedeploy/faqs
+AWS CodePipeline,Release software using continuous delivery,https://aws.amazon.com/codepipeline/faqs
+AWS Command Line Interface,Unified tool to manage AWS services,https://aws.amazon.com/cli/faqs
+AWS Tools and SDKs,Tools and SDKs for AWS,https://aws.amazon.com/getting-started/faqs
+AWS X-Ray,Analyze and debug your applications,https://aws.amazon.com/xray/faqs
+Amazon AppStream 2.0,Stream desktop applications securely to a browser,https://aws.amazon.com/appstream2/faqs
+Amazon WorkDocs,Secure enterprise document storage and sharing,https://aws.amazon.com/workdocs/faqs
+Amazon WorkLink,Enable mobile access to internal websites,https://aws.amazon.com/worklink/faqs
+Amazon WorkSpaces,Virtual desktops in the cloud,https://aws.amazon.com/workspaces/faqs
+Amazon GameLift,"Simple, fast, cost-effective dedicated game server hosting",https://aws.amazon.com/gamelift/faqs
+Amazon Lumberyard,"A free cross-platform 3D game engine, with Full Source, integrated with AWS and Twitch",https://aws.amazon.com/lumberyard/faqs
+AWS IoT Core,Connect devices to the cloud,https://aws.amazon.com/iot-core/faqs
+Amazon FreeRTOS,IoT operating system for microcontrollers,https://aws.amazon.com/freertos/faqs
+AWS Greengrass,"Local compute, messaging, and sync for devices",https://aws.amazon.com/greengrass/faqs
+AWS IoT 1-Click,One click creation of an AWS Lambda trigger,https://aws.amazon.com/iot-1-click/faqs
+AWS IoT Analytics,Analytics for IoT devices,https://aws.amazon.com/iot-analytics/faqs
+AWS IoT Button,Cloud programmable dash button,https://aws.amazon.com/iot/faqs
+AWS IoT Device Defender,Security management for IoT devices,https://aws.amazon.com/iot-device-defender/faqs
+AWS IoT Device Management,"Onboard, organize, and remotely manage IoT devices",https://aws.amazon.com/iot-device-management/faqs
+AWS IoT Events,IoT event detection and response,https://aws.amazon.com/iot-events/faqs
+AWS IoT SiteWise,IoT data collector and interpreter,https://aws.amazon.com/iot-sitewise/faqs
+AWS IoT Things Graph,Easily connect devices and web services,https://aws.amazon.com/iot-things-graph/faqs
+AWS Partner Device Catalog,Curated catalog of AWS-compatible IoT hardware,https://aws.amazon.com//faqs
+Amazon SageMaker,"Build, train, and deploy machine learning models at scale",https://aws.amazon.com/sagemaker/faqs
+Amazon Comprehend,Discover insights and relationships in text,https://aws.amazon.com/comprehend/faqs
+Amazon Elastic Inference,Deep learning inference acceleration,https://aws.amazon.com/elastic-inference/faqs
+Amazon Forecast,Increase forecast accuracy using machine learning,https://aws.amazon.com/forecast/faqs
+Amazon Lex,Build voice and text chatbots,https://aws.amazon.com/lex/faqs
+Amazon Personalize,Build real-time recommendations into your applications,https://aws.amazon.com/personalize/faqs
+Amazon Polly,Turn text into life-like speech,https://aws.amazon.com/polly/faqs
+Amazon Rekognition,Analyze image and video,https://aws.amazon.com/rekognition/faqs
+Amazon SageMaker Ground Truth,Build accurate ML training datasets,https://aws.amazon.com/sagemaker/faqs
+Amazon Textract,Extract text and data from documents,https://aws.amazon.com/textract/faqs
+Amazon Translate,Natural and fluent language translation,https://aws.amazon.com/translate/faqs
+Amazon Transcribe,Automatic speech recognition,https://aws.amazon.com/transcribe/faqs
+AWS Deep Learning AMIs,Deep learning on Amazon EC2,https://aws.amazon.com/machine-learning/faqs
+AWS DeepLens,Deep learning enabled video camera,https://aws.amazon.com/deeplens/faqs
+AWS DeepRacer,"Autonomous 1/18th scale race car, driven by ML",https://aws.amazon.com/deepracer/faqs
+AWS Inferentia,Machine learning inference chip,https://aws.amazon.com/inferentia/faqs
+Apache MXNet on AWS,"Scalable, open-source deep learning framework",https://aws.amazon.com/mxnet/faqs
+TensorFlow on AWS,Open-source machine intelligence library,https://aws.amazon.com/tensorflow/faqs
+Amazon CloudWatch,Monitor resources and applications,https://aws.amazon.com/cloudwatch/faqs
+AWS Auto Scaling,Scale multiple resources to meet demand,https://aws.amazon.com/autoscaling/faqs
+AWS CloudFormation,Create and manage resources with templates,https://aws.amazon.com/cloudformation/faqs
+AWS CloudTrail,Track user activity and API usage,https://aws.amazon.com/cloudtrail/faqs
+AWS Command Line Interface,Unified tool to manage AWS services,https://aws.amazon.com/cli/faqs
+AWS Config,Track resources inventory and changes,https://aws.amazon.com/config/faqs
+AWS Control Tower,"Set-up and govern a secure, compliant multi-account environment",https://aws.amazon.com/controltower/faqs
+AWS Console Mobile Application,Access resources on the go,https://aws.amazon.com/console/faqs
+AWS License Manager,"Track, manage, and control licenses",https://aws.amazon.com/license-manager/faqs
+AWS Management Console,Web-based user interface,https://aws.amazon.com/console/faqs
+AWS Managed Services,Infrastructure operations management for AWS,https://aws.amazon.com/managed-services/faqs
+AWS OpsWorks,Automate operations with Chef and Puppet,https://aws.amazon.com/opsworks/faqs
+AWS Personal Health Dashboard,Personalized view of AWS service health,https://aws.amazon.com/premiumsupport/faqs
+AWS Service Catalog,Create and use standardized products,https://aws.amazon.com/servicecatalog/faqs
+AWS Systems Manager,Gain operational insights and take action,https://aws.amazon.com/systems-manager/faqs
+AWS Trusted Advisor,Optimize performance and security,https://aws.amazon.com/trustedadvisor/faqs
+AWS Well-Architected Tool,Review and improve your workloads,https://aws.amazon.com/well-architected-tool/faqs
+Amazon Elastic Transcoder,Easy-to-use scalable media transcoding,https://aws.amazon.com/elastictranscoder/faqs
+Amazon Kinesis Video Streams,Process and analyze video streams,https://aws.amazon.com/kinesis/faqs
+AWS Elemental MediaConnect,Reliable and secure live video transport,https://aws.amazon.com/mediaconnect/faqs
+AWS Elemental MediaConvert,Convert file-based video content,https://aws.amazon.com/mediaconvert/faqs
+AWS Elemental MediaLive,Convert live video content,https://aws.amazon.com/medialive/faqs
+AWS Elemental MediaPackage,Video origination and packaging,https://aws.amazon.com/mediapackage/faqs
+AWS Elemental MediaStore,Media storage and simple http origin,https://aws.amazon.com/mediastore/faqs
+AWS Elemental MediaTailor,Video personalization and monetization,https://aws.amazon.com/mediatailor/faqs
+AWS Migration Hub,Track migrations from a single place,https://aws.amazon.com/migration-hub/faqs
+AWS Application Discovery Service,Discover on-premises applications to streamline migration,https://aws.amazon.com/application-discovery/faqs
+AWS Database Migration Service,Migrate databases with minimal downtime,https://aws.amazon.com/dms/faqs
+AWS DataSync,"Simple, fast, online data transfer",https://aws.amazon.com/datasync/faqs
+AWS Server Migration Service ,Migrate on-premises servers to AWS,https://aws.amazon.com/server-migration-service/faqs
+AWS Snow Family,Physical devices to migrate data into and out of AWS,https://aws.amazon.com/snow/faqs
+AWS Transfer for SFTP,Fully managed SFTP service,https://aws.amazon.com/sftp/faqs
+AWS Amplify,Build and deploy mobile and web applications,https://aws.amazon.com/amplify/faqs
+Amazon API Gateway,"Build, deploy, and manage API's",https://aws.amazon.com/api-gateway/faqs
+Amazon Pinpoint,Personalized user engagement across channels,https://aws.amazon.com/pinpoint/faqs
+AWS AppSync,Build data-driven apps with real-time and offline capabilities,https://aws.amazon.com/appsync/faqs
+AWS Device Farm,"Test Android, iOS, and web apps on real devices in the AWS cloud",https://aws.amazon.com/device-farm/faqs
+Amazon VPC,Isolated cloud resources,https://aws.amazon.com/vpc/faqs
+Amazon API Gateway,"Build, deploy, and manage APIs",https://aws.amazon.com/api-gateway/faqs
+Amazon CloudFront,Global content delivery network,https://aws.amazon.com/cloudfront/faqs
+Amazon Route 53,Scalable domain name system (DNS),https://aws.amazon.com/route53/faqs
+Amazon VPC PrivateLink,Securely access services hosted on AWS,https://aws.amazon.com/privatelink/faqs
+AWS App Mesh,Monitor and control microservices,https://aws.amazon.com/app-mesh/faqs
+AWS Cloud Map,Service discovery for cloud resources,https://aws.amazon.com/cloud-map/faqs
+AWS Direct Connect,Dedicated network connection to AWS,https://aws.amazon.com/directconnect/faqs
+AWS Global Accelerator,Improve application availability and performance,https://aws.amazon.com/global-accelerator/faqs
+AWS Transit Gateway,Easily scale VPC and account connections,https://aws.amazon.com/transit-gateway/faqs
+AWS RoboMaker,"Develop, test, and deploy robotics applications",https://aws.amazon.com/robomaker/faqs
+AWS Ground Station,Fully managed ground station as a service,https://aws.amazon.com/ground-station/faqs
+AWS Identity and Access Management (IAM),Manage user access and encryption keys,https://aws.amazon.com/iam/faqs
+Amazon Cloud Directory,Create flexible cloud-native directories,https://aws.amazon.com/cloud-directory/faqs
+Amazon Cognito,Identity management for your apps,https://aws.amazon.com/cognito/faqs
+Amazon GuardDuty,Managed threat detection service,https://aws.amazon.com/guardduty/faqs
+Amazon Inspector,Analyze application security,https://aws.amazon.com/inspector/faqs
+Amazon Macie,"Discover, classify, and protect your data",https://aws.amazon.com/macie/faqs
+AWS Artifact,On-demand access to AWS' compliance reports,https://aws.amazon.com/artifact/faqs
+AWS Certificate Manager,"Provision, manage, and deploy SSL/TLS certificates",https://aws.amazon.com/certificate-manager/faqs
+AWS CloudHSM,Hardware-based key storage for regulatory compliance,https://aws.amazon.com/cloudhsm/faqs
+AWS Directory Service,Host and manage active directory,https://aws.amazon.com/directoryservice/faqs
+AWS Firewall Manager,Central management of firewall rules,https://aws.amazon.com/firewall-manager/faqs
+AWS Key Management Service,Managed creation and control of encryption keys,https://aws.amazon.com/kms/faqs
+AWS Organizations,Policy-based management for multiple AWS accounts,https://aws.amazon.com/organizations/faqs
+AWS Secrets Manager,"Rotate, manage, and retrieve secrets",https://aws.amazon.com/secrets-manager/faqs
+AWS Security Hub,Unified security and compliance center,https://aws.amazon.com/security-hub/faqs
+AWS Shield,DDoS protection,https://aws.amazon.com/shield/faqs
+AWS Single Sign-On,Cloud single sign-on (SSO) service,https://aws.amazon.com/single-sign-on/faqs
+AWS WAF,Filter malicious web traffic,https://aws.amazon.com/waf/faqs
+Amazon Simple Storage Service (S3),Scalable storage in the cloud,https://aws.amazon.com/s3/faqs
+Amazon Elastic Block Store (EBS),EC2 block storage volumes,https://aws.amazon.com/ebs/faqs
+Amazon Elastic File System (EFS),Fully managed file system for EC2,https://aws.amazon.com/efs/faqs
+Amazon FSx for Lustre,Fully managed compute-intensive file system,https://aws.amazon.com/fsx/faqs
+Amazon FSx for Windows File Server,Fully managed Windows native file system,https://aws.amazon.com/fsx/faqs
+Amazon S3 Glacier,Low-cost archive storage in the cloud,https://aws.amazon.com/glacier1/faqs
+AWS Backup,Centralized backup across AWS services,https://aws.amazon.com/backup/faqs
+AWS Snow Family,Physical devices to migrate data into and out of AWS,https://aws.amazon.com/snow/faqs
+AWS Storage Gateway,Hybrid storage integration,https://aws.amazon.com/storagegateway/faqs
+Amazon Athena,Query data in S3 using SQL,https://aws.amazon.com/athena/faqs
+Amazon CloudSearch,Managed search service,https://aws.amazon.com/cloudsearch/faqs
+Amazon EMR,Hosted Hadoop framework,https://aws.amazon.com/elasticmapreduce/faqs
+Amazon Elasticsearch Service,Run and scale Elasticsearch clusters,https://aws.amazon.com/elasticsearch-service/faqs
+Amazon Kinesis,Analyze real-time video and data streams,https://aws.amazon.com/kinesis/faqs
+Amazon Managed Streaming for Kafka,Fully managed Apache Kafka service,https://aws.amazon.com/msk/faqs
+Amazon Redshift,"Fast, simple, cost-effective data warehousing",https://aws.amazon.com/redshift/faqs
+Amazon Quicksight,Fast business analytics service,https://aws.amazon.com/quicksight/faqs
+AWS Data Pipeline,"Orchestration service for periodic, data-driven workflows",https://aws.amazon.com/datapipeline/faqs
+AWS Glue,Prepare and load data,https://aws.amazon.com/glue/faqs
+AWS Lake Formation,Build a secure data lake in days,https://aws.amazon.com/lake-formation/faqs
+AWS Step Functions,Coordination for distributed applications,https://aws.amazon.com/step-functions/faqs
+Amazon MQ,Managed message broker for ActiveMQ,https://aws.amazon.com/amazon-mq/faqs
+Amazon Simple Notification Service (SNS),Managed message topics for pub/sub,https://aws.amazon.com/sns/faqs
+Amazon Simple Queue Service (SQS) ,Managed message queues,https://aws.amazon.com/sqs/faqs
+AWS AppSync,Build data-driven apps with real-time and offline capabilities,https://aws.amazon.com/appsync/faqs
+Amazon Sumerian,Build and run VR and AR applications,https://aws.amazon.com/sumerian/faqs
+AWS Cost Explorer,Analyze your AWS cost and usage,https://aws.amazon.com/aws-cost-management/faqs
+AWS Budgets,Set custom cost and usage budgets,https://aws.amazon.com/aws-cost-management/faqs
+AWS Cost and Usage Report,Access comprehensive cost and usage information,https://aws.amazon.com/aws-cost-management/faqs
+Reserved Instance Reporting,Dive deeper into your reserved instances (RIs),https://aws.amazon.com/aws-cost-management/faqs
+Amazon Managed Blockchain,Create and manage scalable blockchain networks,https://aws.amazon.com/managed-blockchain/faqs
+Amazon Quantum Ledger Database (QLDB),Fully managed ledger database,https://aws.amazon.com/qldb/faqs
+Alexa for Business,Empower your organization with Alexa,https://aws.amazon.com/alexaforbusiness/faqs
+Amazon Chime,"Frustration-free meetings, video calls, and chat",https://aws.amazon.com/chime/faqs
+Amazon WorkMail,Secure email and calendaring,https://aws.amazon.com/workmail/faqs
+Amazon EC2,Virtual servers in the cloud,https://aws.amazon.com/ec2/faqs
+Amazon EC2 Auto Scaling,Scale compute capacity to meet demand,https://aws.amazon.com/ec2/faqs
+Amazon Elastic Container Registry,Store and retrieve docker images,https://aws.amazon.com/ecr/faqs
+Amazon Elastic Container Service,Run and manage docker containers,https://aws.amazon.com/ecs/faqs
+Amazon Elastic Container Service for Kubernetes,Run managed Kubernetes on AWS,https://aws.amazon.com/eks/faqs
+Amazon Lightsail,Launch and manage virtual private servers,https://aws.amazon.com/lightsail/faqs
+AWS Batch,Run batch jobs at any scale,https://aws.amazon.com/batch/faqs
+AWS Elastic Beanstalk,Run and manage web apps,https://aws.amazon.com/elasticbeanstalk/faqs
+AWS Fargate,Run containers without managing servers or clusters,https://aws.amazon.com/fargate/faqs
+AWS Lambda,Run code without thinking about servers,https://aws.amazon.com/lambda/faqs
+AWS Outposts,Run AWS infrastructure on-premises,https://aws.amazon.com/outposts/faqs
+AWS Serverless Application Repository,"Discover, deploy, and publish serverless applications",https://aws.amazon.com/serverlessrepo/faqs
+Elastic Load Balancing (ELB),Distribute incoming traffic across multiple targets,https://aws.amazon.com/elasticloadbalancing/faqs
+VMware Cloud on AWS,Build a hybrid cloud without custom hardware,https://aws.amazon.com/vmware/faqs
+Amazon Connect,Cloud-based contact center service,https://aws.amazon.com/connect/faqs
+Amazon Pinpoint,Personalized user engagement across channels,https://aws.amazon.com/pinpoint/faqs
+Amazon Simple Email Service (SES),Email sending and receiving,https://aws.amazon.com/ses/faqs
+Amazon Aurora,High performance managed relational database,https://aws.amazon.com/rds/faqs
+Amazon DynamoDB,Managed NoSQL database,https://aws.amazon.com/dynamodb/faqs
+Amazon DocumentDB (with MongoDB compatibility),Fully managed document database,https://aws.amazon.com/documentdb/faqs
+Amazon ElastiCache,In-memory caching system,https://aws.amazon.com/elasticache/faqs
+Amazon Neptune ,Fully managed graph database service,https://aws.amazon.com/neptune/faqs
+Amazon Quantum Ledger Database (QLDB),Fully managed ledger database,https://aws.amazon.com/qldb/faqs
+Amazon RDS,"Managed relational database service for MySQL, PostgreSQL, Oracle, SQL Server, and MariaDB",https://aws.amazon.com/rds/faqs
+Amazon RDS on VMware,Automate on-premises database management,https://aws.amazon.com/rds/faqs
+Amazon Redshift,"Fast, simple, cost-effective data warehousing",https://aws.amazon.com/redshift/faqs
+Amazon Timestream,Fully managed time series database,https://aws.amazon.com/timestream/faqs
+AWS Database Migration Service,Migrate databases with minimal downtime,https://aws.amazon.com/dms/faqs
+AWS CodeStar,Develop and deploy AWS applications ,https://aws.amazon.com/codestar/faqs
+Amazon Corretto,Production-ready distribution of OpenJDK,https://aws.amazon.com/corretto/faqs
+AWS Cloud9,"Write, run, and debug code on a cloud IDE",https://aws.amazon.com/cloud9/faqs
+AWS CodeBuild,Build and test code,https://aws.amazon.com/codebuild/faqs
+AWS CodeCommit,Store code in private Git repositories,https://aws.amazon.com/codecommit/faqs
+AWS CodeDeploy,Automate code deployment,https://aws.amazon.com/codedeploy/faqs
+AWS CodePipeline,Release software using continuous delivery,https://aws.amazon.com/codepipeline/faqs
+AWS Command Line Interface,Unified tool to manage AWS services,https://aws.amazon.com/cli/faqs
+AWS Tools and SDKs,Tools and SDKs for AWS,https://aws.amazon.com/getting-started/faqs
+AWS X-Ray,Analyze and debug your applications,https://aws.amazon.com/xray/faqs
+Amazon AppStream 2.0,Stream desktop applications securely to a browser,https://aws.amazon.com/appstream2/faqs
+Amazon WorkDocs,Secure enterprise document storage and sharing,https://aws.amazon.com/workdocs/faqs
+Amazon WorkLink,Enable mobile access to internal websites,https://aws.amazon.com/worklink/faqs
+Amazon WorkSpaces,Virtual desktops in the cloud,https://aws.amazon.com/workspaces/faqs
+Amazon GameLift,"Simple, fast, cost-effective dedicated game server hosting",https://aws.amazon.com/gamelift/faqs
+Amazon Lumberyard,"A free cross-platform 3D game engine, with Full Source, integrated with AWS and Twitch",https://aws.amazon.com/lumberyard/faqs
+AWS IoT Core,Connect devices to the cloud,https://aws.amazon.com/iot-core/faqs
+Amazon FreeRTOS,IoT operating system for microcontrollers,https://aws.amazon.com/freertos/faqs
+AWS Greengrass,"Local compute, messaging, and sync for devices",https://aws.amazon.com/greengrass/faqs
+AWS IoT 1-Click,One click creation of an AWS Lambda trigger,https://aws.amazon.com/iot-1-click/faqs
+AWS IoT Analytics,Analytics for IoT devices,https://aws.amazon.com/iot-analytics/faqs
+AWS IoT Button,Cloud programmable dash button,https://aws.amazon.com/iot/faqs
+AWS IoT Device Defender,Security management for IoT devices,https://aws.amazon.com/iot-device-defender/faqs
+AWS IoT Device Management,"Onboard, organize, and remotely manage IoT devices",https://aws.amazon.com/iot-device-management/faqs
+AWS IoT Events,IoT event detection and response,https://aws.amazon.com/iot-events/faqs
+AWS IoT SiteWise,IoT data collector and interpreter,https://aws.amazon.com/iot-sitewise/faqs
+AWS IoT Things Graph,Easily connect devices and web services,https://aws.amazon.com/iot-things-graph/faqs
+AWS Partner Device Catalog,Curated catalog of AWS-compatible IoT hardware,https://aws.amazon.com//faqs
+Amazon SageMaker,"Build, train, and deploy machine learning models at scale",https://aws.amazon.com/sagemaker/faqs
+Amazon Comprehend,Discover insights and relationships in text,https://aws.amazon.com/comprehend/faqs
+Amazon Elastic Inference,Deep learning inference acceleration,https://aws.amazon.com/elastic-inference/faqs
+Amazon Forecast,Increase forecast accuracy using machine learning,https://aws.amazon.com/forecast/faqs
+Amazon Lex,Build voice and text chatbots,https://aws.amazon.com/lex/faqs
+Amazon Personalize,Build real-time recommendations into your applications,https://aws.amazon.com/personalize/faqs
+Amazon Polly,Turn text into life-like speech,https://aws.amazon.com/polly/faqs
+Amazon Rekognition,Analyze image and video,https://aws.amazon.com/rekognition/faqs
+Amazon SageMaker Ground Truth,Build accurate ML training datasets,https://aws.amazon.com/sagemaker/faqs
+Amazon Textract,Extract text and data from documents,https://aws.amazon.com/textract/faqs
+Amazon Translate,Natural and fluent language translation,https://aws.amazon.com/translate/faqs
+Amazon Transcribe,Automatic speech recognition,https://aws.amazon.com/transcribe/faqs
+AWS Deep Learning AMIs,Deep learning on Amazon EC2,https://aws.amazon.com/machine-learning/faqs
+AWS DeepLens,Deep learning enabled video camera,https://aws.amazon.com/deeplens/faqs
+AWS DeepRacer,"Autonomous 1/18th scale race car, driven by ML",https://aws.amazon.com/deepracer/faqs
+AWS Inferentia,Machine learning inference chip,https://aws.amazon.com/inferentia/faqs
+Apache MXNet on AWS,"Scalable, open-source deep learning framework",https://aws.amazon.com/mxnet/faqs
+TensorFlow on AWS,Open-source machine intelligence library,https://aws.amazon.com/tensorflow/faqs
+Amazon CloudWatch,Monitor resources and applications,https://aws.amazon.com/cloudwatch/faqs
+AWS Auto Scaling,Scale multiple resources to meet demand,https://aws.amazon.com/autoscaling/faqs
+AWS CloudFormation,Create and manage resources with templates,https://aws.amazon.com/cloudformation/faqs
+AWS CloudTrail,Track user activity and API usage,https://aws.amazon.com/cloudtrail/faqs
+AWS Command Line Interface,Unified tool to manage AWS services,https://aws.amazon.com/cli/faqs
+AWS Config,Track resources inventory and changes,https://aws.amazon.com/config/faqs
+AWS Control Tower,"Set-up and govern a secure, compliant multi-account environment",https://aws.amazon.com/controltower/faqs
+AWS Console Mobile Application,Access resources on the go,https://aws.amazon.com/console/faqs
+AWS License Manager,"Track, manage, and control licenses",https://aws.amazon.com/license-manager/faqs
+AWS Management Console,Web-based user interface,https://aws.amazon.com/console/faqs
+AWS Managed Services,Infrastructure operations management for AWS,https://aws.amazon.com/managed-services/faqs
+AWS OpsWorks,Automate operations with Chef and Puppet,https://aws.amazon.com/opsworks/faqs
+AWS Personal Health Dashboard,Personalized view of AWS service health,https://aws.amazon.com/premiumsupport/faqs
+AWS Service Catalog,Create and use standardized products,https://aws.amazon.com/servicecatalog/faqs
+AWS Systems Manager,Gain operational insights and take action,https://aws.amazon.com/systems-manager/faqs
+AWS Trusted Advisor,Optimize performance and security,https://aws.amazon.com/trustedadvisor/faqs
+AWS Well-Architected Tool,Review and improve your workloads,https://aws.amazon.com/well-architected-tool/faqs
+Amazon Elastic Transcoder,Easy-to-use scalable media transcoding,https://aws.amazon.com/elastictranscoder/faqs
+Amazon Kinesis Video Streams,Process and analyze video streams,https://aws.amazon.com/kinesis/faqs
+AWS Elemental MediaConnect,Reliable and secure live video transport,https://aws.amazon.com/mediaconnect/faqs
+AWS Elemental MediaConvert,Convert file-based video content,https://aws.amazon.com/mediaconvert/faqs
+AWS Elemental MediaLive,Convert live video content,https://aws.amazon.com/medialive/faqs
+AWS Elemental MediaPackage,Video origination and packaging,https://aws.amazon.com/mediapackage/faqs
+AWS Elemental MediaStore,Media storage and simple http origin,https://aws.amazon.com/mediastore/faqs
+AWS Elemental MediaTailor,Video personalization and monetization,https://aws.amazon.com/mediatailor/faqs
+AWS Migration Hub,Track migrations from a single place,https://aws.amazon.com/migration-hub/faqs
+AWS Application Discovery Service,Discover on-premises applications to streamline migration,https://aws.amazon.com/application-discovery/faqs
+AWS Database Migration Service,Migrate databases with minimal downtime,https://aws.amazon.com/dms/faqs
+AWS DataSync,"Simple, fast, online data transfer",https://aws.amazon.com/datasync/faqs
+AWS Server Migration Service ,Migrate on-premises servers to AWS,https://aws.amazon.com/server-migration-service/faqs
+AWS Snow Family,Physical devices to migrate data into and out of AWS,https://aws.amazon.com/snow/faqs
+AWS Transfer for SFTP,Fully managed SFTP service,https://aws.amazon.com/sftp/faqs
+AWS Amplify,Build and deploy mobile and web applications,https://aws.amazon.com/amplify/faqs
+Amazon API Gateway,"Build, deploy, and manage API's",https://aws.amazon.com/api-gateway/faqs
+Amazon Pinpoint,Personalized user engagement across channels,https://aws.amazon.com/pinpoint/faqs
+AWS AppSync,Build data-driven apps with real-time and offline capabilities,https://aws.amazon.com/appsync/faqs
+AWS Device Farm,"Test Android, iOS, and web apps on real devices in the AWS cloud",https://aws.amazon.com/device-farm/faqs
+Amazon VPC,Isolated cloud resources,https://aws.amazon.com/vpc/faqs
+Amazon API Gateway,"Build, deploy, and manage APIs",https://aws.amazon.com/api-gateway/faqs
+Amazon CloudFront,Global content delivery network,https://aws.amazon.com/cloudfront/faqs
+Amazon Route 53,Scalable domain name system (DNS),https://aws.amazon.com/route53/faqs
+Amazon VPC PrivateLink,Securely access services hosted on AWS,https://aws.amazon.com/privatelink/faqs
+AWS App Mesh,Monitor and control microservices,https://aws.amazon.com/app-mesh/faqs
+AWS Cloud Map,Service discovery for cloud resources,https://aws.amazon.com/cloud-map/faqs
+AWS Direct Connect,Dedicated network connection to AWS,https://aws.amazon.com/directconnect/faqs
+AWS Global Accelerator,Improve application availability and performance,https://aws.amazon.com/global-accelerator/faqs
+AWS Transit Gateway,Easily scale VPC and account connections,https://aws.amazon.com/transit-gateway/faqs
+AWS RoboMaker,"Develop, test, and deploy robotics applications",https://aws.amazon.com/robomaker/faqs
+AWS Ground Station,Fully managed ground station as a service,https://aws.amazon.com/ground-station/faqs
+AWS Identity and Access Management (IAM),Manage user access and encryption keys,https://aws.amazon.com/iam/faqs
+Amazon Cloud Directory,Create flexible cloud-native directories,https://aws.amazon.com/cloud-directory/faqs
+Amazon Cognito,Identity management for your apps,https://aws.amazon.com/cognito/faqs
+Amazon GuardDuty,Managed threat detection service,https://aws.amazon.com/guardduty/faqs
+Amazon Inspector,Analyze application security,https://aws.amazon.com/inspector/faqs
+Amazon Macie,"Discover, classify, and protect your data",https://aws.amazon.com/macie/faqs
+AWS Artifact,On-demand access to AWS' compliance reports,https://aws.amazon.com/artifact/faqs
+AWS Certificate Manager,"Provision, manage, and deploy SSL/TLS certificates",https://aws.amazon.com/certificate-manager/faqs
+AWS CloudHSM,Hardware-based key storage for regulatory compliance,https://aws.amazon.com/cloudhsm/faqs
+AWS Directory Service,Host and manage active directory,https://aws.amazon.com/directoryservice/faqs
+AWS Firewall Manager,Central management of firewall rules,https://aws.amazon.com/firewall-manager/faqs
+AWS Key Management Service,Managed creation and control of encryption keys,https://aws.amazon.com/kms/faqs
+AWS Organizations,Policy-based management for multiple AWS accounts,https://aws.amazon.com/organizations/faqs
+AWS Secrets Manager,"Rotate, manage, and retrieve secrets",https://aws.amazon.com/secrets-manager/faqs
+AWS Security Hub,Unified security and compliance center,https://aws.amazon.com/security-hub/faqs
+AWS Shield,DDoS protection,https://aws.amazon.com/shield/faqs
+AWS Single Sign-On,Cloud single sign-on (SSO) service,https://aws.amazon.com/single-sign-on/faqs
+AWS WAF,Filter malicious web traffic,https://aws.amazon.com/waf/faqs
+Amazon Simple Storage Service (S3),Scalable storage in the cloud,https://aws.amazon.com/s3/faqs
+Amazon Elastic Block Store (EBS),EC2 block storage volumes,https://aws.amazon.com/ebs/faqs
+Amazon Elastic File System (EFS),Fully managed file system for EC2,https://aws.amazon.com/efs/faqs
+Amazon FSx for Lustre,Fully managed compute-intensive file system,https://aws.amazon.com/fsx/faqs
+Amazon FSx for Windows File Server,Fully managed Windows native file system,https://aws.amazon.com/fsx/faqs
+Amazon S3 Glacier,Low-cost archive storage in the cloud,https://aws.amazon.com/glacier1/faqs
+AWS Backup,Centralized backup across AWS services,https://aws.amazon.com/backup/faqs
+AWS Snow Family,Physical devices to migrate data into and out of AWS,https://aws.amazon.com/snow/faqs
+AWS Storage Gateway,Hybrid storage integration,https://aws.amazon.com/storagegateway/faqs

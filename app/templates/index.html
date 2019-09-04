@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>Intelligent Infrastructure Categorizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Indie+Flower|Jua|Open+Sans:600|Raleway:700|Roboto|Roboto+Condensed|Roboto+Slab&amp;subset=latin-ext'>
+
+  <style>
+
+    textarea, textarea:active, textarea:focus{
+        resize: none;
+        width: 100%;
+        border: none;
+        outline: none;
+        overflow: auto;
+        min-height: 50vh;
+        font-family: 'Roboto', sans-serif;
+        padding: 30px;
+        font-size: 20px;
+        -webkit-box-shadow: 10px 10px 39px -1px rgba(99,99,99,0.5);
+        -moz-box-shadow: 10px 10px 39px -1px rgba(99,99,99,0.5);
+        box-shadow: 10px 10px 39px -1px rgba(99,99,99,0.5);
+    }
+
+    *{
+  		-webkit-box-sizing: border-box;
+  		-moz-box-sizing: border-box;
+  		box-sizing: border-box;
+  	}
+
+  	body {
+  		position: absolute;
+  		left: 0;
+  		top: 0;
+  		width: 100vw;
+  		min-height: 98vh;
+      overflow-x: hidden;
+
+  	}
+
+  	.btn-hover {
+  		width: 200px;
+  		font-size: 16px;
+  		font-weight: 600;
+  		color: #fff;
+  		cursor: pointer;
+  		margin: 20px;
+  		height: 50px;
+  		text-align:center;
+  		border: none;
+  		background-size: 300% 100%;
+  		border-radius: 50px;
+  		moz-transition: all .4s ease-in-out;
+  		-o-transition: all .4s ease-in-out;
+  		-webkit-transition: all .4s ease-in-out;
+  		transition: all .4s ease-in-out;
+  	}
+
+  	.btn-hover:hover {
+  		background-position: 100% 0;
+  		moz-transition: all .4s ease-in-out;
+  		-o-transition: all .4s ease-in-out;
+  		-webkit-transition: all .4s ease-in-out;
+  		transition: all .4s ease-in-out;
+  	}
+
+  	.btn-hover:focus {
+  		outline: none;
+  	}
+
+    .mb-1{
+      margin-bottom: 1em;
+    }
+
+    .row {
+      margin-bottom: 20px;
+    }
+
+    .btn-hover.color-5 {
+  		background-image: linear-gradient(to right, #0ba360, #3cba92, #30dd8a, #2bb673);
+  		box-shadow: 0 4px 15px 0 rgba(23, 168, 108, 0.75);
+  	}
+
+    .sidebar {
+      background-color: #FAFAFA;
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 70px;
+    }
+
+    .btn1 {
+      margin: 15px;
+      width: 40px;
+      height: 40px;
+      background: url('/static/res/class.png') no-repeat;
+      background-size: 40px 40px;
+      outline: none;
+      border: none;
+    }
+
+    .btn2 {
+      margin: 15px;
+      width: 40px;
+      height: 40px;
+      background: url('/static/res/stat.png') no-repeat;
+      background-size: 40px 40px;
+      outline: none;
+      border: none;
+    }
+
+    .btn3 {
+      margin: 15px;
+      width: 40px;
+      height: 40px;
+      background: url('/static/res/gear.png') no-repeat;
+      background-size: 40px 40px;
+      outline: none;
+      border: none;
+    }
+
+    .btn4 {
+      margin: 15px;
+      width: 40px;
+      height: 40px;
+      background: url('/static/res/paper.png') no-repeat;
+      background-size: 40px 40px;
+      outline: none;
+      border: none;
+    }
+
+  </style>
+
+
+</head>
+
+<body>
+  <div class = "container" style="position: absolute; left: 0; top: 0; width: 100vw; min-height: 100vh">
+    <div class="row" style="position: absolute; width: inherit; height: inherit">
+      <div class="sidebar">
+        <button class="btn1" onclick="home()"></button>
+        <button class="btn btn2" onclick="update()"></button>
+        <button class="btn3" onclick="github()"></button>
+        <button class="btn4" onclick="drive()"></button>
+      </div>
+      <div style="position: absolute; width: inherit; height: inherit; margin-left: 70px;">
+        <div class="jumbotron" style="background-color: #FFF">
+            <h1><b><i>Intelligent</i></b> Infrastructure Categorizer</h1>
+        </div>
+
+        <div class="container" style=" width: inherit; height: 100vh; margin: 0">
+            <form action="results" method="post" class="form-horizontal">
+                <div class="row">
+                  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <center><textarea name="comment" id="comment" placeholder="Eg. I am facing issues in a MySQL database." required></textarea></center>
+                  </div>
+                    </div>
+                    <div class="row">
+                      <center><button class="btn btn-success btn-block btn-hover color-5" id="downloadBtn" onclick="predict()">Predict</button></center>
+
+                    </div>
+                </div>
+
+        </form>
+        <div><center>Icons made by <a href="https://www.freepik.com/?__hstc=57440181.341982ec57d37915f69eb8bf894f4723.1562199931766.1562199931766.1562226323838.2&__hssc=57440181.18.1562226323838&__hsfp=3641943991" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> & licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></center></div>
+        </div>
+        <div class="modal fade" id="addFontModal" tabindex="-1" role="dialog" aria-labelledby="addFontModal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Fetch new data</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-1">
+                            You will now be redirected. Please wait while new data is being fetched and trained into the model.
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="addFontBtn" type="button" class="btn btn-success" onclick="update()">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+      </div>
+  </div>
+
+
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js'></script>
+
+
+  <script type="text/javascript">
+
+    function home() {
+      document.location.href = "/";
+    }
+
+    function update() {
+      document.location.href = "update";
+    }
+
+    function github() {
+      document.location.href = "https://github.com/apmwar/ACMS-IID";
+    }
+
+    function drive() {
+      document.location.href = "https://drive.google.com";
+    }
+
+  </script>
+
+</body>
+
+</html>

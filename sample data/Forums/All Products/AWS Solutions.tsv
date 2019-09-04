@@ -1,0 +1,807 @@
+label	description
+AWS Solutions	"EC2 Right Sizing errors
+I have been working on getting the EC2 Right Sizing solution running in my company's accounts.  It runs successfully in one account, but in another the run-rightsizing-redshift.py script errors out (see below) and no report is generated.  All of the resources build successfully from the CFT and I can log into the EC2 instance and watch the logs.  It does a lot of work with Redshift before it fails, so I don't think it's a permissions or connectivity issue.
+
+Has anyone else seen this?  Any ideas?  Error below.
+
+2018-10-16 14:04:05,349 INFO     Connected to the database
+2018-10-16 14:04:05,349 INFO     Importing the CloudWatch files to Redshift table
+2018-10-16 14:05:05,406 INFO     Finish to import the CloudWatch files to the Redshift table: cwdatawnygfksc
+2018-10-16 14:05:05,407 INFO     Importing the EC2 pricelist to Redshift
+2018-10-16 14:05:06,263 INFO     Generate Redshift table structure
+2018-10-16 14:05:06,263 INFO     Importing the pricelist files to Redshift table: pricelistnoazermj
+2018-10-16 14:09:47,910 INFO     Finish to import the EC2 pricelist to Redshift table: pricelistnoazermj
+2018-10-16 14:09:47,911 INFO     Analyzing the instances need to be resized
+Traceback (most recent call last):
+  File ""/tmp/run-rightsizing-redshift.py"", line 447, in <module>
+    ls_temp_table = right_sizing(conn, ls_pricelist_tabname, ls_cw_tabname)
+  File ""/tmp/run-rightsizing-redshift.py"", line 311, in right_sizing
+    execute_dml_ddl(db_conn, ls_gen_list_sql)
+  File ""/tmp/run-rightsizing-redshift.py"", line 101, in execute_dml_ddl
+    cur_dml_ddl.execute(sql_stat)
+psycopg2.InternalError: numeric field overflow
+
+Broadcast message from root@ip-10-X-X-29
+        (unknown) at 14:10 ...
+
+The system is going down for power off NOW!"
+AWS Solutions	"Re: EC2 Right Sizing errors
+Hello
+
+Apologies for the delayed response on this thread.
+
+issue
+Upon further investigation we found the issue to be with following lines in the sql query:
+https://github.com/awslabs/cost-optimization-ec2-right-sizing/blob/1db8f6558e1e245108267321abcc40f438b31be4/run-rightsizing-redshift.py#L292
+https://github.com/awslabs/cost-optimization-ec2-right-sizing/blob/1db8f6558e1e245108267321abcc40f438b31be4/run-rightsizing-redshift.py#L300
+
+fix
+change these lines to:
+ls_gen_list_sql += "" max(to_number(trim(both ' ' from diskreadops), '9999999999999D99999999')/60+to_number(trim(both ' ' from diskwriteops),'9999999999999D99999999')/60) as maxiops, ""
+
+reason
+the reason for numeric overflow error was due to mismatch with the data-type.
+
+how to test the change
+please test the suggested change
+you can chose not to terminate resource at deployment. this will leave ec2 and redshift cluster after initial deployment. you can ssh into the box and edit the /tmp/run-rightsizing-redshift.py with the recommended change and run it again"
+AWS Solutions	"VOD Workflow not triggering for API uploads
+I am trying to implement the solution here.
+https://docs.aws.amazon.com/solutions/latest/video-on-demand/overview.html
+
+It all seems to work if I upload a file to S3 directly from the S3 portal. However, if I upload to my bucket via the api. The file is uploaded properly to the bucket, but the workflow never starts. The cloudformation that is created is pretty complex. Does anyone have any advice on where to start debugging?
+
+Thanks"
+AWS Solutions	"Re: VOD Workflow not triggering for API uploads
+Hi and sorry for the delayed response. 
+
+The solution is configured to trigger the workflow if one of the following file formats is uploaded to the source S3 bucket;  mov, mp4, m4v and mpg and this is configured through the S3 event notifications.  
+
+The CLI will use a multipart upload for large files so if you uploading large files using the CLI or SDK then you'll need to update the event notifications on the source S3 bucket to trigger the workflow for multi-upload completes. 
+
+Log in to the console and navigate to S3 > source bucket > events and update each of the event notifications to include 'Complete Multipart Upload'. 
+
+That should be all you need and thanks for pointing this out, we will add this to any future release to the solution."
+AWS Solutions	"Video on Demand customising the Cloud Formation template
+I've managed to launch the VOD CloudFormation stack on my account and get everything working. I'd like to do some customisation of the code and CloudFormation template to achieve two things: use different presets for MediaConvert to support portrait video and be able to include the MP4 destination bucket in the CloudFront distribution as an origin. I'm looking through the VOD source code and I see there is a build bash script but all it does is zip up the lambda functions and customise the code bucket name in the CloudFormation template. There doesn't seem to be any documentation on what is needed to do once the Lambda functions are zipped up and the template is updated. Do I need to write another script that uploads those lambda functions to an S3 bucket? I could do that but isn't there an issue with the cfn-response
+ module not being available to lambda code in an S3 bucket? According to this: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html#cfn-lambda-function-code-cfnresponsemodule The cfn-response module isn't available for source code that's stored in Amazon S3 buckets. To send responses, write your own functions, uploading the custom-resources lambda function to S3 won't work.
+
+Any help in this matter would be greatly appreciated."
+AWS Solutions	"Issues sending email to gmail
+We are facing issue with sending email to gmail.com from our server 
+
+It is not connecting to port 25 at gmail.com and showing ""failed: Connection timed out"" errors.
+
+But we are able to connect to the port 465 from the same server. 
+
+We are facing this issue only from that instance  From other server emails are going properly to gmail.com"
+AWS Solutions	"AWS Glue Using Development Endpoints Does Not Work at All for Me?
+In short. I have a development endpoint let say `myspark` bounded to a private subnet:
+
+Port forwarding work as far as I can see fine:
+
+ssh  -vnNT -L :9007:169.254.76.1:9007 glue@XX.XX.XX.XX
+OpenSSH_7.6p1, LibreSSL 2.6.2
+debug1: Reading configuration data /Users/dspasic/.ssh/config
+debug1: Reading configuration data /etc/ssh/ssh_config
+debug1: /etc/ssh/ssh_config line 48: Applying options for *
+debug1: Connecting to XX.XX.XX.XX port 22.
+debug1: Connection established.
+debug1: identity file /Users/xxxxx/.ssh/id_rsa type 0
+debug1: key_load_public: No such file or directory
+debug1: identity file /Users/xxxxx/.ssh/id_rsa-cert type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /Users/xxxxx/.ssh/id_dsa type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /Users/xxxxx/.ssh/id_dsa-cert type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /Users/xxxxx/.ssh/id_ecdsa type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /Users/xxxxx/.ssh/id_ecdsa-cert type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /Users/xxxxx/.ssh/id_ed25519 type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file /Users/xxxxx/.ssh/id_ed25519-cert type -1
+debug1: Local version string SSH-2.0-OpenSSH_7.6
+
+
+So the next step was to set up the spark interpreter for a local running zeppelin as described on the page: https://docs.aws.amazon.com/glue/latest/dg/dev-endpoint-tutorial-local-notebook.html
+
+Running 
+%pyspark
+import sys
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.transforms import *
+ 
+glueContext = GlueContext(SparkContext.getOrCreate())
+ 
+persons_DyF = glueContext.create_dynamic_frame.from_catalog(database=""THE_DATABASE"", table_name=""THE_TABLE"")
+ 
+# Print out information about this data
+print ""Count:  "", persons_DyF.count()
+persons_DyF.printSchema()
+
+
+Leads to following result
+java.net.ConnectException: Connection refused (Connection refused)
+	at java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:589)
+	at org.apache.thrift.transport.TSocket.open(TSocket.java:182)
+	at org.apache.zeppelin.interpreter.remote.ClientFactory.create(ClientFactory.java:51)
+	at org.apache.zeppelin.interpreter.remote.ClientFactory.create(ClientFactory.java:37)
+	at org.apache.commons.pool2.BasePooledObjectFactory.makeObject(BasePooledObjectFactory.java:60)
+	at org.apache.commons.pool2.impl.GenericObjectPool.create(GenericObjectPool.java:861)
+	at org.apache.commons.pool2.impl.GenericObjectPool.borrowObject(GenericObjectPool.java:435)
+	at org.apache.commons.pool2.impl.GenericObjectPool.borrowObject(GenericObjectPool.java:363)
+	at org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcess.getClient(RemoteInterpreterProcess.java:92)
+	at org.apache.zeppelin.interpreter.remote.RemoteInterpreter.getFormType(RemoteInterpreter.java:439)
+	at org.apache.zeppelin.interpreter.LazyOpenInterpreter.getFormType(LazyOpenInterpreter.java:111)
+	at org.apache.zeppelin.notebook.Paragraph.jobRun(Paragraph.java:387)
+	at org.apache.zeppelin.scheduler.Job.run(Job.java:175)
+	at org.apache.zeppelin.scheduler.RemoteScheduler$JobRunner.run(RemoteScheduler.java:329)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:180)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+
+
+SSH to Python REPL ssh glue@XXXXXXX -t gluepyspark do not work either. There is not respond. 
+
+What I'm doing wrong here?
+
+Edited by: error503 on Oct 18, 2018 1:43 AM"
+AWS Solutions	"Issue to connect Redshift database from clients
+Hi everyone
+
+I am starting with Redshift, I follow the guides and I cant connect to the database of the cluster
+
+https://forums.aws.amazon.com/(500150) Error setting/closing connection: Connection timed out: connect.
+https://forums.aws.amazon.com/(500150) Error setting/closing connection: Connection timed out: connect.
+https://forums.aws.amazon.com/(500150) Error setting/closing connection: Connection timed out: connect.
+      Connection timed out: connect
+      Connection timed out: connect
+
+jdbc:redshift://mysecondcluster.caacfmdvea5y.sa-east-1.redshift.amazonaws.com:5439/dev
+
+In Security, I does not have the Security groups tab, only Subnets groups. I add the subnet of my pc in the Subnet group of the VPC but I cant connect.
+Any idea about solve this?I test with dbveaber and workbenchJ and the error is the same
+
+
+Thanks a lot
+
+Edited by: SergioTECOArg on Oct 17, 2018 8:28 AM"
+AWS Solutions	"Re: Issue to connect Redshift database from clients
+I solve this by myself"
+AWS Solutions	"Issue with KMS Connection Broker
+Not sure if this is the right area to post but will start here.  I am a very basic user who has set up some Windows AWS VMs for a non-profit industry organization. Everything was working fine until a week ago when the following process started chewing up my CPU pegging it at 95-99%.  
+
+KMS Connection Broker
+
+It appears to be a normal Windows service but not sure why it's chewing up CPU.  Tried stopping it and it just keeps popping up.  Tried to delete underlying EXE and it says I must be trusted user. I am the admin on the instance.  I've Googled a bunch of stuff and no luck.  Tried creating an image and launching as a new instance and the problem is still there. 
+
+Not sure what to do now as I have built a ton of stuff on it and don't want to start over."
+AWS Solutions	"AWS Instance Scheduler - trouble configuring for stopping only
+I'm trying to set up a schedule to only stop running Dev instances at a certain time. Not all Dev servers need to be used each day, so I  don't want to start them automatically. My schedules with both a start and stop time work perfectly. 
+
+I have a period that works for all days of the week (0-6) and has only an endtime (no begintime). If I set my schedule with an override_status of stopping, it usually doesn't stop the instances because the state in the state table already says stopped. If I add the enforced flag and set it to true, it's stopping instances after a user starts them. How should I configure my settings to only stop instances that are running at the endtime and only allow manual starts. Thanks!"
+AWS Solutions	"Re: AWS Instance Scheduler - trouble configuring for stopping only
+I may have found a solution. So far it seems to be working. I have both enforced = true and override_status = stopping. I also created two periods that I added to the appropriate schedules. One period goes from 0:00 to 19:05 and the other goes from 19:06 to 12:59. I had changed my interval from 5 to 15 minutes and I didn't want the instances to be turned off too early."
+AWS Solutions	"Re: AWS Instance Scheduler - trouble configuring for stopping only
+This apparently did not resolve my issue. Instances started in the morning are being stopped prematurely. Does anyone know how best to set up what I'm trying to do?"
+AWS Solutions	"Re: AWS Instance Scheduler - trouble configuring for stopping only
+Finally solved it. I had a period with only and endtime and the schedule was set to enforce (no override_status value). It's a simple setup, but in reading the documentation, it didn't seem like this is the way it should work. What happens is that the enforced=true flag makes the scheduler check the actual state rather than the state in the state table to see if it needs to turn the instance off. Without the starttime parameter in the period, it won't ever start it."
+AWS Solutions	"Re: AWS Instance Scheduler - trouble configuring for stopping only
+Well - issues again. Recently I've discovered that if someone starts a server after it was turned off automatically by the scheduler (within hours), it will start and then get turned off because of the enforce flag. So, I still don't really have a good way to implement only stopping instances at a certain time but not doing anything else."
+AWS Solutions	"Re: AWS Instance Scheduler - trouble configuring for stopping only
+See my last comment."
+AWS Solutions	"Re: AWS Instance Scheduler - trouble configuring for stopping only
+Reviving this thread....
+
+This is a common scenario.  There must be a solution to this in the new scheduler.
+
+Basically, it should have the ability to stop an instance at a specific time each day if it was turned on manually.  The old EC2 Scheduler was able to do this, and I'd rather not have to go back to it."
+AWS Solutions	"elb security policy with cf
+I want to disable tls protocols v1.0 and v1.1. I have the code as following:
+
+""LoadBalancerName"" : { ""Fn::Sub"": ""${AWS::StackName}-elb"" },
+        ""Policies"": [
+          {
+            ""PolicyName"": ""limit-tls-policy"",
+            ""PolicyType"": ""SSLNegotiationPolicyType"",
+            ""Attributes"": [
+              { ""Name"" : ""Reference-Security-Policy"" , ""Value"" : ""ELBSecurityPolicy-TLS-1-2-2017-01"" }
+            ]
+          }
+        ],
+
+from whatever i have read, my elb must be implementing the policy: 1-2-2017-01. But after successful creation of the stack, the policy i find under listeners is ELBSecurityPolicy-2016-08, which, obviously, is not required.
+
+Any help would be appreciated,
+
+Thank you."
+AWS Solutions	"Using HTTP GET to IoT device
+Can I use GET to send a message to IoT device?
+
+I did using POST but now I want to transform the POST to GET
+
+Thanks
+
+Edited by: IoTest on Oct 16, 2018 1:29 AM"
+AWS Solutions	"Remove AMI Product Code
+I have an EC2 instance that has Tableau Reporting Server on it, as some point in the past the License for this was purchased through the AWS Marketplace, however now we buy the License outright directly from Tableau. 
+
+The server that tableau is installed on still has an AWS Marketplace code on it that is preventing us from changing to a M5.2xlarge instance. Is there anyway we can remove this code?"
+AWS Solutions	"Can't send a text  message to my number (Indonesia) over SNS
+Hi, why i cant send text message to my number with +62 (Indonesia) code. I want test for SNS send message directly to my phone and after that i have plan for cognito MFA. Thank you"
+AWS Solutions	"ECR error on rate-limit
+Recently we are facing rate-limiting issues on ECR, error is toomanyrequests: Rate exceeded, 
+We have a docker image with ~40 layer when we do a docker push  some time total api transactions will be 40-15 but some time it will be 100-150 transactions. 
+Why this scenario occurs as image layer nothing is changed but api transactions like `InitiateLayerUpload` differs in huge amount.
+
+Edited by: tibin on Oct 8, 2018 5:34 AM"
+AWS Solutions	"Re: ECR error on rate-limit
+I'm not sure I understand your specific problem. If you haven't already, please make a support request with specific details about your commands and inputs and the errors received, and someone will take a look into it"
+AWS Solutions	"Re: ECR error on rate-limit
+When am performing a docker push to ECR  it fails in between the push transactions with error `toomanyrequests: Rate exceeded`, As per doc 'Number of docker push transactions to a repository per second, per region, per account' is 10 sustained, with the ability to burst up to 40 *'
+Is there a way that we can request to increase api rate limit for docker transactions ? 
+Is yes what will max amount of api calls will happen for 1 docker push which has 40-80 layers ? so that  we can request for limit based on that.
+
+Edited by: tibin on Oct 10, 2018 12:27 AM"
+AWS Solutions	"Re: ECR error on rate-limit
+Ah, I see now. ECR throttles on InitiateLayerUpload and CompleteLayerUpload at the same rate of 10 sustained and 40 burst, so it looks like your layers are being uploaded very quickly and you're reaching these throttles.
+
+You should be able to file a support request to ask for a throttle increase for both of these API calls on your account, and that should fix your problem. Also, I can talk with our doc writers to make this throttling more understandable on the public docs."
+AWS Solutions	"Re: ECR error on rate-limit
+Thaks for the update, yes that'll very helpful if the doc is clear.
+I have created a support request with aws for the limit increase  they told it will take up to 5 business days to be deployed. 
+Can I know why aws takes such a long period for a limit increase ? what is internal process of aws in these type of requests.
+
+Edited by: tibin on Oct 11, 2018 3:20 AM
+
+Edited by: tibin on Oct 12, 2018 6:17 AM"
+AWS Solutions	"ElastiCache Node Recovery -- Did Not Trigger SNS Topic for Alert???
+Hi AWS,
+
+I experienced an issue across some production workloads recently, which finally tracked down to be caused by one of our elasticache memcache cluster nodes failing and being recovered.
+
+I have an SNS topic setup for alerts on this, but nothing was received related to the recovery. This took some time to track elasticache as the source, eventually seeing issues on the graphs via the monitoring tools with dropped connections and then in the events log in elasticache showing a node was recovered at the time of issue. ""Recovering cache nodes 0001""
+
+As I understand it, such an event should be covered for triggering the SNS topic setup on this cluster care of: ElastiCache:CacheNodeReplaceComplete | https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/ElastiCacheSNS.html
+
+Why would it be that no email came through to alert for this and how can I verify if theres anything wrong? Apart from this the SNS topic setup works normally. I get a nightly notification of completed snapshots for ElastiCache:SnapshotComplete"
+AWS Solutions	"serverless image handler
+Hi, 
+I tried many times to deploy the Serverless Image Handler from the cloudFront template, every time I had  ""create_Failed"" when CF tries to deploy the UI, with the following "" Failed to create resource. Failed to deploy Image Handler U"".  If I configure CF to not install the UI, then the deployment is successful. I assume the system looks for a aws S3 bucket named : ""Solutions"" 
+with a S3key: serverless-image-handler/v3.0.0/serverless-image-handler.zip
+Thanks in advance for your help."
+AWS Solutions	"Lightsail download speed limited to 1Mbps after a period of use?
+Hello everyone, 
+
+After using Lightsail and EC2 for a while, the download speed is limited to 1Mbps. Is this my reason? what should I do? Please help me. The attachment is the test result.
+
+Edited by: happypeter on Oct 11, 2018 7:47 AM"
+AWS Solutions	"Switch to Basic Support, but still paying the Business Plan
+More then a week ago, I changed the support plan to Basic. But in the October bill the Business support plan cost is present and constantly increasing (see the attach).
+
+I open a ticket 48 hours ago, no response. 
+More time passes more pay.
+
+What can I do? 
+
+Thank you for your help."
+AWS Solutions	"Create and Configure a Cognito User Pool from the AWS CLI
+I'm currently trying to automate the Cognito User Pool creation process via bash scripts on AWS-CLI. However, following the steps from the AWS console, I'm trying to reproduce the same steps via the CLI. I like to know which commands I should be looking at and in what sequence? The AWS docs don't really say much and the commands sometimes tend to be confusing.
+
+Any ideas will be greatly appreciated.
+
+https://stackoverflow.com/questions/52745818/create-and-configure-a-cognito-user-pool-from-the-aws-cli"
+AWS Solutions	"QandA bot - Posting Question and Answers programatically
+Hi,
+I would like to know if there is a way to add question and answers(FAQs) in QandA bot offered by Amazon programmatically. i havent seen any APIs being exposed but jus wanted to cnfirm
+
+Thanks,
+Kumar"
+AWS Solutions	"AWS IoT create thing using REST APIs
+Hello,
+
+I want to register a thing using REST API rather than through AWS web interface. Is it possible to create thing through REST API? If yes, how it can be done.
+
+Thanks."
+AWS Solutions	"Re: AWS IoT create thing using REST APIs
+Yes, please check https://docs.aws.amazon.com/iot/latest/apireference/API_RegisterThing.html
+You need to prepare a provision template (json file), check this https://docs.aws.amazon.com/iot/latest/developerguide/provision-template.html
+
+The request body in the REST API include
+1. provision template
+2. the parameter values , which defined in your template above."
+AWS Solutions	"Using User pool group role policies for API Gateway access control
+I have been struggling for a while trying to make API Gateway use the policies defined for Cognito user groups. I am able to get the right credentials on client side but API Gateway looks no further than just identification, when it comes to resource access it just does not care about policies. I wonder if there is a way to achieve that without a Lambda Authorizer.
+If that is not currently possible, then how do I gather those policies from within the lambda authorizer? I don't want to hardcode nor build the policies in the lambda authorizer since the user groups already have the right policies attached"
+AWS Solutions	"Connect to Ubuntu server instance asks for password
+Hello, I have an instance of an Ubuntu Server, I'm trying to connect via PuTTY but it keeps asking my password, so I think this means my keypair I generated is not working?
+
+I tried this solutions and all of them result in the same thing, asking for password (of course, I did not type any password when generating my private key)
+
+1.- In hostname I put my IP address
+2.- In hostname I put DNS public name
+3.-In hostname I put ubuntu@DnsPublicName
+4.-In Connection -> Data I tried with and without ubuntu in the auto-login username
+5-In connection -> SSH ->  Auth I have use either a private ppk key and public. None worked
+6.- Tried KiTTY instead of PuTTY and the result is the same
+7.- The strangest of all: I tries to connect to a co-worker's instance that it is working well and he connects all the time to it, and the same case: Prompt asks for password
+8.- I created an elastic IP and assoiciated to the instance and connected to it. 
+9.- I tried to use the ssh command in windows with the -v argument to debug whats going on: ssh -v -i default_keypair.pem ubuntu@myHost, this is the output:
+
+OpenSSH_for_Windows_7.6p1, LibreSSL 2.6.4
+debug1: Connecting to 52.9.100.77 http://52.9.100.77 port 22.
+debug1: Connection established.
+debug1: key_load_public: No such file or directory
+debug1: identity file default_keypair.pem type -1
+debug1: key_load_public: No such file or directory
+debug1: identity file default_keypair.pem-cert type -1
+debug1: Local version string SSH-2.0-OpenSSH_for_Windows_7.6
+debug1: Remote protocol version 2.0, remote software version xxxxxxx
+debug1: no match: xxxxxxx
+debug1: Authenticating to 52.9.100.77:22 as 'ubuntu'
+debug1: SSH2_MSG_KEXINIT sent
+debug1: SSH2_MSG_KEXINIT received
+debug1: kex: algorithm: diffie-hellman-group-exchange-sha256
+debug1: kex: host key algorithm: ssh-rsa
+debug1: kex: server->client cipher: aes128-ctr MAC: umac-64@openssh.com compression: none
+debug1: kex: client->server cipher: aes128-ctr MAC: umac-64@openssh.com compression: none
+debug1: SSH2_MSG_KEX_DH_GEX_REQUEST(2048<3072<8192) sent
+debug1: got SSH2_MSG_KEX_DH_GEX_GROUP
+debug1: SSH2_MSG_KEX_DH_GEX_INIT sent
+debug1: got SSH2_MSG_KEX_DH_GEX_REPLY
+debug1: Server host key: ssh-rsa SHA256:HyUi5jL0iOh06FZFW8cnvyKKdnu0eKqx1aiRWmCbQMw
+debug1: Host '52.9.100.77' is known and matches the RSA host key.
+debug1: Found key in C:\\UsersPraxis/.ssh/known_hosts:2
+debug1: rekey after 4294967296 blocks
+debug1: SSH2_MSG_NEWKEYS sent
+debug1: expecting SSH2_MSG_NEWKEYS
+debug1: SSH2_MSG_NEWKEYS received
+debug1: rekey after 4294967296 blocks
+debug1: pubkey_prepare: ssh_get_authentication_socket: No such file or directory
+debug1: SSH2_MSG_SERVICE_ACCEPT received
+debug1: Authentications that can continue: password
+debug1: Next authentication method: password
+debug1: read_passphrase: can't open /dev/tty: No such file or directory
+ubuntu@52.9.100.77's password:
+
+For what I see it seems I need some files, but I have no idea how to get them
+
+Also, a few data about my PC and my server:
+-My PC: Windows 10 x64
+-My server: Ubuntu Server 14.04 LTS (HVM)
+
+So, do you think you could guide me a bit?
+Thanks!"
+AWS Solutions	"Instance Scheduler for instances in an ASG
+How can I use the instance scheduler cloud formation solution for instances in an ASG
+
+https://docs.aws.amazon.com/solutions/latest/instance-scheduler/welcome.html"
+AWS Solutions	"How can I implement a centralized logging solution on AWS?
+Need an Expert opinion on centralized logging to monitor, store,manage and visualize logs about our infra structure.
+We have a requirement to build a centralized logging framework at our project, the catch is we have projects written in different languages such as Java,Angular, Scala and Python. Custom-built solution will lead to additional tasks, costs, and dependencies associated with managing and maintaining its components , so we are thinking about AWS Partner Network (APN) offerings what would be the best managed services out of Splunk,Sumo Logic, Datadog,Elastic and Loggly ??? 
+
+Any guidance would be greatly appreciated....
+
+Regards,
+Sundaresan Ganapathy"
+AWS Solutions	"Re: How can I implement a centralized logging solution on AWS?
+Hello,
+
+Thanks for your question. I understand you are specifically looking for partner offerings and I would leave that for the community to answer and suggest best offerings. To explore yourself you may find this helpful [1].
+Additionally, we do have prescriptive guidance and automated solution for centralized logging which you can check here [2].
+
+==ref links==
+[1] https://aws.amazon.com/partners/find/results/?keyword=logging 
+[2] https://aws.amazon.com/answers/logging/centralized-logging/
+
+Thanks,
+-garvit"
+AWS Solutions	"503 Service Unavailable Issue with Amazon EC2 instance on Bitnami Wordpress
+I'm having an issue of ""503 Service Unavailable"" on my Amazon EC2 instance configured over Bitnami WordPress. It was working fine but all of sudden the issue was pointed out by my visitors. 
+The site pointed to is: www.alterego.buzz
+
+The error is :
+
+Service Unavailable
+
+The server is temporarily unable to service your request due to maintenance downtime or capacity problems. Please try again later.
+
+Additionally, a 503 Service Unavailable error was encountered while trying to use an ErrorDocument to handle the request.
+
+I've checked in the Amazon EC2 console that the instance is running perfectly fine. I also looked over to find a similar issue raised on the net but was unable to find it.
+
+Could someone please help on this as this is a big issue been going on for a long time (over 7 hours) for my visitors to be unable to view the blog?"
+AWS Solutions	"Launch Elastic Beanstalk environment with public IP (without Elastic IP)
+I tried to launcd instance without elastic IP (EIP) by removind EIP from the instance. After that the url (???.us-east-2.elasticbeanstalk.com) from environement site (Elastic Beanstalk --> MyApp --> Environment1) does not work any more. Looks like DNS dont resolve this host any more and DNS hold old Elastic IP which does not excist any more.
+
+Same time the public DNS from EC2 --> Instances --> Environment1 --> Description works fine, but it contains public IP (ec2-18-217-150-??.us-east-2.compute.amazonaws.com) and therefore changes with public IP.
+
+How can i use EC2 isntance with public IP (no elastivc IP) by persistent hostname (like URL in elastic beanstalk environment page)?
+
+Edit: same problem exist by changing EIP - DNS for Elastic Beanstalk host refer to old IP (from previous EIP). Looks like DNS problem.
+
+Edited by: OO on Oct 1, 2018 8:46 AM"
+AWS Solutions	"Can't use my Palo Alto VM-Series as GW
+Hi,
+
+I've been trying to deploy Palo Alto VM-Series and I seems that I hit a road block.
+I have followed this instructions and somehow I can't make it to work.
+See image, I can't select my VM as target.
+
+https://www.paloaltonetworks.com/documentation/80/virtualization/virtualization/set-up-the-vm-series-firewall-on-aws/deploy-the-vm-series-firewall-on-aws/launch-the-vm-series-firewall-on-aws#ide07b93a2-ccb3-4c69-95fe-96e3328b8514
+
+The issue is I can't put my VM-series between my Private Subnet and IGW.
+
+Can anyone enlighten me on this?
+
+I'm using 172.25.0.0/16
+
+Public Subnet: w/c successfully have internet connection 
+172.25.4.0/24
+
+Private Subnet: 
+172.25.1.0/24
+172.25.2.0/24
+172.25.3.0/24
+
+Thanks in advance"
+AWS Solutions	"Re: Can't use my Palo Alto VM-Series as GW
+Instance ID: i-03e258c3b4082cc99
+Subnet ID: subnet-287ce25f
+VPC ID::vpc-ce16b2ab
+
+Here are the details of my account.
+
+I'm now able to see traffic from my Private Subnet to my VM-Series but it is not passing thru the firewall.
+
+Thanks in Advance"
+AWS Solutions	"Architecture creation doubts
+Hi,
+
+I have some doubts regarding a deployment of an environment.
+In this environment I have 2 listeners (listener 1 is for a private company network(private IP), listener 2 a public network(public IP)), those listeners are routing the connection to an application load balancer (ALB). The ALB is connected to 2 AWS instances.
+In order to have secure communication between the users who wants to connect to any AWS instance, if I understand correctly, between listener 1 and the ALB needs to be configured a certificate and another certificate between listener 2 and the ALB. 
+It is correct to assume that the connection between the ALB and AWS instances is an encrypted connection by default? If not, if needs to be installed a third certificate between the ALB and each ALB instances?
+
+Kind regards,
+
+Adnan
+
+Edited by: adnanbasic on Sep 21, 2018 10:44 AM"
+AWS Solutions	"lost FTP access, keys
+Good day! 
+This is my first time working with amazon, please help me solve this problem. 
+There is an account that stores data for several years, but lost FTP access and keys. How do I create a new FTP account or just access the data to upload/edit?
+
+Edited by: nataliya2811 on Sep 21, 2018 4:14 AM"
+AWS Solutions	"passwordless authentication from spinning EC2 to on prem SQL Server
+Hi,
+
+In our organization, we have datalake solution implemented on AWS and we also have traditional data warehouse which is implemented on prem SQL Server. Data science team needs to access data from datalake as well as on SQL Server to run their algorithms. 
+Thus, we need to create a service account which data science team will be using from EC2 instances to connect to on prem SQL Server. According to organization's security policy they will not be sharing password for service account. Hence, we need to setup some mechanism where passwordless secure authentication can be done from EC2 instances to SQL Server. Kindly advise what is the best practice to achieve this.
+
+I came up with a solution to do configure Kerberos authentication. The issue here is data science team will be spinning up EC2 instances. Kindly advise if Kerberos solution can work in this scenario."
+AWS Solutions	"access API gateway using access token from third party identity provider
+We have our identity server implemented using identity server 
+
+https://github.com/IdentityServer/IdentityServer3
+or
+https://github.com/IdentityServer/IdentityServer4
+
+And user will authenticate and get the access token from the identity server. We have some APIs developed in AWS api gateway. Just wondering what is the common practice to implement the authentication / authorization. We would prefer to use the existing access token from the identity server if possible in the API gateway.
+
+Any clue will be appreciated"
+AWS Solutions	"AWS Lex Chatbot to read and write files from S3
+Hello all, I would like to create lex based bot that needs to do the following
+
+1) The bot should popup when a file is created in an S3 bucket.
+2) Print out the contents of the file onto the chat window.
+3) Create a separate file in the same S3 bucket with the user response.
+
+Can we do this using AWS lex and Lambda. How can I call the bot with just an event and without any utterances."
+AWS Solutions	"Why my s3 bucket not working in  docker run
+While running my s3 bucket file doest copy to local what configuration  i missed 
+MariaDB also not connecting 
+
+While running in the aws command line  both working fine 
+
+Dockerfile  FROM ubuntu 
+ENV AWS_ACCESS_KEY_ID=xxx
+ENV AWS_SECRET_ACCESS_KEY=xxx/8fMox8eNWTY51
+ENV AWS_DEFAULT_REGION=us-west-2
+RUN apt-get update && apt-get install -y awscli
+ 
+ADD main.sh /main.sh
+RUN chmod +x /main.sh
+RUN /main.sh 
+
+
+and my script
+ #!/bin/bash
+ 
+ 
+ 
+ docker login --username=xxx--password=12xxxx
+ docker pull mariadb
+ docker pull mysql
+ 
+ 
+ # you can also write the credentials into the awscli configuration file. 
+aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY 
+aws configure set AWS_DEFAULT_REGION $AWS_DEFAULT_REGION
+ 
+ 
+aws s3 cp s3://mariadbs3bucket/test4.txt /test 
+ 
+ mysql -u sathish  -pxx --host testmariadb.ci9m4obirg2u.us-west-2.rds.amazonaws.com -P 3306  --socket=TCP/IP  -e ""USE myDB; insert into myDB.TestTable values(50000);""
+ 
+
+
+Edited by: SathishDavid on Sep 14, 2018 3:22 AM"
+AWS Solutions	"Cross-region EC2 to RDS connection via VPC Peering
+Hello everyone,
+
+I am currently able to :
+ - establish cross-region connection between two EC2 instances via VPC Peering
+ - establish single-region/cross-VPC connection between an EC2 instance and an RDS instance via VPC Peering with DNS resolution support enabled
+
+However when creating a cross-region VPC Peering entry, the associated DNS resolution support is grayed out and as a result, unavailable. My question here is: is there a way to achieve to establish cross-region connection between an EC2 instance and an RDS instance. I feel there might be a solution using a private hosted zone in Route 53, but cannot find out exactly how to do that, since RDS instances do not have a usable private IP address.
+
+Edited by: telequid on Sep 13, 2018 8:28 AM"
+AWS Solutions	"Adding an additional static IP to elastic beanstalk instances
+I have a few elastic beanstalk applications on the same VPC (which can also be reduced to one application), and I'd like them to be accessible both via one IP address (both inbound and outbound traffic), and via their own URL. I've seen that this can be done via NAT, but I haven't found documentation on whether this is all traffic (in both directions) and if it can be done alongside the original endpoints. Another question is whether there is a better way to do this."
+AWS Solutions	"EBS storage read and write is slow
+Hi,
+We have recently upgraded our AWS ec2 instance from m4.xlarge to m5.xlarge. We have installed and configured ENA and NVME drivers to change the instance type. We had an EBS storage which is now mounted as an NVME drive but reading and writing to that storage using our python script is super slow. Any help to overcome this issue.
+
+Many thanks."
+AWS Solutions	"Oracle 12c RDS database Auditing - unable to assign Role AUDIT_ADMIN
+Hi,
+In our Oracle 12.1c database, I am logged in as Master RDS DBA account with full DBA rights.
+The available database Roles in the database includes AUDIT_ADMIN Role.
+SQL> select * from dba_roles where role='AUDIT_ADMIN';
+AUDIT_ADMIN	NO	NONE	YES	Y
+
+I have created a new Security user ""SEC_AUDIT_ADMIN"" and I wish to grant the above Role to the new user.
+However, I am experiencing error suggesting the Role AUDIT_ADMIN does not exist.
+SQL> grant audit_admin to sec_audit_admin
+Error report -
+SQL Error: ORA-01924: role 'AUDIT_ADMIN' not granted or does not exist
+01924. 00000 -  ""role '%s' not granted or does not exist""
+*Cause:    Either the role was not granted to the user, or the role did not exist.
+*Action:   Create the role or grant the role to the user and retry
+           the operation.
+
+I have played about with SET ROLE but to no avail and I feel I am going down the wrong path.
+I can only assume that this is down to some limitations with RDS and RDSASMIN?
+It may of course only work with UNIFIED AUDITING?
+We have MIXED MODE in RDS.
+
+Regards
+Stuart"
+AWS Solutions	"Serverless Image Handler - Setting subfolder as root
+Hi i got the Serverless Image Handler up and running, all good.
+I pointed it to my already existing bucket ""MyBucket"", and i can do image rescaling and stuff when placing images into that bucket.
+However we have all our images in a subfolder to that bucket, called ""cloudfront_assets"". 
+So after assigning my CNAME to the new cloudfront distribution, i am stuck with having to reference my images like this: 
+https:<CNAME>/cloudfront_assets/image.jpg
+instead of
+https:<CNAME>/image.jpg
+
+I tried editing the cloudfront disitrbutions origin settings, and set ""Origin Path"" from /image to things like /cloudfront_assets or /image/cloudfront_assets.
+
+It fixed the path issue, so i didnt have to write the ""/cloudfront_assets/"" before the image, but regardless of what i set, the image rescaling stopped working.
+
+What is the correct way to solve my issue? Please help, currently stuck at the moment
+Set the log level to debug in the lambda function in order to see whats happening, but it only says its getting ""access denied"" as far as i can tell
+
+Edited by: znipe on Sep 13, 2018 12:56 AM"
+AWS Solutions	"EC2 Instances and S3 Permission Issues when switching from t2 to t3
+We deploy many EC2 instances every day for short 30 minutes - 2h tasks, and noticed that with very low frequency all t3.* type instances run into issues, where they lose permissions to access S3 with the use of KMS. We simply attach the role to them that has access to specific key in KMS that is used to store data in S3 and Instances are created using predefined AMI (Based on AWS linux 2), that is alway the same. This is fully automated process so and we double checked correct roles and permissions are added and nothing randomly changes on our side, so we assume its amazon side bug.
+
+Thing is if we use t2.* we never run into issues with S3 where AWS SDK API calls (upload, delete object) result in access denied exceptions, but if we use t3.* this happens with some meaningful frequency not always (if the error occurs every single call will fail and there is no way to fix it even if instance is restarted or roles is reattached), but sometimes, which is huge pain, as we need EBS optimized instances that are fairly cheap and t3.* would be perfect if not for that particular issue...
+
+We run all in N.Virginia, could someone from AWS team please have a look at this issue ?
+
+Edited by: asmodat on Sep 11, 2018 6:39 PM"
+AWS Solutions	"Policy stop working - ip rule
+Hi Guys,
+
+Is there any problem with the policies that restrict by IP to access a secretsmanager:GetSecretValue? If the IP restriction is removed, it works fine. 
+
+Also, that policy is attached to an EC2 role that is attached to an EC2 Machine.
+
+The part of the policy below stopped working is
+
+""Condition"": {
+                ""ForAnyValue:IpAddress"": {
+                    ""aws:SourceIp"": https://forums.aws.amazon.com/
+}}
+
+We haven't changed anything into our configuration, also I have checked the server IP and it still the same as it is an EC2 with a reserved IP."
+AWS Solutions	"Re: Policy stop working - ip rule
+Anyone from AWS?"
+AWS Solutions	"Doubts on a complex AWS architecture diagram
+Hi,
+
+I have got a complex AWS architecture diagram with 5 questions at architecture level. There is no confidential data in the diagram. I am desperately looking for an AWS architect who could resolve those 5 questions. If someone agrees to offer help, I can upload the diagram and 5 questions. 
+
+Kindly let me know.
+
+Cheers
+Sudip (network4sudip652@gmail.com)"
+AWS Solutions	"AWS - OpsWorks: Error while adding encrypted root volume in Stack
+Hi Team,
+
+We are receiving below error while registering instance with Encrypted root volume in Opsworks Stack.
+
+==================== ERROR =================================
+https://forums.aws.amazon.com/ ERROR https://forums.aws.amazon.com/: Failed to register instance with args {:stack_id=>""xxx-xxxx-xxxx-xxxx"", :hostname=>""ip-xx-xx-xx-xx"", :public_ip=>""xx.xx.xx.xx"", :private_ip=>""xx.xx.xx.xx"", :rsa_public_key=>""xxxxxxxxxxxxxxxxxxx-----END PUBLIC KEY-----\n"", :rsa_public_key_fingerprint=>""xxxxxxxxxxxxxxxxxxxxxxxx"", :instance_identity=>{:document=>""{\n  \""devpayProductCodes\"" : null,\n  \""marketplaceProductCodes\"" : null,\n  \""privateIp\"" : \""xx.xx.xx.xx\"",\n  \""version\"" : \""2017-09-30\"",\n  \""instanceId\"" : \""i-xxxxxxxxxxxx\"",\n  \""billingProducts\"" : null,\n  \""instanceType\"" : \""t3.medium\"",\n  \""availabilityZone\"" : \""us-east-1c\"",\n  \""kernelId\"" : null,\n  \""ramdiskId\"" : null,\n  \""accountId\"" : \""xxxxxxxxx\"",\n  \""architecture\"" : \""x86_64\"",\n  \""imageId\"" : \""ami-xxxxxxxxx\"",\n  \""pendingTime\"" : \""2018-09-03T04:01:01Z\"",\n  \""region\"" : \""us-east-1\""\n}"", :signature=>""fhHgtIX7rJr0/VrWzBp5f+WqQGiHrWiOFtK2t7truDpkrV15mO6E8pZpXOc8WL/2iXE+0xM7k6wb\nE9FFOkW6/EjCaFfRHjRPsO1ADrlM/Jl/1BhxNNgRH4BwOGM5zPKiQvD4eYRkqQXI9ouFqn33Fpau\nrg/5Z5OQa9b1gzXxSuk=""}}: Aws::OpsWorks::Errors::ValidationException -  - /opt/aws/opsworks/releases/20180717045128_4031-20180717045128/vendor/bundle/ruby/2.2.0/gems/aws-sdk-core-2.2.26/lib/seahorse/client/plugins/raise_response_errors.rb:15:in `call'
+/tmp/opsworks-agent-installer.5EJQlpXigyE1oUIo/opsworks-agent-installer/opsworks-agent/bin/opsworks-agent-registration-installer.rb:8:in `<main>'
+https://forums.aws.amazon.com/ ERROR https://forums.aws.amazon.com/: Failed to write agent configuration file: Aws::OpsWorks::Errors::ValidationException -  - /opt/aws/opsworks/releases/20180717045128_4031-20180717045128/vendor/bundle/ruby/2.2.0/gems/aws-sdk-core-2.2.26/lib/seahorse/client/plugins/raise_response_errors.rb:15:in `call'
+=================Error End ================================
+
+We have allowed the permission for Opsworks Role in Encrypted keys. Let us know if we are missing out any other thing."
+AWS Solutions	"Re: AWS - OpsWorks: Error while adding encrypted root volume in Stack
+Hi rawdfe,
+
+Registering an instance with encrypted root volume in OpsWorks Stack shouldn't cause a problem per se. I have tried to register an instance with encrypted root volume using the Ubuntu 16.04 LTS default AMI, and it was successful.
+
+I followed the steps in the following document: https://docs.aws.amazon.com/opsworks/latest/userguide/registered-instances-register-walkthrough.html
+
+Regarding the error that you are facing, it shows that the OpsWorks agent installer is failing to write agent configuration file in the OS. I would suggest you to check the following:
+
+1- Please make sure that your OS is supported by OpsWorks agent. The supported OS and AMI list is detailed here: https://docs.aws.amazon.com/opsworks/latest/userguide/workinginstances-os-linux.html
+
+2- If you are using your own custom AMI, please make sure that the OS has no issues causing the installation to fail (e.g. no disk space, etc.). 
+
+3- Please try to launch a fresh instance from the AMI and try to register it with the stack, to avoid any previous installations of the agent that can cause conflict.
+
+Regards,
+Ahmad"
+AWS Solutions	"Error on access a website in a Windows EC2 Instance
+Hello,
+
+I have an instance with Windows Server 2016.
+
+I trying to access a website by Chrome or IE as a standard user. This website executes an API call. Every time when i try to use this website i get the error: An error occurs in flight search.
+So, pressing F12 to enter in console, i can see the detailed error:
+Failed to load resource: the server responded with a status of 403 ()
+Failed to load https://flightavailability-prd.smiles.com.br/searchflights?adults=1&children=0&departureDate=2018-09-11&destinationAirportCode=CGH&forceCongener=false&infants=0&memberNumber=&originAirportCode=BSB&returnDate=2018-09-11: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'https://www.smiles.com.br' is therefore not allowed access.
+
+
+I just need to execute a website. Not to developing anything. Just to use the website as a standar user.
+
+I think the problem is relationed with some windows configuration, because the error occurs in Chrome and IE.
+
+I already changed the IE security policies enabling Access data sources across domains, but without success.
+
+Anyone can helpme?
+
+Thanks
+João Mariano
+
+Edited by: joaonun on Sep 11, 2018 2:57 AM"
+AWS Solutions	"Cloudwatch generating access denied logs for private bucket.
+I enabled CloudTrail to monitor all S3 buckets.
+This is a test account, so I only have 1 S3 bucket which is private, accessible only by my canonical ID.
+Yet every few seconds I get a log like this where the HostID is different every time.
+Is there a way to track/resolve these HostIds or what could be causing this?
+
+<Error>
+<Code>AccessDenied</Code>
+<Message>Access Denied</Message>
+<RequestId>DFDABD71532B9522</RequestId>
+<HostId>
+qT47E6Jm5U7ShGl4dEjFttPHD7qaiSRSjH34VOw/yaUUOUbDVaZK7drdR/6jr1cktqx+bXA+PQM=
+</HostId>
+</Error>
+
+Edited by: brogmeister on Sep 9, 2018 11:14 AM"
+AWS Solutions	"Re: Cloudwatch generating access denied logs for private bucket.
+it seems the json link at the bottom of the cloudtrail event is bogus, since all of them come back as access denied. I'm using my console account so there's no reason I should be denied from these links afaik.
+
+eg:
+Link
+https://s3.amazonaws.com/bucket1.xxxxx.com/bobclilog/AWSLogs/nnnnnnnnnn/CloudTrail/us-east-1/2018/09/09/nnnnnnnnnn_CloudTrail_us-east-1_20180909T1830Z_CFEEEEENlJCFRqaK.json.gz"
+AWS Solutions	"Unable to access webserver running on my amazon ec2 instance
+Hi Team,
+
+I'm new to aws. I have created Amazon EC2 windows server instance. I can able to access the server on localhost through remote desktop, but I can't able to access the server outside rmd. I have installed XAMPP on ther server. please help me.
+my instance Id:- i-013456242747d5d60"
+AWS Solutions	"Re: Unable to access webserver running on my amazon ec2 instance
+Hi,
+
+I would watch a video so you can learn how to do this. Here is one I found.
+
+https://www.youtube.com/watch?v=7ElkIRDsrP8 
+
+Also, you can look at the online docs which are helpful.
+
+Just a word of warning. Opening up a instance to be accessible on the internet means you are at risk of sharing data. Just make sure you have the right security in place so you are not exposing sensitive information. Also, do not expose AWS account details such as user keys or instance IDs. 
+
+Good luck
+Oli"
+AWS Solutions	"serverless aws service without lambda limitations
+Hi everyone,
+
+I'm working on a Django application which processes a large amount of data. 
+I'm trying to run a command on the server to process some data and read and write to an s3 bucket, which takes up to an hour to finish. Can I leverage a serverless solution on AWS?
+
+I was thinking of using lambda but I think it times out after 300 seconds. Is there any serverless solution for this?
+
+If not what would you recommend as the best solution?"
+AWS Solutions	"Re: serverless aws service without lambda limitations
+Hi Ali-IT,
+
+Rather than a yes/no I'd say it depends.  Also it sounds like you are looking for a server-like solution (large lumps of data, processed in batches).
+
+Mostly it depends on your maths skills!  Could you break up the large process into many smaller processes?  I wouldn't be happy with anything taking an hour and would want to process every event or record as soon as it was available, meanwhile getting data sent to S3 more often etc.  
+
+Kinesis with a lambda back-end is a classic pattern if your data is coming from a third party, and encourages them to send smaller and faster.
+
+If your data can't be broken up.  For example maybe it's a mega cross-correlation, or compilation, then a large compute server solution is probably for you.  On cloud you'll want to be able to scale up the compute to reduce the 1hr into real-time.  Maybe that's going to be a Redshift or an Spark-like solution.  These are the kinds of technologies that are the current leaders for processing large amounts of data.
+
+I hope that's helpful, perhaps some more information about your data and the processing?
+
+Best regards,
+Stephen"
+AWS Solutions	"Re: serverless aws service without lambda limitations
+Hi,
+
+You can look at step functions, which is a state machine solution which will allow you to call lambda to check on progress and make decisions based on current state. Used a lot for long running processes.
+
+Oli
+
+Edited by: oliaws on Sep 5, 2018 5:31 PM"
+AWS Solutions	"Deleting package tags in AWS Data Lake Solution
+I just created a data lake using the AWS Data Lake Solution CloudFormation template. The first thing I did after creating the lake was to upload a file and tag it. Unfortunately, not knowing how AWS would use the tag, I created a tag that makes no sense, and now I'd like to delete it. I can add new tags and update old ones (by overwriting them), but I can't see any way of deleting a tag. Can some one tell me how I can do that?
+
+Edited by: AndySturt on Sep 4, 2018 4:25 PM
+
+Edited by: AndySturt on Sep 4, 2018 4:25 PM"
+AWS Solutions	"Activate the binlog on an Aurora read replica database instance
+Hi,
+
+In order to stream database data to a third party we've setup a Python script which uses boto3 to stream entries from the Aurora master instance binlog to an S3 bucket. 
+
+We've pretty much followed this guide here:
+https://aws.amazon.com/blogs/database/streaming-changes-in-a-database-with-amazon-kinesis/
+
+We've been running the solution for a couple of months but we've found that the load on the writer database is quite significant. When the script is running and reading the binlog the database CPU utilisation jumps by 20%.
+
+We'd like to run the Python script against the read replica which is generally idle and relieve the stress on the master instance.
+
+There are questions around the approach:
+
+Is it possible to activate the binlog on the Aurora read replica? (despite the param group for the cluster showing as binlog enabled, and this setting being obeyed by the master instance the read replica does not pick this up)
+How can the binlog be enabled on the read replica? (I've read this is possible running MySQL databases in AWS but the setup regards clustering with Aurora seems very different)
+
+
+I'm open to alternative solutions to the problem of streaming database activity or to suggestions on how to reduce the CPU utilisation caused by the Python script reading the binlog."
+AWS Solutions	"Instance Scheduler CLI install on macOS 13.10 hangs at
+TEST PASSED: /Library/Python/2.7/site-packages/ appears to support .pth files
+running bdist_egg
+running egg_info
+writing requirements to scheduler_cli.egg-info/requires.txt
+writing scheduler_cli.egg-info/PKG-INFO
+writing top-level names to scheduler_cli.egg-info/top_level.txt
+writing dependency_links to scheduler_cli.egg-info/dependency_links.txt
+writing entry points to scheduler_cli.egg-info/entry_points.txt
+
+any hints?"
+AWS Solutions	"find HostedZone for RegisterDomain or TransaferDomain action
+What is the best way to find the hostedZone using Javascript API after a Register Domain or Transfer Domain is done?    When a Register or Transfer Domain is done,  is the LinkedService-ServicePrincipal set for the HostedZone?"

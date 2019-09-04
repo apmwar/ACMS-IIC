@@ -1,0 +1,107 @@
+label	description
+Performance Insights	"Performance Insight for Oracle Standard
+Hi all,
+
+I need to activate Performance Insight for a database, but this section is not shown for the database. It's a Oracle Standard Edition Twi db.t2.micro instance. As I found in docs all oracle should be supported. Any suggetions how to enable this feature or did I miss something?
+
+Regards
+Stefan"
+Performance Insights	"Re: Performance Insight for Oracle Standard
+Performance Insights is not supported yet on t2 instance types. 
+
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html
+""Note
+Performance Insights is not supported on db.t2 DB instance classes.""
+
+We do plan to add support for t2 instance types soon.
+
+Kyle"
+Performance Insights	"Re: Performance Insight for Oracle Standard
+:facepalm: Thank you"
+Performance Insights	"Performance Insights now supported in Cloudformation.
+Cloudformation now supports Performance Insights.
+
+EnablePerformanceInsights property is available for the AWS::RDS:DBInstance resource.
+
+Kyle"
+Performance Insights	"Full SQL text now available for Performance Insights on Aurora PostgreSQL
+Today we released full SQL text collection for Performance Insights on Aurora PostgreSQL.
+Previously text was limited to 500 bytes. On the other hand the SQL text collection is still subject to the database parameter value track_activity_query_size which typically defaults to 1024 bytes  but can be increased to 102400 bytes.
+
+Kyle"
+Performance Insights	"Can't enable performance insights on a db.m4.large
+I have a db.m4.large instance that I can't modify to enable performance insights.  It was not an option when a created it (snapshot restore) or when I try to modify via the console or awscli
+
+$ aws rds modify-db-instance --db-instance-identifier xxxxxxxxxxx --enable-performance-insights
+An error occurred (InvalidParameterCombination) when calling the ModifyDBInstance operation: Performance Insights not supported for this configuration, please disable this feature.
+
+It was created via snapshot restore from another db.m4.large instance. The region is eu-west-1
+I get the same error when trying to modify the original instance.
+Any ideas?"
+Performance Insights	"Re: Can't enable performance insights on a db.m4.large
+What database engine and version? 
+Kyle"
+Performance Insights	"Re: Can't enable performance insights on a db.m4.large
+from https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html
+currently supported DB engines for Performance Insights:
+
+Amazon Aurora PostgreSQL
+Amazon Aurora MySQL (Aurora MySQL version 1.17.3 and higher 1.x versions)
+Amazon RDS MySQL (MySQL 5.7 version 5.7.22 and higher)
+Amazon RDS PostgreSQL version 10
+
+Kyle"
+Performance Insights	"Re: Can't enable performance insights on a db.m4.large
+MySQL 5.7.17 
+SO need to upgrade to 5.7.22
+
+Thanks, I didn't spot that.
+
+Edited by: pellis on Sep 25, 2018 12:38 AM"
+Performance Insights	"RDS Performance Insights for MySql
+Hello, 
+
+Maybe I missed something, I thought AWS announced Performance Insights for MySQL 5.7.22 or higher (not Aurora), but I can't seem to enable it on any of my instances.  Is this really publicly available, or did I imagine that?  If so, how do I enable this on an existing instance?"
+Performance Insights	"Re: RDS Performance Insights for MySql
+I think I just found the answer to my problem...
+
+""Performance Insights is not supported on db.t2 DB instance classes.""
+from
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html"
+Performance Insights	"Performance Schema Not enabled error
+In the Performance Insights page at the top we get an error for all 3 our DBs (write and 2 read replicas Aurora 5.6.10a 1.17.4). 
+""The Performance Schema does not seem to be enabled for this database instance. This means Performance Insights will operate in a sub-optimal mode and some important data will be missing. You may need to reboot your database instance to re-enable the Performance Schema.""
+
+We did enable performance schema ahead of the preview of performance insights. SHOW VARIABLES LIKE 'performance_schema'; query on the DB shows performance_schema	ON so I'm not really sure what this error message is referring to. Is there a secondary setting we're missing?"
+Performance Insights	"Re: Performance Schema Not enabled error
+The Performance Schema parameters needed for Performance Insights are documented here:
+
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.Enabling.html#USER_PerfInsights.EnableMySQL
+
+The easiest way to manage Performance Schema for Performance Insights is to leave the Performance Schema parameters to their default which is off and then Performance Insights will automatically manage them. If Performance Schema is already on, then Performance Insights won't managed the Performance Schema parameters.  Whether managed automatically by Performance Insights or managed manually, shouldn't mater to Performance Insights if the right parameters are set. When the right parameters are set Performance Insights shows database load by wait events by default. When the parameters are not set Performance Insights shows database load by SQL by default and if load by  waits is chosen it will show load by ""states""  instead of ""waits"" (most waits have slashes in their name like ""wait/io/file"") . Showing load by waits is much more useful than load by state.  We have found situations where the message warning about the parameters not being set has been incorrect and that is being addressing quickly.
+
+Kyle"
+Performance Insights	"Performance Insights - All RDS types - Mysql and SQL Server
+Hi There,
+
+Is there any future plans or backlog work in relation to having performance insights enabled on all RDS types, in particular mysql and SQL server RDS instances ?
+
+Cheers heaps
+
+Jade"
+Performance Insights	"Re: Performance Insights - All RDS types - Mysql and SQL Server
+Yes, the plan is to roll out Performance Insights on all the RDS databases.
+
+Stay tuned. More announcements should be coming shortly.
+
+Kyle"
+Performance Insights	"I'm runnning one SQL using all CPU, but cloudwatch disagrees
+Cloudwatch says I'm using 6% CPU, but My one SQL statement visible in Performance Insights says it is using 100%."
+Performance Insights	"Re: I'm runnning one SQL using all CPU, but cloudwatch disagrees
+Performance Insights is divided into two sections. The top section shows the load of the database over time. By default that load is grouped by wait events and you can see among the waits, the CPU time demanded by the sessions on the database. This CPU should be the same or smaller than the CPU from Cloudwatch (as Cloudwatch CPU can include processes running outside the database). CPU will be reported in units of Average Active Sessions (AAS) which is different that % CPU. AAS can be converted to %CPU by dividing AAS for CPU by ""Max CPU"" which is the number of vCPU. If my AAS for CPU is 1 and my ""Max CPU"" is 4 (i.e. I have 4 vCPU) then my %CPU is 25%. Visually this is easy to see by seeing that AAS from CPU is about 1/4 of the height of the Max CPU line. 
+
+On the other hand the bottom section of Performance Insights show by default the Top SQL. The bar in top SQL shows the relative load of each SQL. The load bar by default is grouped in to colors which represent the relative time spent on each type of wait. The wait colors correspond to the wait colors in the load chart on top. If the bar looks like it's full, it doesn't mean it's at 100% - it's just showing the relative load of the SQL vs the other SQL.  If that SQL's load bar is all CPU, it's spending 100% of it's time on CPU but it doesn't mean it's using 100% CPU on the host. The % CPU usage on the host can be seen in the Load chart.
+
+Kyle Hailey
+
+a"

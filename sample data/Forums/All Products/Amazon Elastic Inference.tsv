@@ -1,0 +1,5 @@
+label	description
+Amazon Elastic Inference	"pytorch support
+Will pytorch support be offered anytime soon?"
+Amazon Elastic Inference	"Re: pytorch support
+Hello! Yes, we are working on adding support for PyTorch. Are you open to chatting about your preferred way to deploy PyTorch models? If so please email amazon-ei-feedback@amazon.com"

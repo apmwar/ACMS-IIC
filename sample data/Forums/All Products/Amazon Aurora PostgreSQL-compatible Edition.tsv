@@ -1,0 +1,1131 @@
+label	description
+Amazon Aurora PostgreSQL-compatible Edition	"why can't modify gtid-mode on aws rds
+I create an RDS flower guide by 
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/mysql-replication-gtid.html
+
+but in my parameter group, the 'gtid-mode' and 'enforce_gtid_consistency'  modifiable is false, even I copy to my own parameter group, they value can't modify.
+
+How can I solve this problem?"
+Amazon Aurora PostgreSQL-compatible Edition	"Read Only node connection when there is a failure
+I have a Postgres Aurora cluster with an app with a connection to the cluster for ""write"" operations and another connection for ""read"" operations.
+
+Everything works great.
+
+Now, I am curious as to what happens if the ""read"" replica goes down. (planned)  Will the ""read"" connections automatically begin to read from the ""write"" node?
+
+Unfortunately, I am not able to just take it down and see what happens.  Anyone have any insight on this?
+
+Thanks"
+Amazon Aurora PostgreSQL-compatible Edition	"Aurora PostgreSQL performance issue with pgstatindex() and pgstattuple()
+While migrating our large client data from RDS PostgreSQL to RDS Aurora PostgreSQL we found performance issues with pgstatindex() and pgstattuple() on Aurora.  They are running more than 5 times slower.  On some large table indexes, more than 10x slower.
+For example:
+6,503,016 row table:  pgstatindex() for one index takes under 7 Seconds on PostgreSQL but now takes over 38 seconds on Aurora PostgreSQL.  
+15,880,436 row table:  pgstatindex() for one index takes 11 Seconds on PostgreSQL but now takes  87 seconds on Aurora PostgreSQL.  
+I tried using pgstattuple() as a substitute but it actually runs even slower.  
+This is counter intuitive since our PostgreSQL database was using standard SSD (Not provisioned IOPS) and Aurora has far more IOPS available to it.  (These functions are I/O intensive.) The instances sizes are the same.
+
+Naturally, we have multiple indexes and lots of tables larger than the above examples so the total analysis that use to take minutes now runs for hours.
+
+Why we use pgstatindex():
+Due to high update frequency against large tables we monitor the indexes using pgstatindex() automatically at regular intervals to identify when the indexes get too fragmented so we can rebuild the index to keep the database performing well.  
+
+Is there anything on the Aurora road map to address this issue?
+
+Thanks,
+-Rob D."
+Amazon Aurora PostgreSQL-compatible Edition	"Aurora Postgres cluster is constantly restarting
+On the last 2 weeks, our aurora postgresql compatible instance is constantly restarting with no apparent reason"
+Amazon Aurora PostgreSQL-compatible Edition	"How to migrate from Aurora PostgreSQL 9.6.9 to 10.4
+Region : Oregon
+I see PostgreSQL 10.4 DB version in the drop down while creating a new database. But when i modify any existing instance with version 9.6.9, i dont see this option to migrate to 10.4. I dont see any clear documentation around the migration if it requires any steps. Please guide.
+https://forums.aws.amazon.com/servlet/JiveServlet/download/26214/Screen%20Shot%202018-10-21%20at%2012.25.50%20PM.png
+https://forums.aws.amazon.com/servlet/JiveServlet/download/26242/Screen%20Shot%202018-10-21%20at%2012.26.08%20PM.png"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: How to migrate from Aurora PostgreSQL 9.6.9 to 10.4
+We are actively working on major version upgrade for Aurora-PostgreSQL. Meanwhile, pg_dump functionality can be used to upgrade to version 10. We would suggest testing the upgrade on an imported / cloned cluster using pg_dump, and then performing the actual upgrade."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: How to migrate from Aurora PostgreSQL 9.6.9 to 10.4
+Any idea when there will be the option to upgrade major version from 9.6.9 to 10.4 without the workaround that was suggested?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: How to migrate from Aurora PostgreSQL 9.6.9 to 10.4
+I am anxiously awaiting this as well."
+Amazon Aurora PostgreSQL-compatible Edition	"Invoking a Lambda Function from Aurora Postgresql
+Is this a feature in the works?
+
+It has been in the MySQL version for awhile now.
+
+https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.Lambda.html
+
+Thanks"
+Amazon Aurora PostgreSQL-compatible Edition	"Is There a Way to Manually Invoke an Aurora Software Update?
+We recently received an email from AWS indicating that  one of our cluster had pending updates available. I can see the update is listed as 'Upgrade to Aurora PostgreSQL 1.3.1'. 
+
+Can such update be done via 'modify cluster'? All I see is 'DB ENGINE VERSION' in the 'modify cluster/instnace' screen?
+
+Furthermore, my cluster sits at 9.6.9 and I know 9.6.11 is out. However, the 'modify cluster/instance' screen has one entry in the 'db engine version' dropdown box.
+
+I assume this is because I have to update to Aurora 1.3.1 first before I see 9.6.11 listed?
+
+Thanks"
+Amazon Aurora PostgreSQL-compatible Edition	"Enable Performance Insight for existing cluster
+Is it possible to enable performance insight for an existing cluster?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Enable Performance Insight for existing cluster
+Hi,
+
+Yes, you can enable performance insights for each instance in the cluster via the Instance Actions > Modify wizard.
+
+Once in the modify wizard there is a section titled ""Performance Insights"" you can enable or disable Performance Insights from here.
+
+If you are actively troubleshooting I would also recommend enabling Enhanced Monitoring with a 1 second interval as this provides detailed OS level metrics in addition to the Performance Insights and normal Cloudwatch data."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Enable Performance Insight for existing cluster
+How about from cloudformation? Could not find a way to enable insight from cloudformation template."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Enable Performance Insight for existing cluster
+Currently enable/disable of Performance Insights is only available through the console and API calls to create and/or modify an instance. We are working toward providing this ability through CloudFormation as well.
+
+Kyle"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Enable Performance Insight for existing cluster
+Has there been any update on this? We would like to use CF to manage our Performance Insights configuration"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Enable Performance Insight for existing cluster
+Hi Kyle,
+
+We would also like to set performance insights with cloudformation. Is there a time line or bug/featureRequest which I can track?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Enable Performance Insight for existing cluster
+Cloudformation support for Performance Insights has now been released.
+
+Kyle"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Enable Performance Insight for existing cluster
+Thanks a lot!"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Enable Performance Insight for existing cluster
+Hi
+
+I have a instance db.m1.large with MySQL 5.6.34 and i cant find the way to enable performance insight, is this service compatible with my cluster?
+
+Also, i hear performance insights is not compatible con Aurora serverless, is going to be compatible soon?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Enable Performance Insight for existing cluster
+Performance Insights is available for RDS for MySQL 5.6.41 and higher:
+
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html
+
+We are working on adding support for Performance Insights to Aurora Serverless, but we don't have a date to communicate yet.
+
+Thanks for using RDS and Aurora!"
+Amazon Aurora PostgreSQL-compatible Edition	"Support for kmeans and quantile extensions
+Hi,
+Just submitting a request here for AWS to please prioritize adding kmeans and quantile extensions to Aurora PostgreSQL?  These are the only extensions keeping us from migrating to Aurora.
+
+Thanks!
+Salle Ingle"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Support for kmeans and quantile extensions
+Hello,
+
+Thanks for your request. Could you provide your use cases for using those extensions? 
+
+Thanks
+Sridhar"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Support for kmeans and quantile extensions
+Hi Sridhar,
+
+K-Means is a complex algorithm used in data mining and cluster analysis.  We have a postgres/postGIS database of geography points; our application uses the kmeans extension to group, count and analyze geospatial data based on proximity.  
+
+More info in these links and a screenshot of our app to give a better idea below:
+https://en.wikipedia.org/wiki/K-means_clustering
+https://pgxn.org/dist/kmeans/doc/kmeans.html
+https://github.com/umitanuki/kmeans-postgresql"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Support for kmeans and quantile extensions
+There has been no maintenance of kmeans since it was created in 2011, despite an apparently serious bug being reported 5 years ago (https://github.com/umitanuki/kmeans-postgresql/issues/7).  This is the kind of situation that keeps AWS from enabling a larger set of extensions in its managed database offerings.
+
+Someone, and now that AWS has gotten pretty active in open source projects it could be an AWS person, is going to have to take on active maintenance of kmeans if it is going to be enabled in RDS or Aurora PostgreSQL."
+Amazon Aurora PostgreSQL-compatible Edition	"Aurora PostgreSQL breaking sequences (data corruption)
+We've restored our PostgreSQL RDS database snapshot to Aurora and started testing our API with some traffic. Soon, we've ran into errors such as ERROR: duplicate key value violates unique constraint ""custom_activities_id_pkey"" - many unique constraint violations while inserting new records on primary key columns.
+
+First, we've discovered the sequence's last_value is a lower number than max primary key value in many tables. At this point the main suspicion was our fault while using the sequences or broken restore...
+
+But then, while inspecting sequence values we ran into this:
+
+SELECT last_value FROM custom_activities_id_seq;
+Result: 3205664
+ 
+SELECT nextval('custom_activities_id_seq');
+Result: 3205665
+
+
+So far all seems to be OK. Another call for ""last_value"" returns 3205665 which is correct. But... About ~10 mins later I ran a query like this again:
+
+SELECT last_value FROM custom_activities_id_seq;
+Result: 3205664 (WRONG!!!)
+
+
+It seems that after a few minutes no updates to the sequence are visible anymore!
+
+I've replicated this multiple times using the following approach:
+
+SELECT last_value FROM custom_activities_id_seq;
+SELECT nextval('custom_activities_id_seq');
+ 
+Wait for ~10 minutes and execute the two queries above again.
+
+
+It is a cluster with a single Aurora instance (meaning there shouldn't be any replication issues, etc.).
+
+(Copied from https://forums.aws.amazon.com/thread.jspa?threadID=274626, hopefully a correct forum now.)
+
+Edited by: JanJakes on Feb 27, 2018 11:31 PM"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+We've seen the exact same thing! It only seems to happen on tables that are small/infrequently used though.
+
+We submitted a support case to AWS and got this - reposting in case it can help someone else. We're not sold on the explanation:
+
+I understand that you want to know why you have some questioning about why a sequence have different last_value on writer and reader. The sequences are pretty much expected to behave this way on writer vs reader i.e. some instance may be ahead of another and depending on which instance a thread of the application was connected to, the value it received will not be the next highest value (or in the strict order). Knowing this, it is important to design applications so they are resilient to lost sequences and not-in-order sequences. As for testing it with Aurora Postgresql, we ran a quick test and this is what we see:
+
+Writer:
+
+Password: 
+psql (9.5.10, server 9.6.3)
+WARNING: psql major version 9.5, server major version 9.6.
+         Some psql features might not work.
+SSL connection (protocol: TLSv1.2, cipher: DHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+Type ""help"" for help.
+
+master=> create table users (id serial, name text, age int4);
+CREATE TABLE
+master=> \d
+             List of relations
+ Schema |     Name     |   Type   | Owner  
+--------+--------------+----------+--------
+ public | users        | table    | master
+ public | users_id_seq | sequence | master
+(2 rows)
+
+master=> INSERT INTO users (name, age) VALUES ('Alice', 20);
+INSERT 0 1
+master=> INSERT INTO users (name, age) VALUES ('Bob', 30);
+INSERT 0 1
+master=> INSERT INTO users (name, age) VALUES ('Cooper', 40);
+INSERT 0 1
+master=> INSERT INTO users (name, age) VALUES ('Daniel', 50);
+INSERT 0 1
+master=> INSERT INTO users (name, age) VALUES ('Eva', 60);
+INSERT 0 1
+master=> select * from users;
+ id |  name  | age 
+----+--------+-----
+  1 | Alice  |  20
+  2 | Bob    |  30
+  3 | Cooper |  40
+  4 | Daniel |  50
+  5 | Eva    |  60
+(5 rows)
+
+master=> \d users_id_seq;
+        Sequence ""public.users_id_seq""
+    Column     |  Type   |        Value        
+---------------+---------+---------------------
+ sequence_name | name    | users_id_seq
+ last_value    | bigint  | 5
+ start_value   | bigint  | 1
+ increment_by  | bigint  | 1
+ max_value     | bigint  | 9223372036854775807
+ min_value     | bigint  | 1
+ cache_value   | bigint  | 1
+ log_cnt       | bigint  | 28
+ is_cycled     | boolean | f
+ is_called     | boolean | t
+Owned by: public.users.id
+
+master=>
+
+Reader:
+
+psql (9.5.10, server 9.6.3)
+WARNING: psql major version 9.5, server major version 9.6.
+         Some psql features might not work.
+SSL connection (protocol: TLSv1.2, cipher: DHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+Type ""help"" for help.
+
+master=> \d
+             List of relations
+ Schema |     Name     |   Type   | Owner  
+--------+--------------+----------+--------
+ public | users        | table    | master
+ public | users_id_seq | sequence | master
+(2 rows)
+
+master=> select * from users;
+ id |  name  | age 
+----+--------+-----
+  1 | Alice  |  20
+  2 | Bob    |  30
+  3 | Cooper |  40
+  4 | Daniel |  50
+  5 | Eva    |  60
+(5 rows)
+
+master=> \d users_id_seq
+        Sequence ""public.users_id_seq""
+    Column     |  Type   |        Value        
+---------------+---------+---------------------
+ sequence_name | name    | users_id_seq
+ last_value    | bigint  | 33
+ start_value   | bigint  | 1
+ increment_by  | bigint  | 1
+ max_value     | bigint  | 9223372036854775807
+ min_value     | bigint  | 1
+ cache_value   | bigint  | 1
+ log_cnt       | bigint  | 0
+ is_cycled     | boolean | f
+ is_called     | boolean | t
+Owned by: public.users.id
+
+master=> 
+
+Also, I`ve run those queries on my writer and reader:
+
+Writer:
+
+master=> select max(id) from users;
+ max
+   5
+(1 row)
+
+Reader:
+
+master=> select max(id) from users;
+ max
+   5
+(1 row)
+
+As you can see, last_value indeed is different from my writer to my reader, but both instances are in-sync. This an expected behavior on Postgres[1][2].
+
+I hope that information provided in my reply are useful. Please feel free to reach back to us if you have any further questions and we will be happy to help.
+
+References:
+
+[1] https://www.postgresql.org/message-id/CA%2BU5nMLrdpv2oAY6%2BV0nCugwfFg%2BXFucdk1OZGZOgViCb3%2BkKg%40mail.gmail.com
+
+[2] http://www.varlena.com/GeneralBits/130.php"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+Thanks for sharing this. It seems to me that they are responding to something else. Could you share a link to this thread to your support case? We don't have a paid support yet so we are not able to reach them this way. Thanks!"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+JanJakes,
+
+I'm very sorry you're seeing a problem with sequences in Aurora PostgreSQL. Can you PM me so we can drill down into the details?
+
+Thanks,
+
+-Kevin J (PM for Aurora PostgreSQL)"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+I've started running into this problem too.  My sequences seem to have gotten behind and I'm now getting constraint violations on inserts.
+
+On https://wiki.postgresql.org/wiki/Fixing_Sequences, at the bottom of the page there is a script for ""orphaned sequences that aren't owned by any column"".  When I run it, the list includes the sequences that have gotten behind.
+
+It seems that in my DB schema, I didn't set the owner of these sequences to their corresponding columns.  This didn't seem to cause a problem in the past (before I migrated to Aurora).
+
+Not sure if this is an Aurora problem, or something that I had wrong to begin with and just never happened to run into.
+
+Anyway, it's something you may want to look into.
+
+SELECT ns.nspname AS schema_name, seq.relname AS seq_name
+FROM pg_class AS seq
+JOIN pg_namespace ns ON (seq.relnamespace=ns.oid)
+WHERE seq.relkind = 'S'
+  AND NOT EXISTS (SELECT * FROM pg_depend WHERE objid=seq.oid AND deptype='a')
+ORDER BY seq.relname;
+
+
+Edited by: stepan_riha on Mar 19, 2018 9:25 PM
+
+Well. I don't think that sequence ownership is the cause.  I've noticed mismatched sequences on other tables that were properly configured."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+Very interesting development.
+We have planned migration to Aurora of a quite large dataset, and indefinitely delayed it because of this issue.
+
+Could someone from Amazon post an update to this issue, when it will be resolved?
+
+Thanks."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+We migrated a production DB to Aurora in January and have seen this happen on a number of tables.  It happened again today on an infrequently used table.  First time since the migration."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+We get same error error while inserting row in our database table. 
+
+ERROR: duplicate key value violates unique constraint ""enumeration_pk""
+DETAIL: Key (enumeration_id)=(124) already exists.
+
+As you can see as per error enumeration_id 124 already exist in table. Current last value of id in table is 129. It seems Aurora PostgreSQL is not refreshing the sequence number properly. 
+
+We use following sequence to maintain the enumeration_id.
+
+CREATE SEQUENCE public.enumeration_seq
+INCREMENT 1
+START 123
+MINVALUE 1
+MAXVALUE 9223372036854775807
+CACHE 1;
+
+Following is the trigger which calls a procedure before insert in to the enumeration table.
+CREATE TRIGGER insert_enumeration_bi
+BEFORE INSERT
+ON public.enumeration
+FOR EACH ROW
+EXECUTE PROCEDURE public.insert_enumeration();
+
+Function which increments the value by calling the enumeration_seq sequence
+
+CREATE FUNCTION public.insert_enumeration()
+RETURNS trigger
+LANGUAGE 'plpgsql'
+COST 100
+VOLATILE NOT LEAKPROOF
+ROWS 0
+AS $BODY$
+
+BEGIN
+NEW.created_on := current_timestamp;
+IF NEW.valid_from IS NULL THEN
+NEW.valid_from := current_timestamp;
+END IF;
+IF NEW.is_valid IS NULL THEN
+NEW.is_valid := TRUE;
+END IF;
+NEW.enumeration_id=(SELECT nextval('enumeration_seq'));
+RETURN NEW;
+END;
+
+$BODY$;
+
+This used to work on RDS without any issues, but since we have migrated to Aurora we see this error."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+We are seeing the same behavior. It seems to happen on smaller tables, though the evidence is still coming in. Perfectly normal postgres sequences don't appear to advance. They were fine in RDS, but not Aurora.
+
+I'm wondering if anyone has any bright ideas on how to solve this issue.
+
+If we can't get there, it seems like we have no option but to dump the data, then move back to RDS. The answer above about sequence inconsistency being normal is not something we can deal with."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+Some customers have encountered issues where their sequence values regress after migrating from RDS for PostgreSQL to Aurora PostgreSQL. We have implemented a fix which will be available in the next release. 
+
+This problem only occurs when migrating a snapshot from RDS for PostgreSQL to Aurora PostgreSQL. Until the fix is available, there is a manual workaround you can employ to avoid the problem.
+
+To avoid the issue, please follow these steps:
+
+After migrating to Aurora PostgreSQL, before you begin using the database, for each sequence in your database follow these steps:
+Get the current state of the sequence by executing “\d <sequence name>”. For example:
+\d id_seq
+Sequence ""public.id_seq""
+Column | Type | Value
+sequence_name | name | id_seq
+last_value | bigint | 115149
+start_value | bigint | 1
+increment_by | bigint | 1
+max_value | bigint | 9223372036854775807
+min_value | bigint | 1
+cache_value | bigint | 1
+log_cnt | bigint | 32
+is_cycled | boolean | f
+is_called | boolean | t
+
+Note the current last_value. To ensure the sequence doesn't regress in the future, we want to clear the is_called flag by executing “select setval(<sequence name>, <current last_val>, false)”. For example:
+select setval('id_seq', 115149, false);
+
+Examine the sequence again by doing “\d <sequence name>”. For example:
+\d id_seq
+Sequence ""public.id_seq""
+Column | Type | Value
+sequence_name | name | id_seq
+last_value | bigint | 115149
+start_value | bigint | 1
+increment_by | bigint | 1
+max_value | bigint | 9223372036854775807
+min_value | bigint | 1
+cache_value | bigint | 1
+log_cnt | bigint | 0
+is_cycled | boolean | f
+is_called | boolean | f
+
+Notice the last value hasn't changed, but is_called is false and log_cnt is 0. On the next call to nextval() with these changes, Aurora PostgreSQL will write a fresh log record that guarantees the sequence number will not regress.
+
+If you have already run a workload on your migrated snapshot and have encountered duplicate sequence numbers, you can repair the sequence using similar steps. Run a SELECT query on the table using the sequence to find the maximum value used, say maxval. Follow the steps above using maxval+1 as last_value. This will both set the next sequence value to something unique and clear the is_called flag to ensure the change is logged."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+Thanks for the information, that's a great news. Do you have an idea when the fix will be deployed? And will this thread be notified?
+
+Thanks,
+Jan"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+Hi Jan,
+
+  I don't have a release date for the update containing this fix, but I will definitely update this thread with more information as it becomes available."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+This is really bad and this temporary fix should be in the migration instructions. We encountered this on a small and rarely used table, 2 months after migrating and testing that everything was working. Unfortunately that table is used for purchasing so this caused us real cash money."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+We just encountered this two weeks after migrating to Aurora PostgreSQL, and are in the process of running your recommendation.
+
+Any update on a fix for this?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+Hi Max,
+
+We upgraded our Postgres RDS instance to Aurora w/ Postgres for our development environments and have run into this issue. Do you have an update on the patch for this? We are holding off on deploying Aurora to our production environment until we know this is fixed.
+
+Thanks,
+Sam
+
+Edited by: sampurtill on May 23, 2018 12:56 PM"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
++1
+
+We started seeing the problem today, after over a month of migration from RDS.
+
+Planning to run a sequence fix script tomorrow setting the maxval + 1 and the is_called flag to false on every sequence that I have.
+
+Is that correct ?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+Yes, that is the correct remedy for instances that have already encountered this problem.
+
+Note, when we deploy a fix, the change will only affect new migrations from RDS Postgres to Aurora PostgreSQL-compatible Edition.  Any migration that occurs before the fix is in place will still require the specified steps to correct the issue, even if the problem is not detected until after the fix is in place.
+
+We are working hard to test and deploy the fix.  I'll update this thread when it is available."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+It's likely this script could be useful for automatically repairing affected sequences:
+
+https://gist.github.com/SPARTAN563/430e5d0ab444b12cce36c88a14909484"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+The fix for this issue is available in Aurora PostgreSQL 1.2, which is compatible with PostgreSQL 9.6.8.
+
+NOTE:  This fix will prevent the problem from occurring when you migrate a snapshot from RDS PosgreSQL to Aurora PostgreSQL 1.2.  If you have already done the migration and then upgrade to Aurora PostgreSQL 1.2, you may still encounter the problem.
+
+Release notes for Aurora PostgreSQL can be found here:
+
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/AuroraPostgreSQL.Updates.20180305.html#AuroraPostgreSQL.Updates.20180305.12
+View Thread RSS Feed View Thread RSS Feeds"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+We just got this problem. Initially rds postgres production database was migrated to Aurora PostgreSQL 9.6.8 at Jul 19. 
+
+We fixed sequences by running SELECT setval(pg_get_serial_sequence('""table""','id'), coalesce(max(""id""), 1), max(""id"") IS NOT null) FROM ""table"";
+
+Should we reset ""is_called"" to false on all sequences to prevent this problem in future ?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+Problem solved. This link will help with Aurora sequence bug: 
+
+https://gist.github.com/SPARTAN563/430e5d0ab444b12cce36c88a14909484"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL breaking sequences (data corruption)
+This issue is not solved yet. We deployed a database manually from a dump file generated with pg_dump, and this sequence error occurred. 
+
+The workaround works also in this case scenario."
+Amazon Aurora PostgreSQL-compatible Edition	"ERROR:  improper qualified name (too many dotted names):
+Hi
+I have an issue when I try to change the ownership of a function in the database. I get the following error ERROR:  improper qualified name (too many dotted names):  .  Is there a different way than the usual PostgreSQL way of doing this.
+
+postgres=> create function test_me() returns integer as $$ begin return 10; end; $$ language plpgsql;
+CREATE FUNCTION
+postgres=> select test_me();
+ test_me
+      10
+(1 row)
+
+postgres=> alter function test_me() owner to postgres;
+ERROR:  improper qualified name (too many dotted names): 
+
+This happenning on an Aurora compaitble postgres database"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: ERROR:  improper qualified name (too many dotted names):
+I get this when trying to restore a dump of a PG 9.6 database into PG 10."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: ERROR:  improper qualified name (too many dotted names):
+I am also experiencing the same issue.  After doing a pg_dump and pg_restore for the same version Aurora Postgres 10.4 database, I receive the following error for all the functions that try to alter the owner:
+
+ERROR:  improper qualified name (too many dotted names):
+
+Even when I try to explicitly run the alter statement outside of the pg_restore, I get the same error.  Is this a known issue?  Any help would be greatly appreciated."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: ERROR:  improper qualified name (too many dotted names):
+I'm getting this as well, on occasion, when my IDE (JetBrains PyCharm (using the DataGrip plugins)) drops or alters an object.  It's been very difficult to reproduce reliably.
+
+I'm on 10.4 Amazon Aurora."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: ERROR:  improper qualified name (too many dotted names):
+I have just run into this issue attempting a pg_restore from on-prem pg9.5 to Aurora PostgreSQL 10.4.
+
+I'm also seeing this happen with 'ALTER FUNCTION ... OWNER TO ...' statements.
+
+In an attempt to circumvent the errors I attempted adding the --use-set-session-authorization
+ option to pg_restore, but received the following error:
+pg_restore: [archiver] could not set session user to ""appuser1"": ERROR:  permission denied to set session authorization
+
+
+Does anyone have a path forward through or around this issue?
+
+Thanks,
+Todd"
+Amazon Aurora PostgreSQL-compatible Edition	"Aurora Postgress Database Corruption
+Hello!
+
+I'm running Aurora Postgres and noticed that metric Maximum Used Transaction IDs was increasing a lot. Trying to manually vacuum the tables that's was not automatically vacuumed lead me to the following errors:
+
+sql> VACUUM sales.hist_status
+[2019-01-06 15:22:44] [58P01] ERROR: could not access status of transaction 247756185
+[2019-01-06 15:22:44] Detail: CLOG segment 29 does not exist: No such file or directory.
+ 
+sql> VACUUM sales.hist_items
+[2019-01-06 15:22:55] [XX001] ERROR: found xmin 235941673 from before relfrozenxid 256796328
+
+
+Googling these erros points me to database corruption. What should I do?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora Postgress Database Corruption
+We're very sorry you're having problems with your Aurora PostgreSQL instance. Please PM me the details of your instance so we can help resolve your issues.
+
+Thanks."
+Amazon Aurora PostgreSQL-compatible Edition	"How to create user with superuser privileges on Amazon Aurora PostgreSQL
+Hi Team,
+
+I am new to Amazon Aurora PostgreSQL. I would like to perform ""vacuum analyze"" for entire database and also need to take dump of the database with pg_dump utility from EC2 instance. For this activity, we would requires superuser privileges.
+
+Could you please let me know, how to create a user with superuser privileges.
+
+Receiving below message while i tried to execute ""analyze"" for entire database:
+
+WARNING:  skipping ""pg_db_role_setting"" --- only superuser can analyze it
+WARNING:  skipping ""pg_tablespace"" --- only superuser can analyze it
+WARNING:  skipping ""pg_pltemplate"" --- only superuser can analyze it
+WARNING:  skipping ""pg_auth_members"" --- only superuser can analyze it
+WARNING:  skipping ""pg_shdepend"" --- only superuser can analyze it
+WARNING:  skipping ""pg_shdescription"" --- only superuser can analyze it
+
+Thanks in Advance.
+
+Thanks,
+Kumar
+
+Edited by: vmuthukumar on Dec 31, 2018 7:40 AM"
+Amazon Aurora PostgreSQL-compatible Edition	"Replicate Aurora postgres to another region?
+Hi!
+How to replicate online Aurora postgres to another region? The ""DMS"" service does not support Aurora postgres as a source, since it is impossible to set the ""logical_replication"" parameter and also does not support cross-region replicas.
+
+Best regards!"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Replicate Aurora postgres to another region?
+I believe this is in the ""coming soon"" category.  It was talked about at re:Invent, but I haven't seen an actual launch."
+Amazon Aurora PostgreSQL-compatible Edition	"Error [XX000] ERROR: unrecognized privilege: 39
+Re-posting here since I believe this is fixed in the RDS release of 10.5, which has yet to appear for Aurora.
+
+SELECT * FROM information_schema.columns
+generates error https://forums.aws.amazon.com/ ERROR: unrecognized privilege: 39.
+
+The other issue I am seeing (which may or may not be Aurora/10.4-specific) is this:
+ALTER FUNCTION schema.function_name(BIGINT [])
+OWNER TO my_user;
+generates ERROR: improper qualified name (too many dotted names).
+
+Any update on a date for an update would be much appreciated.
+
+Thanks
+
+Nick"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Error [XX000] ERROR: unrecognized privilege: 39
+Unfortunately, we are at December 6th, and I can confirm Aurora for PostgreSQL v10.4 still has the:
+ InternalError: unrecognized privilege: 39
+Error when accessing information_schema.columns.
+
+Is there any estimate when this will be fixed?
+I know it was fixed in RDS PostgreSQL 10.5 which was released quite a while back."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Error [XX000] ERROR: unrecognized privilege: 39
+And Aurora 10.5 is now available"
+Amazon Aurora PostgreSQL-compatible Edition	"password complexity
+Hello everyone,
+
+Is there a way to enforce password complexity?  For example, at least 8 characters with a number.
+
+Thanks!
+Sharon"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: password complexity
+I don't believe this is possible using PostgreSQL's built-in account capability.  However, you can use IAM Authentication (https://forums.aws.amazon.com/ann.jspa?annID=6293) to achieve this.  See https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_passwords_account-policy.html for information on IAM's password policy capabilities."
+Amazon Aurora PostgreSQL-compatible Edition	"Connection timeouts to PostgreSQL RDS instance (broken)
+This is the wrong forum. Moving this question to https://forums.aws.amazon.com/thread.jspa?threadID=294413
+
+Edited by: joneill on Nov 30, 2018 2:27 PM"
+Amazon Aurora PostgreSQL-compatible Edition	"New UI limits change to instance size
+A UI rollout happend today.  With that change appears to be the ability to resize an instance.  It used to be i could select the instance.  Click modify and then change the instance size.  Now the only option in the instance size is the one it already is.  how do i modify the instance size now?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: New UI limits change to instance size
+the CLI will work for the resize until the UI presents the options."
+Amazon Aurora PostgreSQL-compatible Edition	"Slow Connection to AWS Aurora
+Hello,
+
+We have an Aurora database in the same Zone/Region as our Ubuntu EC2 instance.
+
+If the database is idle for a while, then making an initial connection takes about 2 minutes.
+I can not figure out why the connection would take so long.
+We are using :
+mysql  --verbose -u {databaseuser} -p -h {db ip address}
+
+Normally on any other system it would be very quick..
+
+Once this initial connection is made, any connection afterwards are very fast."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Slow Connection to AWS Aurora
+You posted this message to the Aurora PostgreSQL-specific forum, but it appears your question is related to Aurora MySQL; you should re-post to the RDS forum.
+
+Having said that: have you looked at the logs for your Aurora MySQL instance, to see if there are error or diagnostic messages at the time you first try to connect? Is it possible that you are connecting to an Aurora MySQL Serverless configuration in which it has scaled down to zero compute, in which case initial connect times will be longer?"
+Amazon Aurora PostgreSQL-compatible Edition	"Stream changes from Aurora PostgreSQL to S3
+I want to keep a copy of our data in S3 for data analytics, then redshift downstream.  We can do this with Aurora MySql:
+
+Link: https://aws.amazon.com/blogs/database/replicate-data-from-amazon-aurora-to-amazon-s3-with-aws-database-migration-service/
+
+The idea is that I only want to copy over new changes on sync.  Since logical replication is not enabled, how do we do this with Aurora PostgreSQL?
+Link: https://forums.aws.amazon.com/thread.jspa?threadID=291977&tstart=0
+
+If this is not the right direction for what I'm trying to accomplish, can someone point me in the right direction?
+
+Thanks!"
+Amazon Aurora PostgreSQL-compatible Edition	"Storage Billing
+Hello,
+
+I have been doing quite a few processes in my database this month, and my billed storage is around 10TB.  That is about 2x the size of the actual tables and indexes.  Assuming I am no longer using this much storage, what do I need to do to clean up the free space and scale down the storage usage to lower my bill?
+
+My understanding is that storage grows automatically, but does not shrink..
+
+ --Dan"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Storage Billing
+Any thoughts?"
+Amazon Aurora PostgreSQL-compatible Edition	"Mysterious apgcc Schema
+Does anyone have any information on the mysterious new apgcc schema that has appeared in all our Aurora instances? From all my googling it looks like its caused by a Postgres Extension for keeping heap and indexes in sync, does this sound right?
+
+Basically we have exactly the same situation as outlined -> here Link:https://dba.stackexchange.com/questions/222986/what-is-the-apgcc-schema-in-amazon-rds-postgresql"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Mysterious apgcc Schema
+A recent change in the Aurora PostgreSQL infrastructure made some internal schemas visible to customers. The “apgcc” schema is used for internal maintenance, and we are happy to drop it for you if it is causing an issue. We will address this in a future release."
+Amazon Aurora PostgreSQL-compatible Edition	"Instance logs missing after failover to read replica
+Yesterday at 6:20am PT, our Aurora PostgreSQL cluster logged failover from the primary to the read replica.  However, all of the logs from the previous master/primary are missing -- the console and CLI only show logs that post-date the failover.  The read replica logs are in tact, but do not explain the cause for failover.
+
+As a result, we're unable to inspect the logs to examine what caused the failover -- and none of the metrics show anything unusual except a CPU spike at that time.
+
+Any help would be appreciated.  Thank  you.
+
+Version: Aurora PostgreSQL 9.6.9
+Region: us-east-1
+ARN: arn:aws:rds:us-east-1:873922865494:cluster:dco-prod-cluster"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Instance logs missing after failover to read replica
+My apologies for the confusion: when Aurora PostgreSQL does a host replacement, the database logs are lost, as they are currently local to the instance. We will address this in a future release.
+
+PM me if you want to dive deeper on what caused the failover in your cluster."
+Amazon Aurora PostgreSQL-compatible Edition	"What is Aurora Replica lag metric?
+Aurora master and read replica share the same storage according to documentation. So where the lag comes from, and what does this metric mean?"
+Amazon Aurora PostgreSQL-compatible Edition	"Non-default Aurora Tablespace possible?
+Is it actually supported to define tablespaces or do I have to pg_default for all my application data with Aurora? If I want to create a tablespace, what would the LOCATION '' clause be? Do I have to use a special owner for the object?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Non-default Aurora Tablespace possible?
+Tablespaces don’t make any sense in Aurora because there isn’t a file system."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Non-default Aurora Tablespace possible?
+Aurora PostgreSQL spreads all of the data in your instance, in 10GB segments, across an entire Aurora Storage volume, which itself will consist of hundreds or sometimes thousands of storage nodes distributed across three Availability Zones within an AWS Region. You can create tablespaces, but that won't affect where or how your data is distributed, and the Aurora Storage system will automatically rebalance based on local I/O hotspots, to avoid I/O bottlenecks based on access patterns.
+
+There are lots more details available in the various Aurora Deep Dive talks available online - search for ""Aurora deep dive"" - and we will be presenting in various sessions and chalk talks at AWS re:Invent in Las Vegas in a couple of weeks."
+Amazon Aurora PostgreSQL-compatible Edition	"Cannot restore Aurora Snapshot to encrypted
+Summary:
+I created a snapshot of an Aurora Postgresql DB. 
+I go to restore the snapshot and in the process select ""Enable Encryption"" with the default aws/rds KMS key, then submit. 
+The snapshot restores a database that is unencrypted. 
+
+I've done this many times before, so I'm baffled to why it isn't working. 
+Please help."
+Amazon Aurora PostgreSQL-compatible Edition	"Slow initial database connect
+Hey, we have a slow cold-start for our lambdas that request data from a database, sometimes up to 15 seconds. We test the lambdas locally and get around 4 seconds of database connection time, when accessing the database directly. Once started, the same request takes around 100 ms, so something is definitely wrong with the initial db connection.
+
+Database:
+-PostgreSQL 9.6.6
+-db.t2.micro 
+-With VPC
+-CPU utilization ~3 %
+-DB connections 10
+-Free storage space 19150 MB of 20 GB
+-Freeable memory ~480 MB
+-Write IOPS max: 4
+-Read IOPS max: 1
+-General purpose SSD
+-No Multi AZ
+
+Lambda:
+-Size: 3.4 MB
+-C# .NET Core 2.1
+-Memory 1024 MB
+-With VPC
+-Release configuration
+Non AWS dlls: 
+-.NET Core
+-Newtonsoft Json
+-Entity Framework Core
+-Npgsql (EF Core with Postgresql)
+-Our own framework dlls, around 300 KB
+
+We already tweaked the coldstart down from 10 to 6 sec by using more memory on the lambda. A more potent database didn't really change anything either when looking at the connection times.
+
+Any help would be greatly appreciated, 
+
+Sven"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Slow initial database connect
+Hello,
+
+Given your database instance type (t2.micro), I presume you are referring to RDS PostgreSQL, but you have posted this question under Aurora. Given your scenario where you are able to connect quick subsequently, I suspect something to do with the authentication. You may want to check https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ConnectToPostgreSQLInstance.html#USER_ConnectToPostgreSQLInstance.Troubleshooting.
+
+Thanks
+Sridhar"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Slow initial database connect
+Lambda may be ""serverless"" from the perspective of eliminating the need to explicitly manage servers, but behind the scenes it is using the basket of well known technologies to gives you that serverless experience.  A cold start involves numerous very expensive operations including creating a Container on a Server in order to execute your Lambda functions.  That itself takes time, and I see in the Lambda Forum (https://forums.aws.amazon.com/forum.jspa?forumID=186) that a cold-start time of several seconds, including 15 or more, is not unusual.  On top of Lambda's own cold-start time, database connections are extremely expensive relative to ongoing use of a connection.  So in your case you are paying the cost of Lambda firing up the software infrastructure to run your functions as well as the cost of creating the database connection.  Once all this is done then Lambda not only keeps your Container going as long as you execute more functions, or if you don't then until a timeout, but the Container caches the database connection(s) for reuse.  So subsequent function invocations don't pay these startup costs and consequently run quickly.  In other words, you seem to be having a normal cold-start experience.
+
+I'm by no means a Lambda expert, and I suspect you'd get more feedback on Lambda cold-start issues in the Lambda forum.
+
+In terms of connection time standalone being 4 seconds, that does sound excessive.  I don't know how much things like the Entity Framework contribute to that time.  Have you tested connection time from pgAdmin or psql?  Are you also seeing it take that long?
+
+Hal
+
+PS: This is the Aurora PostgreSQL forum, not the RDS PostgreSQL forum.  RDS PostgreSQL questions are best asked in the RDS Forum https://forums.aws.amazon.com/forum.jspa?forumID=60.  There are just more people active there that will have experience with RDS PostgreSQL than there are active participants here.
+
+Edited by: HalTemp on Sep 1, 2018 5:06 AM
+
+Edited by: HalTemp on Sep 1, 2018 5:28 AM
+
+Edited by: HalTemp on Sep 1, 2018 5:39 AM"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Slow initial database connect
+Hey, thank you all for your answers so far. 
+
+1.: Is it possible to move this thread to the RDS Postgres Forum, or do I just recreate the issue there and mark this one as resolved? I haven't seen any button to do so.
+
+2.: The paAdmin-Connect takes around 500 ms, same with other database management tools. The lambda takes up to 4 seconds, so we think something isn't quite right with the way we connect to the database in our lambdas."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Slow initial database connect
+So, we have some more knowledge now and we figured out, that the vpc is the problem: Maybe the Elastic Network Interface (ENI) that is assigned/started up on a lambda coldstart was the problem, but without the lambda having vpc connection configured, the lambda starts up in around 4 to 5 seconds instead of 20, which is more acceptable. 
+The problem was that the RDS database wasn't accessible with the lambdas not also inside that vpc, but we just configured the security group to accept inbound traffic from 0.0.0.0/0 towards the database, so now the lambdas can access the database."
+Amazon Aurora PostgreSQL-compatible Edition	"Aurora Pricing
+Hi,
+I am trying to figure out the pricing for Amazon Aurora but I am not sure I am reading this properly. On this page ""https://aws.amazon.com/rds/aurora/pricing/"", it is mentioned that you pay only for the storage and IOs your Amazon Aurora database consumes and do not need to provision in advance. However, it is also required to specify an instance class which have different storage capacities.  I wanted to know how the instance class storage capacities and the ""pay as you go"" storage work together. For example, if I know that I will need one terabyte of storage, am I required to select the db.r4.16xlarge instance class since it has the largest storage capacity or can I select another instance class if I wanted too?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora Pricing
+With RDS, including Aurora, all database storage is networked and orthogonal to any storage that might be local to the instance (aka ephemeral storage).  So you can have a 1TB (or 8 or 16 or...) database as part of an instance of any size.  In the case of Aurora the ephemeral storage is used for some processing, sorting during index builds is an example. So on occasion you may need to go up an instance size beyond your compute/memory needs in order to have more ephemeral storage available for these temporary operations.  But usually you pick based on your compute/memory needs then only worry about needing more ephemeral storage (and thus a larger instance) in the rare case you start running into problems.."
+Amazon Aurora PostgreSQL-compatible Edition	"Aurora with Informatica
+Hi,
+
+We have a case study where we need to get data from AWS DB- Aurora onto on-premise database and planning to use Informatica PowerCenter or Cloud for the same. Could you please let me know if any driver or connectors are available for the same at the earliest?
+
+Thanks,
+Satish."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora with Informatica
+From Powercenter's perspective Aurora PostgreSQL is just a PostgreSQL database and I'd expect their PostgreSQL support (which I believe is via third-party ODBC drivers, but I'm not sure) to work just fine.  In any case, you are more likely to get a definitive answer by checking with Informatica."
+Amazon Aurora PostgreSQL-compatible Edition	"Aurora Parallel for PostgreSQL Timeline?
+Hello,
+
+I'm excited about the recent announcement of ""Parallel"" implementation for Aurora MySQL, and will directly benefit from it being brought to Aurora PostgreSQL which I am currently using for my database.  Is there a timeline, and is there any way I can be a part of the Aurora Parallel for PostgreSQL preview?  My data is particularly suited to the improvements brought by Parallel, and I'm also working with a client who would like to understand the timeline.
+
+Thank you for all your work on the Aurora PostgreSQL engine, and for your ongoing work in adding the Parallel functionality.
+
+Sincerely,
+Dylan"
+Amazon Aurora PostgreSQL-compatible Edition	"Enabling Logical Replication in Aurora Postgres
+How can we enable logical replication in Aurora Postgres? I am able to do that in RDS Postgres through the parameter rds.logical_replication. This allows to create replication slots in Postgres and with the decoding plugin (wal2json) I can receive any changes made in our database and replicate these changes to other systems like Elastic Search. 
+
+I am trying to do this in Aurora, but it doesn't expose a parameter for enabling logical replication. In addition, the following page shows that wal2json plugin is not supported in Aurora Postgres. 
+https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraPostgreSQL.Compare.html
+
+Edited by: dars on Oct 19, 2018 12:58 PM"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Enabling Logical Replication in Aurora Postgres
+Logical Replication is not currently supported by Aurora PostgreSQL. I'm sure it is on the team's radar, but there is no way to know where it sits on the roadmap."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Enabling Logical Replication in Aurora Postgres
+Thanks @HalTemp.
+
+I will wait to see if someone can provide any insight about how far ahead is this on the roadmap."
+Amazon Aurora PostgreSQL-compatible Edition	"Support for prepared_transactions
+Hello,
+
+in the documentation as well as the PostgreSQL option/parameter sets I dont see a way to configure the number of outstanding prepared transactions with the `max_prepared_transactions ` parameter. Is this feature not supported in RDS or RDS Autora or are their plans to support it? (my application would require support for XA transactions with the `PREPARE TRANSACTION` statement)"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Support for prepared_transactions
+Think I found the answer myself, the option is in the DB Cluster Parameters, not in the instance parameters."
+Amazon Aurora PostgreSQL-compatible Edition	"9.6.6 does not show newer ""DB engine version"" options
+I need to manually upgrade a single 9.6.6 instance to 9.6.8/9 (having ""Auto minor version upgrade = off"").
+
+The only option shown under the ""DB engine version"" dropdown is ""Aurora PostgreSQL (compatible with PostgreSQL 9.6.6)"" i.e. the current version.  I expected to see at least another option for 9.6.8/9 with a prompt to apply immediately.
+
+Does the instance need to be in any particular state to allow minor revision updates?
+
+Edited by: Northrock on Oct 15, 2018 8:35 PM
+
+Edited by: Northrock on Oct 15, 2018 8:44 PM"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: 9.6.6 does not show newer ""DB engine version"" options
+Hi,
+
+Its not possible to have different nodes within the same Aurora cluster to run different engine versions, this is true even for a single node cluster. Therefore you need to select the cluster and modify the engine version for the cluster which will then complete the engine upgrade on all nodes which exist in the cluster. Before you upgrade your production DB cluster, we recommend that you test the upgrade process on a test DB cluster to verify its duration and to validate your applications.
+
+1. Go to https://console.aws.amazon.com/rds/home?region=us-east-1#dbclusters:
+2. Select your cluster or change to the correct region and select your cluster
+3. Select Actions and Modify Cluster
+4. You should see the available engine update in the DB Engine Version drop down box."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: 9.6.6 does not show newer ""DB engine version"" options
+Helpful and appreciated.  Thank you!"
+Amazon Aurora PostgreSQL-compatible Edition	"Does Aurora Postgres support Row Level Security feature ?
+Does Aurora Postgres support Row Level Security feature ?
+
+Row Level Security is available in Postgres 9.5 onwards."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Does Aurora Postgres support Row Level Security feature ?
+Aurora PostgreSQL is compatible with community PostgreSQL and the Row Security Policies which were introduced in PostgreSQL 9.5 should be present in Aurora PostgreSQL.  The CREATE POLICY command should work; are you seeing something unexpected on your database?"
+Amazon Aurora PostgreSQL-compatible Edition	"Non-default Server Encoding?
+I'm just starting out with both PostgreSQL and Aurora. We don't need UTF8 support in our databases; ISO8859-15/LATIN9 would be sufficient.
+
+It doesn't seem possible to change the SERVER_ENCODING cluster parameter. So by default, databases are created with UTF8 encoding. Am I missing something? It looks like I can script the creation of additional databases with non-UTF8 encoding once the instance is already created.
+
+Am I missing something? Do most people just use UTF8?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Non-default Server Encoding?
+Glad to hear that you're kicking the tires on Aurora PostgreSQL!  Please feel free to post all of your questions and issues here - definitely let us know what parts are easy and what parts are confusing. It's really valuable to have constant input from folks who are learning the platform... we've been immersed in it for awhile now, and sometimes we forget which parts aren't intuitive or easy to understand when folks are first trying it out.  
+
+The ""server_encoding"" parameter in all versions of PostgreSQL is a read-only variable intended to report the encoding used in the database that you are connected to.  (Note that PostgreSQL can have multiple databases with different encodings inside the same instance.)  At present, the usual process for using non-UTF8 character sets in RDS PostgreSQL and Aurora PostgreSQL is exactly what you said - use the ""create database"" SQL command after the instance has been created. Note that there are three locale-related properties of databases: the encoding, the collation order and the character classification type.
+
+aurora-10.4 root@db1=> create database db5 encoding='LATIN9' lc_collate='sv_SE.iso885915' lc_ctype='sv_SE.iso885915' template=template0;
+CREATE DATABASE
+Time: 850.496 ms
+
+
+It might also be worth reviewing the PostgreSQL docs on CREATE DATABASE syntax and localization.
+
+https://www.postgresql.org/docs/10/static/sql-createdatabase.html
+https://www.postgresql.org/docs/10/static/charset.html
+
+
+Hope this helps!"
+Amazon Aurora PostgreSQL-compatible Edition	"Materialized View Refresh - ""No space left on device"" Error
+When refreshing a very large materialized view concurrently I receive the following error:
+""could not write to hash-join temporary file: No space left on device""
+
+Is there a limit on Aurora temp space, or is Aurora not expanding available disk space fast enough for these operations?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Materialized View Refresh - ""No space left on device"" Error
+In Aurora PostgreSQL, the amount of temp space is currently fixed based on the instance size. If you need more temp space for a sort or similar operation, consider temporarily scaling to a larger instance size. We are working on making this more flexible and configurable, but I don't have a timeframe for release yet.
+
+Feel free to PM me if you want to get into more specifics on your use case."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Materialized View Refresh - ""No space left on device"" Error
+FYI - at present (October 2018), the cloudwatch metric ""Free Local Storage"" will tell you how much space is available for large operations that spill into the on-disk temp space.
+
+Edited by: jeremy-aws on Oct 12, 2018 8:57 AM"
+Amazon Aurora PostgreSQL-compatible Edition	"Aurora read-replicas and failover
+Hi,
+
+I have some questions as I am trying to understand how the replicas and failover work on Aurora.
+
+There are two databases: mydb_primary and mydb_replica.
+
+Currently mydb_primary is the writer and mydb_replica is the reader. I did a test fail-over  and the mydb_primary became the reader and mydb_replica the writer.
+
+1. As these databases have different URLs, is it our code that has to handle the new requests and redirect to the new writer after the failover or is it AWS that does redirect to the writer by default?
+
+2. Is it possible to get a notification every time there is a failover?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora read-replicas and failover
+1. When there is a failover in Aurora (MySQL or PostgreSQL), the DNS name for the primary should not change - it should be re-mapped to the IP address of the new primary, which in your case was the mydb_replica instance. Did that not happen when you did the failover?
+
+2. You can subscribe to various events related to your instances using RDS Event Notification: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html
+
+Note that Aurora is part of RDS.
+
+Thanks for using Aurora PostgreSQL!
+
+-KJ"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora read-replicas and failover
+1. Yesterday we found that the primary had become the replica. Probably there was a network failure, which is OK as this might happen.However, the new primary was still a reader and all write requests were denied thus causing some issues to our app. I had to do a manual failover to go back to the initial primary and then everything worked fine.
+
+Am I missing something? Can this be because of wrong configuration on our side.
+
+Just to say, that in our code (Python-Django) we pass the DNS of the database (something like <dbname>.cyydgigoebba.eu-west-1.rds.amazonaws.com) the <dbname> and username/password."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora read-replicas and failover
+Based on the example URL your gave, it looks like you are using the DB instance URLs and not the cluster URLs. You should be using the cluster URLs.
+Your R/W URL should look something like:
+          <dbname>.cluster-cyydgigoebba.eu-west-1.rds.amazonaws.com
+and your R/O URL should look something like:
+          <dbname>.cluster-ro-cyydgigoebba.eu-west-1.rds.amazonaws.com
+
+These are the URLs that have their DNS resolutions re-mapped when a failover happens.
+
+Please implement this change a let us know how it goes."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora read-replicas and failover
+Hello, 
+
+Our Aurora instance failed over today.
+
+There was no spikes in the monitor.
+
+1. Could you find out the reason why?
+
+ARN
+arn:aws:rds:ap-northeast-2:119631385704:db:aurorainstance"
+Amazon Aurora PostgreSQL-compatible Edition	"Aurora Postgres IAM Authentication
+I see it's here for RDS instances.  It appears not to be for Aurora.  Is it coming?
+https://forums.aws.amazon.com/ann.jspa?annID=6166"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora Postgres IAM Authentication
+According to a comment in the RDS forum, it is coming soon."
+Amazon Aurora PostgreSQL-compatible Edition	"Is there going to be a supported way to upgrade from 9.6.9 to 10.4?
+Thanks!"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Is there going to be a supported way to upgrade from 9.6.9 to 10.4?
+I have the same question..."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Is there going to be a supported way to upgrade from 9.6.9 to 10.4?
+We are working on adding support for Major Version Upgrade in Aurora PostgreSQL, to make it easier for you to move from Aurora PostgreSQL 9.6 to Aurora PostgreSQL 10. We don't have a date we can communicate as of yet, but stay tuned."
+Amazon Aurora PostgreSQL-compatible Edition	"Aurora PostgreSQL under the hood?
+Hi,
+
+I'm completely new to AWS and its services.
+At the moment, we're evaluation the possibilities of RDBMS in AWS and of course we came across Aurora PostgreSQL.
+I had a brief look what's Aurora PostgreSQL is about and i think i understood the key concept of separating the logging and storage  to a new component (more or less independent of the actual transaction processing?).
+What I'm still wondering is the question, if Aurora implements a completely new RDBMS which is just capable of understanding / executing PostgreSQL-like SQL and so on or if it's a 'rewritten' or customized plain PostgreSQL.
+Can someone explain this to me, or point me to a place where i can read more about it? After a first brief search i did not find anything.
+
+Background of why we want to know this, is because we're also evaluating possibilities of switching back from AWS or switching within AWS between different databases, i.e. from Aurora PostgreSQL to a plain PostgreSQL."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora PostgreSQL under the hood?
+Amazon Aurora with PostgreSQL compatibility - Aurora PostgreSQL for short - is implemented by starting with the PostgreSQL open source code, and integrating it with the Aurora Storage system. This requires changes to how the code interacts with storage, of course, but leaves the rest of the code unchanged for the most part. This means that Aurora PostgreSQL is running community PostgreSQL code for the query optimizer, data types, transactions, concurrency control, etc, and we plan to maintain full compatibility with standard PostgreSQL for the foreseeable future.
+
+For a lot more detail on how Amazon Aurora works, check out this deep dive from re:Invent 2017:
+
+https://youtu.be/nd_BT_H-vsM
+
+
+Kevin J, Principal Product Manager for Aurora PostgreSQL"
+Amazon Aurora PostgreSQL-compatible Edition	"Change Data Capture in Aurora Postgres to multiple AZ
+Hi All,
+
+How to create a CDC data replication on the various availability zones in Aurora Postgres and RDS.
+
+Is there any roadmap to create **logical replication** in future version of Aurora Postgresql. Any other options to perform CDC on S3 from Aurora Postgres or RDS.
+
+Regards"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Change Data Capture in Aurora Postgres to multiple AZ
+Aurora PostgreSQL does not yet support outbound replication. We are working on adding support for outbound replication in the form of standard PostgreSQL replication slots. Note that RDS for PostgreSQL currently supports outbound replication with PostgreSQL replication slots and three logical decoders: test_decoder, wal2json, and decoder_raw."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Change Data Capture in Aurora Postgres to multiple AZ
+Hi Kevin,
+
+We are currently working on a production project and we have timeline for 6 months. For outbound replication in Aurora is planned within 6 months? So that we can leverage that for data streaming at S3.
+
+Regards"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Change Data Capture in Aurora Postgres to multiple AZ
+When you say ""data streaming at S3"", do you want to stream changes from your Aurora PostgreSQL instances to an S3 bucket? What's the use case from there, and what format(s) do you need the data to be transformed to?"
+Amazon Aurora PostgreSQL-compatible Edition	"Aurora Serverless metrics and logging.
+Hi,
+
+Good day.
+
+I'm testing aurora serverless on our test workloads. Currently it has never scaled down to 0 ACUs. There seems to always be one connection. Even though our test workloads are not in use. 
+
+I've checked the events in the console, and there have been no events. The graph shows that there's one connection though. How would I go about debugging what that connection is? Is there a way to turn on query logging maybe?
+
+Also, I've logged onto the server, and then I see the metrics show that there are 2 connections. But when I check what queries are running with ""SHOW FULL PROCESSLIST;"" I only get my own details back.
+
+Regards.
+JJ
+
+Edited by: jarrettj on Sep 18, 2018 4:05 PM"
+Amazon Aurora PostgreSQL-compatible Edition	"Required upgrade of Aurora Postgres 9.6.3 and 9.6.6 to 9.6.8
+We have got an email from AWS informing us for automatic upgrade will be scheduled during the maintenance window for all our Aurora Postgres instances from 9.6.3 to 9.6.8 after 11th of September, I don't find my instances marked for upgrade in the console during the maintenance window, so I'm not sure if the upgrade will be done during the next maintenance window, we need to know in order to announce our clients for a possible down time.
+
+Is there a way to know on which maintenance window exactly the upgrade will take place?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Required upgrade of Aurora Postgres 9.6.3 and 9.6.6 to 9.6.8
+The notification you received was related to any instances for which you have enabled automatic minor version upgrade. If you want to fully control when your instances are upgraded, you should disable automatic minor version upgrade, either in the RDS console or through the RDS API, and then manually invoke upgrades for each instance when you are ready. Sorry for the confusion.
+
+-KJ"
+Amazon Aurora PostgreSQL-compatible Edition	"Aurora with PostgreSQL Supports Version 10 - Timeline
+Is it safe to say Aurora with PostgreSQL will eventually support Postgresql version 10?
+
+If so, when should we expect something like this to be released?
+
+---
+
+The key feature I'm interested in is  Full Text Search support for JSONB https://wiki.postgresql.org/wiki/New_in_postgres_10#Full_Text_Search_support_for_JSON_and_JSONB 
+
+Thanks!
+
+Edited by: quang on Jun 8, 2018 3:12 PM"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora with PostgreSQL Supports Version 10 - Timeline
+Hello,
+
+We are actively working on adding PostgreSQL 10 support with Aurora; we don't have any dates to share yet.
+
+thanks
+Sridhar"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora with PostgreSQL Supports Version 10 - Timeline
+Thanks Sridhar!"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora with PostgreSQL Supports Version 10 - Timeline
+Personally, i would rather have some of the bugs fixed that i reported and native export to s3 than version 10 compatibility.
+
+Edited by: dnhlms on Jun 9, 2018 10:24 AM"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora with PostgreSQL Supports Version 10 - Timeline
+We are working hard to release a new version which addresses multiple bugs reported by customers as well as bugs we have found in our internal testing. Which bugs did you report?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora with PostgreSQL Supports Version 10 - Timeline
+It is detailed in case 4732706901.  It was related to incorrect query results when parallelism is used.
+
+Thanks for responding."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora with PostgreSQL Supports Version 10 - Timeline
+Another vote here for PostgreSQL 10.
+
+Version 11 is just about to be released.  9.x is really old. I want to use Aurora, but my DBAs are complaining about this!"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora with PostgreSQL Supports Version 10 - Timeline
++1 for postgres 10
+
+Keen to use:
+https://wiki.postgresql.org/wiki/New_in_postgres_10#Crash_Safe.2C_Replicable_Hash_Indexes
+https://wiki.postgresql.org/wiki/New_in_postgres_10#Native_Partitioning"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Aurora with PostgreSQL Supports Version 10 - Timeline
+Although there hasn’t yet been an announcement, if you look at the version selector for creating an Aurora PostgreSQL instance in US-West-2 you see PostgreSQL 10.4 as an option. So I would expect deployments to other regions that have Aurora PostgreSQL to complete,  and there to be a formal launch,  in the next few days."
+Amazon Aurora PostgreSQL-compatible Edition	"Read replica rebooting at random - storage runtime process crash
+Hello there, 
+
+We seem to be having an issue with our read replica running into some form of replication errors a couple of times over the past 24 hours. Our read replica instance restarted last night at 21:55:57 GMT+1 and today at 13:04:29 GMT+1, and after looking in the logs we discovered the following:
+
+2018-09-04 12:04:23 UTC::@:[17174]:LOG:  aurora wal replay process (PID 17234) was terminated by signal 6: Aborted
+2018-09-04 12:04:23 UTC::@:[17174]:LOG:  terminating any other active server processes
+2018-09-04 12:04:23 UTC::@:[17174]:FATAL:  Can't handle storage runtime process crash
+2018-09-04 12:04:23 UTC::@:[17174]:LOG:  database system is shut down
+
+
+The instance is nowhere near heavily utilized, as it's usually a simple select-where-style query a couple of times an hour, which returns results in under 100ms, . We tested this instance with some heavy production-style load testing a few days before and it handled it absolutely fine, dealing with 90 requests per second with minimal difficulty, and no signs of instability. During the times that the instance rebooted, it doesn't look like there were any queries actually running against the database whatsoever. The writer database wasn't going under any significant load at the time either, with just the usual sorts of queries that our webserver usually carries out, and doesn't seem to exhibit this same issue at all. 
+
+Any ideas why this might be the case? We haven't been able to replicate it and aside from the above log entries, we can't see anything else untoward with our instance. 
+
+Thank you, 
+Alex Sumner"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Read replica rebooting at random - storage runtime process crash
+I'm having the exact same problem while creating a read replica of a RDS PostgreSQL 9.6.9 instance in Aurora PostgreSQL. In addition, I'm getting a long stream of the following log entries:
+
+[AWS_OSCAR_INFO][PROGRESS_INDICATOR VOLUME_OPEN: VMC is now Describing Protection Groups.]"
+Amazon Aurora PostgreSQL-compatible Edition	"Postgres: Create Aurora read replica from RDS
+Hello:
+I am trying to create an aurora read replica from a PostgreSQL RDS instance, but the created instance is in 'incompatible-restore' state. 
+Instance resource id is db-LD5WES5WXYD75KHKWB7R4XHULE
+The source instance is currently receiving data via DMS tasks.
+thanks
+
+Edited by: Javier14 on Aug 21, 2018 4:35 AM"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Postgres: Create Aurora read replica from RDS
+Hello,
+
+Looks like you have an hash index in your master RDS PostgreSQL instance. We do not support hash index replication for Aurora PostgreSQL 9.6. You should be able to see an event on cluster level for this error. The restriction will be removed with PostgreSQL 10.
+
+Thanks
+Sridhar"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Postgres: Create Aurora read replica from RDS
+That really fixed it. Thank you for your response, Sridhar. Once we changed the index to btree our test worked flawlessly."
+Amazon Aurora PostgreSQL-compatible Edition	"UNLOGGED table performance
+Does anyone have experience in the write performance of an UNLOGGED Aurora table compared to a LOGGED one?  I am putting 150million rows in nightly and was hoping for a performance gain without the WAL activity.
+
+Has anyone else tried this and seen a decent gain or IO reduction and therefore cost?"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: UNLOGGED table performance
+Hello,
+
+UNLOGGED is a no-op in Aurora PostgreSQL - as we only write WAL records to the Aurora storage.
+
+thanks
+Sridhar"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: UNLOGGED table performance
+To clarify: specifying UNLOGGED for a table in Aurora PostgreSQL won't change the performance or behavior of the system. This is because Aurora PostgreSQL only writes log/WAL records to storage, so the only way to get a table into the database is by writing WAL records."
+Amazon Aurora PostgreSQL-compatible Edition	"Sporadic slow connections to DB
+Our application is logging occasional slow responses which, according to our NewRelic monitoring, trace back to the method that connects to the database. Most of the time that method runs in a few milliseconds, but it occasionally takes several seconds up to tens of seconds. These connections are done using PHP's PDO::__construct(), and that is the only interaction the method in question has with the database. (The rest of that method is just a few lines to determine which parameters to use for the connection.) The occasional slow connections can happen on both the master and on the read replica.
+
+Any ""gotchas"" I should consider? Should I be using the persistent connection option in PDO? (I hear many horror stories about that, though seemingly usually MySQL-related?) Should I consider adding some sort of DB connection-pooler between our app and Aurora? Other...?
+
+PS: From some testing I've tried, I'm beginning to wonder if the delays are somewhere in the PHP PDO code. I tried adding the PDO::ATTR_TIMEOUT parameter with a short time, but no effect. Then I tried adding `ini_set(""default_socket_timeout"", 1);` before the instantiation, per another forum's suggestion, and similarly no effect: still got occasional 4 or more second delays to instantiate. 
+
+Edited by: CWReace on Aug 8, 2018 12:20 PM"
+Amazon Aurora PostgreSQL-compatible Edition	"MultiXactId xxxx has not been created yet -- apparent wraparound error
+Hi,
+
+We have created Aurora read replica from our production database, and after promoting it tried to run some queries.
+Unfortunately straight away we hit error ""MultiXactId <some number> has not been created yet -- apparent wraparound"" when selecting from one of the tables.
+
+Is there any solution to this problem?
+
+Original RDS version is Postgresql 9.6.6, Aurora read replica was selected as 9.6.8
+
+Thanks."
+Amazon Aurora PostgreSQL-compatible Edition	"Re: MultiXactId xxxx has not been created yet -- apparent wraparound error
+The same upgrade to version 9.6.6 (Aurora version 1.1.0) does not have this error.
+
+So this only happens on new Aurora 1.2.0"
+Amazon Aurora PostgreSQL-compatible Edition	"Feature Request : Load directly from S3 to Aurora-postgres
+Hi,
+
+I need to be able to load directly from S3 to Aurora-postgres. 
+This feature is available for mysql, but not for postgresql and would want AWS to add load from S3 feature in psql soon as we need to asap.
+
+Thanks,
+pooja"
+Amazon Aurora PostgreSQL-compatible Edition	"Re: Feature Request : Load directly from S3 to Aurora-postgres
+Plus 1 (or a billion)"

@@ -1,0 +1,763 @@
+label	description
+Amazon Lambda	"Deploy multiple end point in Springboot as Lambda
+Hi ,
+I want to clarify the below when it comes to deploying multiple rest endpoints implemented as a single springboot application.
+ 1.Can we expose all the end points in original spring boot by writing a single lambda function and update all the paths in sam.yaml?Can we add multiple paths to the below snippet under single lambda function for spring boot to expose all end point in sam.yaml?
+
+Resources:
+  PetStoreFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.amazonaws.serverless.sample.springboot.StreamLambdaHandler::handleRequest
+      Runtime: java8
+      CodeUri: target/serverless-spring-boot-example-1.0-SNAPSHOT-lambda-package.zip
+      MemorySize: 1512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 60
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: any
+
+Or do we need to write lambda function per end point and spin off multiple springboot containers or Is ther=ir any way to share a single spring boot container across multiple end points ?
+
+Please clarify
+
+Thanks
+Isuru"
+Amazon Lambda	"Can I trigger a second function on response from an external HTTP service?
+Hi all,
+
+I have a process that uses a black-box system through (slow) HTTP requests. I could make a function that generates the request, and sends it to the server, but idling the task while waiting for the response would be a great waste of time and resources. Instead, it seems to me that it would be better to trigger a second function that processes the result from the HTTP response of that call. Then, no function would be alive during the time of the request (15~60 seconds times very many requests).
+
+Is such a thing possible with AWS Lambda? What would you suggest to do in such a setting?
+
+Edited by: JeroenV on Apr 10, 2019 1:58 AM"
+Amazon Lambda	"Re: Can I trigger a second function on response from an external HTTP service?
+Sounds like you might want to provide the external service with a callback url? That way when it's done doing whatever slow processing it's doing, it can send the results to that url, which can invoke a lambda function.
+
+This is of course assuming the external service has that capability, or you can alter it to have that capability. There isn't really anything available to do the http call for you and invoke a lambda with the results..."
+Amazon Lambda	"Exception thrown when invoking an AWS Lambda from a local Lambda
+Hi
+
+I'm developing a NodeJS Lambda function in VS Code using the Serverless Framework. I'm able to debug it locally in VS Code, but have encountered an issue when I try to invoke another Lambda (which is deployed in AWS) from within the local Lambda. 
+
+I'm using AWS.Lambda.invoke, as shown in the following code snippet.
+
+var AWS = require('aws-sdk');
+AWS.config.region = 'eu-west-1';
+var lambda = new AWS.Lambda();
+...
+return lambda.invoke(params).promise();
+
+
+However, it throws an IncompleteSignatureException, along with the following message:
+
+'/20190411/eu-west-1/lambda/aws4_request' not a valid key=value pair (missing equal-sign) in Authorization header: 'AWS4-HMAC-SHA256 Credential=xxxxx /20190411/eu-west-1/lambda/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-invocation-type;x-amz-log-type, Signature=xxxxxx'
+
+When I deploy the calling Lambda to AWS, the invocation of the second Lambda works fine, so there must be something additional I need to do when invoking it locally. The trouble is, I don't know what that something is.
+
+Note that nowhere in my code am I explicitly setting a Signature or header values. My search for a solution has returned suggestions related to API Gateway and custom authorizers, but there is no API Gateway for the Lambda I'm trying to invoke.
+
+Thanks
+
+Edited by: alanwarren395 on Apr 11, 2019 6:41 AM
+
+Edited by: alanwarren395 on Apr 11, 2019 6:43 AM"
+Amazon Lambda	"Option to set minimum number of 'warm functions'
+A nice to heave feature would be an option on the lambda to set a ""Keep-Warm"" option. The ability to set a minimum number of warmed instances, as well as being able to set a specific schedule (similar to a cron job schedule) all in exchange for some fee. This would help developers not have to write workarounds for services that need a certain level of responsiveness during cold periods. (Think people doing uncommon things late at night)."
+Amazon Lambda	"Re: Option to set minimum number of 'warm functions'
+Hello,
+
+Thank you for the feedback. I will forward this as a feature request to the internal team. However, we will not be able to provide an ETA on when/if this feature will be released.
+
+Kindly, check our products announcement page [1] and AWS Blog [2] periodically for updates. 
+
+[1] https://aws.amazon.com/new/
+[2] https://aws.amazon.com/blogs/aws/"
+Amazon Lambda	"Re: Option to set minimum number of 'warm functions'
+Now that Microsoft has this feature, I'd really like aws to support it as well. Basically cold starts are no longer a concern when you use azure... For anyone curious here is the announcement: https://azure.microsoft.com/en-us/blog/announcing-the-azure-functions-premium-plan-for-enterprise-serverless-workloads/
+
+Please log my vote on this as well! It would make life so much easier by not having to focus every decision around ""how can we reduce cold starts further"" and having to manually warm lambdas (which you need to go through api gateway when you're using xray)."
+Amazon Lambda	"Re: Option to set minimum number of 'warm functions'
+Hello
+
+One can keep your lamdbas warm with this plugin https://github.com/FidelLimited/serverless-plugin-warmup
+
+I use it myself and it works."
+Amazon Lambda	"Can we check how many concurrent lambda currently run?
+Sometimes I want to know how many lambda is still running. To limit concurrent or spawn new one to keep the same amount of parallel
+
+Are there any API to let me know this information?"
+Amazon Lambda	"Re: Can we check how many concurrent lambda currently run?
+There is currently no API to tell you the real time concrete number of concurrent executions, but you can make a fair estimate by using the provided cloudwatch metrics and multiplying the number of invocations (supplied down to the minute) with the average duration of executions (supplied in ms) at a given point in time.  
+
+We are looking into features that will help in this concurrent and throttling area."
+Amazon Lambda	"Re: Can we check how many concurrent lambda currently run?
+Hi cecilia@AWS,
+
+Is there a service or API to do the same yet?"
+Amazon Lambda	"Is possible to change lambda timeout container?
+Hey, I'm trying to avoid cold start in my lambda functions.
+Is there any way to control the container timeout? 
+Can I reserve 1 or 10 containers for a longer period of time? Even if this will be an extra charge.
+
+I just want to know if is anything I can do to control container timeout, besides keeping it warm with schedule requests.
+
+Edited by: jnabais on Mar 20, 2019 3:33 AM"
+Amazon Lambda	"Re: Is possible to change lambda timeout container?
+Hello,
+
+Unfortunately, as of now, it is not possible to control the container timeout and reserve it for a longer time. I see that you are already following the best practices of keeping lambda functions warm using scheduled requests. Thank you for the feedback. I will forward this feature request to the internal team. However, we will not be able to provide an ETA for when/if this feature will be released.
+
+Kindly, check our products announcement page [1] and AWS Blog [2] periodically for updates. 
+
+[1] https://aws.amazon.com/new/
+[2] https://aws.amazon.com/blogs/aws/"
+Amazon Lambda	"Is the permission DetachNetworkInterfaces reasonable?
+If you run an AWS Lambda function in a VPC, does it make sense to add the action DetachNetworkInferace to the IAM role?
+
+We run all of our Lambda function within a VPC. It is my understanding that in this case the function needs an ENI to access VPC resources. To enable this we attach the AWS managed policy AWSLambdaVPCAccessExecutionRole to the functions. While browsing the permission I noticed that the action DetachNetworkInterface is missing.
+
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": [
+                ""logs:CreateLogGroup"",
+                ""logs:CreateLogStream"",
+                ""logs:PutLogEvents"",
+                ""ec2:CreateNetworkInterface"",
+                ""ec2:DescribeNetworkInterfaces"",
+                ""ec2:DeleteNetworkInterface""
+            ],
+            ""Resource"": ""*""
+        }
+    ]
+}
+
+
+How can the container that runs the function delete the ENI if it can't detach the ENI?
+
+This is a bit of deep dive question, but I am just curious about the internals of AWS Lambda."
+Amazon Lambda	"Re: Is the permission DetachNetworkInterfaces reasonable?
+Hello,
+
+AWS Lambda is a managed service, the operations of attaching/detaching the network interfaces are taken care of internally. As this is internal information, we cannot provide much details related to this. However, we need the create and delete permissions because these ENIs are created in your account and would require permissions for the same. 
+
+I hope this answers your query. Please let us know if you have any other queries."
+Amazon Lambda	"Re: Is the permission DetachNetworkInterfaces reasonable?
+Thanks!"
+Amazon Lambda	"Pass Cognito credentials/identity from API Gateway to Lambda (Python 3.6).
+Hi. I have a couple of endpoints in API Gateway configured with a Cognito Authorizer (a Client App in a Cognito User Pool configured with the Client Credentials flow), the endpoints are integrated with a Lambda function (Python 3.6).
+
+I need to know in my Lambda function what's the client app used to perform the API access, but I don't see anything in the context object and my event variable about the Cognito identity.
+
+Any idea? Thank you so much."
+Amazon Lambda	"Re: Pass Cognito credentials/identity from API Gateway to Lambda (Python 3.6).
+Hello,
+
+Amazon Cognito user pool returns different properties in the JSON claims response after the method caller is successfully authenticated. The JSON claims response looks like below:
+
+{
+  ""sub"": ""x-x-x-x-x"",
+  ""aud"": ""xyz"",
+  ""email_verified"": ""true"",
+  ""token_use"": ""id"",
+  ""auth_time"": ""1499671038"",
+  ""iss"": ""https://cognito-idp.us-west-2.amazonaws.com/us-west-2_abcd"",
+  ""cognito:username"": ""user2"",
+  ""exp"": ""Mon Jul 10 08:17:18 UTC 2017"",
+  ""iat"": ""Mon Jul 10 07:17:18 UTC 2017"",
+  ""email"": ""abc@xyz.com""
+}
+
+The $context variable holds all the contextual information of your API call will be used to get these properties from claims response [1]. The “aud” claim here will hold the app client ID. You can add the below in the mapping template of Integration Request:
+
+{
+""context"" : {
+    
+    ""appclient"" : ""$context.authorizer.claims['aud']"" 
+    
+    }
+}
+
+
+I hope this helps. Please let us know if you have any other queries. 
+
+[1] https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-enable-cognito-user-pool.html"
+Amazon Lambda	"Lambda Layers not supported with SAM/CloudFormation in eu-north-1?
+Have a serverless-template with ""AWS::Serverless::LayerVersion"", when trying to deploy in eu-north-1 I get ""FAILED. Reason: Template format error: Unrecognized resource types: https://forums.aws.amazon.com/"" 
+
+When trying in eu-west-1 it deploys OK. 
+
+Bug or just not supported in Stockholm?"
+Amazon Lambda	"Re: Lambda Layers not supported with SAM/CloudFormation in eu-north-1?
+I've noticed the same problem with eu-north-1. Have not been able to find any documentation regarding this. This forum post was the only relevant search result on Google."
+Amazon Lambda	"Re: Lambda Layers not supported with SAM/CloudFormation in eu-north-1?
+I got a message from someone saying that the support for Layers/Serverless in CF is deployed by the Lambda-team (not CF-team), and that latest version hopefully would come soon... I have not tested rcently"
+Amazon Lambda	"CodeBuild Error: UNAUTHORIZED_OPERATION_CREATE_NETWORK_INTERFACE
+Error in codebuild:
+UNAUTHORIZED_OPERATION_CREATE_NETWORK_INTERFACE: The service role is not authorized to perform ec2:CreateNetworkInterface
+
+I am trying to allow my Codebuild config connect to a VPC, but when i allow the connection, i am getting the following error upon build.
+
+UNAUTHORIZED_OPERATION_CREATE_NETWORK_INTERFACE: The service role is not authorized to perform ec2:CreateNetworkInterface
+
+I have already attempted to add the ec2:CreateNetworkInterface to all used roles, but still no luck"
+Amazon Lambda	"Re: CodeBuild Error: UNAUTHORIZED_OPERATION_CREATE_NETWORK_INTERFACE
+I've hit the same problem - did you have any luck sorting it out?
+
+UPDATE: I was using codestar for this and the generated permission boundary on the pipeline role seems to be the issue. Temporarily removing it and adding the EC2 permissions seems to have fixed it for now.
+
+I'll need to narrow down what I need to add to the boundary for it to work but that part is probably specific to my account. Good luck!
+
+Edited by: Buzzologist on Jan 20, 2019 7:05 PM"
+Amazon Lambda	"Re: CodeBuild Error: UNAUTHORIZED_OPERATION_CREATE_NETWORK_INTERFACE
+You have to grant a few different EC2 permissions for it to work.
+
+{
+        ""Effect"": ""Allow"",
+        ""Action"": [
+            ""ec2:CreateNetworkInterface"",
+            ""ec2:DescribeDhcpOptions"",
+            ""ec2:DescribeNetworkInterfaces"",
+            ""ec2:DeleteNetworkInterface"",
+            ""ec2:DescribeSubnets"",
+            ""ec2:DescribeSecurityGroups"",
+            ""ec2:DescribeVpcs""
+        ],
+        ""Resource"": ""*""
+    },
+    {
+        ""Effect"": ""Allow"",
+        ""Action"": [
+            ""ec2:CreateNetworkInterfacePermission""
+        ],
+        ""Resource"": ""arn:aws:ec2:<REGION>:<ACCOUNTNUMBER>:network-interface/*"",
+        ""Condition"": {
+            ""StringEquals"": {
+                ""ec2:Subnet"": [
+                    ""arn:aws:ec2:<REGION>:<ACCOUNTNUMBER>:subnet/subnet-<ID>""
+                ],
+                ""ec2:AuthorizedService"": ""codebuild.amazonaws.com""
+            }
+        }
+    }
+
+
+The permission section is only need if you want to restrict code build to only using a specific subnet.  It can be removed if you don't want that restriction."
+Amazon Lambda	"Sending Webpush notification through Lambda
+Hi,
+
+I am developing a progressive web app(PWA) and as part of that I am trying to send web push notification to clients.
+The setup is upon certain actions by client, a message containing subscription and payload information is stored in SQS and whenever a message is pushed to SQS, a lambda is triggered. The lambda is used to send the push notification to the clients using the nodejs web-push library. 
+However, what I see is lambda is successfully invoked and able to read the message from SQS, but it does not deliver the web push notification.
+
+The code does not log ""Succeeded"" or any error details. It directly logs ""Everything done.""
+
+Let me know what I am doing wrong.
+
+Here is the lambda code:
+const webpush = require('web-push');
+ 
+exports.handler = async function(event, context) {
+    var publicVapidKey=""A_public_vapid_key""
+    var privateVapidKey=""A_pprivate_vapid_key""
+    var supportEmail=""our@email.address""
+ 
+    // Replace with your email
+    webpush.setVapidDetails(`mailto:${supportEmail}`, publicVapidKey, privateVapidKey);
+ 
+    console.log(event);
+ 
+    event.Records.forEach(record => {
+      console.log(record);
+        console.log(""Body:"", JSON.parse(record.body));
+        const body = JSON.parse(record.body);
+        const subscription = body.subscription;
+        const requestPayload = body.payload;
+ 
+        const payload = JSON.stringify({
+            title: requestPayload.title,
+            content: requestPayload.content,
+            openUrl: requestPayload.url
+        });
+        
+        webpush.sendNotification(subscription, payload)
+            .then(() => {
+                console.log('\nNotification pushed successfully:', record.MessageId);
+                context.done(""Succeeded."")
+                //deleteMessage(element, queueUrl)
+            })
+            .catch(error => {
+                console.error(`\nError in sending notification: ${error}- ${error.stack}`);
+                context.fail(error);
+            });
+ 
+        console.log(""Everything Done."")
+    });
+    
+    return {};
+  };
+
+
+Edited by: ashishsheth on Apr 5, 2019 9:59 PM"
+Amazon Lambda	"Code Storage -  Does it reuse a deployment package?
+Hello,
+
+I have several functions using same deployment package, like this:
+
+...
+    ""DeleteDashuserLambdaFunction"": {
+      ""Type"": ""AWS::Lambda::Function"",
+      ""Properties"": {
+        ""Code"": {
+          ""S3Bucket"": ""dev.eu-west-1.serverless.deploys.em.com"",
+          ""S3Key"": ""serverless/user-service-ts/dev/1554451324595-2019-04-05T08:02:04.595Z/user-service-ts.zip""
+        },
+...
+    ""InviteDashuserLambdaFunction"": {
+      ""Type"": ""AWS::Lambda::Function"",
+      ""Properties"": {
+        ""Code"": {
+          ""S3Bucket"": ""dev.eu-west-1.serverless.deploys.em.com"",
+          ""S3Key"": ""serverless/user-service-ts/dev/1554451324595-2019-04-05T08:02:04.595Z/user-service-ts.zip""
+        },
+...
+
+
+Will the lambda reuse the deployment package? What's more effective from the code storage perspective: use one zip (say 10MB) for several functions or split into smaller zips (10 packages 5 MB each)?"
+Amazon Lambda	"Lambda javascript API missing functions
+I am trying to setup a Lambda to call cloudWatch.getMetricWidgetImage({...}) but the api is returning a not found error. If I test locally with the npm api version then it works, but it appears that api included with Lambda does not include this function.
+
+{""errorMessage"":""cloudWatch.getMetricWidgetImage is not a function"",""errorType"":""TypeError"",""stackTrace"":[""exports.handler (/var/task/index.js:9:39)""]}
+
+
+Below is my code, the console.log is there to test whether the property existed and to check if some of the other functions existed. that call below just returns undefined:
+
+const AWS = require('aws-sdk'); 
+const cloudWatch = new AWS.CloudWatch();
+ 
+exports.handler = async (event) => {
+    const params = {
+        MetricWidget: JSON.stringify(event)
+    };
+    console.log(new AWS.CloudWatch().getMetricWidgetImage);
+    const response = await cloudWatch.getMetricWidgetImage(params).promise();
+    return response.MetricWidgetImage;
+};"
+Amazon Lambda	"Expired Token
+Occasionally,  my lambda calls will get errors for a few minutes that look like this:
+
+[ExpiredToken: The provided token has expired.] message: 'The provided token has expired.', code: 'ExpiredToken', time: Mon Jan 19 2015 00:32:14 GMT-0800 (PST), statusCode: 400, retryable: true }
+
+
+This seems to be coming from the my attempt to upload to S3.  My role has that ability and it works most of the time."
+Amazon Lambda	"Re: Expired Token
+Thanks for reporting this issue, Jeremymcjunkin. We are working on a fix and will update this thread when it has been pushed."
+Amazon Lambda	"Re: Expired Token
+Agreed, thanks Jeremy.
+
+Bradley -- is there any update from the AWS side on this? We're also seeing this issue frequently and are hoping to fix soon.
+
+Thanks,
+
+Ryan"
+Amazon Lambda	"Re: Expired Token
+We've deployed a change that should fix the issue. Please let us know if you are still seeing this happen."
+Amazon Lambda	"Re: Expired Token
+I just received a similar error.  Is this an issue on the Lambda side or something I'm doing wrong?
+
+2015-07-16T04:35:22.871Z	11a7f9e9-2b74-11e5-8c00-475603917ab3	{""errorMessage"":""The security token included in the request is invalid."",""errorType"":""UnrecognizedClientException"",""stackTrace"":[""Request.extractError (/var/runtime/node_modules/aws-sdk/lib/protocol/json.js:43:27)"",""Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:105:20)"",""Request.emit (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:77:10)"",""Request.emit (/var/runtime/node_modules/aws-sdk/lib/request.js:595:14)"",""Request.transition (/var/runtime/node_modules/aws-sdk/lib/request.js:21:10)"",""AcceptorStateMachine.runTo (/var/runtime/node_modules/aws-sdk/lib/state_machine.js:14:12)"",""/var/runtime/node_modules/aws-sdk/lib/state_machine.js:26:10"",""Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:37:9)"",""Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:597:12)"",""Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:115:18)""]}
+END RequestId: 11a7f9e9-2b74-11e5-8c00-475603917ab3
+
+
+Mitch
+
+Edited by: M. Garnaat on Jul 16, 2015 12:39 AM"
+Amazon Lambda	"Re: Expired Token
+That particular problem seemed to go away over night.  Now I'm getting this:
+
+2015-07-16T14:39:31.785Z	77258836-2bc8-11e5-820b-0f95ad6ce145	{""errorMessage"":""The AWS Access Key Id you provided does not exist in our records."",""errorType"":""InvalidAccessKeyId"",""stackTrace"":[""Request.extractError (/var/runtime/node_modules/aws-sdk/lib/services/s3.js:321:35)"",""Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:105:20)"",""Request.emit (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:77:10)"",""Request.emit (/var/runtime/node_modules/aws-sdk/lib/request.js:595:14)"",""Request.transition (/var/runtime/node_modules/aws-sdk/lib/request.js:21:10)"",""AcceptorStateMachine.runTo (/var/runtime/node_modules/aws-sdk/lib/state_machine.js:14:12)"",""/var/runtime/node_modules/aws-sdk/lib/state_machine.js:26:10"",""Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:37:9)"",""Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:597:12)"",""Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:115:18)""]}
+END RequestId: 77258836-2bc8-11e5-820b-0f95ad6ce145
+
+
+I think the issue is that occasionally I delete my Lambda function and all roles and policies I have created for it and start over again.  This is an easy thing to do with kappa and it's a good test to make sure my configuration is actually working properly.  However, if the role gets deleted, it seems like some STS credentials are being cached somewhere and continue to be used to execute the Lambda function even though they are no longer valid.
+
+Usually waiting an hour clears up the problem although this latest one has lasted more than an hour.  I've been using this basic workflow since Lambda was released and I've never had this problem before so I think something has changed on the AWS side to cause this.
+
+Mitch"
+Amazon Lambda	"Re: Expired Token
+I've been seeing this is my lambda function as well. It's a simple function that reads some data from S3, checks an internet site, and then writes it back. It get this:
+
+{ ExpiredToken: The provided token has expired. message: 'The provided token has expired.', code: 'ExpiredToken', time: Tue Aug 11 2015 21:46:03 GMT+0000 (UTC), statusCode: 400, retryable: true }
+
+It happens infrequently - the lambda function is running every 15 minutes, and this happens once or twice a day. But it has me concerned to use it for more mission critical work."
+Amazon Lambda	"Re: Expired Token
+Has this been resolved? I'm getting this same issue for a java web service running in tomcat 8 EBS, using latest (1.10.50) libs."
+Amazon Lambda	"Re: Expired Token
+I am getting the same issue using the same configuration as corvi42."
+Amazon Lambda	"Re: Expired Token
+Hi, I still get same error 'Token expired' when i try to upload bulk data(like upload of multiple folder nearly each folder of size 20GB and more) from client side to s3. Is this resolved?
+
+ExpiredToken: The provided token has expired. at constructor.extractError (bucket_name/inspections/20180730_DTS4/Run4/Cam3/180730_DTS4_4~F394~C3.jpg""]
+
+Please let me know if the issue could be resolved from client side.
+
+Edited by: Ranjitha on Apr 1, 2019 11:33 PM"
+Amazon Lambda	"How to run python code on AWS lambda with package dependencies >500MB
+The requirement is that I have to trigger a SageMaker endpoint on lambda to get predictions(which is easy) but have to do some extra processing for variable importance using packages such as XGBoost and SHAP.
+
+I am able to hit the endpoint and get variable importance using the SageMaker Jupyter notebook. Now, I want to replicate the same thing on AWS lambda.
+
+1) How to run python code on AWS lambda with package dependencies for Pandas, XGBoost and SHAP (total package size greater than 500MB). The unzipped deployment package size is greater than 250 MB, hence lambda is not allowing to deploy. I even tried using lambda function from Cloud9 and got the same error due to size restrictions. I have also tried lambda layers, but no luck.
+
+2) Is there a way for me to run the code with such big packages on or through lambda bypassing the deployment package size limitation of 250 MB
+
+3) Is there a way to trigger a SageMaker notebook execution through lambda which would do the calculations and return the output back to lambda?
+
+Edited by: Tdoo7 on Apr 1, 2019 2:37 PM"
+Amazon Lambda	"Global Accelerator with Lambda path patterns
+Hi, I have an application load balancer set up and can send requests via the one ALB to 2 different lambda functions based on path patterns. I added a global accelerator and the path patterns don't seem to be recognised when using the global accelerator. Just wondering if this is functionality that should work?
+I tried seeing if I could add additional endpoint groups but can't add a second listener for port 80 which the ALB is listening on. Any ideas appreciated. Thanks!"
+Amazon Lambda	"Re: Global Accelerator with Lambda path patterns
+Hi there,
+
+Yes, this is functionality that should work.  An ALB behind Global Accelerator allows you to route to your Lambda functions based on HTTP request method, HTTP header, path pattern, or query string.  The one ALB condition that would not work as expected is source IP, since Global Accelerator does not yet preserve the source IP.
+
+Are you able to describe any more details of your setup to help us get to the bottom of this?  When you say the path patterns aren't recognized, what exact behavior do you see?
+
+Thanks,
+Harvo"
+Amazon Lambda	"Possible to access the domain/host in Lambda@Edge origin request event?
+All I can see in the origin request L@E event payload is the cloudfront hostname. Is it possible to access the hostname of the HTTP request that triggered the event? As in, if somebody typed in `foobar.example.org` into their browser bar, vs `asdfafagwgag.cloudfront.net`.
+
+I have a wildcard Alternate Domain Name (CNAME), say `*.example.org`, and I need to alter the response based upon the value of requested hostname."
+Amazon Lambda	"Re: Possible to access the domain/host in Lambda@Edge origin request event?
+By default, event.Records[0].cf.request.headers['host'][0]['value'] contains the *.cloudfront.net hostname of the CloudFront distribution, in an origin request event.
+
+If you need access the Host header from the original incoming request in an origin request trigger, you'll want to configure the Cache Behavior to whitelist the Host header for forwarding to the origin server.  Making that change will expose the original host header, here, instead of the CloudFront-assigned distribution hostname."
+Amazon Lambda	"Re: Possible to access the domain/host in Lambda@Edge origin request event?
+Would also really like this feature - the proposed solution doesn't work because `Host` is not one of the 3 headers that can be whitelisted."
+Amazon Lambda	"Re: Possible to access the domain/host in Lambda@Edge origin request event?
+Hi  arkadiyt,
+
+It looks like you are working with S3 origin. 
+
+Could you please share your use case that will be solved if host header is allowed to be whitelisted for S3 origin and available in origin request event?
+
+Thanks,
+Abhishek"
+Amazon Lambda	"Re: Possible to access the domain/host in Lambda@Edge origin request event?
+I want to redirect users from `www.my-website.com` to `my-website.com`. It's possible to do it in the viewer event but I'd prefer the origin event so it can be cached. Right now I work around this by creating a separate distribution for `www.my-website.com`, with an origin request that always redirects. This seems a bit hacky to me and I'd rather have a single distribution for both.
+
+Thanks,"
+Amazon Lambda	"Re: Possible to access the domain/host in Lambda@Edge origin request event?
+Hi arkadiyt,
+
+Thanks for sharing your use case.
+
+As host header whitelisting is not available yet for S3 origin, there are few workarounds possible which will let you keep one distribution. It involves setting up the CloudFront origin as a custom origin instead of S3 origin. Either of below two approaches will work.
+a. Enable S3 static website hosting and configure an S3 bucket as a custom origin in CloudFront - https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html
+b. Create a CNAME record that points to an S3 bucket and use this CNAME as a custom origin in CloudFront. 
+
+But this will not be an option if you are using an origin access identity to restrict access to your S3 bucket - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+
+Thanks,
+Abhishek"
+Amazon Lambda	"Re: Possible to access the domain/host in Lambda@Edge origin request event?
+The primary problem here is that Cloudfront overwrites the host header in the request to the origin host.
+I was able to workaround this by using a combination of viewer-request L@E and origin-request L@E.
+
+In the viewer request L@E copy the host header into another header like x-forwarded-host.
+// viewer-request.js
+exports.handler = (event, context, callback) => {
+  const request = event.Records[0].cf.request
+  request.headers['x-forwarded-host'] = [
+    { key: 'X-Forwarded-Host', value: request.headers.host[0].value }
+  ]
+  return callback(null, request)
+}
+
+
+Configure your cloudfront to whitelist `x-forwarded-host` host header in the behaviour.
+This way the Cloudfront also takes into consideration the `x-forwarded-host` when caching and also passes the header along to the `origin-request lambda`.
+
+So now in your origin-request lambda you can access the `x-forwarded-host` header
+
+// origin-request.js
+exports.handler = (event, context, callback) => {
+  const request = event.Records[0].cf.request;
+  const headers = request.headers;
+  const requestHost = headers['x-forwarded-host'][0].value;
+  console.log(requestHost);
+  callback(null, request);
+}"
+Amazon Lambda	"Re: Possible to access the domain/host in Lambda@Edge origin request event?
+Hi HavaH, 
+
+Cloudfront overwrites the host header in the request to the origin domain name only if host header is not whitelisted in the cache behavior. By whitelisting host header, you can access unmodified host header in the origin-request function.
+
+ - Abhishek"
+Amazon Lambda	"Re: Possible to access the domain/host in Lambda@Edge origin request event?
+I also need this. My use case is that I have a single page react app in my s3 bucket, and 10s of CNames on my cloudfront. I need to whitelist the Host name in the headers to inject opengraph tags into the html depending on which host name was in the request, and otherwise serve content out of the bucket (which is configured to be private and only accessible by the cloudfront). 
+
+The react code could do this per host name in a browser, but not in bots like the facebook crawler.
+
+Edited by: brian-traceme on Mar 27, 2019 3:42 PM"
+Amazon Lambda	"Validate that a given CloudWatch Events ScheduleExpression is valid?
+I'd like to be able to validate the syntax/format of a CloudWatch Events ScheduleExpression (rate and cron) before making the `putRule` API call. Is there a javascript utility/helper/library available for this feature?
+
+Thanks"
+Amazon Lambda	"C# >NET Trouble referencing Core Library
+Hello, so I'm playing with Lambda and the .NET toolkit.  I created the example function that uppercases a string and tested it and all is good.  Now I want to create a library with method to use from my Lambda code.  So, I created a Core library and had a simple static public object with a single public method.  I then added a reference to my library to my lambda project.  All looks good.
+
+HOWEVER, no matter what I've tried I can't seem to reference the public class and method from my lambda project.
+
+I then went and created a simple .NET core console app project, added the same library and have no problem referencing the library.  I compared the lambda project settings to my standalone console app and they both seem to be building with core 2.1.
+
+What is going on?  Being new to Lambda and .NET core it's probably something stupid...
+
+Edited by: GrantS on Mar 26, 2019 10:24 AM"
+Amazon Lambda	"Re: C# >NET Trouble referencing Core Library
+I found that it was an IDE issue.  That is, even though intellisense didn't show the library when I entered ""using ..."" or show class members and so on it still compiled and worked.  I then saved my project and exited and on restart intellisense on the library tags started working."
+Amazon Lambda	"Mounting EFS file systems
+Would you consider the possibility to mount a specific EFS file system within a Lambda function? If not, is there an other way Lambda functions could stream large amount of data to other Lambda functions?
+
+Thanks"
+Amazon Lambda	"Re: Mounting EFS file systems
+Hi Sylvain Perron,
+Thank you for your feedback!
+
+I brought your comments to the attention of the service team so that they can evaluate the request.
+Thank you for your collaboration and help here!"
+Amazon Lambda	"Re: Mounting EFS file systems
+hi Sylvain, currently you will need to use an intermediate store like S3 to transfer large amounts of data. Definitely appreciate the feedback, and we are looking to make this simpler!"
+Amazon Lambda	"Re: Mounting EFS file systems
+Is there any update on this?
+I have a case where I need to download a 5-10GB(or even more) file from S3 and do QC checks using various lambda functions. If I can download the file once in an EFS file system which can be mounted in lambda function, it would save the time(and bandwidth) to download the file in each lambda invocation.
+
+Edited by: shatgupt on Jan 17, 2016 9:39 AM
+Specify that file is to be downloaded from S3"
+Amazon Lambda	"Re: Mounting EFS file systems
+Me too would like to use S3 if it's not because S3 is TOOOO SLOOWWWWW to work with lambda. There are also many functionality missing such as partial update or at least append file. There are many feature I want to request for S3. But then it would be easier just using EFS than waiting your update for S3"
+Amazon Lambda	"Re: Mounting EFS file systems
+Given that the AWS Lambda package size can only be 50MB and /tmp space is only 512MB, Lambdas become unusable for functions which need more disk storage. For example, functions which use precomputed ML model files which can get pretty large, or something like RocksDb. Because of cold start delays and 512 MB limits, copying from S3 is not a viable solution.
+
+For AWS Lambda to be viable to such needs, it is essential to have an ability to attach some kind of larger disk volume. 
+
+We love AWS Lambda and want to see it become more successful. Can anyone from Amazon respond to what the plans are to address these needs?
+
+Edited by: Ayush Gupta on May 11, 2016 9:04 PM"
+Amazon Lambda	"Re: Mounting EFS file systems
++1"
+Amazon Lambda	"Re: Mounting EFS file systems
++1
+And there are more people asking for this over on Hacker News ."
+Amazon Lambda	"Re: Mounting EFS file systems
++1.  We have a few ML computations that would be perfect for lambda, but they use third-party libraries that expect a file-system for grabbing model files.  Even just read-only mounts on lambda would be great."
+Amazon Lambda	"Re: Mounting EFS file systems
++1 Read only efs would be enough for our needs too."
+Amazon Lambda	"Re: Mounting EFS file systems
+Hello,
+
+The feature request has been already logged with the appropriate team. However we do not have any ETA when this feature will be available. Please keep an eye on our blogs to stay updated with the latest news.
+
+Regards,
+Umair A."
+Amazon Lambda	"Re: Mounting EFS file systems
++1
+Lambda and EFS together can be very powerful for ML and web services."
+Amazon Lambda	"Re: Mounting EFS file systems
++1 Essential for access by Lambda to data in EFS in important bioinformatics applications."
+Amazon Lambda	"Re: Mounting EFS file systems
++1
+Hi,
+Any updates on this request  ? We will need this to support persistence of certain stream data for our lambda function. Appreciate your comments.
+
+Thanks,
+-Surya
+
+Edited by: SuryaNittala on May 13, 2017 4:26 AM"
+Amazon Lambda	"Re: Mounting EFS file systems
++1! It will be great with Lambdas working with thousands of small files!"
+Amazon Lambda	"Re: Mounting EFS file systems
++1 !!
+
+Would really love to migrate existing legacy file transfer/handling processes to the lambda server-less world but ample storage is required.   Launching ephemeral ec2 instances for those workloads seems so 2010."
+Amazon Lambda	"Re: Mounting EFS file systems
+Umair
+
+Any update on the ETA for this?
+It's been well over a year, only so long we can keep an eye our on the blogs.
+
+Thanks,
+Damian"
+Amazon Lambda	"Re: Mounting EFS file systems
++1
+
+This would be very helpful for us, since we sometimes cannot process files since they are more than 512MB. Even processing files > 250MB is hard, since we have an input and output file that we both need to store in /tmp."
+Amazon Lambda	"Re: Mounting EFS file systems
++1
+It's great for ML!"
+Amazon Lambda	"Re: Mounting EFS file systems
++1 We are using lambda for image and document processing, but we have stopped developing because of the 512mb temp storage limit, it is just way to low for processing documents."
+Amazon Lambda	"Re: Mounting EFS file systems
++1"
+Amazon Lambda	"Re: Mounting EFS file systems
++1
+
+Lots of use cases where this expands the capabilities of Lambda, but I can understand the challenges in mounting and making the index of a file system available in a short period of time that it could be utilized efficiently within the 5 minute time frame a Lambda function is alloted.
+
+Granted we could use S3 in some cases, many applications want the file stored locally before they make modifications, which means the source and destination file size total needs to be less than 512MB, which is half the problem. The other half is if you re-use the same source file multiple times, one step would be removed if the file was already there on the mounted file system.
+
+For AWS engineers looking into this, I would suggest thinking about the problem with the idea of a specialized version of EFS specifically for use only with Lambda with limited storage sizes say 20GB and/or limits on the number of files/descriptors, say 10,000. I cannot speak for everyone here but our need is primarily to not have to duplicate work in multiple lambda functions (persistent files across all of the Lambda functions in an EFS) as well as provide additional drive space than the 512MB we're allotted today."
+Amazon Lambda	"Re: Mounting EFS file systems
+I have another use case. I am rendering animations using spot instances spun up by a lambda function. Those instances share an EFS setup to render together.
+
+Right now, I am uploading a zip file to s3 which triggers the lambda, and the new servers then pull down the s3 object.
+
+My process would be greatly streamlined if I could drop that zip directly into the EFS via the lambda."
+Amazon Lambda	"Re: Mounting EFS file systems
++1"
+Amazon Lambda	"Re: Mounting EFS file systems
+Year and a half passed and the engineer log is freezed as always"
+Amazon Lambda	"Alias dimension not available
+According to the documentation here:
+https://docs.aws.amazon.com/lambda/latest/dg/monitoring-functions-metrics.html
+we should have access to an Alias dimension when looking at lambda metrics in cloudwatch. Despite seeing all the other dimensions from that doc (including Resource and ExecutedVersion), none of our functions have the Alias dimension attached to them. Is anyone else seeing something similar?"
+Amazon Lambda	"Re: Alias dimension not available
+Bump. This is in us-west-2, for the record."
+Amazon Lambda	"Re: Alias dimension not available
+bump. Is anyone else experiencing something similar to this? It's sort of an issue when we want to get a look at all our dev aliases, for example."
+Amazon Lambda	"Re: Alias dimension not available
+Can anyone from Amazon comment on this? Are the docs wrong. Is there some special way to enable this dimension on cloudwatch?"
+Amazon Lambda	"Re: Alias dimension not available
+Bump."
+Amazon Lambda	"Re: Alias dimension not available
+To update this, I contacted AWS support, and apparently the docs were wrong, there was no such dimension."
+Amazon Lambda	"Lambda - ""Task timed out"" on first 3 or 4 invocations then works
+I've got a collection of Lambda functions serving as a simple CRUD REST API via API Gateway.  If I leave the function idle for awhile, or after I deploy, the first few invocations timeout and just return an ""Internal Server Error"".  It starts working fine after 3 or 4 invocations and then no troubles after that until it goes idle again.  The logs say ""2019-03-25T14:38:56.148Z 3ccc877d-ced0-4ad9-81cc-ccf4e0cea87c Task timed out after 5.01 seconds"".  
+
+Here's one of my lambdas that's exhibiting the behavior:
+  getAccounts : async (event, context, callback) => {
+    context.callbackWaitsForEmptyEventLoop = false
+    const connection = mysql.createConnection(dbConfig)
+ 
+    try {
+      const results = await executeQuery(connection, 'select * from accounts', [])
+      context.succeed({statusCode: 200, headers: responseHeaders, body: JSON.stringify(results)})
+    }
+    catch(err) {
+      console.log('There was an error: ', err)
+      context.fail({statusCode: 400, headers: responseHeaders, body: JSON.stringify(err.errorMessage)})
+    }
+    finally {
+      connection.destroy()
+    }
+  }
+ 
+function executeQuery(conn, query, args){
+  return new Promise((resolve, reject) => {
+    conn.connect(connError => {
+      if(connError){
+        console.log('Connection error: ', JSON.stringify(connError))
+        reject(connError)
+      }else{
+        conn.query(query, args, (err, results) => {
+          if(err){
+            console.log('Query error: ', JSON.stringify(err))
+            reject(err)
+          }else{
+            resolve(results)
+          }
+        })
+      }
+    })
+  })
+
+Edited by: stackwalker on Mar 25, 2019 8:08 AM
+
+Edited by: stackwalker on Mar 25, 2019 8:10 AM"
+Amazon Lambda	"Lambda using extra libaries
+Hello,
+    I am trying to use an extra libary zbar in lambda but im not sure how i would go about packing this up?  normally i would just install it with yum install zbar.  i know i can do binaries but i dont see how to get a repo package?
+
+Thanks"
+Amazon Lambda	"Re: Lambda using extra libaries
+Hello, 
+
+Here are guidelines for building packages for dependencies. You likely need the one for Python.
+http://docs.aws.amazon.com/lambda/latest/dg/deployment-package-v2.html
+
+Hope this helps.
+
+Thanks,
+Vishal"
+Amazon Lambda	"Re: Lambda using extra libaries
+Hi I have been trying hard to get zbar working in my lambda function.
+This is the error I am getting when trying to access the libzbar libray.
+
+Unable to import module 'lambda_function': libzbar.so.0: cannot openshared object file: No such file or directory.
+
+I got libzbar.so.0 from lambda docker image and placed it in bin directory that will be included in my zip package and then in my code I added these two lines to let the lambda know about where to look for the file.
+
+os.environ = os.environ + ':' + os.environ + '/bin'
+os.environ = os.environ + '/bin'
+
+But it is still not working.
+Can anyone help?"
+Amazon Lambda	"Re: Lambda using extra libaries
+Did you ever figure this out, I am also interested."
+Amazon Lambda	"Possible to add a Lambda ""shut down"" callback?
+Hello all, 
+
+I got a reply from @AWSSupport on Twitter, saying I can always post feedback here. 
+
+I'm new here, so bear with me if this was already asked. 
+
+I can imagine the feature I'm about to describe is not that easy to implement, and I believe that there might be a good reason why this wasn't implemented yet. But still, it doesn't hurt to ask 
+
+Would it be possible to (optionally) call the function one last time, once the instance is about to be shut down? 
+
+This would eg. enable us to resolve the already known issue with DB connection management. I'm talking about the case in which you establish a DB connection (eg. to the DocumentDB), and it remains open even though the Lambda instance was shut down. With this new ""callback"" implemented, it would be possible to close the active connection, thus removing the possibility to max out on the number of connections towards the DB. It doesn't have to be a separate callback, a simple param in the context argument of the function would also suffice I believe.
+
+I'm aware of a few alternative approaches, like eg. setting up a single EC2 instance (single point of failure) to manage all connections, but that seems to be a bit unnecessary, or I would say ""serverful"" 
+
+Happy to hear what others think about this feature and also about this specific situation. Correct me if I'm wrong about anything, always glad to learn something new.
+
+Thanks!"
+Amazon Lambda	"Authorizer function not logging to CloudWatch
+Greetings.
+
+Full Disclosure - I am still very new to AWS.
+
+For my first AWS project, I am creating a websocket connection between my website and my DynamoDB table. Inasmuch, I have created the tables, a Websocket API, and the supporting Lambda functions. Everything is working great.
+
+I then added a JS Lamba Authorizer function (Node 8.10), and something peculiar is occurring: Within the function, I am using simple console.log statements to help me debug an Unauthorized condition. When I Test the function, the logs appear in CloudWatch. However, when I attempt to make a connection from my website, no logs appear in CloudWatch.
+
+All my other Lambda functions - $connect, $disconnect, and the routing functions -  all work normally and output their console.log text to CloudWatch. Only the Authorizer function fails to send logs, and yet when I click on the ""Test"" button, the logs are sent.
+
+I was thinking that there might be some log settings on the function itself, but I'm not able to locate anything other than this entry in the Developer:
+
+Allow: logs:CreateLogGroup
+Allow: logs:CreateLogStream
+Allow: logs:DescribeLogGroups
+Allow: logs:DescribeLogStreams
+Allow: logs:PutLogEvents
+Allow: logs:GetLogEvents
+Allow: logs:FilterLogEvents
+
+Other than the global log setting in the Websocket API, I can't figure out why all my APIs except the Authorizer will log to CloudWatch.
+
+Has anyone run into something like this before, and if so, what did you do to fix it? If not, can anyone give me a hint as to where I can look to debug this issue?
+
+Thank you."
+Amazon Lambda	"Re: Authorizer function not logging to CloudWatch
+To answer my own question, the problem was indeed due to the ""Unauthorized"" problem that I mentioned but thought it has nothing to do with it.
+
+When I setup my authorizer, I set a Lambda Event payload for a custom header, and I had neglected to set that header in my browser session. According to the documentation at https://docs.aws.amazon.com/apigateway/latest/developerguide/configure-api-gateway-lambda-authorization-with-console.html, section 9b, the API Gateway will throw a 401 Unauthorized error without even executing the Lambda function. So that was the source of the problem."

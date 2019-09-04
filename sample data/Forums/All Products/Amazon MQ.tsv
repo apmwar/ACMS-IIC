@@ -1,0 +1,1787 @@
+label	description
+Amazon MQ	"CloudWatch does not have Destination (Queue and Topic) Metrics
+I'm trying to retrieve the QueueSize from CloudWatch but can only see Broker level fields. i.e.
+
+All Metrics -> AmazonMQ -> 13 Metrics
+
+(instead of 28 Metrics which is shown in https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-accessing-metrics.html)
+
+Is there any other setting that I need to enable for the Destination (Queue and Topic) Metrics to appear?
+
+Thanks!"
+Amazon MQ	"How to do Content based Routing in Amazon MQ?
+Hi, 
+
+Let's assume, we have three queues, INQueue_Student, OUTQueue_FemaleStudent, OutQueue_MaleStudent on Amazon MQ. Publisher publishes XML body to INQueue_Student and two Consumer's Consumes from OUTQueue_*.  
+
+If Message body has ""<StudentGender>Female</StudentGender>"", then it has to be routed to OUTQueue_FemaleStudent. If it has <StudentGender>Male</StudentGender>"", then it has to be routed to OUTQueue_MaleStudent. 
+
+How can I achieve this routing? 
+
+Thanks,
+Srithi"
+Amazon MQ	"Question about CloudWatch and QueueSize
+I am trying to determine the size of a Queue using CloudWatch. Based on a previous question it sounded like jmx was not supported so the only way to get this information would be to use a jms QueueBrowser and count the messages (seems inefficient) or use the CloudWatch metrics.  I am use the java sdk and I am having some issues understanding how to form the request properly.  I think I should create a GetMetricStatisticsResult like the below, but I am unsure of what to put in for the StartTime, EndTime, statistics, and Period.  Any input would be appreciate.
+
+Also we are using (Active/Passive) is there an elegant way to know which broker is active?
+
+Thank you
+
+Sample Request:
+
+GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
+	.withNamespace(""AWS/AmazonMQ"")
+	.withStartTime(new Date(new Date().getTime() - durationMillis))
+	.withMetricName(""QueueSize"")
+	.withPeriod(durationSeconds)
+	.withStatistics(""Minimum"", ""Maximum"", ""Average"", ""Sum"")
+	.withDimensions(new Dimension().withName(""Broker"")
+	.withValue(ACTIVE_BROKER_NAME), 
+		new Dimension().withName(""Queue"").withValue(queueName))
+	.withEndTime(new Date());"
+Amazon MQ	"Re: Question about CloudWatch and QueueSize
+Sorry for the delayed response.
+
+The sample request is correct. You cannot get the current queue size via CloudWatch because there is a delay for metrics to be sampled and then propagated through CloudWatch. The QueueSize metric in CloudWatch is aggregated by the minute, and you can usually query for data up to about 1-3 minutes ago.
+
+If real-time size is not required, then request data from 10 minutes ago up until the current time, and then in your application code select the most recent datapoint returned by CloudWatch.
+If real-time size is required, then the ActiveMQ console will show it. But the only way to query that programmatically is to scrape the ActiveMQ console web page. JMX access is not supported.
+
+The Sum metric would not be very useful (if you aggregate over 5min or 1hour periods, then it would be summing the size for each of the 1min buckets making up that period). Rather fetch Minimum and Maximum stats."
+Amazon MQ	"Re: Question about CloudWatch and QueueSize
+bbillows wrote:
+Also we are using (Active/Passive) is there an elegant way to know which broker is active?
+
+Sorry, there is currently no easy way to determine that."
+Amazon MQ	"Re: Question about CloudWatch and QueueSize
+Thank you for your responses."
+Amazon MQ	"Re: Question about CloudWatch and QueueSize
+Instead of starting a new topic, I thought it's best to ask here since my query is somewhat related. I'm trying to retrieve the QueueSize from CloudWatch but can only see Broker level fields. i.e.
+
+All Metrics -> AmazonMQ -> 13 Metrics
+
+(instead of 28 Metrics which is shown in https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-accessing-metrics.html)
+
+Is there any other setting that I need to enable for the Destination (Queue and Topic) Metrics to appear?"
+Amazon MQ	"ActiveMQ lost messages if there is no commit pending on MDB with XA and RA
+Hi, we are facing some strange behavior with ActiveMQ with Message Driven Beans. We migrate from Artemis to use AmazonMQ.
+
+Basically, when some application fails, we realize that some messages are lost. We made some tests to identify if there is some configuration issue with ack type, message persistence, etc. But in the end, the conclusion we came, and the test scenario we get, is that when we have a MDB processing the message and there is no transaction with a pending commit, when the application dies, the message is lost, the broker removes it from the pending messages.
+
+But, if we do have a transaction with a pending commit, the broker keeps it, and soon the application starts the message can be processed again. 
+
+We are using XA and Resource Adapter with a WildFly Swarm application. Looks like as soon a transaction starts from the MDB and there is a commit pending, the application notifies the broker to hold the message even if the consumer dies. If there is no transaction, as soon the broker identifies that the consumer has lost connection, the messages are removed from the queue.
+
+Some infos:
+
+
+Even defining with transaction required and container management, the same occurs
+With auto or dups ack, the same occurs
+The messages are persistent
+
+
+We are missing some configuration with activeMQ? We don't find any other property saying something about this kind of behavior with MDBs and transactions. What tells the broker that he should hold the messages with going transactions? There is a way to keep all the messages in case of failure using MDBs and XA?
+
+Here is a simple MDB code with the test scenario:
+
+@MessageDriven(activationConfig = {
+        @ActivationConfigProperty(propertyName = ""acknowledgeMode"", propertyValue = ""Auto-acknowledge""),
+        @ActivationConfigProperty(propertyName = ""destination"", propertyValue = ""task-processor""),
+        @ActivationConfigProperty(propertyName = ""destinationType"", propertyValue = ""javax.jms.Queue""),
+        @ActivationConfigProperty(propertyName = ""maxSessions"", propertyValue = ""20"")
+})
+@ResourceAdapter(""activemq-rar.rar"")
+public class MyMDB implements MessageListener {
+ 
+    @Inject
+    private CartaoService service;
+ 
+    @Override
+    public void onMessage(Message message) {
+ 
+        try {
+            // 0 - No transaction
+            // 1 - Will be a transaction with a pending commit
+            int t = new Random().nextInt(2);
+ 
+           // Just a entity to persist and have a pending commit
+            Cartao c = new Cartao();
+            c.setIdBoard(1l);
+            c.setNome(((TextMessage) message).getText());
+            c.setStatus(""ON"");
+            c.setTempo(10l);
+ 
+            // Prints the message id and if there is a transaction
+            System.out.println(((TextMessage) message).getJMSMessageID() + "" - "" + t);
+ 
+            // Sometimes we will have a commit pending
+            if (t == 1)
+               service.insert(c);
+            TimeUnit.SECONDS.sleep(30);
+            System.out.println(""END"");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+ 
+    }
+ 
+ 
+}
+
+
+Please let me know if there is a more additional info"
+Amazon MQ	"Re: ActiveMQ lost messages if there is no commit pending on MDB with XA and RA
+Please provide more details on what happens inside your CartaoService::insert() method.
+Are you making calls to the MessageDrivenContext interface?"
+Amazon MQ	"Re: ActiveMQ lost messages if there is no commit pending on MDB with XA and RA
+Thank you for the reply.
+
+In the insert method we just call a persist from EntityManager.
+
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public T insert(@Valid T bean) { 
+       em.persist(bean);
+       return bean;
+    }
+
+
+The strange thing is, if the consumer dies before calling this method, the message is always dequeued and never will be processed again, but if this method is call, the message stays there after the consumer dies. Look's like the MDB says something to the broker after having a transaction with a pending commit.
+
+By the documentation, I believe that the correct behavior would be the message stays enqueued to be processed again as soon a new consumer is available.
+
+And we don't do any call to MessageDrivenContext.
+
+Edited by: brunobluiz on Dec 18, 2018 2:51 AM"
+Amazon MQ	"Re: ActiveMQ lost messages if there is no commit pending on MDB with XA and RA
+Could you please point to the documentation you refer to that describes the message staying enqueued?
+
+Does this article help at all? https://www.javaworld.com/article/2074123/java-web-development/transaction-and-redelivery-in-jms.html
+(MDB discussion starts on page 2)"
+Amazon MQ	"Re: ActiveMQ lost messages if there is no commit pending on MDB with XA and RA
+Thanks for the reply, I've read the article you provided. About the documentation, the point I'm talking is available in your article:
+
+Page 2 (Auto Ack):
+
+"" a message is automatically acknowledged after the application successfully processes it, which is after the message successfully returns from the onMessage() method ""
+
+When my application dies, the onMessage never returns. My container is stopped or can lose any connection with the broker. That's my point, why the message is removed from the queue as like was processed? The message won't appear on DLQ or in any advisory queue. The count of dequeued messages will be incremented by one.
+
+There is another part in the article:
+
+""Second, the receiving application restarts, causing the session to restart. Restarting the session causes all unacknowledged messages to be redelivered.""
+
+The redelivering won't occur, since there is no unacknowledged messages, because ""something"" removed the message from the queue."
+Amazon MQ	"Amazon MQ - STOMP vs OpenWire transport?
+I am using Amazon MQ with OpenWire transport. Is there any benefit or restrictions for switching to STOMP protocol? I know STOMP has lower performance compare to OpenWire due to STOMP being text based. Also, the failover transport is not fully supported over STOMP protocol. Is there anything else missing on STOMP vs OpenWire on Amazon MQ?"
+Amazon MQ	"How many queues can I created for Amazon MQ
+Hi,
+I am not familiar with Amazon MQ and have questions about how many queues we can create in Amazon MQ.
+I have the following 2 use cases: 1-to-1 and 1-to-many (fan out) message sending for more than 200k users.
+My plan is to create a queue for each user, in that case, we just need to push the message for the specific queue for the ""1-to-1"" use case. Push message for each queue for the ""fan out"" use case.
+
+However, I see the  limits https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-limits.html  for brokers :
+1 Connections per wire-level protocol	1,000
+2 Brokers per broker instance type, per AWS account, per region	20
+3 Users per broker 250
+
+1. Does that mean I can only have at most 250 * 20 or 1000 * 20 queues? 
+2. Is it good to create many queues for my use case. Should I create a single queue for all message  with routing key? Which way is better?
+3. I also checked SNS. It seems like they have limits for the number of subscribers: SNS offers 10 million subscriptions per topic, and 100,000 topics per account. 
+Any comments are appreciated!"
+Amazon MQ	"Stomp+ssl through logstash Error: initialize: name or service not known
+Hi,
+I am trying to configure logstash stomp input to read Amazon MQ Queue but getting the following error from the logstash:
+Error: initialize: name or service not known
+Exception: SocketError
+1. Connecting to a separate ActiveMQ server running locally, works OK (localhost).
+2. The Amazon MQ security group port (61614) is open and it is running within the VPC where the logstash is running.
+3. Connecting to the AmazonMQ service using OpenWire protocol (port 61617 not through the logstash) from the same machine - working properly.
+4. Logstash config file contains the following configuration:
+stomp { host => ""stomp+ssl://AWS_Url_From_AmazonMQ.amazonaws.com"" port => ""61614"" destination => ""MyQueue"" user => ""AmazonMQDefinedUser"" password => ""AmazonMQDefinedPassword""}	
+
+Any help will be appriciated.
+
+Thanks!
+Barak"
+Amazon MQ	"Re: Stomp+ssl through logstash Error: initialize: name or service not known
+Hi,
+
+All Amazon MQ connection protocols use TLS, so a client attempting to establish an insecure connection on the secure port will fail. I'm not familiar with the Logstash client, but it's possible that it's attempting to create such an insecure connection. 
+
+You may wish to look into ways to configure a TLS STOMP connection on the client. Here are two related articles about Java and Python:
+
+https://stackoverflow.com/questions/34334629/spring-boot-ssl-tcpclient-stompbrokerrelaymessagehandler-activemq-undertow
+https://stackoverflow.com/questions/46770328/activemq-stompssl-with-python-stomp-client
+
+
+And if you'd like to verify that the broker itself is accessible over port 61614, here is some sample Ruby code:
+
+require 'stomp'
+ 
+# Define the supported list of ciphers we can accept
+ciphers_list = [
+  [""DHE-RSA-AES256-SHA"", ""TLSv1/SSLv3"", 256, 256],
+  [""DHE-DSS-AES256-SHA"", ""TLSv1/SSLv3"", 256, 256],
+  [""AES256-SHA"", ""TLSv1/SSLv3"", 256, 256],
+  [""EDH-RSA-DES-CBC3-SHA"", ""TLSv1/SSLv3"", 168, 168],
+  [""EDH-DSS-DES-CBC3-SHA"", ""TLSv1/SSLv3"", 168, 168],
+  [""DES-CBC3-SHA"", ""TLSv1/SSLv3"", 168, 168],
+  [""DHE-RSA-AES128-SHA"", ""TLSv1/SSLv3"", 128, 128],
+  [""DHE-DSS-AES128-SHA"", ""TLSv1/SSLv3"", 128, 128],
+  [""AES128-SHA"", ""TLSv1/SSLv3"", 128, 128],
+  [""RC4-SHA"", ""TLSv1/SSLv3"", 128, 128],
+  [""RC4-MD5"", ""TLSv1/SSLv3"", 128, 128],
+  [""EDH-RSA-DES-CBC-SHA"", ""TLSv1/SSLv3"", 56, 56],
+  [""EDH-DSS-DES-CBC-SHA"", ""TLSv1/SSLv3"", 56, 56],
+  [""DES-CBC-SHA"", ""TLSv1/SSLv3"", 56, 56],
+  [""EXP-EDH-RSA-DES-CBC-SHA"", ""TLSv1/SSLv3"", 40, 56],
+  [""EXP-EDH-DSS-DES-CBC-SHA"", ""TLSv1/SSLv3"", 40, 56],
+  [""EXP-DES-CBC-SHA"", ""TLSv1/SSLv3"", 40, 56],
+  [""EXP-RC2-CBC-MD5"", ""TLSv1/SSLv3"", 40, 128],
+  [""EXP-RC4-MD5"", ""TLSv1/SSLv3"", 40, 128]
+]
+ 
+# Define the SSL client certificate options (public key, and private certificate in pem form)
+# openssl req -newkey rsa:2048 -nodes -keyout privateKey.key -x509 -days 365 -out certificate.pem
+ssl_opts = Stomp::SSLParams.new(
+  :key_file => ""/Users/#{ENV['USER']}/StompTest/privateKey.key"",
+  :cert_file => ""/Users/#{ENV['USER']}/StompTest/certificate.pem"",
+  :fsck => true,
+  :ciphers => ciphers_list
+)
+ 
+# Define the connection
+hash = { 
+  :hosts => [ 
+    {
+      :login => ""username"",
+      :passcode => ""redacted"",
+      :host => ""b-123...789-1.mq.ap-southeast-2.amazonaws.com"",
+      :port => 61614,
+      :ssl => ssl_opts
+    }
+  ],
+  :reliable => false,
+  :start_timeout => 0,
+  :connect_headers => {""accept-version"" => ""1.1,1.2"", ""host"" => ""vhost"", ""heart-beat"" => ""5000,10000"" }
+}
+ 
+puts ""Creating client""
+client = Stomp::Client.new(hash)
+conn_frame = client.connection_frame()
+ 
+# Check we are connected
+if conn_frame.command == Stomp::CMD_ERROR
+    puts ""Unable to connect...\n""
+    raise conn_frame.body
+end
+ 
+puts ""-"" * 50
+puts ""Connect version  - #{conn_frame.headers['version']}""
+puts ""Connect server   - #{conn_frame.headers['server']}""
+puts ""Session ID       - #{conn_frame.headers['session']}""
+puts ""Heartbeats       - #{conn_frame.headers['heart-beat']}""
+puts ""SSL Verify       - #{ssl_opts.verify_result}""
+puts ""-"" * 50 , ""\n\n""
+ 
+# Append a message to a queue
+client.publish( ""/queue/myqueue"", ""Hello World!"")
+puts ""*** Message sent ***""
+ 
+# Read all messages from the same queue and acknowlege the receipt
+client.subscribe(""/queue/myqueue"", {:ack => ""client"", ""activemq.prefetchSize"" => 10000,:browser => ""false""} ) do |msg|
+    puts ""Message Body : #{msg.body}""
+    client.acknowledge(msg)
+end
+ 
+# Listen for 2 minutes
+client.join(120)
+ 
+# Tidy up and exit
+puts ""Done subscribing""
+client.close
+exit"
+Amazon MQ	"Migration from RabbitMQ to AmazonMQ
+Currently we are using RabbitMQ self hosted on ec2 as our message broker. I've read that AmazonMQ supports the AMQP protocol. Does that mean we can simply swap out the RabbitMQ cluster for AmazonMQ without any need for code modifications?
+
+I understand that ActiveMQ primarly supports the JMS protocol, however AWS documentation seems to suggest that AMQP is supported too.
+
+Any advice/gotchas would be much appreciated."
+Amazon MQ	"Re: Migration from RabbitMQ to AmazonMQ
+ActiveMQ indeed supports AMQP. If you are not using something very specific to RabbitMQ, the migration should be as simple as repointing your application to the Amazon MQ endpoint."
+Amazon MQ	"Re: Migration from RabbitMQ to AmazonMQ
+Rabbitmq out of the box implements amqp version 0-9-1 (though there is a plugin for amqp 1.0), whereas activemq only implements ampq v1.0.
+
+Both are vastly different versions so it wont be as simple as repointing the applications to amazonmq. you will have to upgrade your application clients as well and figure out how to port over the exchanges and queues from rabbitmq to amazonmq"
+Amazon MQ	"Re: Migration from RabbitMQ to AmazonMQ
+Thanks, I didn't even consider the protocol version. I will confirm with our vendor which version they use but I suspect it is 0.9.1"
+Amazon MQ	"Re: Migration from RabbitMQ to AmazonMQ
+We have recently published a blog post on this topic, linking it here as it may be of interest:
+
+https://aws.amazon.com/blogs/compute/migrating-from-rabbitmq-to-amazon-mq/"
+Amazon MQ	"Re: Migration from RabbitMQ to AmazonMQ
+Edit: I misunderstood the intention of the article. Looks like there's no AMQP 0-9 support for the ActiveMQ broker.
+
+Edited by: Justin T. Arthur on Jan 15, 2019 10:15 AM"
+Amazon MQ	"Amazon MQ lose messages on broker restarts
+Hello,
+
+We recently performed Amazon MQ reliability test in order to verify if it can guarantee 0 messages loss.
+Results show that if the broker is restarted in the process of producing/consuming we lose messages.
+
+Testing environment:
+AWS
+
+Broker instance type: mq.m5.large
+Engine version: 5.15.6
+
+Producer/Consumer: t3.large
+Client: https://github.com/erik-wramner/JmsTools
+
+Similar result we got using ActiveMQ. As Amazon MQ is based on it, the issue may be related to the results we got during its testing.
+
+The result and project with all required data for issue reproducing may be found on GitHub: https://github.com/veaceslavdoina/messages-brokers-testing
+Jira issue: https://issues.apache.org/jira/browse/AMQ-7096
+Discussion on the Mailing list: http://activemq.2283324.n4.nabble.com/ActiveMQ-and-Artemis-reliability-Messages-lost-tt4744881.html
+
+Thank you!
+
+Slava.
+
+Edited by: veaceslavdoina on Nov 12, 2018 3:26 AM
+
+Edited by: veaceslavdoina on Nov 12, 2018 3:27 AM"
+Amazon MQ	"Re: Amazon MQ lose messages on broker restarts
+Hi,
+
+We are tracking the issue here https://issues.apache.org/jira/browse/AMQ-7096 and http://activemq.2283324.n4.nabble.com/ActiveMQ-and-Artemis-reliability-Messages-lost-tt4744881.html and will provide more details soon."
+Amazon MQ	"Re: Amazon MQ lose messages on broker restarts
+We have been unable to reproduce any message loss with Amazon MQ, and the thread on the ActiveMQ forum suggests this may be a problem with the test code.  We suggest engaging with the ActiveMQ forum for further investigation."
+Amazon MQ	"Re: Amazon MQ lose messages on broker restarts
+TrevoratAWS, thank you for the investigation!
+
+May I ask you more details about methodology you used during the tests?
+
+Which tool did you use, it is publicly available?
+
+Thank you!
+
+Slava."
+Amazon MQ	"Re: Amazon MQ lose messages on broker restarts
+The tool is not publicly available, but here are the details of how it works:
+
+
+10 producers and consumers running in parallel with unique connections.
+100000 random messages with GUID that are stored in an in-memory hash-table for double checking
+A thread segfaulting the broker directly on the EC2 instance every few thousand messages with random jitter (which is much worse than restarting, but also much faster)
+Runs for a few minutes with about 10 segfaults."
+Amazon MQ	"""unexpected end of stream"" Using Stomp and Node.js
+Just stating out and am having a problem getting any further than the ""connect"".  Receive a ""unexpected end of stream"".  Code is fairly simple:
+
+ 
+const stompit = require('stompit');
+ 
+var connectOptions = {
+    'host': 'STOMP end point',
+    'port': 61614,
+    'connectHeaders': {
+        'host': '/',
+        'login': 'userid',
+        'passcode': 'pasword',
+        'heart-beat': '5000,5000'
+    }
+};
+ 
+stompit.connect(connectOptions, function (error, client) {
+ 
+    if (error) {
+        console.log('connect error ' + error.message);
+        return;
+    }
+ 
+    var sendHeaders = {
+        'destination': '/queue/test',
+        'content-type': 'text/plain'
+    };
+ 
+    var frame = client.send(sendHeaders);
+    frame.write('hello');
+    frame.end();
+ 
+    client.disconnect();
+});
+
+
+Any help would be appreciated.
+
+Thanks."
+Amazon MQ	"Re: ""unexpected end of stream"" Using Stomp and Node.js
+Is your host name correct? I would expect it would need to be something like 
+
+b-1234a5b6-78cd-901e-2fgh-3i45j6k178l9-1.mq.us-east-1.amazonaws.com"
+Amazon MQ	"Re: ""unexpected end of stream"" Using Stomp and Node.js
+no response from OP in a long time, marking as assumed answered"
+Amazon MQ	"Re: ""unexpected end of stream"" Using Stomp and Node.js
+I am getting the same error, I have verified the host name and port, I am able to telnet and ping the host, any help is appreciated."
+Amazon MQ	"Re: ""unexpected end of stream"" Using Stomp and Node.js
+Hi, Amazon MQ requires SSL connection. According to http://gdaws.github.io/node-stomp/api/connect/, however, SSL by default is not enabled. To solve this issue, you can add the option ""ssl: true"" to the variable ""connectOptions"" like below:
+var connectOptions = {
+    'host': '<hostname>',
+    'port': 61614,
+    'ssl': true,
+     'connectHeaders': {
+        'host': '/',
+        'login': 'login_name',
+        'passcode': 'passcode',
+        'heart-beat': '5000,5000'
+    }
+};
+
+
+Edited by: xinjingataws on Jan 12, 2019 10:20 AM"
+Amazon MQ	"Unable to access Active MQ console
+When I click on console, the page does not show up once the broker is up. The security policy allows all incoming traffic across all ports. Am I missing something?"
+Amazon MQ	"Re: Unable to access Active MQ console
+hi muthyas@ - Did you create a publicly accessible broker? If so, you can get to the page from the internet. If not, you can only access your broker from within your VPC.
+
+You can check the 'Public accessibility' flag from the broker detail page on the Amazon MQ console."
+Amazon MQ	"Re: Unable to access Active MQ console
+The security policy allows all incoming traffic across all ports.
+
+Please double check out security policy, especially the 'Source' column. If it's a security group identifier, then the 'all incoming traffic across all ports' rule applies to traffic coming from other instances attached to the same security group, not internet traffic.
+
+To get access to your broker, edit the security group. Add a rule for incoming TCP connection on specific port you want to enable and set the source as your own public IP address.
+
+For instance, if my public IP address is 1.2.3.4 and I want to be able to access the ActiveMQ webconsole through port 8162, I need to add a new inbound rule:
+Type: Custom TCP rule
+Protocol: TCP
+Port range: 8162
+Source: Custom, 1.2.3.4/32"
+Amazon MQ	"Re: Unable to access Active MQ console
+Thanks! It worked with the public IP address."
+Amazon MQ	"Re: Unable to access Active MQ console
+When I am behind proxy. I am unable to view the ActiveMQ console. Is there anyway I can access the console behind a proxy.
+
+Edited by: ShreyaSuga on Jan 9, 2019 3:20 AM"
+Amazon MQ	"Jolokia REST support
+Hi,
+
+Is support for REST/Jolokia endpoint on the roadmap in the nearest future?
+
+Regards
+Marek Dominiak"
+Amazon MQ	"How to trigger a real failover on Amazon MQ broker?
+I have completed the workshop of Amazon MQ with an active/standby broker. The failover test was to reboot the broker. The test was successful. But I did not see the standby broker taking over. Is there a way to trigger a real failover scenario so that the standby broker takes over? How to verify the standby broker's taking over?
+
+Thanks,
+
+Yannan"
+Amazon MQ	"Re: How to trigger a real failover on Amazon MQ broker?
+You can issue a Reboot of the active/standby broker, and look at metrics in CloudWatch to see the broker switching from active to standby, and back from standby to active."
+Amazon MQ	"Reverse proxy in front of active mq web panel leads to misbehaviour
+Hi there,
+
+we did put a nginx reverse proxy in front of our active mq instance for the web console so we are able to use our own login system.
+
+However, any active action taken in the web console (e.g. purging queues, creating messages) leads to redirects towards the internal aws url (https://abc-def-xyz-1.mq.eu-central-1.amazonaws.com) and since we disallowed direct access in our network it ends up in an timeout/error.
+
+Is there a way to have the active mq web panel to always use the same URL as the one under which the reverse proxy is reachable? Taking the reduced configuration options of Amazon-MQ into account.
+
+Thanks.
+
+Best,
+
+Marcel
+
+
+Nginx reverse config:
+set $proxy_pass_url https://abc-def-xyz-1.mq.eu-central-1.amazonaws.com:8162;
+location / {
+  proxy_pass $proxy_pass_url;
+  proxy_http_version 1.1;
+  proxy_set_header Authorization ""Basic AUTHSTRING"";
+  proxy_set_header X-Forwarded-User $remote_user;
+  proxy_set_header Host abc-def-xyz-1.mq.eu-central-1.amazonaws.com;
+  proxy_set_header Connection ""Keep-Alive"";
+  proxy_set_header Proxy-Connection ""Keep-Alive"";
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header X-Forwarded-Proto $scheme;
+  proxy_set_header X-Forwarded-Host $http_host;
+}"
+Amazon MQ	"Re: Reverse proxy in front of active mq web panel leads to misbehaviour
+Did you consider mapping the internal domain to also go through your proxy?
+If the console redirects to some url, then your network needs to map that domain to wherever your proxy service is so that you can properly handle those requests too."
+Amazon MQ	"Re: Reverse proxy in front of active mq web panel leads to misbehaviour
+No response from original poster, marking as assumed answered."
+Amazon MQ	"Re: Reverse proxy in front of active mq web panel leads to misbehaviour
+Thanks for looking into that.
+
+However, that would mean manipulating DNS resolvement I guess, our OPs did not like that idea, nor do I.
+
+Additionally it's redirecting to the AWS consoles port (:8162) where as the proxy listens on 443 (https), which probably the proxy can also listen on easily.
+
+I was looking for the variable for the redirect target host in active-mqs code, but couldn't find anything, given that my knowledge about that sort of java stuff is quite limited."
+Amazon MQ	"Using Client Certificates possible?
+Hi,
+
+Is it possible to use Client Certificates (http://activemq.apache.org/how-do-i-use-ssl.html) with AmazonMQ ?
+I saw we could access the configuration xml but don't see it mentioned in the docs how to reference a truststore for the broker
+
+With best regards
+              Seb"
+Amazon MQ	"Re: Using Client Certificates possible?
+Client certificates are currently not supported.  Please let us know your use case and we can add it to the feature request backlog."
+Amazon MQ	"Re: Using Client Certificates possible?
+I was wondering about the same - using client certificates.
+
+Our use case is this:
+
+We have high availability broker, and we created network load balancer between broker1 and broker2
+
+We have custom dns name pointed to the load balancer
+
+The problem is with the AMQ certificate DNS name ""*.mq.us-east-1.amazonaws.com""
+
+Since we go to console https://mq.our-domain:8162 - dns name does not match, and we have a warning
+
+""This server could not prove that it is mq.our-domain; its security certificate is from *.mq.us-east-1.amazonaws.com""
+
+If we could use our own certificate - this would solve the problem
+
+Edited by: tevch on Oct 19, 2018 1:01 PM"
+Amazon MQ	"Unable to connect to MQ broker using STOMP in python
+I am unable to connect to my MQ broker using STOMP and I am not sure why. The script still works when I try to connect to a broker that I locally set up, I tried adding a new connector for stomp to  ASW-MQ broker config See http://activemq.apache.org/stomp.html but it's being automatically removed from the config.
+
+Note: I am able to send messages from a java application using openWire protocol on port 61617.
+
+Here is my python code that isn't working:
+import stomp
+server=""xxxxxxxxxxxxxxxxxxx.mq.eu-west-1.amazonaws.com""
+port=61614
+conn = stomp.Connection(host_and_ports=[(server, port)],auto_decode=True)
+conn.start()
+user='user'
+passwd='pass!'
+dest ='/queue/xxxxx'
+#will keep waiting forever
+conn.connect(username=user,passcode=passwd,wait=True)
+conn.send(headers={'type':'test','correlation-id':'test'},body='test' , destination=dest,persistent='true')
+conn.disconnect()"
+Amazon MQ	"Re: Unable to connect to MQ broker using STOMP in python
+Apologies for the late response.
+
+One thing to be aware of is that you need to ensure the broker's security group allows access to your test host on port 61614.
+
+Assuming you are using this Python package: https://github.com/jasonrbriggs/stomp.py which I installed via sudo pip3 install stomp.py
+And confirmed that I get ConnectFailedException to my test broker using the provided code.
+
+I suspect the problem is that the stomp.py client is not able to connect over TLS. Note that all Amazon MQ protocols connect over TLS - this is not a raw STOMP connection. See the ActiveMQ documentation http://activemq.apache.org/how-do-i-use-ssl.html for how to use TLS.
+
+I was able to get it working using a Ruby client https://rubygems.org/gems/stomp that allows you to specify the OpenSSL options (modifying this sample code https://atos-csms.atlassian.net/wiki/spaces/CDC/pages/22118507/Connecting+to+a+queue+using+Ruby+Stomp)
+
+Before running this code I used the OpenSSL command in the comment to generate a dummy client cert.
+
+See attached file for example code.
+
+Edited by: TrevoratAWS on Aug 7, 2018 12:19 PM"
+Amazon MQ	"Re: Unable to connect to MQ broker using STOMP in python
+Also, here is a guide explaining how to do it with the Python client: https://stackoverflow.com/questions/46770328/activemq-stompssl-with-python-stomp-client"
+Amazon MQ	"Re: Unable to connect to MQ broker using STOMP+SSL in Java
+Unable to connect to MQ broker using STOMP+SSL in Java. How to connect to MQ broker using stomp+ssl connection in Java.
+
+Edited by: Shama on Oct 17, 2018 9:43 AM"
+Amazon MQ	"Re: Unable to connect to MQ broker using STOMP+SSL in Java
+Can you please provide a few more details? Where is it failing, and what error are you seeing?"
+Amazon MQ	"Message dead lettering to replicate RabbitMQ behaviour
+Hi,
+I'm currently evaluating AmazonMQ to migrate a RabbitMQ messaging infrastructure but I've some points to clarify.
+
+1. RabbitMQ queues are able to route the timed out messages to a specific queue.
+Is there a way to replicate that use case with AmazonMQ? i.e. a rule to route all the timed out messages to another queue.
+
+2. RabbitMQ supports AMQP0.9 that allow to define queues, bindings, exchanges without downtime. Is that possible with AmazonMQ ?
+
+Thanks
+Simone"
+Amazon MQ	"Re: Message dead lettering to replicate RabbitMQ behaviour
+Hi,
+
+1. This would be a DLQ strategy configured through the property processExpired.
+Something to specify in the broker configuration like:
+<deadLetterStrategy>
+  <sharedDeadLetterStrategy processExpired=""true"" />
+</deadLetterStrategy>
+
+You can also further specify how long to keep the messages in the DLQ with the expiration property.
+
+The sharedDeadLetterStrategy above can be replaced by individualDeadLetterStrategy for finer granularity of the settings. 
+
+2. ActiveMQ destinations (queues and topics) are automatically created when a message is produced on an non-existing destination. As such no downtime is required.
+
+Hope this helps."
+Amazon MQ	"How to add Active MQ custom groups for users?
+I am trying to create new groups for users to control access to queues and topics.
+
+But I don't see a page where I can add new groups. Is there any way to add groups through configuration?
+
+Anybody have example config?
+
+Thanks,
+Sanjay"
+Amazon MQ	"Re: How to add Active MQ custom groups for users?
+Sorry for the delay.  There is some information here:
+
+https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-listing-managing-users.html
+
+and within the ActiveMQ docs here:
+
+http://activemq.apache.org/security.html
+
+Edited by: TrevoratAWS on Oct 1, 2018 2:20 PM"
+Amazon MQ	"Re: How to add Active MQ custom groups for users?
+Hi,
+
+With AmazonMQ, you don't need to create groups on one hand and user on the other hand.
+ActiveMQ groups are lazily created when adding/editing a user and associating a user to a list of groups: https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-listing-managing-users.html"
+Amazon MQ	"Lopsided latency behavior in Amazon MQ
+I'm new to AMQP in general so I may just be missing some setting but here is the set up:
+
+
+m5d.large EC2 instance talking to a mq.m4.large broker
+single broker instance
+non-persistent messages
+2 queues (request and response)
+
+
+I run a ""producer"" application that sends a simple (24 byte) message from the EC2 instance to the request queue and waits for a response on the response queue.
+I run a ""consumer"" application on the same EC2 instance that receives a request from the request queue, fills in a timetag field and then immediate sends the message back on the response queue.
+
+This lets me calculate how long it takes to get a request from the producer->broker->consumer as well as how long it takes to get a response from the consumer->broker->producer.  Here is an example of a sequence of 5 messages being sent that way:
+Sending message 1
+  Recieved response to 1 in 44613 microseconds (Rqst: 3773, Resp: 40839)
+  Sent 1 and received response for 1. Moving on.
+Sending message 2
+  Recieved response to 2 in 43957 microseconds (Rqst: 3981, Resp: 39975)
+  Sent 2 and received response for 2. Moving on.
+Sending message 3
+  Recieved response to 3 in 43990 microseconds (Rqst: 4007, Resp: 39983)
+  Sent 3 and received response for 3. Moving on.
+Sending message 4
+  Recieved response to 4 in 44013 microseconds (Rqst: 4007, Resp: 40006)
+  Sent 4 and received response for 4. Moving on.
+Sending message 5
+  Recieved response to 5 in 43955 microseconds (Rqst: 3974, Resp: 39980)
+  Sent 5 and received response for 5. Moving on.
+ 
+
+
+My question is what could possibly be causing the responses to take 10 times longer to travel from the consumer to the the producer as it takes the requests to travel from producer to consumer?  Also the response latency (40 milliseconds) is oddly consistent- as if there is a polling or batching timeout set somewhere.  But since both my producer and consumer are using the same library to access the broker, I can't imagine what it would be on my side.
+
+Incidentally when I was messing around with sending ""batches"" of messages I saw a similar 40 ms latency show up whenever I set the link credit of my receiver to > 1.
+
+My producer/consumer do almost zero processing (other than to get time tags and populate messages) and are written in go.  They use this amqp package: https://github.com/vcabbage/amqp"
+Amazon MQ	"Re: Lopsided latency behavior in Amazon MQ
+The latency seems unusual and different than what we've seen. I am not familiar with the Go client you are using but there may be some delay in the client.  Perhaps try the standard ActiveMQ Java client and see if there is a difference."
+Amazon MQ	"Re: Lopsided latency behavior in Amazon MQ
+Hi, please let us know if you've had any luck with this?"
+Amazon MQ	"Re: Lopsided latency behavior in Amazon MQ
+After digging into this more deeply we found the following. This a collateral effect of a TCP implementation + chatty protocol + small packets.
+
+A good explanation can be found here:
+
+https://www.extrahop.com/company/blog/2016/tcp-nodelay-nagle-quickack-best-practices/
+
+Is important to note that this behavior is an edge case. You will see this behavior if you are sending only one really small message at a time and waiting for a response on this message.
+
+In your use case, only one message is being sent each time over AMQP (which is a chatty protocol). 
+
+Here are three things to consider to avoid this (they don't need to be done simultaneously):
+
+1.	Use different connections on the producer side (one to produce and one to consume) in order to avoid interference between them at a TCP level.
+2.	Increase the message size to something larger, say around 20KB.
+3.	Send multiple messages at the same time.
+
+Let us know if this helps!"
+Amazon MQ	"Consume remote Stomp feed using AWS infrastructure
+Hi,
+
+Sorry for possibly newbie question, but I'd like to consume a remote ActiveMQ queue via Stomp protocol using AWS infrastructure. What's the best way to go about it? We were hoping to end up with an SQS with all the messages from the remote and also a copy stored in Redis.
+
+I would greatly appreciate some pointers on how to go about it."
+Amazon MQ	"Re: Consume remote Stomp feed using AWS infrastructure
+Just to clarify a few things:
+
+1) by ""remote"" do you mean the ActiveMQ queue is running on a broker somewhere outside AWS, like in  your own data center?
+
+2) Are you trying to consume messages from ActiveMQ and then store them into a queue in Amazon SQS?"
+Amazon MQ	"Re: Consume remote Stomp feed using AWS infrastructure
+1) by ""remote"" do you mean the ActiveMQ queue is running on a broker somewhere outside AWS, like in your own data center?
+
+Yes, althought it's not our own data center nor our broker, hence there's no possibility of changing its configuration.
+
+2) Are you trying to consume messages from ActiveMQ and then store them into a queue in Amazon SQS?
+
+Yes, and also into a database. Our thinking was that it would be best if a lambda was executed for each message consumed, and that lambda would parse and put those messages in an SQS queue (or a number of queues) and into a database table.
+
+Edited by: MichalTat on Sep 3, 2018 3:48 AM"
+Amazon MQ	"Re: Consume remote Stomp feed using AWS infrastructure
+Additionally it turns out it can't be Stomp, but ActiveMQ OpenWire."
+Amazon MQ	"How do I view the ActiveMQ log
+I would like to diagnosis an issue with Virtual Topics how would I view the ActiveMQ log?
+
+Mike"
+Amazon MQ	"Re: How do I view the ActiveMQ log
+We're tracking the ability to inspect ActiveMQ logs as a feature request.
+
+You can check the status of topics and queues through:
+
+CloudWatch metrics emitted for all your destinations
+ActiveMQ webconsole
+By enabling the statistics plugin in broker configuration and sending requests to query the status of queues / topics."
+Amazon MQ	"Re: How do I view the ActiveMQ log
+This feature is now available - you can publish the ActiveMQ logs to CloudWatch Logs.  
+
+See announcement at the top of this forum.
+
+Edited by: TrevoratAWS on Aug 20, 2018 11:33 PM"
+Amazon MQ	"ELB in front of Amazon MQ for Web console access
+Is it possible to to sit an ELB infront of Amazon MQ so the web console can be made accessible from outside VPC without having to make the broker publicly accessible?
+
+The ELB would just be a pass through from port 443 to Amazon MQ (port 8162) which would still be responsible for decrypting the traffic
+
+Thanks
+John"
+Amazon MQ	"Re: ELB in front of Amazon MQ for Web console access
+Yes, confirmed that this does work, however because the SSL certificate is only valid for the broker hostname and not the LB’s name you will get a “this server is not trusted” error message from the browser and have to override it.
+
+Steps to reproduce:
+1) Create multi-AZ broker (private or public, it makes no difference)
+2) Create NLB (strongly recommend using this instead of a classic ELB) using port 8162. Ensure you put the NLB endpoints in the same AZs as your broker ENIs
+3) Add both private IP addresses for your ENIs to the NLB as targets
+4) Find both private IP addresses for the NLB and add them to the security group used by your ENIs on port 8162
+5) Wait for NLB health checks to initialize
+6) Hit up https:<nlb-dns-name>:8162 in your browser and click to ignore the invalid cert warning
+7) Done
+
+Note that this makes your broker publicly accessible and you should consider locking down your NLB to the expected callers."
+Amazon MQ	"Re: ELB in front of Amazon MQ for Web console access
+Many thanks for the info TrevoratAWS
+
+John"
+Amazon MQ	"Re: ELB in front of Amazon MQ for Web console access
+@TrevoratAWS
+
+Could you paste sample CloudFormation template from AmazonMQ with NLB.
+I am struggling with specifying AmazonMQ instances as Targets:
+ ""TargetType"": ""ip"",
+        ""Targets"": [
+          {
+            ""Id"": ""34.234.243.75"",
+            ""Port"": 8162
+          },
+          {
+            ""Id"": ""18.209.38.162"",
+            ""Port"": 8162
+          }
+        ],"
+Amazon MQ	"Re: ELB in front of Amazon MQ for Web console access
+Is your setup fully compatible with the web panels functionality? 
+
+We found out that especially active actions issued in the panel (purging queues, moving messages) will rewrite the URL to the (internal) Amazon MQ web console, where direct access is blocked (cause of the setup).
+
+Also see my thread about this: https://forums.aws.amazon.com/thread.jspa?threadID=286809&tstart=0"
+Amazon MQ	"Re: ELB in front of Amazon MQ for Web console access
+Thanks for your response Marcel. 
+I was able to resolve this using following template:
+""TargetGroup"": {
+      ""Type"": ""AWS::ElasticLoadBalancingV2::TargetGroup"",
+      ""Properties"": {
+        ""Name"": ""MyTargets"",
+        ""Port"": 10,
+        ""Protocol"": ""TCP"",
+        ""TargetGroupAttributes"": [
+          {
+            ""Key"": ""deregistration_delay.timeout_seconds"",
+            ""Value"": ""20""
+          }
+        ],
+        ""TargetType"": ""ip"",
+        ""Targets"": [
+          {
+            ""Id"": ""10.206.29.113"",
+            ""Port"": 8162
+          },
+          {
+            ""Id"": ""10.206.28.108"",
+            ""Port"": 8162
+          }
+        ],
+        ""VpcId"": ""vpc-89f837f3""
+      }
+    }
+
+Is there a way to dynamically get the private IP of the Master and Slave broker?
+For instance in terraform you can specify: aws_instance.inatance1.private_ip"
+Amazon MQ	"Kahadb Disk Space Recovery
+Hi,
+
+I am using durable topics and durable queues to store persistent messages. The messages are stored in the default kahadb. I am concerned that a kahadb will become full and cause a broker to block.
+
+Does Amazon MQ prevent kahadb from filling? Or does Amazon MQ have a mechanism to handle the situation when a kahadb becomes full?
+
+Thanks in advance,
+Roland
+
+Edited by: rbooth on Jun 5, 2018 9:51 AM"
+Amazon MQ	"Re: Kahadb Disk Space Recovery
+Amazon MQ has a 200GB limit on disk space as referenced here: https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-limits.html
+
+You can monitor broker metrics, such as TotalMessageCount, to ensure your broker storage is not getting too full.  You can also monitor your DequeueCount to help detect when consumers are not reading from your queues."
+Amazon MQ	"Re: Kahadb Disk Space Recovery
+Thanks for your response.
+
+Suppose that the broker metrics are ignored and the disk fills completely. All 200gb are used. I have two related questions about this scenario: 
+
+1. Who or what is responsible for resolving this scenario? Does Amazon MQ have a mechanism to automatically recover, or is it the responsibility of the users of Amazon MQ to manually recover?
+
+2. What will be the behaviour of the broker in this scenario?"
+Amazon MQ	"Re: Kahadb Disk Space Recovery
+Apologies for the late response.
+
+1. The user is responsible for resolving this scenario.
+
+2. The broker will refuse to accept any further messages from clients."
+Amazon MQ	"AWS MQ performance 5 times slower than active mq?
+Hi.  I have a question on AWS MQ performance for persisted messages.  I did some basic testing and I found AWS MQ to be about 5 times slower than a Active MQ server when sending persisted messages (I tested queues not topics).  Has anyone else seen this?  Is there a way to improve performance?
+
+My basic test was:
+Create a test application that has three threads:
+1.  Producer thread - produces messages as fast as it can
+2.  Consumer thread - consumes messages as fast as it can
+3.  Timing thread - Every minute it prints out the number produced and consumed and resets counts.
+
+I tested this in many different environments, but the end test was:
+ec2 to awsmq -> mq.m4.large -> 6,500 per minute
+ec2 to activemq (in aws) -> m4 large instance -> 40,000 per minute
+
+I found aws mq to be about 5 times slower.  
+
+I have to use persisted messages and I cannot use async messages (I rely on transactions).  Note transactions were not used in this test.
+
+Am I missing something or is AWS MQ simply slower?"
+Amazon MQ	"Re: AWS MQ performance 5 times slower than active mq?
+Amazon MQ uses highly durable storage across 3 AZs, so in general performance won't be as high as if you are using local storage or local EBS in one AZ. The trade-off is that you get the assurance that your persisted messages are much safer from being lost. Even if an AZ was completely destroyed, the messages would be safely available in another physically separate AZ. But there is a trade-off with performance.
+
+For your testing, we recommend scaling up your producers and consumers as much as you can, as fast consumers improves performance. You can also experiment with setting concurrentStoreAndDispatch flag to FALSE (see: https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/ensuring-effective-amazon-mq-performance.html) if you have slower consumers."
+Amazon MQ	"Re: AWS MQ performance 5 times slower than active mq?
+You can also try using this benchmark tool to run some benchmark tests:
+
+https://github.com/chirino/jms-benchmark"
+Amazon MQ	"Re: AWS MQ performance 5 times slower than active mq?
+Note that we have recently introduced higher-performing M5 instances.  These instances have higher network capacity, CPU, and memory than the m4.large instance. We recommend trying a few different instance sizes (we support from m5.large up to m5.4xlarge) to determine the best configuration for your performance needs."
+Amazon MQ	"Amazon MQ high availability
+Hi all,
+
+I have a an instance of Amazon MQ in high availabilty mode (two instances) using it as queue for background jobs.
+
+My understanding is that if the active server fails, the backup server will take over which is perfect. But what happens with the messages that are waiting in the queue on the active server when it fails? Are they replicated to the backup server, so in the moment when failover happens, there is no data loss? Or are these messages forever lost?
+
+Thanks,
+Tihomir
+
+Edited by: tmescic on Aug 7, 2018 1:54 AM"
+Amazon MQ	"Re: Amazon MQ high availability
+The answer is given in the Amazon MQ FAQs: https://aws.amazon.com/amazon-mq/faqs/
+
+Q: What kind of messaging durability does Amazon MQ provide?
+
+A: When the ActiveMQ broker is used in persistent mode, each message is redundantly stored across multiple Availability Zones (AZs). The message store can be accessed concurrently from all AZs in the region where it is located, which means that the message broker can fail over from one AZ to another AZ in the region without message loss."
+Amazon MQ	"Consume and Publish message to AWS MQ using amqp protocol in Nodejs ?
+Hi,
+I need to use Amazon MQ to consume and publish message to queue using amqp protocol in Nodejs. I have already set up AWS MQ, define the broker and created a queue.
+
+I have followed AWS Javascript SDk but still I am not able to find any method to consume and publish message to queue.
+
+Can you please help me out on this ?
+
+Thanks"
+Amazon MQ	"Re: Consume and Publish message to AWS MQ using amqp protocol in Nodejs ?
+I found this client which might be worth checking out:
+
+https://www.npmjs.com/package/amqp-nodejs"
+Amazon MQ	"Re: Consume and Publish message to AWS MQ using amqp protocol in Nodejs ?
+Hi,
+The clients for accessing ActiveMQ are not included within the AWS SDK.  There are several clients available from the Apache ActiveMQ website.  For Node.js using AMQP, you may want to try this open source client: 
+
+https://github.com/noodlefrenzy/node-amqp10"
+Amazon MQ	"Re: Consume and Publish message to AWS MQ using amqp protocol in Nodejs ?
+Hello Trevor,
+
+Can you give me an example how to use the failover string for Node.js?
+
+Thanks!"
+Amazon MQ	"Re: Consume and Publish message to AWS MQ using amqp protocol in Nodejs ?
+It doesn't look like the node-amqp10 client supports the failover:// protocol, as far as I can tell. The native ActiveMQ clients support the failover protocol."
+Amazon MQ	"AmazonMQ scaling
+Hi,
+Amazon provided ActiveMQ has HA(active/standby) and this was only one single mq.m4.large instance. IMHO there is no way for vertical scaling if ten of thousands messages come in the broker instance.
+I have following questions related to AmazonMQ:
+1. How AmazonMQ vertically scales or is there a way to increase the number of connections that a single ActiveMQ broker can handle.
+In addition to scaling a single broker we can also use number of ActiveMQ brokers and that means horizontal scaling.
+2. Does AmazonMQ has horizontal scaling or any kind of traffic partitioning.
+
+Thanks in advance."
+Amazon MQ	"Re: AmazonMQ scaling
+1. Today you cannot vertically scale an instance, but stay tuned for some news in this area. To increase the # of connections, reach out through support and we can increase your limit.
+2. There is no horizontal scaling out-of-the-box today, but take a look at this Twitch video to see how one of our customers achieved horizontal scaling: https://www.twitch.tv/videos/259845421 (see at about 26:40).  Stay tuned for future capabilities in this area.
+
+In general our most highly scalable messaging service today is SQS for queues, or SNS for topics.  We will be improving Amazon MQ scalability as we move forward."
+Amazon MQ	"when Korea area can use Amazon MQ ?
+thanks"
+Amazon MQ	"Re: when Korea area can use Amazon MQ ?
+We can't share specifics of our roadmap in a public forum, but we are planning to launch in the Asia Pacific (Seoul) region soon so stay tuned! If you are under NDA please contact your account team for further details."
+Amazon MQ	"Error while attempting to add new Connection to the pool
+What's the most probable reason that Java example here doesn't work. 
+
+https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-working-java-example.html
+
+Broker's SSL URL, username and password should be correct. VPC's attributes enableDnsHostnames and enableDnsSupport are true. There shouldn't also be any local firewall blocking network traffic.
+
+Exception in thread ""main"" javax.jms.JMSException: Error while attempting to add new Connection to the pool
+        at org.apache.activemq.jms.pool.PooledConnectionFactory.createJmsException(PooledConnectionFactory.java:266)
+        at org.apache.activemq.jms.pool.PooledConnectionFactory.createConnection(PooledConnectionFactory.java:225)
+        at org.apache.activemq.jms.pool.PooledConnectionFactory.createConnection(PooledConnectionFactory.java:204)
+        at AmazonMQExample.main(AmazonMQExample.java:44)
+Caused by: javax.jms.JMSException: Could not connect to broker URL: ssl://b-04b65332-efa4-431f-8827-3c2d9677f851-1.mq.eu-central-1.amazonaws.com:61617. Reason: java.net.ConnectException: Connection timed out: connect
+        at org.apache.activemq.util.JMSExceptionSupport.create(JMSExceptionSupport.java:36)
+        at org.apache.activemq.ActiveMQConnectionFactory.createActiveMQConnection(ActiveMQConnectionFactory.java:374)
+        at org.apache.activemq.ActiveMQConnectionFactory.createActiveMQConnection(ActiveMQConnectionFactory.java:304)
+        at org.apache.activemq.ActiveMQConnectionFactory.createConnection(ActiveMQConnectionFactory.java:244)
+        at org.apache.activemq.jms.pool.PooledConnectionFactory.createConnection(PooledConnectionFactory.java:275)
+        at org.apache.activemq.jms.pool.PooledConnectionFactory$1.makeObject(PooledConnectionFactory.java:95)
+        at org.apache.activemq.jms.pool.PooledConnectionFactory$1.makeObject(PooledConnectionFactory.java:92)
+        at org.apache.commons.pool2.impl.GenericKeyedObjectPool.create(GenericKeyedObjectPool.java:1041)
+        at org.apache.commons.pool2.impl.GenericKeyedObjectPool.addObject(GenericKeyedObjectPool.java:1221)
+        at org.apache.activemq.jms.pool.PooledConnectionFactory.createConnection(PooledConnectionFactory.java:221)
+        ... 2 more
+Caused by: java.net.ConnectException: Connection timed out: connect
+        at java.net.DualStackPlainSocketImpl.waitForConnect(Native Method)
+        at java.net.DualStackPlainSocketImpl.socketConnect(Unknown Source)
+        at java.net.AbstractPlainSocketImpl.doConnect(Unknown Source)
+        at java.net.AbstractPlainSocketImpl.connectToAddress(Unknown Source)
+        at java.net.AbstractPlainSocketImpl.connect(Unknown Source)
+        at java.net.PlainSocketImpl.connect(Unknown Source)
+        at java.net.SocksSocketImpl.connect(Unknown Source)
+        at java.net.Socket.connect(Unknown Source)
+        at sun.security.ssl.SSLSocketImpl.connect(Unknown Source)
+        at org.apache.activemq.transport.tcp.TcpTransport.connect(TcpTransport.java:525)
+        at org.apache.activemq.transport.tcp.TcpTransport.doStart(TcpTransport.java:488)
+        at org.apache.activemq.util.ServiceSupport.start(ServiceSupport.java:55)
+        at org.apache.activemq.transport.AbstractInactivityMonitor.start(AbstractInactivityMonitor.java:169)
+        at org.apache.activemq.transport.InactivityMonitor.start(InactivityMonitor.java:52)
+        at org.apache.activemq.transport.TransportFilter.start(TransportFilter.java:64)
+        at org.apache.activemq.transport.WireFormatNegotiator.start(WireFormatNegotiator.java:72)
+        at org.apache.activemq.transport.TransportFilter.start(TransportFilter.java:64)
+        at org.apache.activemq.transport.TransportFilter.start(TransportFilter.java:64)
+        at org.apache.activemq.ActiveMQConnectionFactory.createActiveMQConnection(ActiveMQConnectionFactory.java:354)
+        ... 10 more"
+Amazon MQ	"Re: Error while attempting to add new Connection to the pool
+Hi jjylonen@,
+
+ Could you check the security group configuration for your broker? It might be related to inbound rules for your security group. You can check if this is the issue trying to access the ActiveMQ console from the host you are getting the connection error. Keep in mind that they are different ports.
+
+  We have a helper to explain it better on Amazon MQ console. Open the describe page to your broker  and look for a blue information called ""Enable connections to your broker"".
+
+Cheers,
+Daniel
+
+Edited by: danielbdAWS on Apr 6, 2018 11:05 AM"
+Amazon MQ	"Re: Error while attempting to add new Connection to the pool
+Did you open the port, as described in the prerequisites section? https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-working-java-example.html#quick-start-prerequisites"
+Amazon MQ	"JBoss application server integration
+I have an existing JBoss 4.2.3 application which successfully runs on Java 8. I used the internal JBoss messaging broker which has issues. I need to integrate with Active MQ, of which AWS has a wrapper around. There is documentation of integrating JBoss with an embedded ActiveMQ: http://activemq.apache.org/integrating-apache-activemq-with-jboss.html, which is not what I'm looking for, though I made changes which seem generic for a standalone ActiveMQ server.
+
+I removed the existing jms-ds.xml (data source) file and jms-ra.rar. The remaining jms-ds.xml in the jms directory, I updated to include the activemq RAR file which I placed inside JBoss' deploy/jms directory.
+
+For the active MQ rar file, I updated META-INF/ra.xml. I set the user name and password. But for the ""ServerUrl"" property, I currently set ""ssl://b-1c0fe7e0-1d28-4fa2-a6ff-fe22e659b423-1.mq.us-west-2.amazonaws.com:61617"", which I don't know if this is the protocol and URL I should be setting.
+
+Getting lots of errors upon JBoss startup. One of which is attempt to locate ""java:/ConnectionFactory"" within the code. Seems like an implicit name? Can't find where it is defined in original settings, if it even was. If there is a JNDI setting I need to set somewhere for active mq, I can't find it.
+
+Has anyone had experience with such integration or can point me to documentation out there (haven't found any)?"
+Amazon MQ	"Re: JBoss application server integration
+jonathant@, here is another link that may help, as it refers to installing ActiveMQ separately from JBoss, although it is for a newer version of JBoss.
+
+https://developer.jboss.org/wiki/IntegrationOfJBossAS7WithActiveMQ#jive_content_id_JBoss_AS_7_and_ActiveMQ
+
+Edited by: TrevoratAWS on Apr 3, 2018 2:11 PM"
+Amazon MQ	"Authorization Plugin and web console
+I have been experimenting with the authorizationPlugin.  It is working great via JMS and I am able to create/read/write from all my topics and queues.  However, when it is enabled I am no longer able to interact with the Topics/Queues in the web console.  My user is in the a admin group and that group has rights to all topics and queues as well as a temp destination authorization entry.  Any idea what I am doing wrong?
+
+Thank you,
+Brent"
+Amazon MQ	"Re: Authorization Plugin and web console
+Hello  bbillows, 
+
+When you configure an authorizationPlugin you will have to give appropriate permissions to a system group called ""activemq-webconsole"". 
+
+Please refer to https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/using-amazon-mq-securely.html#always-configure-system-group for bit more information.
+
+Hope this helps.
+
+Cheers, 
+Alvin"
+Amazon MQ	"Trouble with authorization plugin
+I am trialling the AmazonMQ service and I am unable to make the authorization plugin work.
+
+I have a broker running.  With the default configuration, I am able to connect clients to publish and subscribe, everything is fine.  But when I enable authorization (and restart the broker), I cannot connect; I get a connack 5 error (not authorized).  I can, however, still use the Apache ActiveMQ web console (with a user that is both in admins, and has console access enabled).
+
+I've pasted below my whole configuration (comments removed).  I have configured users for this broker via the AWS console, and those users belong to the groups referenced in the configuration (admin, subscribers, publishers).
+
+What am I doing wrong?
+
+Thanks in advance,
+Ben
+
+<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+<broker xmlns=""http://activemq.apache.org/schema/core"">
+  <destinationPolicy>
+    <policyMap>
+      <policyEntries>
+        <policyEntry topic=""&gt;"">
+          <pendingMessageLimitStrategy>
+            <constantPendingMessageLimitStrategy limit=""1000""/>
+          </pendingMessageLimitStrategy>
+        </policyEntry>
+      </policyEntries>
+    </policyMap>
+  </destinationPolicy>
+  <plugins>
+    <authorizationPlugin>
+      <map>
+        <authorizationMap>
+          <authorizationEntries>
+            <authorizationEntry admin=""activemq-webconsole,admins"" read=""activemq-webconsole,subscribers"" topic=""&gt;"" write=""activemq-webconsole,publishers""/>
+          </authorizationEntries>
+        </authorizationMap>
+      </map>
+    </authorizationPlugin>
+  </plugins>
+</broker>
+
+
+Edited by: leftclick on Mar 28, 2018 7:34 AM"
+Amazon MQ	"Re: Trouble with authorization plugin
+leftclick wrote:
+I am trialling the AmazonMQ service and I am unable to make the authorization plugin work.
+
+I have a broker running.  With the default configuration, I am able to connect clients to publish and subscribe, everything is fine.  But when I enable authorization (and restart the broker), I cannot connect; I get a connack 5 error (not authorized).  I can, however, still use the Apache ActiveMQ web console (with a user that is both in admins, and has console access enabled).
+
+I've pasted below my whole configuration (comments removed).  I have configured users for this broker via the AWS console, and those users belong to the groups referenced in the configuration (admin, subscribers, publishers).
+
+What am I doing wrong?
+
+Thanks in advance,
+Ben
+
+<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+<broker xmlns=""http://activemq.apache.org/schema/core"">
+  <destinationPolicy>
+    <policyMap>
+      <policyEntries>
+        <policyEntry topic=""&gt;"">
+          <pendingMessageLimitStrategy>
+            <constantPendingMessageLimitStrategy limit=""1000""/>
+          </pendingMessageLimitStrategy>
+        </policyEntry>
+      </policyEntries>
+    </policyMap>
+  </destinationPolicy>
+  <plugins>
+    <authorizationPlugin>
+      <map>
+        <authorizationMap>
+          <authorizationEntries>
+            <authorizationEntry admin=""activemq-webconsole,admins"" read=""activemq-webconsole,subscribers"" topic=""&gt;"" write=""activemq-webconsole,publishers""/>
+          </authorizationEntries>
+        </authorizationMap>
+      </map>
+    </authorizationPlugin>
+  </plugins>
+</broker>
+
+
+Edited by: leftclick on Mar 28, 2018 7:34 AM
+leftclick wrote:
+I am trialling the AmazonMQ service and I am unable to make the authorization plugin work.
+
+I have a broker running.  With the default configuration, I am able to connect clients to publish and subscribe, everything is fine.  But when I enable authorization (and restart the broker), I cannot connect; I get a connack 5 error (not authorized).  I can, however, still use the Apache ActiveMQ web console (with a user that is both in admins, and has console access enabled).
+
+I've pasted below my whole configuration (comments removed).  I have configured users for this broker via the AWS console, and those users belong to the groups referenced in the configuration (admin, subscribers, publishers).
+
+What am I doing wrong?
+
+Thanks in advance,
+Ben
+
+<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+<broker xmlns=""http://activemq.apache.org/schema/core"">
+  <destinationPolicy>
+    <policyMap>
+      <policyEntries>
+        <policyEntry topic=""&gt;"">
+          <pendingMessageLimitStrategy>
+            <constantPendingMessageLimitStrategy limit=""1000""/>
+          </pendingMessageLimitStrategy>
+        </policyEntry>
+      </policyEntries>
+    </policyMap>
+  </destinationPolicy>
+  <plugins>
+    <authorizationPlugin>
+      <map>
+        <authorizationMap>
+          <authorizationEntries>
+            <authorizationEntry admin=""activemq-webconsole,admins"" read=""activemq-webconsole,subscribers"" topic=""&gt;"" write=""activemq-webconsole,publishers""/>
+          </authorizationEntries>
+        </authorizationMap>
+      </map>
+    </authorizationPlugin>
+  </plugins>
+</broker>
+
+
+Edited by: leftclick on Mar 28, 2018 7:34 AM
+Hi Ben,
+Not sure if this will help or not, but when I was experimenting with the Authorization plugin I had to add an entry for the Advisory topics.  Something like the following should fix your issue:
+
+<authorizationEntry admin=""activemq-webconsole,admins"" read=""activemq-webconsole,admins"" topic=""ActiveMQ.Advisory.&gt;"" write=""activemq-webconsole,admins""/>
+
+This is a relevant line from the documentation here (http://activemq.apache.org/security.html):
+Note that full access rights should generally be given to the ActiveMQ.Advisory destinations because by default an ActiveMQConnection uses destination advisories to get early knowledge of temp destination creation and deletion. 
+
+Hope this helps,
+Brent"
+Amazon MQ	"Redelivery Policy in configuration file makes broker unavailable
+I am trying to implement a custom redelivery policy.  I initially commented the values in the default configuration back in, but this caused the broker to not restart.  Every other option I have tried other then simply keeping that policy commented out has caused the broker to not start and be unavailable until the configuration was changed back to a previous version with the redelivery plugin commented out.
+
+The documentation suggests this can be changed.  Has anyone had any luck changing it?  Is the default example somehow flawed?  It appears to be the same information that is on the official ActiveMQ site, so it seems like it should work.  Any help you can provide would be most appreciated.
+Thank you,
+Brent"
+Amazon MQ	"Re: Redelivery Policy in configuration file makes broker unavailable
+Hello, 
+
+When you add the redelivery plugin to ActiveMQ you will also have to enable the ""schedulerSupport"" as  documented here: http://activemq.apache.org/delay-and-schedule-message-delivery.html
+
+The ""schedulerSupport"" can be configured like the following: 
+<broker schedulerSupport=""true"" ...> 
+
+Hope this helps. 
+
+Sincerely, 
+Alvin"
+Amazon MQ	"Re: Redelivery Policy in configuration file makes broker unavailable
+Thank you so much, I completely missed that setting.  Everything is working great now.
+Brent"
+Amazon MQ	"JMX Access
+Does Amazon MQ support JMX connections and the use of MBeans?
+Thanks"
+Amazon MQ	"Re: JMX Access
+Amazon MQ does not support JMX access at this time. JMX is often used for monitoring, and we integrate with CloudWatch for that purpose.  What is your goal for using JMX?"
+Amazon MQ	"Re: JMX Access
+Thank you for your response.  We are currently evaluating AmazonMQ as a replacement for our current MOM and there were 2 usecases related to JMX I was exploring.  Purging a queue and reporting on statistics of Destinations.  I could consume all the messages in a queue via JMS, not sure if that if inefficient, but I think this functionality is mostly for DEV/TEST environments.  As far as statistics are concerned I think CloudWatch has all the information we would initially be interested.  
+
+I know this is open-ended, but has anyone encountered any gotchas, or ""good to knows"" related to using AmazonMQ that would be good to know about?
+
+Thank you,
+Brent"
+Amazon MQ	"Re: JMX Access
+I believe there is a way to Purge a queue through the ActiveMQ console, perhaps that would meet your needs?
+
+Regarding ""gotchas"" we are collecting best practices here:
+
+https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-best-practices.html"
+Amazon MQ	"Re: JMX Access
+Thank you for the response.  Yes there is a purge command in the admin console, but we were looking for a way to allow our users to purge their queues without giving them access to the console our other people's queues.  
+
+I ended up using jsoup to programmatically load the page and pull out the secret and send a purge command.  However, in testing the purge command was taking about a second to purge 1000,000 messages from the queue while using JMS to consume the same messages took just under 3 seconds.  In the end we went with the jms approach since it was simpler and didn't require us to try to figure out which broker was active.
+
+Thanks"
+Amazon MQ	"Is there a way to increase websocket endpoint message size
+ActiveMQ provides a way to configure the transport connector/endpoint via transportConnector (http://activemq.apache.org/stomp.html)
+
+<transportConnectors>
+    <transportConnector name=""ws"" uri=""ws://0.0.0.0:61614?websocket.maxTextMessageSize=999999""/>
+</transportConnectors>    
+
+At the moment the default message size for WebSocket endpoint is 16KB, and I would like to increase it; however, Amazon MQ does not allow me to specify <transportConnectors> under the <broker> section in the configuration (https://ap-southeast-2.console.aws.amazon.com/amazon-mq/home?region=ap-southeast-2#/configurations)
+
+Is there a way to solve it? At the moment I only like to configure the websocket.maxTextMessageSize, is there another way to configure it?"
+Amazon MQ	"Re: Is there a way to increase websocket endpoint message size
+This option is currently not supported, but we are logging it as a feature request."
+Amazon MQ	"Re: Is there a way to increase websocket endpoint message size
+Similar to the question above, is it possible to turn on the Virtual Topic Subscription strategy for WebSockets or MQTT transport?
+
+http://activemq.apache.org/mqtt.html
+
+<transportConnector name=""mqtt"" uri=""mqtt://localhost:1883?transport.subscriptionStrategy=mqtt-virtual-topic-subscriptions""/>"
+Amazon MQ	"Re: Is there a way to increase websocket endpoint message size
+Not currently supported, but we will add a feature request."
+Amazon MQ	"AmazonMQ Roadmap
+Hello,
+
+We're looking at switching off of RabbitMQ as our message broker to use AmazonMQ, however I have some concerns around performance limitations.
+
+What is the expected throughput of mq.m4.large vs mq.t2.micro?
+
+Currently the max instance size is mq.m4.large, are there any plans to have any other sizes available?
+
+Also what about support for horizontal scaling? Allowing multiple machines to work together in a cluster?
+
+Thank you,"
+Amazon MQ	"Re: AmazonMQ Roadmap
+Hi,
+
+The performance can vary greatly based on your use case and parameters - in particular message size, numbers of producers and consumers, number of queues, persistent/non-persistent mode, and various other settings.  We recommend you use a tool such as JMS Benchmark (https://github.com/chirino/jms-benchmark), which is quite easy to run yourself, and experiment with different scenarios that match your use case.
+
+Regarding roadmap, if you contact your account manager or private-message me.  We don't disclose roadmap publicly but we can discuss under NDA.
+
+Thanks,
+Trevor"
+Amazon MQ	"How to test fail-over for Active/standby brokers
+The ""Reboot Broker"" seems to reload both brokers in the high availability pair.  I would like to reboot the active broker and cause fail-over to the standby broker.  Is this possible?"
+Amazon MQ	"Re: How to test fail-over for Active/standby brokers
+Hi kbarr@,
+
+You are correct - a reboot will reload both brokers as this is the intended design. When the reboot process reloads the primary broker, it will cause your application to fail over to the secondary broker. This is the best way to test the fail over process. Only one broker will be active at a given time.
+
+Zak"
+Amazon MQ	"Re: How to test fail-over for Active/standby brokers
+Hi Zak.  I am not sure I fully understand what you are saying.  Are you saying the ""Reboot broker"" button reloads one broker at a time.  Therefore applications will failover to the secondary broker while the primary broker is rebooting.  Then when the primary is back up the secondary broker reboots and the applications fail back to the primary?
+
+This is not what I am seeing, I believe I am seeing both brokers go down and recover in aprox 5 minutes.  During the test period there is no connectivity to either broker."
+Amazon MQ	"Re: How to test fail-over for Active/standby brokers
+That's exactly how it should behave.
+
+Could you share your broker ARN via a private message? I can check out the logs."
+Amazon MQ	"Are Virtual Topics/Queues available ?
+I'm working on evaluating this service as a replacement for my existing ActiveMQ implementation.
+I use Virtual Topics in my current setup but when I tried to set it up using this service is does not seem to be working is Virtual Topics not available in the AWS version?
+
+I was able to get the Composite Destinations to work.
+
+Thanks
+Mike"
+Amazon MQ	"Re: Are Virtual Topics/Queues available ?
+Hey Mike,
+
+Could you share the steps you used to test this? There isn't anything in the system inherently blocking Virtual Topics.
+
+(don't forget to add useVirtualTopics=""true"" into the broker element in your configuration and then restart the broker)
+
+Cheers,
+Zak
+
+Edited by: zak@AWS on Nov 30, 2017 12:10 PM"
+Amazon MQ	"Re: Are Virtual Topics/Queues available ?
+I use a tool to send data to ActiveMQ and read the response.
+So I setup an AWS Service in my sandbox using the following stock config:
+
+Only addedd the useVirtualTopics=""true"" attribute.
+
+<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+<broker useVirtualTopics=""true"" xmlns=""http://activemq.apache.org/schema/core"">
+  <!--
+  A configuration contains all of the settings for your ActiveMQ broker, in XML format (similar to ActiveMQ's activemq.xml file).
+  You can create a configuration before creating any brokers. You can then apply the configuration to one or more brokers.
+
+  For more information, see Configuration and Amazon MQ Broker Configuration Parameters in the Amazon MQ Developer Guide:
+https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-broker-configuration-parameters.html
+  -->
+  <destinationInterceptors>
+    <!--
+    Mirrored queues let you send a copy of each message to a topic with a similar name automatically.
+    For more information, see http://activemq.apache.org/mirrored-queues.html
+    -->
+    <!--
+    <mirroredQueue copyMessage=""true"" postfix="".qmirror"" prefix=""""/>
+    -->
+    <!--
+    Virtual destinations let you configure advanced routing of messages between destinations.
+    For more information, see http://activemq.apache.org/virtual-destinations.html
+    -->
+    <!-- <virtualDestinationInterceptor>
+      <virtualDestinations>
+        <virtualTopic name="">"" prefix=""VirtualTopicConsumers.*."" selectorAware=""false""/>
+        <compositeQueue name=""compositQueue.heartbeat"">
+          <forwardTo>
+            <queue physicalName=""Consumer.A.heartbeat""/>
+            <queue physicalName=""Consumer.B.heartbeat""/>
+            <topic physicalName=""heartbeat""/>
+          </forwardTo>
+        </compositeQueue>
+      </virtualDestinations>
+    </virtualDestinationInterceptor> -->
+  </destinationInterceptors>
+  <!--
+  Destination policies let you configure a rich set of behaviors for your queues and topics.
+  For more information, see http://activemq.apache.org/per-destination-policies.html
+  -->
+  <!--
+  <destinationPolicy>
+    <policyMap>
+      <policyEntries>
+        <policyEntry topic=""FOO.>"">
+          <dispatchPolicy>
+            <roundRobinDispatchPolicy/>
+          </dispatchPolicy>
+          <subscriptionRecoveryPolicy>
+            <lastImageSubscriptionRecoveryPolicy/>
+          </subscriptionRecoveryPolicy>
+        </policyEntry>
+        <policyEntry advisoryForConsumed=""true"" tempTopic=""true""/>
+        <policyEntry advisoryForConsumed=""true"" tempQueue=""true""/>
+      </policyEntries>
+    </policyMap>
+  </destinationPolicy>
+  -->
+  <!--
+  Typically, destinations are created automatically when they are used. Amazon MQ lets you create destinations when the broker is started.
+  For more information, see http://activemq.apache.org/configure-startup-destinations.html
+  -->
+  <!--
+  <destinations>
+    <queue physicalName=""FOO.BAR""/>
+    <topic physicalName=""SOME.TOPIC""/>
+  </destinations>
+  -->
+  <!--
+  You can control advanced ActiveMQ features using plugins.
+  -->
+  <plugins>
+    <!--
+    The Authorization plugin allows you to control the groups of users that are allowed to perform certain operations on your destinations.
+    For more information, see http://activemq.apache.org/security.html
+    -->
+    <!--
+    <authorizationPlugin>
+      <map>
+        <authorizationMap>
+          <authorizationEntries>
+            <authorizationEntry admin=""guests,users"" queue=""GUEST.>"" read=""guests"" write=""guests,users""/>
+            <authorizationEntry admin=""guests,users"" read=""guests,users"" topic=""ActiveMQ.Advisory.>"" write=""guests,users""/>
+          </authorizationEntries>
+          <tempDestinationAuthorizationEntry>
+            <tempDestinationAuthorizationEntry admin=""tempDestinationAdmins"" read=""tempDestinationAdmins"" write=""tempDestinationAdmins""/>
+          </tempDestinationAuthorizationEntry>
+        </authorizationMap>
+      </map>
+    </authorizationPlugin>
+    -->
+    <!--
+    The Discarding DLQ plugin simplifies the configuration of your global dead-letter queue strategy.
+    You can take advantage of a more granular per-destination control by using destination policies.
+    For more information, see http://activemq.apache.org/message-redelivery-and-dlq-handling.html
+    -->
+    <!--
+    <discardingDLQBrokerPlugin dropAll=""true"" dropTemporaryQueues=""true"" dropTemporaryTopics=""true""/>
+    -->
+    <!--
+    The Force Persistency Mode plugin can override the persistency mode set on messages.
+    -->
+    <!--
+    <forcePersistencyModeBrokerPlugin persistenceFlag=""true""/>
+    -->
+    <!--
+    The Redelivery plugin extends the capabilities of destination policies with respect to message redelivery.
+    For more information, see http://activemq.apache.org/message-redelivery-and-dlq-handling.html
+    -->
+    <!--
+    <redeliveryPlugin fallbackToDeadLetter=""true"" sendToDlqIfMaxRetriesExceeded=""true"">
+      <redeliveryPolicyMap>
+        <redeliveryPolicyMap>
+          <redeliveryPolicyEntries>
+            <redeliveryPolicy maximumRedeliveries=""4"" queue=""SpecialQueue"" redeliveryDelay=""10000""/>
+          </redeliveryPolicyEntries>
+          <defaultEntry>
+            <redeliveryPolicy initialRedeliveryDelay=""5000"" maximumRedeliveries=""4"" redeliveryDelay=""10000""/>
+          </defaultEntry>
+        </redeliveryPolicyMap>
+      </redeliveryPolicyMap>
+    </redeliveryPlugin>
+    -->
+    <!--
+    The Statistics plugin lets you query broker or destination statistics by sending messages to the broker.
+    For more information, see http://activemq.apache.org/statisticsplugin.html
+    -->
+    <!--
+    <statisticsBrokerPlugin/>
+    -->
+    <!--
+    The Timestamping plugin lets the broker use server-side time instead of client-provided time for messages.
+    For more information, see http://activemq.apache.org/timestampplugin.html
+    -->
+    <!--
+    <timeStampingBrokerPlugin ttlCeiling=""86400000"" zeroExpirationOverride=""86400000""/>
+    -->
+  </plugins>
+</broker>
+
+My process is as follows the messages are sent to an inbound queue ""heartbeat"" no issues.
+I have a Camel microservice doing content routing from the queue to a ""VirtualTopic.heartbeat"" topic no issues.
+I then have a consumer listening to ""Consumer.A.VirtualTopic.heartbeat"" queue. 
+No Messages are sent to that queue.
+
+Interesting is that the ActiveMQ.Advisory.Consumer.Queue.Consumer.A.VirtualTopic.heartbeat contains messages. So it appears that the virtual topic is partially working. 
+
+Mike"
+Amazon MQ	"Re: Are Virtual Topics/Queues available ?
+I've double checked ActiveMQ source code, and it turns out that by default useVirtualTopics=""true"" and you don't have to specify it.
+
+By looking at the configuration provided configuration by you on the forum, it seems that the virtual destination configuration is commented out. It should look similar to this:
+
+<destinationInterceptors>
+<virtualDestinationInterceptor>
+<virtualDestinations>
+<virtualTopic name="">"" prefix=""VirtualTopicConsumers.*."" selectorAware=""false""/>
+</virtualDestinations>
+</virtualDestinationInterceptor>
+</destinationInterceptors>
+
+I suspect that you did not have virtual topics enabled and you saw advisory because you connected the consumer to that queue (which auto-creates the destination in ActiveMQ).
+
+Please follow up with you findings. It would be interesting to other reader what was the root cause of this."
+Amazon MQ	"Re: Are Virtual Topics/Queues available ?
+> I've double checked ActiveMQ source code, and it turns out that by default useVirtualTopics=""true"" and you don't have to specify it.
+> By looking at the configuration provided configuration by you on the forum, it seems that the virtual destination configuration is commented out. It should look similar to this:
+> 
+> <destinationInterceptors>
+> <virtualDestinationInterceptor>
+> <virtualDestinations>
+> <virtualTopic name="">"" prefix=""VirtualTopicConsumers.*."" selectorAware=""false""/>
+> </virtualDestinations>
+> </virtualDestinationInterceptor>
+> </destinationInterceptors>
++> +
+With a standard ActiveMQ 5.15.0 installation in EC2, Virtual Topics work as documented without this configuration of destinationInterceptors. I am able to publish data to a queue, route to a virtual topic in the standard naming convention (i.e. VirtualTopic.topic_name), and either subscribe directly to the topic with 1..N consumers or consume from a queue with the default naming convention (i.e. Consumer.consumer_name.VirtualTopic.topic_name). When I switch to Amazon MQ with default configuration, the queue routing inherent in virtual destinations does not occur. Even if I add the useVirtualDestSubs attribute and set to ""true"", the expected behavior of consuming from different consumer queues does not occur."
+Amazon MQ	"Re: Are Virtual Topics/Queues available ?
+Thanks for reporting this!
+
+I've double check the ActiveMQ source code and it seems that having empty destinationInterceptors element has a different effect than omitting this element completely. If it is missing, a default virtual topic handler is instantiated automatically:
+https://github.com/apache/activemq/blob/master/activemq-broker/src/main/java/org/apache/activemq/broker/BrokerService.java#L2382
+
+To resolve your issue, just remove the destinationInterceptors element.
+
+We'll follow up with a general fix shortly."
+Amazon MQ	"Re: Are Virtual Topics/Queues available ?
+Same issue, and puzzling why virtualtopics didn't work.
+Removing the empty conf section as suggested, fixed the problem."
+Amazon MQ	"Re: Are Virtual Topics/Queues available ?
+We've changed the way default configurations are created. By default virtual destinations are now enabled (an empty element is no longer present in the default XML configuration).
+
+This change does not affect existing configurations, created before the change was introduced."
+Amazon MQ	"Feature request: RabbitMQ!
+Hi,
+
+We just quickly assessed whether we could use AmazonMQ to replace our Ec2 hosted RabbitMQ broker but this is a lot more work then I expected. Also the dashboard of ActiveMQ is really...really... yeah.. archaic and painful to operate if you're used to RabbitMQ.
+
+If you're (still) using Java as the broker client in combination with Spring, RabbitMQ is the default implementation. Now if you're having a couple of microservices running Java/Spring/RMQ you can see it is not worth it to migrate to AmazonMQ/ActiveMQ. So here is my request, AmazonMQ is designed to host a configurable message-broker, you just need to add RabbitMQ there 
+
+thanks,
+pepijn"
+Amazon MQ	"Re: Feature request: RabbitMQ!
+You're welcome to try CloudAMQP https://www.cloudamqp.com. It's the worlds most used RabbitMQ as a Service, we host tens of thousands of RabbitMQ servers in EC2."
+Amazon MQ	"Re: Feature request: RabbitMQ!
+Agreed, the ApacheMQ GUI is indeed not so useful at the present state.
+
+I think AWS should mask ApacheMQ webgui with their GUI and just expose AWS gui to customers."
+Amazon MQ	"Re: Feature request: RabbitMQ!
+Thanks for the feedback. We will log this as a feature request. 
+
+Can you please elaborate on what is meant by ""archaic and painful to operate"" about ActiveMQ as compared to RabbitMQ? One of the reasons for this service is to remove some of that management overhead for our customers."
+Amazon MQ	"PCI Compliance and App Logs
+Are there any plans for Amazon MQ to become PCI compliant?  Also, I saw in a previous thread someone had asked about access to application level logs, I'm curious about that as well.   Will log access to be provided in the (near) future?  Currently these 2 issues are show stoppers for my company and I'm curious what the roadmap looks like going forward?
+
+Thank you."
+Amazon MQ	"Re: PCI Compliance and App Logs
+These are both on the roadmap. We can't share specific timelines in this forum, as that requires an NDA. Please reach out through your account team and we'd be happy to share more details.
+
+Thanks."
+Amazon MQ	"AmazonMQ servers HA pair systematically crashes and reboot
+During some testing, I found by chance a particular load where the whole AmazonMQ HA broker server side process crashes and then the two HA instances apparently keeps switching as a master (for some seconds each broker web gui is available in turn).
+
+It seems related to keeping a transaction long enough (ie. in my case after say 40000 messages the whole cluster apparently DoS and crashes - i can see the uptime on the pages resetting...).
+
+I'm apparently unable to find the server logs using the GUI in AWS, but I can give you my broker id and eventually code in PM for further inspection (just tell me whom I should send to replying to this message)."
+Amazon MQ	"Re: AmazonMQ servers HA pair systematically crashes and reboot
+Hi aceit
+I have sent you a PM requesting some more information. One we have some more details we can take a closer look.
+
+-Daniel"
+Amazon MQ	"Re: AmazonMQ servers HA pair systematically crashes and reboot
+replied with my ARN in PM.
+
+My scenario is:
+Client configured to connect to cluster (failover url mode), client is set to send 100000 test messages but after sending 40000 test messages in persistent mode, the client crashes with a socket error (""java.net.SocketException: Connection reset by peer: socket write error""), because the connection is broken (backend down).
+Checking the uptime on the broker it is clear that it restarted (ie. reset).
+
+-----CLIENT PECULIARITIES--
+sincerely the difference between a non-server crashing code and the crashing one I think it is this code (the code is actually generated by my ETL tool when I choose ""set transacted"" on the component):
+
+javax.jms.Session session_tMomOutput_1 = connection_tMomOutput_1
+.createSession(true, javax.jms.Session.AUTO_ACKNOWLEDGE);
+
+setting AUTO_ACKNOWLEDGE on a sending session apparently breaks something on the server side.
+
+hope it helps"
+Amazon MQ	"Re: AmazonMQ servers HA pair systematically crashes and reboot
+Was this issue ever solved ?
+
+Thanks,
+Serge"
+Amazon MQ	"Re: AmazonMQ servers HA pair systematically crashes and reboot
+I don't know.
+I've sent the details to the team as stated above, but apparently no official answer yet."
+Amazon MQ	"Re: AmazonMQ servers HA pair systematically crashes and reboot
+Hi aceit
+We are looking into the details of your situation. To further investigate your case we would like to ask you a few more questions to help us understand more about the problem:
+1. How many producers did you use to send messages to the broker and were you sending from multiple producers in parallel?
+2. What message size were you using (on average)?
+3. Were there any consumers connected to the broker while you were sending messages?
+4. How many queues were you sending messages to?
+5. Were there any other queues/topics in use on the broker at the time you were creating this situation?
+6. You mentioned that you were able to systematically produce this situation. How many times did you do this? How did you trigger recovery from this in-order to recreate the situation?"
+Amazon MQ	"How too change Amazon MQ  ActiveMQ web-console port
+I just don't see where to specify this.   
+
+When I create a broker, the AMQ Webconsole comes out at   https://blah.blah.amazonaws.com:8162  and I want that to be https://blah.blah.amazonaws.com:8080  (or some other port of my choosing). 
+
+Normally I tweak the file $AMQ_HOME/conf/jetty.xml and adjust:   <bean id=""jettyPort""    > 
+according to my needs.   I do not see how to do that in the AmazonMQ configurations editor  (which looks primarily as a device for maintaining the $AMQ_HOME/conf/activemq.xml broker config file). 
+
+How can I edit the jetty.xml?    Or is there some device in the Amazon console that I can update the port (that I just haven't found yet)?   (oh this doesn't work, the Amazon MQ config editor discards stuff that is not supported -- namely <bean    /> ) 
+
+Can I stuff the jettyPort bean into to the configurations editor (with the idea that it would override whatever is in the jetty.xml)? 
+
+Any other ideas?"
+Amazon MQ	"Re: How too change Amazon MQ  ActiveMQ web-console port
+Amazon MQ does not support changing the console port at the moment."
+Amazon MQ	"Does ""Jolokia"" API exist on port 8161?
+Is there support for the ""Jolokia"" api on port 8161? See http://www.jakubkorab.net/2013/11/monitoring-activemq-via-http.html.
+
+Thank you"
+Amazon MQ	"Re: Does ""Jolokia"" API exist on port 8161?
+Hi, 
+
+Jolokia API is not currently offered on Amazon MQ. Monitoring is available through CloudWatch. Please check https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-monitoring-cloudwatch.html for more info"
+Amazon MQ	"expected performance of durable
+I'm testing an instance of micro AmazonMQ (in HA pair).
+Sending from an on premise process to AmazonMQ, I get
+
+Non-persistent messaging to Queue: 5000 to 6000 msg/s
+Persistent messaging to Queue: 18 msg/s
+
+Is common and expected such a performance hit for using underlying storage in persistent mode?
+btw, I get also the same results using a large test broker instance.
+I'm using java with the native client org.apache.activemq.* classes from a standalone test client."
+Amazon MQ	"Re: expected performance of durable
+Hey aceit@,
+
+Try running your test using the jms-benchmark suite (https://github.com/chirino/jms-benchmark). I was able to get significantly higher throughput than what you are getting. My numbers were closer to ~15K messages/sec for persistent and ~160K messages/sec for non-persistent messages.
+
+Zak"
+Amazon MQ	"Re: expected performance of durable
+I suspect my test was indeed slower, because the client was launched outside AWS networks with 30 to 40 ms latency from the broker.
+I'm investigating the feasibility to integrate some on-prem processes with some running on AWS directly using the AmazonMQ broker.
+
+I don't know the underlying protocol semantics in detail, but I suspect that in persistent mode the MQ client requires and ACK from the server before proceeding with the next message, thus limiting the scalability (due to round trip time) with high latencies (no batching).
+
+Using a client to broker running both in the same AWS network VPC indeed higher throughput is expected due to microsec latencies .
+
+Is it possible in ApacheMQ to relax this behaviour/guarantees (ie. store the message in the broker anyway but not waiting on ACK? so at least in case of HA failover the in-transit messages are not lost and they can still be managed by the other broker)."
+Amazon MQ	"Re: expected performance of durable
+You may want to consider using async sends, ActiveMQ has some documentation on it here:
+
+http://activemq.apache.org/async-sends.html"
+Amazon MQ	"Re: expected performance of durable
+Excellent, thanks for the link, the performance is much better using such option (of course it relaxes strict ACK semantics to client, but is ok for me because I don't want to lose messages in case of HA failover).
+It goes to 4200 msg / s from outside AWS (30ms) that is ok for my use case.
+
+It happens in fact that by default (and rightly so) the client switch to sync mode if ""persistent"" messages are required and if one send outside of a well defined transaction, to respect a more strict delivery semantics. Of course this destroys throughput especially if an RTT in the order of ms is involved.
+
+""persistent"" inside a well defined JMS transaction is automatically sent in async, though.
+
+thanks for the insight,
+bye"
+Amazon MQ	"Re: expected performance of durable
+I experienced a similar low throughput.
+I'd spun up a client instance in the same vpc as the Amazon MQ, sending 1kb messages with persistence enabled.
+Everything else being out of the box configuration for an AmazonMQ m4.large.
+I saw a max publish throughput of 100messages/sec.
+When I spun up more producers, then the per producer throughput fell down. Overall throughput remained in the range of 100 messages per sec.
+
+a. Is that the throughput you'd typically expect or are there other performance tweaks one could apply?
+
+I do see Trevor's note about async mode, and that mode does increase the throughput by an order of magnitude. But I believe, then I'm loosing transactional guarantee.
+b. Is my understanding correct?
+
+Edited by: whitewolf on Dec 13, 2017 9:43 PM"
+Amazon MQ	"Re: expected performance of durable
+Unless forced, with the option explained before, native ApacheMQ client reverts to SYNC if in fact 1) transactions are not used 2) persistence required.
+
+If you send inside transaction boundaries a batch of messages, async is used and the performance is good and you have transactional guarantees and semantics.
+(still this mode crashes completely my AmazonMQ cluster, after 40000 msg circa, see the other message here in the forum). 
+
+
+If you require persistence and you consider a single message a transaction by itself, you are indeed limited to the RTT, otherwise it would be impossible to give guarantees."
+Amazon MQ	"Encryption of data at rest
+Hi,
+
+On the AWS MQ features page is states that it is simple to encrypt persistent messages (data at rest), but I see no option in the AWS console to do this.
+
+As far as I know KahaDB itself does not support it so it is a case of saving messages to an encrypted volume (EBS / EFS) by configuring the location of KahadDB (in xml configuration) or is it achieved by some other means?
+
+Thanks"
+Amazon MQ	"Re: Encryption of data at rest
+The data is encrypted on the storage volume (at rest) using service managed keys by default. We are evaluating the option of enabling Customer-Managed-Keys (CMK) for encrypting your data at rest, but I cannot comment on a timeline right now."
+Amazon MQ	"SERIALIZABLE_PACKAGES configuration with AmazonMQ
+Hi Team 
+
+We are getting an exception while using AmazonMQ service with our application. Here is exception, 
+
+""Forbidden class net.intigral.ice.model.entities.gracenote.Media! This class is not trusted to be serialized as ObjectMessage payload. Please take a look at http://activemq.apache.org/objectmessage.html for more information ""
+
+Based on findings from documention we found that the parameter ""-Dorg.apache.activemq.SERIALIZABLE_PACKAGES=*"" needs to be added to activemq configs.
+
+Can you suggest how to append the same with AmazonMQ xml configuration. 
+
+Thanks"
+Amazon MQ	"Re: SERIALIZABLE_PACKAGES configuration with AmazonMQ
+AWS support Team
+
+Can you suggest a solution or workaround for this ?? in other words is it possible to do the same on AmazonMQ. 
+
+Thanks
+Govind"
+Amazon MQ	"No support for Network of brokers?
+Any idea when network of brokers will be supported?
+
+Our current implementation is setup using this to route messages across regions.
+
+Mike"
+Amazon MQ	"Re: No support for Network of brokers?
+We are planning to support this in future - please contact us through your account team as we are unable to share specific dates in this public forum.  We would love to get on the phone with you to have a more detailed discussion."
+Amazon MQ	"Custom Authorizer
+I am evaluating Amazon MQ as a possible replacement for an existing MQTT broker architecture and it appears as though there is very little integration with other AWS services in this offering. In particular, the authn and authz options for this new service is severely lacking. It depends on managing access to the broker topics using ActiveMQ-managed user names and passwords. I see support for the ActiveMQ built-in authorizationPlugin which allows a mapping of read/write semantics to a group of users, but no support for a custom authorization plugin. I was imagining AWS would at least include a built-in plugin that could be configured to call an AWS Lambda function to authorize request principals as is supported with other AWS services.
+
+Is there any intention to extend the Amazon MQ service to integrate better with the AWS ecosystem or at least support custom plugins?"
+Amazon MQ	"Re: Custom Authorizer
+We have the same question.  On-prem ActiveMQ supports custom authorization plugins which are typically loaded onto the server (jars) and configured by the administrator.  
+
+Is this planned?  We are particularly interested in auth plugins implementing MessageAuthorizationPolicy.
+
+Thanks!"
+Amazon MQ	"Re: Custom Authorizer
+As an initial release we currently support ActiveMQ's basic authentication mechanism (username/password). We plan to add more auth capabilities going forward but don't yet have specific plans to share. Please contact your account team if you would like to engage us to talk about your requirements, we'd be happy to discuss further."
+Amazon MQ	"Is REST API available for sending and consuming messages  ?
+Hi, 
+
+In original ActiveMQ broker REST API is available for creating and consuming messages (http://activemq.apache.org/rest.html). It seems that this option is disabled in Amazon MQ ?
+When I am trying to wget ... https://awshost:8162/api/message/TEST?type=queue I get 404.
+Is possible to somehow enable this option via configuration.
+
+Thanks in advance.
+ENE"
+Amazon MQ	"Re: Is REST API available for sending and consuming messages  ?
+The REST API option is not supported at the moment. You'll have to consider one of the available options - OpenWire, STOMP, MQTT, AMQP, or WSS. 
+
+We will consider supporting the REST API in a future release."
+Amazon MQ	"Re: Is REST API available for sending and consuming messages  ?
+Thanks for the answer. In our case producers and consumers are in on-premise network. We have to use http, https (company rules). Is there any other possibility to use Amazon MQ via http or should we rather think about SNS, SQS."
+Amazon MQ	"Re: Is REST API available for sending and consuming messages  ?
+Are you able to leverage the OpenWire protocol (e.g. ssl://https://forums.aws.amazon.com/.mq.https://forums.aws.amazon.com/.amazonaws.com:61617)? Connections from your on-prem application to Amazon MQ will be encrypted in transit, if the primary concern is security."
+Amazon MQ	"Re: Is REST API available for sending and consuming messages  ?
+Unfortunately it is not possible. Traffic on-premise -> AWS need to go through set of FW and reverse proxy - only https (443) communication is allowed at the moment. BTW are you able to give some rough estimation when REST API is going to be supported ? 
+
+BR
+ENE"
+Amazon MQ	"Unable to programmatically create a topic, publish and subscribe
+Now that we have the console up and running with the broker, we are trying to write a simple topic, pub and sub using C#. Here's the program:
+
+using System;
+using Apache.NMS;
+using Apache.NMS.ActiveMQ.OpenWire;
+
+namespace testmqttpub
+{
+    class MainClass
+    {
+        public static void Main(string[] args)
+        {
+            Console.WriteLine(“Hello World!“);
+            publishData(“test message”);
+        }
+        public static void publishData(string publishingJson)
+        {
+           string mqtturl = “tcp:<url>.amazonaws.com:61617"";
+
+           string uname = “<username>”;
+
+           string password = “<password>"";
+
+            string topic = “dummy”;
+            IConnectionFactory factory = new NMSConnectionFactory(new Uri(mqtturl));
+            IConnection connection = factory.CreateConnection(uname, password);
+            ISession session = connection.CreateSession();
+            IDestination destination = session.GetDestination(“topic://” + topic);
+            IMessageConsumer consumer = session.CreateConsumer(destination);
+            IMessageProducer producer = session.CreateProducer(destination);
+
+           try
+            {
+                connection.Start();
+                producer.DeliveryMode = MsgDeliveryMode.Persistent;
+                ITextMessage request = session.CreateTextMessage(publishingJson);
+                request.NMSCorrelationID = “observation”;
+                request.Propertieshttps://forums.aws.amazon.com/ = “observation”;
+                request.Propertieshttps://forums.aws.amazon.com/ = “observation”;
+                producer.Send(request);
+            //    _logger.InfoFormat(“Publishing Data”);
+                session.Close();
+                connection.Close();
+
+           }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.GetBaseException());
+            }
+            finally
+            {
+                session.Close();
+                connection.Close();
+            }
+        }
+
+   }
+}
+
+Here's the error:
+Apache.NMS.NMSConnectionException: Error connecting to <url>.amazonaws.com:8162. ---> System.Net.Sockets.SocketException: mono-io-layer-error (-2)
+  at Apache.NMS.ActiveMQ.Transport.Tcp.TcpTransportFactory.DoConnect (System.String host, System.Int32 port, System.String localAddress, System.Int32 localPort) https://forums.aws.amazon.com/ in <9242e58ce95a4b8a813e9662dfbe65fe>:0
+   --- End of inner exception stack trace ---
+  at Apache.NMS.ActiveMQ.Transport.Tcp.TcpTransportFactory.DoConnect (System.String host, System.Int32 port, System.String localAddress, System.Int32 localPort) https://forums.aws.amazon.com/ in <9242e58ce95a4b8a813e9662dfbe65fe>:0
+  at Apache.NMS.ActiveMQ.Transport.Tcp.TcpTransportFactory.CompositeConnect (System.Uri location) https://forums.aws.amazon.com/ in <9242e58ce95a4b8a813e9662dfbe65fe>:0
+  at Apache.NMS.ActiveMQ.Transport.Tcp.TcpTransportFactory.CreateTransport (System.Uri location) https://forums.aws.amazon.com/ in <9242e58ce95a4b8a813e9662dfbe65fe>:0
+  at Apache.NMS.ActiveMQ.Transport.TransportFactory.CreateTransport (System.Uri location) https://forums.aws.amazon.com/ in <9242e58ce95a4b8a813e9662dfbe65fe>:0
+  at Apache.NMS.ActiveMQ.ConnectionFactory.CreateActiveMQConnection (System.String userName, System.String password) https://forums.aws.amazon.com/ in <9242e58ce95a4b8a813e9662dfbe65fe>:0
+  at Apache.NMS.ActiveMQ.ConnectionFactory.CreateConnection (System.String userName, System.String password) https://forums.aws.amazon.com/ in <9242e58ce95a4b8a813e9662dfbe65fe>:0
+  at Apache.NMS.NMSConnectionFactory.CreateConnection (System.String userName, System.String password) https://forums.aws.amazon.com/ in <53effb06f12a48e4933cd883c0e27b12>:0
+  at testmqttpub.MainClass.publishData (System.String publishingJson) https://forums.aws.amazon.com/ in /Users/name/Projects/testmqttpub/testmqttpub/Program.cs:34
+  at testmqttpub.MainClass.Main (System.String[] args) https://forums.aws.amazon.com/ in /Users/name/Projects/testmqttpub/testmqttpub/Program.cs:13
+
+The user running the program has full access to AmazonMQ and can access the broker console as well.
+
+Any idea what's happening? Appreciate any help. 
+
+Thanks!"
+Amazon MQ	"Re: Unable to programmatically create a topic, publish and subscribe
+Resolved. Issue was with security policy. Added incoming traffic to include end points."

@@ -1,0 +1,2166 @@
+label	description
+Amazon WorkMail	"Archiving email
+We note that AWS has a storage limit which we are well inside at the moment but in due course we may wish to archive older messages on local storage here.
+
+What is the best way to do this?"
+Amazon WorkMail	"Re: Archiving email
+No one?  We were wondering if we could use IMAP in Thunderbird and then copy the folders down to local folders"
+Amazon WorkMail	"Re: Archiving email
+Hi,
+
+It seems that nobody who reads the WorkMail forums has had the same problem as you want to solve. But using Thunderbird and IMAP with local folders should definitely be a good solution. Similarly Windows Outlook and a PST file should do the trick as well. 
+
+Another solution that you can use is email journaling: https://docs.aws.amazon.com/workmail/latest/adminguide/journaling_overview.html.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Archiving email
+The original question mentioned storage limits so I think it's as much a storage management question as a backup question.
+
+Journaling can solve the backup problem, but it doesn't address the storage a management problem.  I really don't want to accumulate gigs and gigs of spam, or mailing list messages.  My previous solution provided retention rules by folder that helped to manage those things.   Right now in WorkMail if I want to find and delete everything in a folder more than a year old that would have to be done on the client side which is not at all optimal."
+Amazon WorkMail	"Re: Archiving email
+Hi,
+
+I've checked with the service team and the feature to set retention policies is on the roadmap.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"2FA Support
+Hi, 
+Are there any plans to add 2FA to Workmail on the Public Roadmap?
+
+Workmail is marketed as a ""secure"" solution, but it seems crazy not to have 2FA in 2018
+
+Thanks"
+Amazon WorkMail	"Re: 2FA Support
+Hi,
+
+Thank you for your question regarding 2FA authentication for WorkMail. I checked with the service team if this is on their roadmap and this feature request is indeed on their roadmap but the team cannot disclose any dates for this. 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: 2FA Support
+Any update to this from AWS?"
+Amazon WorkMail	"Re: 2FA Support
+My organization is very interested in 2FA support as well and would like to see it implemented as soon as possible, preferably within the next few months."
+Amazon WorkMail	"Re: 2FA Support
+Hello Everyone,
+
+Thank you for you interest in WorkMail and the 2FA feature. I have checked with the service team and this is definitely on their roadmap, but cannot give you an ETA for this feature.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Spam/Phishing emails with spoofed addresses matching my users@domain
+I and my other users have been receiving a lot of phishing email that follows this pattern:
+
+Let's say user@example.org is a legitimate user inbox, or even a legitimate group on my domain.
+
+From header is spoofed as user@example.org
+
+SPF check passes
+DKIM check fails
+DMARK check fails
+
+It's coming from some server that's not in my SPF.
+
+Why is my Amazon Workmail even accepting mail from ""me"" that isn't authenticated?
+
+See below (inbox username changed to ""redacted"":
+Return-Path: <ups@contact-tv.ru>
+Received: from mail.contact-tv.ru (mail.contact-tv.ru [91.194.253.2])
+ by inbound-smtp.us-east-1.amazonaws.com with SMTP id l3qbc32r2qh9oe8ih5nc8dlup0knprcij0vap4g1
+ for redacted@plein.org;
+ Sun, 24 Feb 2019 08:51:53 +0000 (UTC)
+Received-SPF: none (spfCheck: 91.194.253.2 is neither permitted nor denied by domain of contact-tv.ru) client-ip=91.194.253.2; envelope-from=ups@contact-tv.ru; helo=mail.contact-tv.ru;
+Authentication-Results: amazonses.com;
+ spf=none (spfCheck: 91.194.253.2 is neither permitted nor denied by domain of contact-tv.ru) client-ip=91.194.253.2; envelope-from=ups@contact-tv.ru; helo=mail.contact-tv.ru;
+ dkim=permerror header.i=@contact-tv.ru;
+ dmarc=fail header.from=plein.org;
+X-SES-RECEIPT: AEFBQUFBQUFBQUFFcVczRjBUb0lHTnZIWGFER1JjMDk1YWZZdGQrS0tYbHltb1dwc3BISTQyWitjSlEzQUxkYkd4K0cxc0w1Q2UyVnZ0TnNnYjAwMDZvV0dCZy80QXVVMDFneCtCZTJzNDVNOS8yVDljYU5kVG9QVXhPQW9DbWMwWVh6WWIvUENtRGhmTVdZSlMzcXlYN0lXenppT1hwaWJ4UWo3bkI5SSsxMlVlaW1YcmFZaG1rWlNkZU9lVzJXMnhiTmw3TDNCZkFlYVB0eTBTdXlNNFh1eEV1VWRMZVJMalQ4ay9XN2tMdlNwZnJTdms1Ri9hRTl2WlcxWStZZ1lCZDEzY3pKaTcwLytGd3ZyR0ovYlBHa0xrNEpCNW9mb0ovQVpyQVFrRjBHeklHZW4vcjRnRUE9PQ==
+X-SES-DKIM-SIGNATURE: a=rsa-sha256; q=dns/txt; b=DZw2qauBnVxE0phe0cwC2xZWZKcNxpp0WaLEwMZmEnHwgNgGtPtyG4Ft+Yn568CvNRjB9ZxRuk9SV+Z6pudQ6k0ta5I+T9rxc9x16M7SSoxVbm/VS5LrkZFQ1ovMPN3QH0+C1iOvp214BnTzvPgLEqJilMmiiVH721QxvnFLgEc=; c=relaxed/simple; s=ug7nbtf4gccmlpwj322ax3p6ow6yfsug; d=amazonses.com; t=1550998314; v=1; bh=KO4X0cScUFQnDpWF4iRQdhLmY8PfuAKR+k6ayqMyMaE=; h=From:To:Cc:Bcc:Subject:Date:Message-ID:MIME-Version:Content-Type:X-SES-RECEIPT;
+Received: from localhost (mail.contact-tv.ru [127.0.0.1])
+	by mail.contact-tv.ru (Postfix) with ESMTP id 682F723AC498
+	for <redacted@plein.org>; Sun, 24 Feb 2019 12:50:13 +0400 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=contact-tv.ru; h=
+	message-id:from:from:to:subject:subject:list-subscribe
+	:content-type:content-type:content-transfer-encoding:date:date
+	:organization; s=dkim; t=1550998213; x=1551862213; bh=KO4X0cScUF
+	QnDpWF4iRQdhLmY8PfuAKR+k6ayqMyMaE=; b=N9PnmoXziWecWmIOJpHYN4EO6o
+	90xJLKVqzglN1JL95zw/6I14kZZGwivJ1IkUErzF4FUda9sZ8fkptJXkCOtlS1qN
+	DBpqkuiQ1BDNSkCi9zx/DaWuxd/nYlR/ZC3xX4CiYgZOdjiE7JFpvKMXzd11MQv2
+	ZL/wsR+D2viTd0GFc=
+X-Virus-Scanned: amavisd-new at mail.contact-tv.ru
+Received: from mail.contact-tv.ru ([127.0.0.1])
+	by localhost (mail.contact-tv.ru [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fV0GvYRxj5tj for <redacted@plein.org>;
+	Sun, 24 Feb 2019 11:50:13 +0300 (MSK)
+Received: from [200-146-239-073.valmont.com.br] (unknown [200.146.239.73])
+	by mail.contact-tv.ru (Postfix) with ESMTPSA id 4780423AC433
+	for <redacted@plein.org>; Sun, 24 Feb 2019 11:50:08 +0300 (MSK)
+Organization: Bcbqexpmnalb
+Date: Sun, 24 Feb 2019 09:50:09 +0100
+X-Sender: <ups@contact-tv.ru>
+X-Abuse-Reports-To: abuse@contact-tv.ru
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+List-Subscribe: <http://contact-tv.ru/mailman/listinfo/kjzvkmkcp>
+Subject: redacted
+Feedback-ID: 35001197:36439415:tpryb
+X-Priority: 3 (Normal)
+To: redacted@plein.org
+From: <redacted@plein.org>
+Message-ID: <2b1ah9asqmcl$m6uelvfo$n8c86uwn$@contact-tv.ru>
+X-CSA-Complaints: whitelist-complaints@contact-tv.ru
+X-Complaints-To: abuse@contact-tv.ru
+
+
+Am I setting up SPF and DKIM/DMARC too loosely? I'm following the Workmail suggestions and everything is ""Verified"" on the domain settings page.
+
+Similar example but with different SPF (softfail)
+
+Return-Path: <pierre.leconte@verbaereauto.com>
+Received: from ns330149.ip-94-23-250.eu (ns330149.ip-94-23-250.eu [94.23.250.130])
+ by inbound-smtp.us-east-1.amazonaws.com with SMTP id mppfo0urlgudbatei064pec0t445oen965uuvk81
+ for redacted@plein.org;
+ Wed, 13 Feb 2019 23:02:21 +0000 (UTC)
+Received-SPF: softfail (spfCheck: transitioning domain of verbaereauto.com does not designate 94.23.250.130 as permitted sender) client-ip=94.23.250.130; envelope-from=pierre.leconte@verbaereauto.com; helo=ns330149.ip-94-23-250.eu;
+Authentication-Results: amazonses.com;
+ spf=softfail (spfCheck: transitioning domain of verbaereauto.com does not designate 94.23.250.130 as permitted sender) client-ip=94.23.250.130; envelope-from=pierre.leconte@verbaereauto.com; helo=ns330149.ip-94-23-250.eu;
+ dmarc=fail header.from=plein.org;
+X-SES-RECEIPT: AEFBQUFBQUFBQUFGMHA3S1plRzBrVURwNzRZZjdhR0NSUVhRdlZqUnB1U1kwZWxybGMzWVMyb1VxZEtIa2gxTXlUdHFGS3VzQ0R1RDdmOGw3Tno2VXJBaXhpUHZKVmRjSkU1emtubUtJcUdCeGJVamR0NFo1SlBYN0dlU1RRcWtSRjFaUVUxdm9ubUNVKzkrbytJYm54OHZZQTB4NTRUZjRGZ3ByM1VzT0Z1M0FqZUNzbXNFQ1V6akhWRFJLcDdwYUFOd1ZWcG96UHdpcEw0a0pyL3FJcmxNcC8rZlUrc3JyMlhIak05VkxKcVA2ZFllUnVMVU1lUnVDQWYwdFVCb3FWOGZ6UHZ3ZUloeDJTekNhUGx5OGRqUkVpelVZbUNhRGtBS2xTakdPU1pQTjF3ZmU4RUpGMm9DRnIxb3lVZ01pbExvUjdaK2RnbnM9
+X-SES-DKIM-SIGNATURE: a=rsa-sha256; q=dns/txt; b=gcDw7Tl1WgDsogCvoTzRewbG/CEuDeLVivkhPM+XETVCsTVSKlGfbplRF/4/s+yFzvkeRVAYN5lyo9D6/azWYVRTn0LWuMPQiwJv/1L8Zho0WLWFNh2D22j0iG2bdZ9MA70cZKtcka4+228XeBgTe6q1e9ZuEeAaDpTZXkfmju4=; c=relaxed/simple; s=ug7nbtf4gccmlpwj322ax3p6ow6yfsug; d=amazonses.com; t=1550098942; v=1; bh=cVZhtRJogP0xJg8KVrJZAYlC+cRoQa/WzsObz07cQFk=; h=From:To:Cc:Bcc:Subject:Date:Message-ID:MIME-Version:Content-Type:X-SES-RECEIPT;
+Received: from [4134222063.e.brasiltelecom.net.br] (4134222063.e.brasiltelecom.net.br [177.202.118.44])
+	by ns330149.ip-94-23-250.eu (Postfix) with ESMTPSA id 08EB366EAB
+	for <redacted@plein.org>; Wed, 13 Feb 2019 19:58:37 +0100 (CET)
+List-Subscribe: <http://verbaereauto.com/mailman/listinfo/verbaereauto.com>,
+Subject: redacted
+Date: Wed, 13 Feb 2019 19:58:35 +0100
+X-Mailer: aspNetEmail ver 3.7.0.19
+X-CSA-Complaints: whitelistcomplaints@verbaereauto.com
+List-Help:
+ <http://verbaereauto.com/m/jwuxzvt/?ytbn=rgkw_mzs&epldj=hry1cs6tnee0uhjueet9p1ywh&Z=39875064>
+X-aid: 2392144509
+List-Unsubscribe:
+ <https://axangpya.us5.list-manage.com/unsubscribe?u=mcqxrdtuxvilksax1laa9h6dh&id=e4aq77kw3y&e=2mz5gb73hk&c=cek2svwre8>,
+  <mailto:unsubscribe-mc.2byoej9et544dyt4ak56crvc5snnw@mailin.verbaereauto.com?subject=unsubscribe>
+Message-ID: <w2n1cw.i2alu62djp4r28u@mail.verbaereauto.com>
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML,
+ like Gecko) Chrome/51.0.2704.103 Safari/537.36
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+Organization: Iykdethuxwkfwxrh
+From: <redacted@plein.org>
+To: redacted@plein.org
+List-ID: yzoecop5jn561n8iceoduwwf0w6 list
+ <l8y529fb99x8n3ocys8ahmkx8.084961.verbaereauto.com>
+Errors-To: 9CF8F6AF4026FAC580B8F9E431DE6ADE91292C8DD4@mail.verbaereauto.com
+
+
+Edited by: bplein on Feb 25, 2019 7:04 AM - Why? Because Amazon won't let me REPLY to my own message. Dumb."
+Amazon WorkMail	"Missing emails upon moving to subfolder
+Hi,
+I've recently had an issue where Mac Mail has somehow permanently deleted local and server copies of some emails upon trying to move them from the inbox to a subfolder. The emails were deleted from the inbox, but did not get moved to the destination folder. The emails don't show in the ""Restore items"" menu either.
+Is there any form of backup available of these and if so are these in any way available to accounts on the basic support plan?
+Thanks,
+David"
+Amazon WorkMail	"Taking too long to receive NDRs
+Our users are frustrated that it takes several hours to a day to receive an NDR. They need to make sure their responses go through before the end of the day. When we had an internal mail server we set the SMTP retry notifcations to 2 hours for delays and 4 hours to fail which would provide the user with an NDR. Is there a way to accomplish this in AWS WorkMail?"
+Amazon WorkMail	"Re: Taking too long to receive NDRs
+Hi,
+
+I'm sorry to inform you that currently this retry time out is not configurable. I will forward this as a feature request to the service team.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Taking too long to receive NDRs
+Good evening. How can we reduce the time it takes for AWS WorkMail to send a NDR?"
+Amazon WorkMail	"Re: Taking too long to receive NDRs
+bump"
+Amazon WorkMail	"Import / sync of contacts
+Hi,
+
+Most of my contacts for WorkMail are residing in LinkedIn and CSV files. 
+
+Can we expect any functionality to import the contacts?
+
+Thank you,
+Dean"
+Amazon WorkMail	"Re: Import / sync of contacts
+Hi Dean,
+
+I will forward this request to the service team. If you use Windows Outlook you can use the build in import function: https://support.office.com/en-ie/article/Import-contacts-to-Outlook-bb796340-b58a-46c1-90c7-b549b8f3c5f8
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Import / sync of contacts
+I will second this request. I would like to import / sync of contacts from my android phone.
+
+Moussa"
+Amazon WorkMail	"Re: Import / sync of contacts
+Yes please.  It would be very handy to be able to import a CSV file of contacts."
+Amazon WorkMail	"Re: Import / sync of contacts
+Add me to this list.  I don't use Outlook so native import of contacts from standard formats would be helpful."
+Amazon WorkMail	"Migrate Workmail Directory to Simple AD
+Hello
+
+I'd like to migrate my existing Workmail Directory to Simple AD, so I can use WorkDocs with this organisation.
+
+How can I do this ?
+
+Thank you !
+
+Alexandre"
+Amazon WorkMail	"Re: Migrate Workmail Directory to Simple AD
+Hello Alexandre,
+
+I'm sorry to inform you there is no easy migration path from a WorkMail directory to a Simple AD. You can use the WorkMail migration partners (https://aws.amazon.com/workmail/features/) to migrate your current WorkMail directory organization to a new WorkMail organization with a Simple AD.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Migrate Workmail Directory to Simple AD
+OK, thanks for your answer !"
+Amazon WorkMail	"(SMTP) error. The server responded:  too many commands.
+If I try to send more than 5 messages via workmail (using thunderbird outbox) - I get this error: ""An Outgoing server (SMTP) error occurred while sending mail. The server responded:  too many commands.""
+
+the only solution is to wait a little while and try again. If I can't fix this problem there's no way I can continue to use workmail.
+
+I see someone else recently posted this issue here as well, but there's no solution there https://forums.aws.amazon.com/thread.jspa?threadID=291417
+
+Edited by: steve-matic on Jan 31, 2019 10:40 AM"
+Amazon WorkMail	"Re: (SMTP) error. The server responded:  too many commands.
+To add a little bit more information:
+
+I'm using smtp.mail.us-west-2.awsapps.com port 465, SSL/TLS
+Also, this isn't a recent or transient problem, I experienced it a month ago when I was also trying to send multiple messages in my outbox.
+
+It seems to be some sort of rate limit, I am able to send 6 outgoing emails before seeing the error, and I can send another 6 if I wait about 1 minute."
+Amazon WorkMail	"Re: (SMTP) error. The server responded:  too many commands.
+Hey Steve,
+
+Sorry that you are experiencing this problem. I have sent you a private message, can you have a look at that message.
+
+Thanks,
+Vishwajit"
+Amazon WorkMail	"Re: (SMTP) error. The server responded:  too many commands.
+Thanks, I have replied to your PM, but I'm not at all interested in using SES to send out 20 or 30 emails. I'd like to know if this is something that you're going to be able to fix over the weekend or if I should be finding a new email provider so I can send out more than 6 emails at a time next week."
+Amazon WorkMail	"Re: (SMTP) error. The server responded:  too many commands.
+I've decided to find another email provider, so there's no need to rush to assist me. You should think about adding ""send up to 6 emails per minute"" on the limits page when signing up for workmail."
+Amazon WorkMail	"Re: (SMTP) error. The server responded:  too many commands.
+Hi there,
+
+I am faced with the exact same problem responded to in this form regarding SMTP error. Any assistance you can give me would be greatly appreciated.
+
+Is this a rate limit problem? If is it true, could you tell me the exact figures of its limit?
+
+Regards,
+t-matsuda"
+Amazon WorkMail	"Re: (SMTP) error. The server responded:  too many commands.
+It's some sort of internal unpublished limit. Maybe if enough people post about the problem here, AWS will eventually address it - my impression is that they don't think it's a problem many people have. Not being able to send out more than 6 emails at a time is an unfortunate limitation.
+
+Edited by: steve-matic on Feb 4, 2019 2:17 AM"
+Amazon WorkMail	"Re: (SMTP) error. The server responded:  too many commands.
+I gave it a try today and it appears that the limitation has been lifted and I'm able to dispatch emails from my outbox properly. Hopefully it continues working, I'll keep using workmail as long as it does.
+
+Thanks to whoever fixed this!
+
+Edited by: steve-matic on Feb 18, 2019 5:33 AM"
+Amazon WorkMail	"AWS charging policy
+Good evening to you all
+
+I thought I knew how Amazon work mail costing worked out but now I'm not so sure - can somebody point me to a fools guide to how AWS is charged?
+
+Or perhaps it only needs one line response?
+
+TIA all"
+Amazon WorkMail	"Re: AWS charging policy
+Hi,
+
+The WorkMail pricing is straight forward as described on this page: https://aws.amazon.com/workmail/pricing/ Its $4 per enabled user per month. It can be that a user was only enabled for a part of the month and thus the charge will only be for that part of the month.
+
+Kind regards,
+Robun"
+Amazon WorkMail	"Workmail & Route 53
+Workmail with custom domain was working fine last friday.
+Monday the emails suddenly stopped to work. 
+In Workmail > Domains > mydomain.com > Step 2 I had to update again the MX and CNAME and also in Step 3 the 3 CNAME and 2 TXT. Wednesday they are still missing.
+We tried to reach the service of AWS on the phone, without success.
+Our domain is in AWS, and our server Azure and we use Wor
+Can somebody from AWS can check our records ? or somebody has any advice?"
+Amazon WorkMail	"Re: Workmail & Route 53
+Hi,
+
+I'm sorry to hear you're experiencing problems with your domain verification. I took a look at your domain records and was unable to resolve any of them, the problem is that your domain name servers don't point to the route 53 hosted zone. If you want to use route 53 you need to update your domains name servers at your registrar and enter the values from the route 53 hosted zone. Alternatively you can add all records with your domain registrar.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Workmail already taken 24 hours, no DNS verification for external domain.
+I setup the TXT and CNAME records for the external domain I want to use for email yesterday as indicated on the AWS Workmail setup, but as of this morning (Tuesday, February 12, 2019), Workmail still has that domain as not verified.
+
+It says at the bottom of the Workmail screen that DNS can take up to 72 hours, but in my experience, it's usually much shorter than that (a few minutes to maybe 20 minutes).
+
+One possible issue is that the CNAME value is something like ""10 other-characters-here"". If I copied the whole string with the 10 and the space, I would get an error. I'm assuming the 10 is the TTL or something, but this might be the issue.  Once I just saved the part after the 10 and the space, it saved OK, but not verifying.
+
+Suggestions on things to check?
+
+I'm thinking something is off somewhere.
+
+Thanks,
+
+Edited by: Oliverb on Feb 12, 2019 3:32 AM"
+Amazon WorkMail	"Re: Workmail already taken 24 hours, no DNS verification for external domain.
+Hi,
+
+I'm sorry to hear you're experiencing problems with the domain verification of your WorkMail organization. I checked your organization and I think the problem is in the created domains. It seems the records are created with domain.com.domain.com. 
+
+Some registrars automatically append the domain to the record you create and a straight copy of the domain record from the WorkMail console then leads to a double domain record. Can you verify your domain records to ensure the domain is not twice in the record? If that is corrected the verification should happen. You can force a retry of the domain verification in the SES console in the domain section.
+
+For the domain record with ""10 domain.com"", this is a MX record and the 10 is for priority of that SMTP server. 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Workmail already taken 24 hours, no DNS verification for external domain.
+I am also having this same problem. I'm now nearing 72 hours on this wait. I've followed all the steps and having verified the correct TXT record via nslookup. Why is AWS so delayed on the domain verification?
+
+Edited by: camaleonsystems on Feb 12, 2019 5:00 PM"
+Amazon WorkMail	"Re: Workmail already taken 24 hours, no DNS verification for external domain.
+Hi,
+
+I'm sorry to hear you're also experiencing problems with domain verification. From what I can see your case is a little more complicated so I have escalated this to the service team for further investigation. I will get back to you when I know more.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Domain Verification FAILURE in region for Workmail following Lightsail
+I registered a domain name in Route 53 (confchem-r.com) and set up Workmail successfully.  I then set up Lightsail and followed the instructions here https://lightsail.aws.amazon.com/ls/docs/en/articles/lightsail-how-to-create-dns-entry  to set up a webpage.  This seemed to work, but I must have made a mistake because it broke Workmail; I think I initially tried to set up the server in a different territory from the registered domain, or maybe the Name Servers from Lightsail conflicted with the original ones.  I have now killed the Lightsail instance completely and attempted to set up Workmail from fresh, following the instructions here  https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-workmail.html, and the original settings (as far as I can tell), but it isn't working.  I get an email saying 
+""We have been attempting to verify the domain confchem-r.com in region EU (Ireland) for the last 3 days. We have not been able to detect the required TXT record in your DNS settings. If you still wish to verify confchem-r.com, please confirm all of your information and retry the verification process. You will not be able to send email through either Amazon SES or Amazon Pinpoint using this domain unless it is verified.""
+
+I can't think where I have gone wrong, or what to try next.  Any help is very much appreciated."
+Amazon WorkMail	"Re: Domain Verification FAILURE in region for Workmail following Lightsail
+Hi,
+
+I'm sorry to hear you're experiencing problems with your domain verification. I took a look at your domain and was unable to resolve any record. It seems that your name servers are incorrectly configured. Please update your domains name servers at your domain registrar to the correct values from the route 53 hosted zone. After that you can re-trigger the verification process in the Amazon SES console in the domain section.
+
+If you still want to use Lightsail you can but you will need to manage your WorkMail domain records in the Lightsail console and not in a hosted zone. Once you add a domain in Lightsail you will need to manage all your domain records from it.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"ドメインの所有権が突然無くなりました。
+ドメインの所有権が突然無くなりました。
+
+今までメールの送受信ができていたのですが、突然送受信ができなくなっており、aws WorkMail管理画面へ行き、WorkMailドメインを確認するとドメインの状態が「失敗しました」状態となっており、
+「手順1：ドメインの所有権を確認する」の部分で失敗している状態となっています。_amazonses.●●●.●●● のtxtレコードをroute53で設定していて、今までは成功状態となっていたのに何も操作していないのに突然失敗状態になっていて大変困っております。
+
+_amazonses.●●●.●●●のtxtレコードが反映されているか
+dig txt _amazonses.●●●.●●●
+コマンドで確認しましたが反映されています。
+txtレコードが存在するのに「失敗状態」なのは何故なのでしょうか？
+
+
+追記***************************************************************************
+ドメインが失効する少し前にドメインの所有権が確認できないという警告メールが届いていました。
+
+route53上で _amazonses.●●●.●●● のtxtレコード追加と
+独自ドメイン ●●●.●●● のtxtレコードにも同じ値を追記し
+WorkMail管理画面から再度ドメインをAdd domainしなおすとdomain statusがVerifiedへとなりメールが送れるようになりました。
+これは独自ドメイン ●●●.●●● にtxtレコードを追加していないと１時的にはdomain statusがVerifiedになり使用可能になるが数日で所有権が確認できなくなりメールが送受信できなくなるという事なのでしょうか？原因が分からず、これからまた同じことが起こるかもと考えると不安で眠れません。
+******************************************************************************
+
+Edited by: yui on Feb 10, 2019 4:18 AM"
+Amazon WorkMail	"Re: ドメインの所有権が突然無くなりました。
+Hi,
+
+I'm sorry to hear you're experiencing problems with the domain verification status of your organization. I checked your domain and currently it is verified.
+
+I will check with the service team if there any reason why the verification status was lost.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: ドメインの所有権が突然無くなりました。
+Robink@AWS 　様
+返信ありがとうございます。
+
+そうですね、
+WorkMail管理画面から再度ドメインを作り直すと、所有権は確認済みになりました。
+しかし何故ドメインの所有権がいきなり無くなったのか謎でした。
+調査してくださるということでありがとうございます！
+ご連絡お待ちしております、よろしくお願いします。"
+Amazon WorkMail	"A user can see/use my inbox without permission
+One of my colleagues has since yesterday access to my inbox despite having no permission for.
+When he opens Outlook my inbox appears listed below his own, and he can do any action (sending, receiving, deleting, ...).
+This seems to happen only on his PC, not e.g. on his mobile phone.
+
+1) My Inbox has default permissions and the only thing I share (specifically with this colleague) is my calendar.
+2) No users has access permission to the inbox of the others.
+3) I'm the most privileged user, but not on personal inboxes - I have permissions on group emails.
+
+Does anybody has any idea what could be the reason for this strange behaviour?
+Any help is welcome.
+
+Thanks
+Claudio"
+Amazon WorkMail	"Re: A user can see/use my inbox without permission
+Hello Claudio,
+
+I'm sorry to hear you're experiencing problems with permissions on you mail store. I have escalated this case to the service and will get back to you on this asap.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: A user can see/use my inbox without permission
+Hi Claudio,
+
+The service team investigated your issue and it seems you have misinterpreted the way WorkMail permissions work. You have given multiple groups full mailbox access permissions on your user. This means that all members of these groups have full mailbox access to your user and explains why your colleague can open your mailbox without you giving explicit permissions to do so.
+
+If you want to give your user permissions on groups you need to add your user to the group.
+
+I will check with the service team to review the documentation and console details for this.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: A user can see/use my inbox without permission
+Ops. Thanks for the quick investigation and clarification.
+
+I'm now fixing the configuration and as soon as my colleague will confirm on his side, I'll make the question as answered.
+
+Thanks
+Claudio"
+Amazon WorkMail	"Migrate cPanel mail & etc folder data to WorkMail
+As the subject states I'm interested in migrating existing mail and etc data over from a generic cPanel account into the WorkMail environment on AWS. Is it possible at all? Or do I have to archive the cPanel data and start fresh with WorkMail? 
+
+My question is for a concerned client that needs email history for the sake of preventing litigation in their business - so it would be great to be able to assure no loss in emails. I have made the assumption that if they were to create a new mail account, pointing to WorkMail, they could possibly lose their local backups of messages. I have downloaded a zip of both the mail & the etc folders and I have access to their name servers, ready to point them to an AWS Route 53 created zone to begin the process of migration to WorkMail. 
+
+Any advice from someone who has dealt with something similar or has a deeper knowledge on the subject would be greatly appreciated."
+Amazon WorkMail	"Re: Migrate cPanel mail & etc folder data to WorkMail
+Hi,
+
+Welcome to WorkMail! To migrate to WorkMail there are some options available: If the old mail server supports EWS (Exchange WebServices) then our migration partners can help with the migration. If no EWS is available but you have Windows Outlook you can do the migration by exporting the mailboxes to a PST file which can be imported in the new WorkMail mailbox. Another solution is to drag and drop mail in any client that support multiple mail accounts. 
+
+WorkMail does not offer an console side import where you can upload a zip file with mail data.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"メールのリダイレクトができていないことがある件について
+amazon workmail　でsettings → email rules から　
+conditions が has my name in the to box で
+actionsが　Ridirect the message to...　に10個のメールアドレスを設定しています。
+
+つまりworkmailのアドレスに受信すると、複数のメールアドレスにリダイレクトする設定にしています。
+しかしリダイレクト先メールアドレスによってたまに受信していないことがあり、テストで５通メールを送信したところ、あるメールアドレスには４通しか受信していないことが分かりました。
+
+リダイレクトはできているので設定は間違っていないと思います。
+となるとworkmail側で１分間のメールリダイレクト数制限や、メモリ上限などが存在するのでしょうか？
+しかし５通*10なのでそんな負荷が掛かってるとも思えないのですが、workmailのバグなのでしょうか？
+
+
+追記：***************************************************************
+
+ちなみに
+受信したメールはworkmailで設定した独自ドメインのアドレスで
+リダイレクト先のメールアドレスはgmail等です。
+
+独自ドメイン側でSPFの設定
+include:amazonses.com
+していなかった時、workmailからリダイレクトできない場合は、
+エラーメールが返ってきていたのですが
+今回の場合エラーメールも帰ってきていないので
+2つのgmailを見比べて気づきました。
+
+********************************************************************
+
+Edited by: yui on Feb 1, 2019 2:05 AM"
+Amazon WorkMail	"Re: メールのリダイレクトができていないことがある件について
+Hi,
+
+I'm sorry to hear you're experiencing problems with your redirect rules. I forwarded your case to the service team for investigation and they identified the problem.
+
+Your redirect rule has a redirect action for each recipient, which is failing due bug in the system. The service team will fix this asap.
+
+A solution for you problem is to add all recipients in 1 redirect action. This will not trigger the bug and cause the message to be redirected to all recipients.
+
+To clarify, your rule should look like:
+Condition: your condition.
+Action: Redirect message to: Recipient 1, Recipient 2, Recipient 3 ect.
+
+We're very sorry for the inconvenience this has caused.
+
+Kind regards,
+Robin
+
+Translation:
+お世話になっております。
+この度はリダイレクトルールにつきまして、AWS 側の問題によりご迷惑をおかけし、申し訳ございません。
+
+AWS Workmail に関連するシステムに問題が見つかり、現在製品開発部が問題の修復に取り組んでおります。
+
+ワークアラウンドといたしまして、以下の回避策をお知らせいたします。
+
+設定いただいている全ての受信者を、1 つのリダイレクトアクション内に追加くださいませ。
+
+ルールのイメージと致しましては、以下のような形となります。
+
+Condition: お客様に選択いただいた Condition
+Action: Redirect message to: + 受信者 1, + 受信者 2, + 受信者 3 etc...
+
+この度は、AWS 側の問題によりご迷惑をおかけし、申し訳ございませんでした。
+ご不明点がありましたら、遠慮なくご連絡くださいませ。"
+Amazon WorkMail	"Domain won't verify, cannot complete WorkMail setup
+Purchased Domain on AWS
+Route53 has one hosted zone.
+WorkMail is setup.  DNS records added from WorkMail to Route53.
+
+WorkMail domain verification is waiting on SES domain verification which is waiting for DKIM sending verification....
+
+I'm stuck.  I must be missing one step.  
+
+On WorkMail, I've setup two users, but neither of us have accessed our webmail.  I'm planning on using our new domain email addresses on other Mail clients via SMTP, etc.
+
+Ken"
+Amazon WorkMail	"Re: Domain won't verify, cannot complete WorkMail setup
+Hi Ken,
+
+I'm sorry to hear you're experiencing problems configuring your domain with WorkMail. I took a look at your domain and I was unable to resolve any record. 
+
+Can you double check that you have copied the name servers from the NS record in the hosted zone to the domain?
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Domain won't verify, cannot complete WorkMail setup
+Thanks Robin.
+
+Something so simple!  I was poking around in SES and WorkMail trying to see what I may have missed.  What I missed was tying the domain to the hosted zone.
+
+Thanks!!
+
+Ken"
+Amazon WorkMail	"Problem of attachment file name contains special character
+We received an email with attachment that the file name contained a special character.
+BL-SZ1730414-701.pdf
+The attachment can be downloaded by using Microsoft Outlook but not by webmail.
+We tried to attach the downloaded file in an email and send out but failed in both Outlook and webmail.
+
+Unfortunately, the system was unable to deliver your mail.
+The error given was:
+
+2017-06-14 04:02:42 : <Sending Email> Expected ';', got """"
+
+You may need to contact your e-mail administrator to solve this problem.
+
+We tried Outlook Mail and Gmail accounts to send and receive the file and they all work fine.
+
+PS. I tried to put that file name in this message, but that special charater cannot be shown.
+
+Edited by: csl on Jun 13, 2017 11:57 PM"
+Amazon WorkMail	"Re: Problem of attachment file name contains special character
+Hi, 
+
+Can you try to send the character in a PM to me? Maybe that works, so I can forward it to the service team. 
+
+Can you also include the sender who received the bounce? 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Problem of attachment file name contains special character
+Hi,
+
+I have an update from the service team. We have identified 2 issues, 1 in downloading the attachment and 1 for sending it. 
+
+The attachment name contained a DEL character which is causing the issues. The service team will fix both issues.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Problem of attachment file name contains special character
+I have the same issue:
+
+Unfortunately, the system was unable to deliver your mail.
+The error given was:
+2019-01-24 07:35:23 : <Sending Email> Expected '/', got :
+You may need to contact your e-mail administrator to solve this problem."
+Amazon WorkMail	"Re: Problem of attachment file name contains special character
+Hi,
+
+I'm sorry to hear you're experiencing problems sending emails. Can you send me the user that sent the mail their email address in a PM? I will pass this to the service team for investigation.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Problem of attachment file name contains special character
+Hi,
+
+I have send you a PM. Can you please check.
+
+Thanks,
+Vishwajit."
+Amazon WorkMail	"Why Can't I Verify My Route 53 Domain With AWS Workmail?
+I'm attempting to verify my domain, which I have as part of the Route 53 service, with AWS Workmail. Each time I check to see if its verified, it keeps saying pending. What am I doing wrong? I copied and pasted the cname records, text records and MX records and they seem to be correct. I even removed AmazonSES from the verification TXT record as suggested, but that still didn't work.
+
+Any ideas?"
+Amazon WorkMail	"Re: Why Can't I Verify My Route 53 Domain With AWS Workmail?
+Hi,
+
+The name of the TXT record is missing _amazonses in the domain name. The record should be _amazonses.domain.com. If you update the record and restart the validation via the WorkMail console verification should pass.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Why Can't I Verify My Route 53 Domain With AWS Workmail?
+I put it into the TXT record. Still no verification."
+Amazon WorkMail	"Re: Why Can't I Verify My Route 53 Domain With AWS Workmail?
+Hi,
+
+I forwarded your issue to the service team. I can see that the records are created correctly but cannot resolve any of them.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Why Can't I Verify My Route 53 Domain With AWS Workmail?
+Let me know what the update is."
+Amazon WorkMail	"Re: Why Can't I Verify My Route 53 Domain With AWS Workmail?
+Hi,
+
+The NS record that you have registered does not match the NS record in your hostedzone. I have pmed you with more details.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Why Can't I Verify My Route 53 Domain With AWS Workmail?
+Hi there,
+
+I seem to have the same issue you responded to in this form regarding WorkMail.  Any assistance you can give me would be greatly appreciated.
+
+Domain is iZooky.com
+
+Validation message is always 'pending'.  It has been more than 24 hours.  I'm pretty sure all my TXT and other DNS records are correct.
+
+Thanks,
+
+Zubin."
+Amazon WorkMail	"Re: Why Can't I Verify My Route 53 Domain With AWS Workmail?
+Hi Zubin,
+
+I'm sorry to hear you're experiencing problems with verifying your domain. I took a look at your domain and I was unable to resolve any of the required domain records.
+
+Looking at the whois information on your domain I see name servers that are not route 53. Can you verify that you have added the name servers from the route 53 hosted zone to your domain at your registrar?
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Why Can't I Verify My Route 53 Domain With AWS Workmail?
+Robin@AWS (or others)...
+
+I'm experiencing the same issue.  Registered domain with Route53, setup WorkMail, all records added to domain in Route53 hosted zone.  SES and WorkMail show verification pending.  SES and WorkMail are in the same region (R53 is global). 
+
+Any idea what may be wrong with the setup?  domain is octopus.partners
+
+Thanks.
+
+Ken"
+Amazon WorkMail	"The mail address is already used in another organization
+Hi,
+I'm trying to set up WorkMail but after domain verification I'm having an issue. When I try to create a new email address for ""chris@manscorner.com"" I'm getting this error: The mail address 'chris@manscorner.com' is already used in another organization.
+
+I am the only user and I have verified the domain. How could someone else be using my email? Can you please help?
+
+Thanks,
+-Chris"
+Amazon WorkMail	"Re: The mail address is already used in another organization
+Hi Chris,
+
+I'm sorry to hear you're experiencing problems enabling new users in your WorkMail organization. I checked your WorkMail organization and I can see that that email address is linked to one of your users.
+
+I will send you a private message with the user name of the user that has this email address assigned.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: The mail address is already used in another organization
+It was attached to another AWS account I own."
+Amazon WorkMail	"Workmail SMTP Gateway and Outbound rules to flow mail to trendmicro HES
+I see a lot of AWS response to the forums and have a case open (01633045) that is not getting to a resolution and am hoping this forum is monitored by someone with practical application knowledge on this.  Am happy with AWS and the support given but I think this hits an area not covered by their expertise.
+
+I have to think it's normal (we do it with premise based exchange servers) to want to direct email out thru a cloud based scanning service (in this case we want DLP and email encrypt functions from Trendmicro HES outbound scanning).  
+
+I have all pieces configured and working except the actual connection.  HES and AWS have verifications steps that are marked as good.  The domain's inbound is successfully flowing inbound via TM HES.   When I send an email that routes out to the SMTP gateway pointing to the standard outbound smart host (relay.hes.trendmicro.com) i get a bounce.  
+
+Trendmicro support reviewed and has said it's not getting to the smarthost and the bounce is generated by AWS (it would be nice to have access to logs to self debug this).  Here's the bounce:
+
+An error occurred while trying to deliver the mail to the following recipients:
+
+start ndr
+Technical report:
+
+Reporting-MTA: dsn; a11-123.smtp-out.amazonses.com
+
+Action: failed
+Final-Recipient: rfc822; xxx@aol.com
+Diagnostic-Code: smtp; 554 5.7.1 <xxx@aol.com>: Recipient address rejected: NO-DOMAIN.
+Status: 5.7.1
+end ndr
+
+Am looking for anyone that has gotten this figured out or if there are other forums that may have a good answer for this.  I may be the first to try HES outbound with Workmail.  I don't know.  I have to think that someone has run into this with a cloud outbound scanning service (trendmicro or other).  There is plenty of info on how to configure Exchange server and other premise based servers for an outbound smarthost but AWS workmail doesn't conform to how they show to do this."
+Amazon WorkMail	"Re: Workmail SMTP Gateway and Outbound rules to flow mail to trendmicro HES
+Hi,
+
+I'm sorry to hear you're experiencing problems with using the SMTP gateway feature. I checked with the service team and they already received your case and are looking into that. 
+
+I think the service team will update you via the support case when they know more.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"DNS records shown as missing even though they are there...
+Hi,
+
+I am in the process of setting up WorkMail and as required have added all DNS related MX/TXT/CNAME records to my domains DNS Management pane. All the records are there and have been copied via the clipboard function from the WorkMail>Domains>DNS site to avoid any typos.
+
+So far I managed to get the TXT value for _amazonses to ""verified"", as well as the 3 DKIM CNAME records. All the other records (MX/TXT/etc) are shown as ""Missing"" even though they are present in Route 53 > Domain > DNS Settings.
+
+I've waited for 4 days for the system to propagate the records but something is not right here. Any suggestion on what to do here? It is infuriating already that I have to go through the manual process of copy pasting when I am using both Amazon's WorkMail and Route 53 (@devs, you could really automate that...), but now I have been waiting for 4 days already and am stuck without email service because the MX record cant be verified!
+
+Appreciate any help, thanks."
+Amazon WorkMail	"Re: DNS records shown as missing even though they are there...
+Hi,
+
+I'm sorry to hear you're experiencing problems with your domain records. I can see some can be resolved and other cannot. I will forward this case to the service team for investigation.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: DNS records shown as missing even though they are there...
+Hi,
+
+The service team checked your domain and it seems that you're using Amazon Lightsail. Did you add the domain in Lightsail? In that case you need to add the domain records in the Lightsail console.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: DNS records shown as missing even though they are there...
+Hi Robink,
+I have a similar problem:domain registered with route 53, workmail working fine until lightsail was set up.  Now in Workmail/Domains, step 2 Finalize mail setup, the MX and CNAME status's are 'missing'.  In red, so it must be serious.  This was working before - and in Route 53, the values for both are in the hosted zone's record set.  I saw your post to add the domain in lightsail: MX, subdomain mail.blahblahblah.com, maps to blahblahblah.com, but this didn't work.  Please can you advise what I'm doing wrong.
+Thanks very much.
+Regards."
+Amazon WorkMail	"Re: DNS records shown as missing even though they are there...
+Hi,
+
+I'm sorry to hear you're experiencing problems with your domain records. I took a look to see if I was able to spot a problem, but everything looks to be correct. The NS records from Whois match your route 53 NS record. But when I try to resolve any of the WorkMail records it returns nothing. I do get something when I try to resolve the TXT record for your domain while this record was not in Route 53. Can you check this record and where it is registered?
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: DNS records shown as missing even though they are there...
+Hi Robin,
+
+Thanks very much for getting back to me, and I'm kind of relieved you can't see what's wrong either.  I changed all of the NS records I originally had in Route 53 to the ones provided in Light Sail, according to the instructions - so these are the records in Route 53.  Should I have added them, and not removed the original Route 53 records?
+
+In Route 53 everything seems set up properly to my eyes - see the link to the image here:  https://drive.google.com/open?id=1UAK5c2cnpvL1T97lwk_tQZVbcDlxCw1G  .  In Light Sail I have changed the information for the NS, following the instructions as I understood them - see a link to the image here:  https://drive.google.com/open?id=1XbQka32cYvzI23nxOQpcraJVtIYRd03_ .  It was when I did this the Workmail network went pear shaped, and now email is bouncing (although I can still log in and send email).  See the link to the image here:   https://drive.google.com/open?id=1KPevH-A0QU4OvCcJCK8j1c--rRI4s6qR 
+
+Any help would be very much appreciated.  I am not an expert, and although I believe I have followed the instructions, I must be doing something wrong - just can't figure it out.
+
+Thanks very much.
+
+Kind regards,
+
+S"
+Amazon WorkMail	"Re: DNS records shown as missing even though they are there...
+Hi,
+
+I checked with the service team and tried to find out some more on how LightSail manages its domains and I think I figured out what is wrong with your configuration. 
+
+If you want to use LightSail to manage your domain, you will need to add all records in LightSails DNS zone for that domain. Then for the domain record in route 53 (not the hosted zone) you will need to update the NS servers to the ones supplied in LightSail. If you manage all your domain records via LigthSail you no longer need the hosted zone that you currently have in route 53 as the DNS zone in LightSail does the same for you.
+
+For the working of WorkMail when domain verification fails there is a grace period where you're still allowed to send mail but receiving will fail as the DNS records cannot be resolved by the other party. Logging on to the system is not linked to the DNS records and will always be allowed. 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Error message: Undelivered Mail Returned to Sender
+Hi,
+
+I am using WorkMail with Outlook 2010 to send mails to my clients.
+
+It worked fine since past 2 months.
+But since 2 days ago, I got error message as below:
+
+======================
+Unfortunately, the system was unable to deliver your mail.
+The error given was:
+
+2019-01-17 03:40:42 : You are currently not allowed to send this e-mail. Please try again later.
+
+You may need to contact your e-mail administrator to solve this problem.
+======================
+
+The mail address I sent are all valid.
+I got around 30 mails from 300-350 mails.
+
+When I receive this message, I have to mark them one by one from my list, and wait to next day and resend the 30 mails again.
+
+It is too troublesome and double work for me.
+
+Please help.  Why is this happening?
+
+Johnny"
+Amazon WorkMail	"Re: Error message: Undelivered Mail Returned to Sender
+Hi Johnny,
+
+I'm sorry to hear you're experiencing problems sending mail. This bounce message is the results of exceeding the daily mailing quota. But if you only sent ~350 you should not get this message.
+
+I will forward this case to the service team for investigation.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Error message: Undelivered Mail Returned to Sender
+Hi Robin,
+
+Thanks for your reply.
+What is the daily mailing quota, 5000 mails?
+I did not send so many mails, and I sent mails through WorkMail & SES without problems 2-3 months ago.
+
+Now it does not work so well.
+
+https://imgur.com/JPI5Ipa
+
+https://imgur.com/QgkzXyK
+
+Please help."
+Amazon WorkMail	"Re: Error message: Undelivered Mail Returned to Sender
+Hi Johnny,
+
+The WorkMail limits can be found on this documentation page: https://docs.aws.amazon.com/workmail/latest/adminguide/workmail_limits.html
+
+The service team is investigating the issue and I will update you once I know more.
+
+Sorry for the inconvenience this is causing you right now. 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Error message: Undelivered Mail Returned to Sender
+Hi Johnny,
+
+The service team is still investigating the problem but to unblock you they have manually increased your limit so you should be able to send at least 10k emails per day.
+
+I will update you with more information once I have that from the service team.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Error message: Undelivered Mail Returned to Sender
+Hi Johnny,
+
+I got another update from the service team, they have identified and correct a bug.
+
+We're sorry for the inconvenience this has caused.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Error message: Undelivered Mail Returned to Sender
+Hi Robin,
+
+Thank you very much for your help, it works fine now.
+
+Johnny"
+Amazon WorkMail	"Migrate AWAY FROM Workmail to Gmail
+This may be an odd question for a forum like this, but because of some Salesforce integration issues, we are being forced to migrate away from Workmail and on to Gmail (GSuite). What I can't figure out is how to connect to the Workmail server to migrate email over to Gmail. Google is asking about TLS Certificates and EWS settings and none of that appears to be available in the Workmail Admin portal. Any advice is appreciated."
+Amazon WorkMail	"Re: Migrate AWAY FROM Workmail to Gmail
+Hi,
+
+I'm sorry to hear you're leaving WorkMail, information on the EWS end-points can be found on this documentation page: https://docs.aws.amazon.com/workmail/latest/userguide/outlook-start.html#outlook_manual (In the section on Mac Outlook).
+
+If you want you can pm me the problems you experienced and I will pass them on to the service team.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"changing which app 'orgname.awsapps.com' redirects to
+Right now, when I go to myorg.awsapps.com, it redirects to the Workdocs login-- which we don't use.
+
+Is there a way to make that URL redirect to workmail, instead?"
+Amazon WorkMail	"Re: changing which app 'orgname.awsapps.com' redirects to
+Hi,
+
+Thank you for using WorkMail. I don't know if there is a way to change the destination of the default awsapps.com url. I will check with the service to log this as a feature request.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: changing which app 'orgname.awsapps.com' redirects to
+Thanks!"
+Amazon WorkMail	"Is anyone have this problem with Workmail ?!
+when i enter the WorkMail username and password it sending me to white page with only 
+"" loading amazon WorkMail ...
+Welcome {0} ""
+and it's never load the dashboard"
+Amazon WorkMail	"Re: Is anyone have this problem with Workmail ?!
+hi,
+
+I'm sorry to hear you're experiencing problems logging on to the WorkMail WebMail. I will forward this to the service team for investigation and update you when I know more.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Is anyone have this problem with Workmail ?!
+Hi,
+
+The service team checked your account to see if there are any issues. They we not able to find anything wrong with your organization. Are you still experiencing this problem?
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Is anyone have this problem with Workmail ?!
+Thank you so much , the problem has been solved"
+Amazon WorkMail	"System was unable to deliver your mail
+Good afternoon
+
+What is this about please?
+
+I've been sending successfully since we took out this account on 27 December 2018 nothing's changed as far as I know
+.............................................
+Unfortunately, the system was unable to deliver your mail.
+The error given was:
+
+2019-01-10 14:45:09 : <Sending Email> Local address contains control or whitespace
+
+You may need to contact your e-mail administrator to solve this problem.
+..................................................
+
+Best
+
+Andy"
+Amazon WorkMail	"Re: System was unable to deliver your mail
+Hi Andy,
+
+I'm sorry to hear you're experiencing problems sending mails. I will ask the service team to take a look, in the meantime can you take a look at the recipients of your email and check if there are any white spaces in any of the email addresses?
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: System was unable to deliver your mail
+Good afternoon Robin,
+
+Thank you for asking.
+
+This refers to the messages I'm sending to not the one I'm sending from?
+
+The email in question was sent two email addresses and copied into two more.
+
+To be sure, before I posted this message, I checked the records locally as best I could.
+
+Two of the addresses were not in the contacts list so I added them, checked them for spaces, and added them back to the sending, plus I checked the ones that were in the contact list already again to no good effect.
+
+Best
+
+Andy"
+Amazon WorkMail	"Re: System was unable to deliver your mail
+Good afternoon Robin,
+
+I just had another go and the message now been sent.
+
+I wonder if the interface had not been updated with your servers but for safety sake I stripped out the contents of the message into a text pad file and then pasted it back taking out any of the HTML-ish contents
+
+So I've marked this query as dealt with"
+Amazon WorkMail	"Re: System was unable to deliver your mail
+Hi Andy,
+
+Good to hear you where able to send your message. 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Pointing a domain to Amazon work mail
+We have a work domain and we want to point the email feed to Amazon work mail - is there a simple ""how-to"" in the help file somewhere as we may not be using the right words to bring it up"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Hi,
+
+I took a look at the WorkMail documentation but indeed it lacks a detailed page describing how to manage mail via MX records. I will ask the team to look into this.
+
+For your case, assuming you already have a WorkMail organization you can add your domain to the WorkMail organization. Once you have added the domain you will need to verify the ownership of the domain. This is done by creating a TXT domain record with the value that is shown in the WorkMail console. 
+
+After the domain ownership is verified you can add the domain to all users email address. Then you can create or update the existing MX domain record to point to WorkMail, again the required value for this domain record is specified in the WorkMail console. 
+
+Its strongly recommended to create all records suggested by the WorkMail console. The autodiscover record will allow automatic configuration for your mail clients and the DKIM, SPF and DMARC records will improve mail security and deliverability.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Good morning Robin,
+
+Thank you for your response and that it was not just me not being able to find something!
+
+Are you saying that I simply add the domain to the AWS system but the problem is that I would need to log onto the Zen interface to change the email pointers so I would need to know what is the address that I need to point the MX record to?
+
+As ever thank you for your help"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Hi,
+
+When you add a domain in WorkMail it will show all required records. Once you have added a domain in the WorkMail console it will not effect your current mail flow or WorkMail organization. So you can safely add your domain to the WorkMail organization. 
+
+Once that is done you will get to a domain details page where you can see the verification status per domain record. 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Also I need IP addresses for the domain not text as here .........
+
+https://docs.aws.amazon.com/workmail/latest/adminguide/add_domain.html"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Hi,
+
+Since WorkMail is a service it will not be reliable to use a IP of the end-points. These IPs might change and will leave your domains pointing to the wrong IPs. The WorkMail console shows all domain records you need to create as CNAME records. 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Good morning
+
+I have now sorted this out with my domain host and they have a strange concern about underscores which you may understand?
+
+Anyway we will migrate our main email domain across on 27 December with the hope that is all working properly by the beginning of the next week
+
+I have one final query which is about spam control - does AWS email have a spam control dashboard of some sort which allows, for example, specification of what happens to emails coming into names that are not on the domain?"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Hi,
+
+For the domain records with a underscore, the SES console (SES handles the domain verification) mentions: If your DNS provider does not allow underscores in record names, you can omit _amazonses from the record name. To help you easily identify this record within your domain's DNS settings, you can optionally prefix the record value with amazonses:
+
+I am not sure if this also applies to the _dmarc domain record. I will ask the service team if they can answer that.
+
+For the spam control dashboard, I'm sorry to report that this is not available with WorkMail yet. I know ""message tracking"" and ""Catch all email addresses"" are two feature that are on their roadmap but there is no ETA for either of them.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Good afternoon,
+
+The simple answer to my question about DNS is that if you add a domain to an existing AWS work mail organisation it gives you all of the DNS settings that you need.
+
+Obviously I was being misleading about IP addresses as I believe these will reset automatically based on the other settings in the domain Control Panel.
+
+I'm obviously going to have to get used to filtering my own spam by the sounds of it!"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Okay - next question - I am now collecting email on the domain on my mobile phone, through an IMAP collection in Thunderbird and I can see the email in a webpage when logged onto https://webmail.mail.us-west-2.awsapps.com/workmail/.
+
+However I can enter a calendar entry on my phone appears on the Webpage - but neither seems to come down to IMAP.
+
+Should I be really using Outlook rather than Thunderbird although I'm really quite wedded to the portable version of the latter"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Hi,
+
+IMAP is a email only protocol, so it cannot do calendar items. There are plugins for Thunderbird to use the lightning calendar plugin with EWS. But I am not sure if these also work with the mobile version of Thunderbird.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Good morning,
+
+Ah! Okay then
+
+Yes the portable version of Thunderbird does work with the Lightning calendar add-on but of course there's no use given IMAP.
+
+So there's no way to get the calendar feed aside from the IMAP mail feed?
+
+Thank you for your continuing help
+
+Andy"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Hi Andy,
+
+If you are on a mobile device you can use its native clients to sync you calendar. For more information on how to configure a mobile device you can check this documentation page: https://docs.aws.amazon.com/workmail/latest/userguide/mobile-start.html
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Hi again 
+
+Thank you for your continuing help
+
+So I now have my calendar on my mobile phone so I now have my calendar on my mobile phone and in the web application.
+
+I guess I need to find an email client that has SMTP facilities to get calendar on a workstation local reader what I can then save messages to a local store?
+
+Best wishes
+
+Andy"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Hi Andy,
+
+If you are looking for a client that can combine Mail and Calendar I suggest looking for one that can do EWS. IMAP and SMTP are mailing protocols and to sync calendar items you will need to do this via EWS or active sync. 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Good morning,
+
+Thank you again - I assume EWS is Exchange Web Services?
+
+I can find an add-on for Thunderbird that does EWS but the calendar add-on 
+which is called Lightning has an out of date EWS Provider called Provider 
+for Exchange ActiveSync - out of date in that it is not compatible with 
+the current version of Thunderbird
+
+I've tried Outlook but it does not seem to want to let me set up EWS on a 
+PC - I suspect this is because you thinks you should only use EWS on the 
+mobile phone
+
+All other suggestions welcome"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Hi,
+
+Yes, I was talking about Exchange Web Services, this protocol is used by Mac Outlook and native Mac applications. This can also be used via the EWS managed api. For mobile devices we have the Active sync protocol and for Windows Outlook we have another protocol. If you want want use Windows Outlook you can use the auto discover server to auto configure a profile for you.
+
+More detailed instructions on how to configure Windows Outlook: https://docs.aws.amazon.com/workmail/latest/userguide/outlook-start.html
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Good evening,
+
+Thank you again for being helpful.
+
+I now have Outlook working the what it does not seem to do is copy down the folders that I've created in work mail on the web interface and which I can see on my telephone - I presume this is an EWS thing?
+
+Best
+
+Andy"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Hi Andy,
+
+I checked with the service team and it looks like you're connecting to WorkMail via IMAP. This means that it might be required to ""subscribe"" to folders to be able to see them. 
+
+If you want to configure your profile for EWS you can use Mac Outlook and automatic configuration. The service team mentioned that your Outlook version looked like the Windows Outlook version. In that case you cannot connect to EWS but to its own protocol. Again the automatic configuration for this should work. 
+
+I checked your autodiscover domain record and its correctly configured so to set-up a profile in Windows Outlook please follow these steps: https://docs.aws.amazon.com/workmail/latest/userguide/outlook-start.html
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Good afternoon,
+
+You are quite correct that I'm testing Outlook version 1811 under Windows 10 professional patched up to update 1803  - I've never really used Outlook ""in anger"" before.
+
+Can your colleagues be more specific about precisely where to display the folders that I've created in the web interface version of my email account?
+
+Best
+
+Andy"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Hi Andy,
+
+If you want to use IMAP for mail you can use these instructions on how to ""subscribe"" to folders: https://support.office.com/en-us/article/choose-which-imap-account-folders-appear-in-outlook-32103602-a568-4499-9d25-54fe236aee6a
+
+I do highly recommend that you switch you profile in Outlook from IMAP to the proper protocol for a much better experience.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Thank you 
+
+I can now see the IMAP option and folders have now been displayed.
+
+Re ""switch you profile in Outlook from IMAP to the proper protocol"" I was not aware I had an option - what is the proper protocol?
+
+Best
+
+Andy"
+Amazon WorkMail	"Re: Pointing a domain to Amazon work mail
+Hello Andy,
+
+Good to hear you managed to find the folders in Outlook. The other protocol is called Mapi over HTTP. You can let Outlook automatically configure this for you with the autodiscover service. The documentation page has all the instructions on how to configure such an account: https://docs.aws.amazon.com/workmail/latest/userguide/outlook-start.html
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Migration IMAP -> WORKMAIL
+Hi everyone,
+
+our mails are stored in an imap server. No Windows, no Office, no Outlook. Workmail does not offer imap, so I quickly ran out of tooling options.
+
+Any ideas? I would like to sync one of the larger mailboxes and do some testing.
+
+bgds,
+
+Papick"
+Amazon WorkMail	"Re: Migration IMAP -> WORKMAIL
+Hi Papick,
+
+Thank you for your interest in WorkMail. We are researching the demand for IMAP support and I would advise you to keep an eye on the AWS tech blog for announcements.  With only IMAP available for you internally there is unfortunately no available direct migration path. If for testing purposes only and a single account a viable alternative for consideration would be to use a temporary outlook setup to transfer the mail manually one single time."
+Amazon WorkMail	"Re: Migration IMAP -> WORKMAIL
+Would love to, but osx outlook 2016 cannot connect to account. mail for osx hangs and crashes when copying mail to aws."
+Amazon WorkMail	"Re: Migration IMAP -> WORKMAIL
+Sorry to hear your trouble with this; the support for Mac Outlook is still limited to Mac Outlook 2011, and my suggestion was directed at a windows Outlook instance.
+An options here would be to fire up a temporarily AWS WorkSpaces instance, with the outlook bundle included, after use directly remove it again to avoid further costs. That could serve as an intermediate step via a PST to get this data over for a single mailbox."
+Amazon WorkMail	"Re: Migration IMAP -> WORKMAIL
+I wrote you a private message with more details on this migration scenario."
+Amazon WorkMail	"Re: Migration IMAP -> WORKMAIL
+Could you also post the instructions here or send me a PM? Thanks"
+Amazon WorkMail	"Re: Migration IMAP -> WORKMAIL
+Hello,
+
+I've asked Milo to follow up with you.
+
+Richard"
+Amazon WorkMail	"Re: Migration IMAP -> WORKMAIL
+I just send you a PM."
+Amazon WorkMail	"Re: Migration IMAP -> WORKMAIL
+Hi,
+
+This is another request for this functionality.
+
+Without this direct migration path this is very painful to get to an operational state.
+
+You are essentially stuck with having to drag and drop each individual folder in the users mail hierarchy across to the Workmail instance.
+
+Mac Mail works slightly better than Outlook 2011 for this. But the short answer is that this is really only a path for the die-hards. No end user will put us with this. Performance is miserable, and you will frequently encounter crashes of the clients that puts your exchange folders in spurious states and causes you to either use the workmail web client to delete the folder in question - assuming that you can guess which one it is, or delete your account in the client, let the client start up again and the add the account back.
+
+If this product offering is to be anything but something for Exchange customers then a really good migration tool is a must.
+
+Feel free to contact me if you want more details on this misery.
+/S"
+Amazon WorkMail	"Re: Migration IMAP -> WORKMAIL
+Can you send me a PM with the migration details IMAP to WorkMail.
+
+Thanks,
+Don"
+Amazon WorkMail	"Re: Migration IMAP -> WORKMAIL
+Could you please send me the details for IMAP to WorkMail also?"
+Amazon WorkMail	"Workmail not recieveing any mail
+I am having some issues with my workmail account.  Right now it will send but not receive.  I have not received any e-mail sense yesterday afternoon at 5:01 central time.   I tried sending to this account from an outside account and get nothing.  Please help."
+Amazon WorkMail	"Re: Workmail not recieveing any mail
+Hi Brad,
+
+I'm sorry to hear you're experiencing problems receiving mails. Are you still not receiving mails? If so did you receive a bounce message sent to the outside account?
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Delete All Items in Inbox
+I ran an migration tool and ran into some issues. I ran the tool again, but now I have duplicate emails in my Inbox. I am now just trying to empty the Inbox, but using the UI, I am limited to 50 emails at at time and its is so slow. I have over 25,000 emails in my box, this will take forever. I also connected using Outlook, but the delete and move options is grayed out. Does anyone know how to clear my Inbox? Office 365 does not have this limitation.
+
+TY"
+Amazon WorkMail	"Re: Delete All Items in Inbox
+Hi TY,
+
+I'm sorry to hear you are unable to delete the duplicate emails. Can you tell me how you connected Outlook to WorkMail and when you're are referring to the delete and move options being greyed out are you are talking about the folder options correct? In the case of default folders, the options are greyed out because these are protected from deletion. 
+
+Do you also see these option greyed out on other folders?
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Delete All Items in Inbox
+I am connected using Outlook and also using the WorkMail UI. I do not want to delete the Inbox, I only want to delete all the emails in the box. When using Outlook and right clicking on the Inbox, there is an ""Delete All"" option. This option is grayed out when connected to WorkMail, but in Office 365 this option is available. There are no options to delete all the emails using the UI. The only option using the UI is to delete 50 at a time.
+
+I just need to flush the inbox of all the emails. 
+
+Also, why am I limited the amount of replies to this thread? I am migrating from Office 365 to WorkMail and will be paying the monthly fees. You would think that if you are paying for a service, you would at least get basic web support with no limitations. I don't mind paying for support, but the current monthly fees are very expensive, compared to my monthly service fee of $8.
+
+TY"
+Amazon WorkMail	"Re: Delete All Items in Inbox
+Hi TY,
+
+The post limit on the forums only applies to new accounts and is use to prevent spammers on the forums. 
+
+For your problem I will check with the service team to see why the delete all option is unavailable. Can you tell me what Outlook version you are using? But for removing all messages, can you delete the messages via Outlook? 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Delete All Items in Inbox
+I am using Outlook 2016. The option in Outlook is grayed out when connected to a WorkMail inbox. When using the same Outlook version with Office 365, the option is available."
+Amazon WorkMail	"Re: Delete All Items in Inbox
+Hi TY,
+
+The service team looked into your case and found no problems with your store so there should not be any reason for Outlook to block the Delete all option.
+
+The service team suggested to connect Outlook in online mode to see if the option would be available in that mode.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Delete All Items in Inbox
+Can they provide me with the directions on how to delete all the issues in my inbox at once using the UI. I do not want to delete 50 at a time. All I want to do, is delete all the messages in my inbox.
+
+TY"
+Amazon WorkMail	"Re: Delete All Items in Inbox
+Hi TY,
+
+I'm sorry to inform you that the Web UI does not offer a way to delete more than 50 messages at a time. If you do not mind losing the users mailbox you can delete the use via the AWS SDK and re-create the user to create a new mailbox. 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Delete All Items in Inbox
+Since you are using O365, why not just open your Windows Outlook Client and merge double existing emails from there?
+
+Assuming you are using Office 2016 (but surely similar to other versions):
+https://www.stellarinfo.com/blog/remove-duplicated-email-messages-outlook-2016/
+
+Regards"
+Amazon WorkMail	"Alias - Send email from SMTP/Laravel
+Hi,
+
+I have a project written in Laravel and would like to send emails via an alias of my main account. Main account is john@domain.com and the alias is noreply@domain.com.
+
+How do I setup my backend to login/send as the alias address? Is there any special configuration?
+
+Thanks"
+Amazon WorkMail	"Re: Alias - Send email from SMTP/Laravel
+Hi,
+
+I'm sorry to inform you that currently WorkMail SMTP does not support sending from Aliases only the primary email address can be used to send mail. Currently the send as alias feature is only supported using the WebMail and Windows Outlook. 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Alias - Send email from SMTP/Laravel
+Thanks Robin, not a big fan that his feature is unavailable, but I guess there isnt much I can do besides putting my +1 on the feature request.
+
+Still, there is a workaround that allows to ""sort of"" send an email from an alias account. See more below:
+
+Example:
+Main account: john@domain.com
+Alias: support@domain.com
+
+1. delete the support@domain alias from AWS WorkMail > Users > john > edit
+2. go to AWS WorkMail > Groups > New Group > Name: Support + email support@domain.com
+3. add john@domain.com as the sole member of the group
+4. Go to AWS Services > Simple Email Service (SES)
+5. Go to Email Addresses > Verify New Email Address > add support@domain.com
+6. Go to john@domain.com and click on the link you just received to confirm the email address
+7. In SES > SMTP Settings click on support@domain.com and press the ""Get SMTP Credentials"" button
+8. You will be redirected to AWS AIM where you have to choose a username (eg. domain.support.smtp)
+9. Complete the wizard and lick ""Show Credentials"", which will show you the username and password for the support@domain.com SMTP login (download or write down)
+10. Take note of which location your WorkMail server is (Eg. eu-west-1)
+11. Go to www.smtper.net to test your smtp login with the below credentials:
+
+SMTP host: email-smtp.eu-west-1.amazonaws.com
+Port: 25
+Use SLL: True
+Use Authentication: True
+Authentication name: <the name you wrote down>
+Authentication password: <the password you wrote down>
+From Email: support@domain.com
+
+Hope that helps!"
+Amazon WorkMail	"Alias & Rules - move mails when received via alias accounts
+Hi,
+
+I have one main email address (hello@domain.com) which also has 2 more alias accounts (careers@domain.com and info@domain.com), meaning if anyone sends emails to the alias accounts they are still being received by the main account.
+
+The question is how can I set a rule that if an email is received from an alias account, that it gets moved to a specific folder in the inbox? Right now, all emails received from any of the accounts are thrown into the inbox without any clear indication to which account the email was sent to.
+
+I was going through several threads in this forum and almost every response is ""Sorry, this feature is not supported"", even though we are asking for rather basic functionality.
+
+Appreciate any help here, thanks."
+Amazon WorkMail	"Re: Alias & Rules - move mails when received via alias accounts
+Hi,
+
+I'm glad to inform you that moving emails that are sent to aliases is possible in WorkMail. The  condition to use is ""includes these words in the message header ..."". Set the value to the alias and it will allow you to move messages to other folders.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Alias & Rules - move mails when received via alias accounts
+Lovely, thank you.
+
+To those who still have problems with this and perhaps prefer another solution, there is a workaround that utilizes creating ""Groups"" (eg. support@domain.com), and adding the main email account as the sole member of this group. Once that is done, an email rule with ""when the email is sent to support@domain.com ..."" can be set and moves the email in the relevant directory.
+
+Cheers"
+Amazon WorkMail	"Deleting a group
+How do you delete a group?
+
+I had a group media@my-domain.com, but now my business needs to send from that address. After trying everything to make that happen and realising to my astonishment it's impossible, I now need to delete the group to free up the username and address for use as a regular user account."
+Amazon WorkMail	"Re: Deleting a group
+Hi,
+
+WorkMail indeed does not support sending as groups or aliases. We are aware of the need of this and are looking into this. 
+
+In your case I assume you found the option to disable the group and want to reuse the username? This is not possible from the WorkMail console. The username will still exist in the user backend. The email address is not, so if you can use a different username then you can reuse the group email address.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Deleting a group
+Is there any news / updates on this feature? I have a test group that I cannot delete because I was unaware of this during my WorkMail setup."
+Amazon WorkMail	"Re: Deleting a group
+I'm in the same sad boat.  I created a group and now need to use it as an actual mailbox username and I've tried all sorts of methods.  Workmail really needs to allow the deletion of Groups as well as Users - those too can only be Disabled.
+
+Thanks,
+Kevin
+
+Edited by: kevincap on Jun 13, 2018 9:07 PM"
+Amazon WorkMail	"Re: Deleting a group
+Hi Kevin,
+
+I'm sorry to hear that you experience issue due the lack of this feature. I will +1 the feature request ticket for you. If you have a simple AD as user backed for your WorkMail directory you can join the domain of that directory with a Windows machine and use ADtools to delete the user. 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Deleting a group
++1 this really should be a native feature in the workmail menu.
+
+Meanwhile, have a look at this. There seems to be a command from the terminal that does this.
+https://docs.aws.amazon.com/cli/latest/reference/workmail/delete-group.html"
+Amazon WorkMail	"Central Email Signature
+Hiya,
+
+I recently got Amazon Workmail  under a basic package and was wondering if it was possible to create a centralised signature for my organisation. 
+This would mean that anyone listed under the organisation would automatically have the set signature attached to any email that they send out.
+
+Thanks
+
+Edited by: moj on Dec 20, 2018 7:04 AM"
+Amazon WorkMail	"Re: Central Email Signature
+Hi,
+
+Welcome to WorkMail! I'm sorry to inform you WorkMail does not offer this functionality yet. The team recently released lambda's on outbound rules which in the future should offer functionality like this.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Can't send emails with SMTP (timeout)
+Hi,
+
+I use Workmail as a webmail - which works fine. 
+
+Now I try to use it as SMTP with C#, so send emails, e.g. when a user has registerted on my website. 
+
+Here are my settings:
+
+""SmtpServer"": {
+    ""Server"": ""smtp.mail.us-east-1.awsapps.com"",
+    ""Username"": myemail,
+    ""Password"": mypassword,
+    ""Port"": 465,
+    ""Sender"": myemail
+  }
+
+I can't connect, I got a timeout every try. 
+
+To avoid mistakes on my end with my code I tried it with an online web tool: 
+
+https://www.smtper.net/
+
+Here is an example:
+
+https://imgur.com/a/OlgRm35
+
+He gets the same problem... 
+
+So what to do?"
+Amazon WorkMail	"Re: Can't send emails with SMTP (timeout)
+Hi,
+
+I'm sorry to hear your experiencing problems with configuring SMTP in your C# code. I'm not sure why its failing but could try to ensure that the code is using SSL? Also WorkMail SMTP does not support STARTTLS, so you can check if that is not used.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Can't send emails with SMTP (timeout)
+Hi.
+
+it is really sad that I have to wait a whole day and then get an answer that is that leacking of quality... 
+
+Yes, of course I try SLL and everything else... 
+
+That is the reason, that I gave you the screenshot and a online test tool - did you even read my thread or just copy pasting ideas from a word document?"
+Amazon WorkMail	"Re: Can't send emails with SMTP (timeout)
+Hi,
+
+I'm sorry that you're disappointed by the delayed response here on the forums. For better and quick support feel free to take a look at https://aws.amazon.com/premiumsupport/.
+
+For you problem with the SMTP server connection, I tested the site you used and was unable to verify that it was not using STARTTLS which can be the reason the connection fails. I am able to use SMTP with Thunderbird. 
+
+What library are you using in C#? You might need to explicitly disable STARTTLS.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Migration from Lotus Notes
+Good morning to you all
+
+We are running a test version of AWS mail as a replacement for our Lotus Notes installation as we no longer need to use the database facilities of Notes leaving just the email, calendar and contact list part.
+
+Email is not a problem as we can keep our historic messages locally and refer to them as needed.
+
+However it will be helpful to move calendar and contacts.
+
+If we going to move our domain to AWS mail we could export our contacts to a variety of formats importing including  .vcf
+
+Calendar may be more problematic but it seems we could export it to a .ics file.
+
+Does this sound do-able?
+
+Secondly if I import these into my test domain can I transfer them to the real domain if and when we move across?
+
+And thirdly, having imported it and used them (email contacts and calendar) can we bring those down to a local copy of some sort?
+
+Thank you for your help"
+Amazon WorkMail	"Re: Migration from Lotus Notes
+Hi,
+
+Good to hear you're interested in using WorkMail, I do have some questions for you. What client are you using right now? 
+
+If you're using Windows Outlook I suggest using a PST export from the Lotus notes user and import this in the WorkMail user to copy everything (Mail, contacts and calendar). If you do not use Windows Outlook it will be harder to import the contacts and calendar items. The WorkMail WebMail client does not offer any import functions so it will come down to the client you're using. 
+
+For using a test domain, with WorkMail you get a complementary .awsapps.com domain that you can use for testing. You can also add your own domain without impact on your current set-up. If you add your domain and verify the ownership but don't create any of the other required records (Mainly MX and auto discover records), you will be able to add your domain to all users but mail will still go to the old mail stack.
+
+For a local copy, this again comes down to the client you are using. WorkMail offer support for most mail clients over varying protocols so it should not be a problem to find a client that suits your needs for this.
+
+If you have any more questions feel free to ask.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Migration from Lotus Notes
+Good afternoon
+
+Thank you for such a full reply
+
+The client I am using right now is Mozilla Thunderbird but I could fire up Outlook if I set up a Windows 10 pro VM here so that I could use a PST export from the Lotus notes.
+
+I'll try a test and see what happens.
+
+I already have a complementary .awsapps.com domain that I am using for testing. 
+
+Concerning adding our own domain without impact on your current set-up - there seems to be no point in that if we do not point the MX records across?
+
+Presumably if I keep on carrying on using Outlook locally or even go back to Thunderbird or some other off-line reader I would still have the benefit of the one-off import of my previous email, contacts, and diary?
+
+The only thing that worries me is the size of the import as we are a bit lackadaisical in closing down and opening new mail files for our users and so they tend to grow quite large - what is the file size limit in work mail and what of the charges if we go over that limit?
+
+Edited by: DTbusyness on Nov 16, 2018 4:10 AM"
+Amazon WorkMail	"Re: Migration from Lotus Notes
+Hi,
+
+You're welcome, glad I was able to shed some light. For the new questions yes, the MX record defines where email will go, if that is Lotus Notes mail will go there. So you can add the domain to WorkMail safely, so you can configure it as email address for your users. Once you are ready flip over, you update the MX record and your users can start using WorkMail. 
+
+If you used Outlook to export your current store it will make it easy to import into WorkMail. This should include all items that can be exported to PST. For Email rules, you can also make an export using Windows Outlook and re-import this in the WorkMail user store. For usage afterwards, Thunderbird should be good to view mail offline but it will only offer mail. For Calendar and Contacts you might want to use Windows Outlook or and EWS capable client.
+
+For sizes and limits in WorkMail. The maximum size of emails in WorkMail is 25MB, larger files will not be synced to the server if you import these in WorkMail. The maximum user store size this is 50GB. You cannot go over this so it will also not incur any more costs that the normal $4 per user per month.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Migration from Lotus Notes
+Good afternoon
+
+Again thanks
+
+Noted about ""flip over"" etc
+
+I opened Outlook on my local workstation which I do not usually use and tried the import into it from Lotus Notes having established a connection from Outlook to the test account.
+
+Unfortunately the export did not work properly I ended up with a whole bunch of email headers with no content and no differentiation between email calendar and address book items.
+
+Is there any easy way of deleting all of these from my account and where is the best place to delete them from?  Would it be in Outlook?
+
+And will that then replicate?
+
+Or should I simply dump the dump the test account and open another one?"
+Amazon WorkMail	"Re: Migration from Lotus Notes
+Hi,
+
+If you're using a test account that you will not use, the fastest way to get a empty mailbox will be to create a new user. Do note that when disabling and enabling a user will not give you an empty mailbox as WorkMail will only delete a mailbox for a user that has been disabled after 30 days. 
+
+If you remove all all mail in Outlook it will sync this to the server, removing all mail from the server. Again the items will still be in ""Recover deleted items"" for 30 days.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Migration from Lotus Notes
+Good morning you
+
+Thank you again - I see - that seems quite simple so I've done that I will prepare a new import in my admin day tomorrow and we will see how that goes.
+
+Best
+
+Andy"
+Amazon WorkMail	"Re: Migration from Lotus Notes
+Import now successful"
+Amazon WorkMail	"Not receiving e-mails, but can send
+Hello,
+
+As of today none of my users e-mail accounts are receiving any e-mail. We tested and we can send e-mails to other domains like @gmail.com, but our own e-mail is not receiving anything. I've checked AWS Status page and Workmail status is ok. How can I check more details about this or how can I proceed in order to solve this issue?
+Just to give more details, yesterday e-mails were working normally. There wasnt any change in our domain, Workmail, or in our AWS account in general.
+
+Kind Regards,
+Eric Akira"
+Amazon WorkMail	"Re: Not receiving e-mails, but can send
+Hi Eric,
+
+I'm sorry to hear that you're experiencing problems with receiving mail for you WorkMail organization. I took a look at your organization and the custom domain you have configured. I was unable to resolve any of the domain record that are required. 
+
+Can you check that all your domain records are still correct and can be resolved? You can use the domain page to see if WorkMail can resolve and use the domain.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Not receiving e-mails, but can send
+Hello Robink. I had checked Route 53 and everything was right there, in the end the problem was where I've bought the domain, outside AWS. Thanks for the help, it certainly was a DNS problem."
+Amazon WorkMail	"Workmail no longer working on Mac Outlook 2016
+Workmail had been working on Outlook 2016 for Mac (Version 16.21 (181205)) using Exchange until this week.
+
+I am now getting the error: Make sure your mailbox is on Exchange Server 2010 SP2 or later.
+
+Thank you"
+Amazon WorkMail	"Re: Workmail no longer working on Mac Outlook 2016
+Hi,
+
+I'm sorry to hear you're experiencing problems with the latest version of Mac Outlook. I checked with the service team they are aware of the problem and working to solve this. The service should be available again soon for clients on the fast track of the office insider program.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Can send email but i can't receive it from my workmail account.
+Hi Everyone.
+
+I have a problem with my Workmail account, i can send email but i can't receive it in my inbox folder or even in the Junk email folder, please help me with this problem.
+
+Regards.
+
+Guss"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi Guss,
+
+What email domain are using in the email address?
+If it's <organizationname>.awsapps.com it should work fine. 
+
+When you are using your own domain, it's important the MX record is pointed to WorkMail or your email are forwarded from your other email server.
+
+Only switch your MX records when you have all email addresses (both users and distribution lists) created on WorkMail and your original mailbox migrated. 
+
+Milo"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi Milo.
+
+Thanks!!! the problem was in my MX records as you said.
+
+Regards."
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+I have everything setup correctly, but cannot receive email on my custom domain.
+MX records are in place, domain is setup correctly... can send mail just fine. Need some way of debugging  to test that users can receive mail and if not why not."
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi Milo,
+
+What if I need to use both the email on my hosting company and the email on AWS , its kind of a slow transition before switching everything to AWS. can that be possible?
+
+As of now I am using the exchange of Hostway and my domain is with them, but I want to use the AWS workmail slowly and testing, I have created a user under workmail, I can send email but I cannot receive any ..."
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Yes, you can slowly transition to Amazon WorkMail.
+For this you want to setup an dual or split delivery setup. Below the steps to accomplish this:
+
+1. Add your domains to WorkMail
+2. Verify the domain ownership by adding the TXT verification record
+3. Add your users to WorkMail and set the primary address to their current Exchange address
+4. Add an email alias to each user with the <alias>.awsapps.com domain. This address is used to receive email forwards.
+5. Enabling forwarding for users to their (...@<alias>.awsapps.com) in the Exchange Management Console (recipient configuration > Mailbox > User > Mail Flow settings > Delivery options)/
+You can decide to still keep a copy in Exchange if you are running WorkMail in a PoC setup.
+6. Once all users are migrated you can switch the MX record to WorkMail.
+
+When setting up the Outlook client make sure you use the email alias as login name, otherwise the autodiscover process will resolve the user back to the Exchange server.
+
+With the above steps you can run part of the users on WorkMail, while they can still use their email address. 
+
+If you want to have an unified global address book between Exchange and WorkMail you can have to add/enable the users and distribution groups in WorkMail. Currently you can't share free/busy calendar information between WorkMail and Exchange.
+
+Let me know if you have any questions about this setup.
+
+-Milo"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi Milo,
+
+So far here is what i did. also thank you for the response:
+
+1. Add your domains to WorkMail = DONE
+2. Verify the domain ownership by adding the TXT verification record = DONE
+3. Add your users to WorkMail and set the primary address to their current Exchange address
+I did not use the current address instead I created new email address that is not in the exchange of hostway. ( I have new employee named ""anne"" and I created a user on AWS using the verified domain from hostway , this user has no current email address in the exchange server of hostway) it is now anne.marie@hostwaydomain.com
+
+4. Add an email alias to each user with the <alias>.awsapps.com domain. This address is used to receive email forwards.
+=I dont know where i can add an email alias on AWS , do i need the alias if i created a new user on AWS but no current email address in the exchange server?
+
+5. Enabling forwarding for users to their (...@<alias>.awsapps.com) in the Exchange Management Console (recipient configuration > Mailbox > User > Mail Flow settings > Delivery options)/
+-Where is the Exchange MC can be found?
+
+You can decide to still keep a copy in Exchange if you are running WorkMail in a PoC setup.
+what is poc setup?
+
+AS of now I am stuck to step 4
+
+-jeff"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi Jeff,
+
+4. You can add an email alias to a user by opening the AWS Management Console, selecting the user, and pressing edit. In the edit view you can add additional email addresses to the user.
+
+5. It depends on the Exchange version. For Exchange 2013 you can access the exchange console by accessing https://exchange_url/ecp. It looks like hostway runs Exchange 2010 and provides an own control panel for management.
+Can you add in the control panel a new mail user? 
+A mail user is a user without a mailbox where you can also add an external address. All emails send to this user will be forwarded to the external address.
+
+
+what is poc setup?
+
+PoC = Proof of Concept
+
+-Milo"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi,
+
+I am having the same problem. Have just migrated all emails from Office 365 to Workmail, setup a custom domain, changed all MX, CNAME, etc. in my DNS provider. However, I cannot send an email to this new workmail address. It has been already over 24 hours.
+
+Should I wait more? It is disruptive right now because the old MX records are now replaced by the new, meaning the old Office 365 can no longer have incoming emails.
+
+Please help."
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi,
+
+I checked your settings and everything seems correct. Do you receive a bounce message when you try to send an email to one of you WorkMail users?
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hello,
+
+I have the same problem with the WorkMail. I can receive email from Gmail, but I can't receive from Yahoo and Facebook. I've added all CNAME records and updated the MX record in my domain provider. What is wrong?
+
+Thanks
+
+Edited by: Zhoro on Oct 7, 2017 9:01 AM"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+I have the same problem, and I set up Route53 and Workmail according to the documentation and steps.  
+
+I have a domain hosted in Route53:  awsbeginner.com
+I created the new domain in Workmail:  awsbeginner.com and I added the appropriate DNS records in Route 53:  1 TXT record for verification, 1 MX record, and 4 cname records by copying and pasting.  
+
+I can send emails from the web app:  at https://awsbeginner.awsapps.com/mail
+but I am unable to receive any emails.
+
+I do NOT have any exchange emails or other email servers.  I only use Route53 and Workmail.  What am I missing?  Attached are some screen shots of the records that I pasted into Route 53.  Please assist.  Thanks."
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi,
+
+Looking at your SES incoming rules, I see that you have a rule for you domain to move items to S3. Can you check if you emails are in S3?
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+I do see a bucket in S3 called emails-aws, but I believe that was a bucket I manually created when I first tried configuring email using SES directly.  Now I just wanted to try using Workmail.  
+
+And the answer is YES, I just checked the the s3 bucket ""emails-aws"" and I do see two object in there after sending two emails to my workmail email.  But I click on the message and it's blocked with XML access denied error.   
+
+Again, I was only able to send out from workmail console web app.  I haven't received any emails in my inbox of amazon workmail.   I went to SES in my AWS console, and I didn't see any SES settings I could manage.  
+
+If all the emails are being directed to S3, how can I use an email client to view those incoming emails? Or how to view those in Amazon Workmail?  
+
+So please assist me so I can see the emails to show up i my workmail app directly.  Or if I can use Amazon SES and receive emails directly using my own email client, that's option #2.  Please assist with both.  Thanks alot."
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi,
+
+If you do not want to use a S3 bucket to save email I suggest to remove that rule. You can do this by going to the SES console and in the menu bar select ""Rule Sets"" in the Email Receiving section. On that page click ""View Active Rule Set"".
+
+The rule for WorkMail will be named something like: m-f34b61e100ad47a88866b30ea043c113. You can also check the actions of the rules, the WorkMail rule will have 1 action called ""WorkMail Action"".
+
+You can remove the S3 rule and then email should arrive at WorkMail and will be visible in the WorkMail WebMail client.
+
+If there is only 1 rule which contains multiple actions, you can open that rule and remove S3 action. Then only the WorkMail action remains.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi, can you help me with the same problem: Can send but can't receive.
+Egor
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  weare@zihipro.ru
+    Unrouteable address
+
+Return-path: <egorka23@mail.ru>
+Received: by f381.i.mail.ru with local (envelope-from <egorka23@mail.ru>)
+id 1eHodz-0003JN-TX
+for weare@zihipro.ru; Thu, 23 Nov 2017 13:22:08 +0300
+Received: by e.mail.ru with HTTP;
+Thu, 23 Nov 2017 13:22:07 +0300
+From: =?UTF-8?B?RWdvciBCLiBBa2ltb3Y=?= <egorka23@mail.ru>
+To: =?UTF-8?B?d2VhcmU=?= <weare@zihipro.ru>
+Subject: =?UTF-8?B?Z2ZnZmc=?=
+MIME-Version: 1.0
+X-Mailer: Mail.Ru Mailer 1.0
+X-Originating-IP: http://47.35.147.70
+Date: Thu, 23 Nov 2017 13:22:07 +0300
+Reply-To: =?UTF-8?B?RWdvciBCLiBBa2ltb3Y=?= <egorka23@mail.ru>
+X-Priority: 3 (Normal)
+Message-ID: <1511432527.617891153@f381.i.mail.ru>
+Content-Type: multipart/alternative;
+boundary=""--ALT--ApkVEYiJYul7SpgyUDTae9NtOeVwgCGt1511432527""
+Authentication-Results: f381.i.mail.ru; auth=pass smtp.auth=egorka23@mail.ru smtp.mailfrom=egorka23@mail.ru
+X-7FA49CB5: 0D63561A33F958A511400816EB95A32E1162554B8FC4DF7817170D799AE2D8F1725E5C173C3A84C311BA4339981C382AD953094FE6BCB7E4463FC242DBD691A6C4224003CC836476C0CAF46E325F83A50BF2EBBBDD9D6B0F05F538519369F3743B503F486389A921A5CC5B56E945C8DA
+X-Mailru-Sender: 04F37311093D2945830366C62A1E4DEBC99C1376AF678DEEFA631A105E355C950A6F60A32BE3538D0AEC8EFC3662D0CC0C7C32C9699C4469DCD7DD56DF79237CC1066F626AABBBD9938EED61E02B7D2EF80DE39EF3A783F767EA787935ED9F1B
+X-Mras: OK
+X-Spam: undefined
+
+----ALT--ApkVEYiJYul7SpgyUDTae9NtOeVwgCGt1511432527
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+
+0LLQsNCy0LDQstCw0LLQsAoKCg==
+
+----ALT--ApkVEYiJYul7SpgyUDTae9NtOeVwgCGt1511432527
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: base64
+
+CjxIVE1MPjxCT0RZPtCy0LDQstCw0LLQsNCy0LA8YnI+PGJyPjxicj48L0JPRFk+PC9IVE1MPgo=
+
+----ALT--ApkVEYiJYul7SpgyUDTae9NtOeVwgCGt1511432527--"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+hi,
+
+I was not able to resolve the MX records for the domain zihipro.ru. Have you created the MX record to point to the correct smtp endpoint?
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hey Robin,
+I'm also having the same issue. Can send emails but can't receive them. MX entries have been made. The domain in question is provider.virtual*****.com"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi,
+
+I am unable to resolve the MX record for your domains. Can you verify that they are created correctly? You can use this tool to verify that the records are created correctly: https://mxtoolbox.com/
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+I have the same problem, and reading this thread it appears to be fairly common but with nearly a different solution for each instance.
+
+I had a domain and email hosted with Google that I migrated (seemingly successfully) to Route 53 and Workmail.  As mentioned, I can send email but I can't receive.  A test email I sent to myself yesterday never came through but this morning this error message was returned:
+
+The response was:
+DNS Error: 9984544 DNS type 'mx' lookup of fatreddog.com responded with code SERVFAIL
+
+Reporting-MTA: dns; googlemail.com
+Received-From-MTA: dns; craig@gmail.com
+Arrival-Date: Thu, 22 Mar 2018 05:34:01 -0700 (PDT)
+X-Original-Message-ID: <A0844ACE-9F0D-4F8C-9B6F-07D31C79E8D2@gmail.com>
+
+Final-Recipient: rfc822; craig@fatreddog.com
+Action: delayed
+Status: 4.0.0
+Diagnostic-Code: smtp; DNS Error: 9984544 DNS type 'mx' lookup of fatreddog.com responded with code SERVFAIL
+
+Do any of the solutions in this thread apply to this problem?
+
+Thanks,
+Craig"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+I'm also experiencing issues with my Amazon Workmail. Ever since I changed my DNS host to Amazon Route 53, my emails have either been severely delayed or have not shown up at all.
+
+Is there a way for me to fix this?
+
+Thank you."
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi Craig,
+
+I'm sorry to hear about your problems with domain verification. I took a look at your WorkMail organization and your domain. The WorkMail organization does not have the domain added and the MX record still points to google. 
+
+To use your domain with WorkMail, please add the domain in the WorkMail console following these steps: https://docs.aws.amazon.com/workmail/latest/adminguide/add_domain.html After that you should be able to use your domain to send and receive mail.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi Robin,
+
+Thank you for getting back with me.
+I swapped the MX record from Google to awsdns.
+I did see the domain fatreddog.awsapps.com is verified in my WorkMail organization, so I'm not clear on why you see that it's not added.
+Anyway, I can still send but not receive.  Any other input would be greatly appreciated.
+
+Thanks,
+Craig"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Hi Craig,
+
+To send emails to or from the fatreddog.com domain you will need to add it in the WorkMail console. Currently you only have the complementary domain fatreddog.awsapps.com that you can send and receive email from.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Can send email but i can't receive it from my workmail account.
+Well, this took about a week for the domain to transfer - but now after changing everything it looks like an even bigger mess than before.  I can't even guess what the problem/problems are now?
+~ Craig"
+Amazon WorkMail	"WorkMail question
+What does number of users in workmail means. Does One user mean there will be only one domain, or it means there will be only one email address. For example if I use admin@mydomain.com then this is one user and for using info@mydomain.com I have to pay another $4.0 per month?"
+Amazon WorkMail	"Re: WorkMail question
+Hi,
+
+Thank you for your interest in WorkMail. In WorkMail you pay per ""Enabled user"" and a ""Enabled"" user is a user that can log on to WorkMail.
+
+A user can have up to 100 email aliases from the 1000 domains you can add to a WorkMail organization. Extra domains and or email addresses for users will not cost you anything extra.
+
+Does that answer your question? Feel free to ask more questions if you have them.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: WorkMail question
+Thanks for response. So a user can create many aliases, but only one person can access mails to those aliases (or at least this is what I understood from answer).
+If I have 10 persons in my organization, and I set 10 email aliases by their names  (from the same domain), how can they access their emails from their own desk without looking at emails from other users? Will I have to create 10 users in this scenario?"
+Amazon WorkMail	"Re: WorkMail question
+Hi,
+
+Yes, that is correct. Only the user with the alias can read email sent to that alias. For your use-case you will have to create a user for each of your users so they have access to their own mail.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: WorkMail question
+Thank you. It is clear now."
+Amazon WorkMail	"Workmail randomly rejecting valid password
+Just started yesterday, for hours on end Outlook 2016 pops up and ask for password over and over again. It then stops asking for about an hour at a time before starting up again. I know the password is correct as a logged into amazon web mail using it. I created a test email profile and during initial mailbox setup it does the same. You enter email address and password box pops up. It never accepts the valid password. It does not appear to do any autodiscovery work. Has anything changed in the back end of workmail to cause this?"
+Amazon WorkMail	"Re: Workmail randomly rejecting valid password
+Hey,
+
+Sorry to hear about the problem being faced by you. Can you please provide me date time frame when you are/were experiencing this problem. This will help us in narrowing the search to debug your issue.
+
+Thanks,
+Vishwajit."
+Amazon WorkMail	"Re: Workmail randomly rejecting valid password
+Hi Vishwajit, it started around 3pm UK time yesterday. About 1 hour later it stopped asking for passwords. When I go in to the office at 10am today it was asking for passwords. Early afternoon today it  stopped asking for a while. Now it is back asking for password again.
+
+The weird thing is - emails are being sent and received OK from Outlook using this workmail account despite the login prompts."
+Amazon WorkMail	"Re: Workmail randomly rejecting valid password
+Hi,
+
+Outlooks is regularly calling Autodiscover service. It first tries with Authorization header 'bearer', for which WorkMail Autodiscover service returns 401 (because it is not supported). Normally after that Outlook calls Autodiscover service with 'basic auth' Authorization header. It is successfully handled by WorkMail.  
+
+We have checked logs on our side and discovered unusual Outlook behavior:
+
+We see that there are periods of time when your Outlook is calling Autodiscover service only with 'bearer' Authorization header and is not falling back to 'basic auth'. These correspond to a time frames you've mentioned. It might be something wrong with your Outlook. Could you please try to update it or reinstall it? Also, could you please recreate a profile in Outlook? 
+
+--Dima"
+Amazon WorkMail	"Re: Workmail randomly rejecting valid password
+Hi, this is now happening on two different devices, my work desktop and personal laptop.
+
+On both I've created a new mail profile and when you create the profile and enter the information eg. name, email address and password it does the same thing. Just keeps asking for the password. It doesn't look like it is getting to the autodiscover stage.
+
+If I cancel the login it says and encrypted connection is not available, and it will tried unencrypted. This also fails and it goes on to manual setup, I picked office365 and then Exchange server types but neither worked."
+Amazon WorkMail	"Re: Workmail randomly rejecting valid password
+Hi,
+
+we see that your are using newer Outlook version. And we do see that the problem is happening again. At this point we don't know why Outlook is calling WorkMail only with Authorization header 'bearer' and is not falling back to 'basic auth'.
+
+--Dima"
+Amazon WorkMail	"Re: Workmail randomly rejecting valid password
+Hi,
+
+I've checked the logs on our side, seems like last 5 days the problem was not happening. Can you confirm?
+
+--Dima"
+Amazon WorkMail	"Re: Workmail randomly rejecting valid password
+It's stopped happening as I've reverted to using webmail for now. I can't add the Workmail account to outlook anymore. I have 1 PC at work that is working still. I have a laptop and tablet (both windows 10 like my PC) where I removed the workmail account and can't re-add them.
+
+I just need to decide if I should move all my various clients and my own mailboxes over to Office365 where just dealing with one company for client software and back end should be less problematic and I have one company to do the support. I appreciate the fact that if Microsoft make a change to the client it's not your fault. I just need reliable email access."
+Amazon WorkMail	"Authentication failure with Simple AD users.
+Hi,
+
+I'm having some issues authenticating when using IMAP or macOS Mail. Workmail is backed off Simple AD and I have also renamed the user since creating their mailbox. The workmail console doesn't seem to indicate any problems and webmail works but I can't authenticate using IMAP or EWS with macOS Mail.
+
+Thanks,
+Orch"
+Amazon WorkMail	"Re: Authentication failure with Simple AD users.
+Hey,
+
+I am sorry to hear that you faced problem while using WorkMail. Are you still experiencing the issue  you mentioned or is it working fine now ? If you are still experiencing the issue, can you please PM me the email address and datetime during when you tried and faced the problem. This will help us in investigating further.
+
+Thanks,
+Vishwajit"
+Amazon WorkMail	"Re: Authentication failure with Simple AD users.
+Hi,
+Never got any reply to my Private Message, users are still having IMAP access issues. Is there any possibility of looking into this?
+Thanks,
+Orch"
+Amazon WorkMail	"Workmail Subfolders Hidden
+Hi I can't find my workmail subfolders they don't display when I log-in. They still exist; when I right-click Inbox>Properties>Details they're listed but not showing-up in the My Mail sidebar. Please help thanks."
+Amazon WorkMail	"Re: Workmail Subfolders Hidden
+Hi,
+
+I'm sorry to hear your experiencing problems with your sub folders. Can you tell me what client are you using to view the folders?
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Feature request: exclude pattern for outbound mail flow rule
+Hi there,
+
+I'm very happy with the SMTP Gateway option, great stuff. One thing that would be fantastic to have is the option to exclude domains from the mail flow rule for destinations domains. So you might get:
+
+!myowndomain.com
+*
+
+Meaning: deliver everything to the SMTP Gateway except recipients in myowndomain.com. This avoids processing internal mail via the SMTP Gateway or any other recipient domain you don't wish to route via SMTP Gateway.
+
+Hope this makes sense, feel free to reach out if I need to clarify more.
+
+Kind regards
+Meint"
+Amazon WorkMail	"Re: Feature request: exclude pattern for outbound mail flow rule
+Silly me, not needed I resolved it by adding another rule that excludes, disregard my request"
+Amazon WorkMail	"Re: Feature request: exclude pattern for outbound mail flow rule
+Hi,
+
+Glad to hear you're happy with the SMTP gateway feature and that you found a solution for the problem you faced. One question regarding the STMP gateway documentation, did you missing anything from our documentation that would have helped understanding how the rule work? If you have any comments or questions, feel free to post them.
+
+Also have you seen the latest feature release for Outbound rules? You can now execute a Lambda for outgoing mail.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Feature request: exclude pattern for outbound mail flow rule
+Hi Robin,
+
+It wasnt directly clear to me how the outbound rules interacted, I'm used to mail flow rules in Exchange/O365 and there you have precedence in the rules which isn't the case with Workmail. Not an issue but it didn't directly click in my head how Workmail operates.
+
+It might help other customers if the documentation makes a specific notice how to exclude internal email from the outbound rule in combination with the SMTP Gateway, ie something like:
+
+""If you're sending all your outbound email via the SMTP Gateway and you want to exclude your internal email you need to create an additional rule where you define the 'Default' action with your own domain as destination"".
+
+Or something to that wording, I expect this is a common scenario/question for many companies that do outbound filtering (spam, virus, DLP).
+
+Thanks for taking the time to respond to my spurious question 
+
+Kind regards
+Meint"
+Amazon WorkMail	"Re: Feature request: exclude pattern for outbound mail flow rule
+Hi Meint,
+
+Thank you for your reply, this is indeed a good suggestion. I will pass this to the service team.
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Feature request: smart host / mail relay integration
+Hi, with Office 365, Exchange and G-Suite i have the option of sending traffic for certain addresses (or domains) to a smart host rather than send out directly. The smart host might have the function of an outbound spam filter, policy server or DLP engine. 
+
+Connection to the smart host would ideally be protected by TLS and uses SASL for authentication. The mail servers I mentioned all have the ability to define (send) connectors where you can configure settings for a smart host (host, TLS settings, domain scope), a (distribution) group where you can isolate addresses/domains that can use the connector and a mail rule that ties them together (""If somebody from this group emails use send connector x"").
+
+I would like to request this feature as I think this is essential for any larger corporation with an extensive security policy / perimeter approach."
+Amazon WorkMail	"Re: Feature request: smart host / mail relay integration
+Hi,
+
+Thank you for your interest in WorkMail. I know this feature is high on the WorkMail roadmap so keep an eye on the forums for release announcements. 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: Feature request: smart host / mail relay integration
+Happy to see that outbound smtp gateway is now supported, thank you!"
+Amazon WorkMail	"Changed password, now can't access my account
+I changed my WorkMail password yesterday and as a result can no longer access mail in any account,
+
+iOS on iPad, macOS on my MacBook in both Outlook and Mac mail or via the webpage.
+
+I have gone into the console and reset the password multiple times to no avail and used both simple and complex passwords, which always succeed by the way.
+
+I still have access to mail accounts where I have not reset the password so I know it is not my network.
+
+when I try to access my mail from my MacBook I get the following error
+
+The server for account ""Mike"" returned the error ""Logon failure: unknown user name or bad password."" Your username/password or security settings may be incorrect. Would you like to try re-entering your password?
+
+When using the web page I get this error
+
+Authentication Failed
+Please check your username and password to make sure you typed them correctly.
+
+And to be certain I copied and pasted the password into both the password reset and logon page.
+
+
+Update - When I reset my password yet again this morning, after 15 minutes my accounts started working. But within 2 hours they had all stopped again with invalid password so something is invalidating my password in the background."
+Amazon WorkMail	"Re: Changed password, now can't access my account
+Hey,
+
+Sorry for the delayed response. We checked at our side about the issue you are experiencing.
+We can see in our logs that you are successfully able to use Outlook for Mac client with WorkMail. Is the problem you mentioned is fixed. If you are still experiencing the issue, can you please do the following - 
+1) Remove your profile from the client you are using.
+2) Re-add the profile in your client using your latest password and email address.
+
+Also if you are still experiencing the issue, please provide us with the date and time you performed the above steps and when you get the authentication pop-up for wrong password in order to help us debug the issue.
+
+Thanks,
+Vishwajit."
+Amazon WorkMail	"Cannot add email. Error: The action cannot be completed. The name cannot...
+I am unable to add my email address chris@skylinetech.co through the Mail setting in Control Panel. 
+
+Whenever I try, I get the following error:
+""The action cannot be completed. The name cannot be matched to a name in the address list.""
+
+I able to add my other email support@skylinetech.co without issue.
+
+I have uninstalled and reinstalled Office 365 multiple times. I've restarted my computer in between and have used CCleaner to clean up any left over registry entries.
+
+Can someone please help me? I have searched Google and have spent hours trying to fix but have not been able to find a solution."
+Amazon WorkMail	"Re: Cannot add email. Error: The action cannot be completed. The name cannot...
+Hi Chris, 
+I am sorry that you are having issues setting up your account. I will forward the issue to the service team.
+
+Thanks,
+Sowmya"
+Amazon WorkMail	"Re: Cannot add email. Error: The action cannot be completed. The name cannot...
+Thank you. I appreciate the help.
+
+-Chris"
+Amazon WorkMail	"Re: Cannot add email. Error: The action cannot be completed. The name cannot...
+I haven't heard from anyone and my issue is not resolved. Can you please help?"
+Amazon WorkMail	"Re: Cannot add email. Error: The action cannot be completed. The name cannot...
+Hi,
+
+sorry for inconvenience. We are still looking to the issue. We need some help from you side. Could you please try to configure your account in Windows one more time and write back when you have done this? This will help us to research the problem. 
+
+--Dima"
+Amazon WorkMail	"Re: Cannot add email. Error: The action cannot be completed. The name cannot...
+I just tried adding again. Same issue.
+
+-Chris"
+Amazon WorkMail	"Re: Cannot add email. Error: The action cannot be completed. The name cannot...
+Hi,
+
+I've contacted you via PM. Could you please check it?
+
+--Dima"
+Amazon WorkMail	"Re: Cannot add email. Error: The action cannot be completed. The name cannot...
+Worked with the customer, trying to solve the problem. On WorkMail side in Autodisocver logs, we saw only calls with invalid password. At the end, it looked like an Outlook issue. Customer is following up with Outlook support."
+Amazon WorkMail	"Re: Cannot add email. Error: The action cannot be completed. The name cannot...
+In General, for anyone who runs in to the similar issues, you can use https://testconnectivity.microsoft.com tool to check your Autodiscover setup. 
+
+The steps are:
+
+1) go to https://testconnectivity.microsoft.com
+2) choose Microsoft Office Outlook Connectivity Tests / Outlook Autodiscover
+3) press Next
+4) type:
+4.1) Email address - your email address, e.g.user@company.tld
+4.2) Domain\User Name (or UPN): - type e.g. company.tld\user
+4.3) Password \ Confirm password - WorkMail user password
+4.4) Ignore Trust for SSL - keep unselected
+4.5) I understand that I must use the credentials... - select this
+4.6) Verification - type the code on the picture
+5) press Perform Test
+
+Result of the test should be successful. If it is not, then you have some issues with WorkMail Autodiscover setup. Please go to WorkMail console and follow instructions given there. You also can consider configuring Autodiscover Phase 2 for you organization, see: https://docs.aws.amazon.com/workmail/latest/adminguide/autodiscover.html but this configuration is optional."
+Amazon WorkMail	"WorkMail routing to third party email security services (i.e., Mimecast)
+Looking at / trying WorkMail. I'm not seeing where I can route incoming/outgoing mail through a third-party security service, such as Mimecast(.com), or others. 
+
+Is this not possible with WorkMail? Apologies in advance, if I've missed this.
+
+Thanks, all."
+Amazon WorkMail	"Re: WorkMail routing to third party email security services (i.e., Mimecast)
+Hi,
+
+Thank you for your interest in WorkMail, right now WorkMail only supports incoming mail routing. This can be configured using MX records. WorkMail does not support Outgoing SMTP routing yet. This is on the teams roadmap. Keep an eye on these forums or on https://aws.amazon.com/new/ for announcements.
+
+WorkMail does support email Journaling: https://docs.aws.amazon.com/workmail/latest/adminguide/journaling_overview.html 
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: WorkMail routing to third party email security services (i.e., Mimecast)
+Hi Christopher,
+
+We are pleased to inform you WorkMail has released the first iteration of outbound mail flow rules. You can now provide details of an SMTP gateway, and then you can configure an outbound mail flow rule to use that gateway on sending mail. See here for more information:
+https://aws.amazon.com/about-aws/whats-new/2018/11/amazon-workmail-introduces-outbound-mail-flow-rules/
+https://docs.aws.amazon.com/workmail/latest/adminguide/smtp-gateway.html
+
+Please let us know if you have any feedback.
+
+Thanks,
+Chris"
+Amazon WorkMail	"awsapps.com mail vs hosted zone domain workmail
+so far setting up workmail seems to set up an awsapps.com user email before setting up the hosted zone email user.  Are these considered 2 separate users, ie, $4 per user per month?  If so, how to set up the hosted zone email in workmail without setting up the awsapps.com email ?"
+Amazon WorkMail	"Re: awsapps.com mail vs hosted zone domain workmail
+Hi,
+
+Thank you for your interest in WorkMail. The awsapps.com domain that you get with every WorkMail organization does not cost you a thing. The $4 is per user an not per email address. You can have up to 100 email addresses per user. So having 1 user with 3 email addresses will cost you $4 per month. 
+
+If you want to add your own domain to WorkMail you can visit this documentation page for more information: https://docs.aws.amazon.com/workmail/latest/adminguide/domains_overview.html
+
+For more details on the WorkMail limits please visit: https://docs.aws.amazon.com/workmail/latest/adminguide/workmail_limits.html
+
+Kind regards,
+Robin"
+Amazon WorkMail	"Re: awsapps.com mail vs hosted zone domain workmail
+Thanks.  To clarify, are you stating 100 email address per user meaning ""alias forward"" or actually mailboxes that can send and receive?
+
+Do you set up awsapps.com user for each hosted domain that is added or one awsapps.com user account per aws account? 
+
+possible to change the user name for awsapps.com email or will that affect the hosted zone domain user account?
+
+somehow how seem to be getting awsapps.com email in the hosted domain in box, so what is the connect between these two accounts?"
+Amazon WorkMail	"Re: awsapps.com mail vs hosted zone domain workmail
+Hi,
+
+These are some good questions, maybe the WorkMail documentation need some updates to clarify this. 
+
+For the 100 email addresses, a user can have 1 primary email address and 99 email aliases. A user can use all 100 to send and receive mail. But on inbound mail WorkMail will resolve aliases to the primary email address. So Inbound mail always shows the primary email address in the ""To"". The original alias is still shown in the message headers. 
+
+The complementary .awsapps.com domain that you receive with the organization is linked to the organization. You can use it for all users in your organization but you cannot change this domain as it's tied to the organization name. Also only 1 .awsapps.com domain per organization can be used and it's listed in the the domain page of the WorkMail as its part of the organization. 
+
+A good reason to have and keep a awsapps.com email on your users is to have an easy autodiscover domain for all accounts. For instance IOS has strict requirements for autodiscover and the ""phase 3"" we supply by default on custom domains is not sufficient. Using the awsapps.com email address during set-up will work and the primary email address will be used after account set-up is complete. 
+
+I hope this answers your questions, if you have any more feel free to post them.
+
+Kind regards,
+Robin"

@@ -1,0 +1,45 @@
+question,answer
+Q: What is Amazon DynamoDB?,"
+DynamoDB is a fast and flexible nonrelational database service for any scale. DynamoDB enables customers to offload the administrative burdens of operating and scaling distributed databases to AWS so that they don’t have to worry about hardware provisioning, setup and configuration, throughput capacity planning, replication, software patching, or cluster scaling.
+"
+Q: What does DynamoDB manage on my behalf?,"
+DynamoDB takes away one of the main stumbling blocks of scaling databases: the management of database software and the provisioning of the hardware needed to run it. You can deploy a nonrelational database in a matter of minutes. DynamoDB automatically scales throughput capacity to meet workload demands, and partitions and repartitions your data as your table size grows. Also, DynamoDB synchronously replicates data across three facilities in an AWS Region, giving you high availability and data durability.
+"
+Q: What is the consistency model of DynamoDB?,"
+When reading data from DynamoDB, users can specify whether they want the read to be eventually consistent or strongly consistent:
+<ul>
+<li>Eventually consistent reads (the default) – The eventual consistency option maximizes your read throughput. However, an eventually consistent read might not reflect the results of a recently completed write. All copies of data usually reach consistency within a second. Repeating a read after a short time should return the updated data.</li>
+<li>Strongly consistent reads — In addition to eventual consistency, DynamoDB also gives you the flexibility and control to request a strongly consistent read if your application, or an element of your application, requires it. A strongly consistent read returns a result that reflects all writes that received a successful response before the read.</li>
+</ul>
+"
+Q: What kind of query functionality does DynamoDB support?,"
+DynamoDB supports GET/PUT operations by using a user-defined primary key. The primary key is the only required attribute for items in a table. You specify the primary key when you create a table, and it uniquely identifies each item. DynamoDB also provides flexible querying by letting you query on nonprimary key attributes using <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html"" target=""_blank"">global secondary indexes</a> and <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LSI.html"" target=""_blank"">local secondary indexes</a>.
+A primary key can be either a <a href=""https://aws.amazon.com/blogs/database/choosing-the-right-dynamodb-partition-key/"" target=""_blank"">single-attribute partition key or a composite partition-sort key</a>. A single-attribute partition key could be, for example, <b>UserID"
+Q: How do I update and query data items with DynamoDB?,"
+After you have created a table using the <a href=""https://console.aws.amazon.com/dynamodb/home"" target=""_blank"">DynamoDB console</a> or <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_CreateTable.html"" target=""_blank"">CreateTable API</a>, you can use the <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html"" target=""_blank"">PutItem</a> or <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_BatchWriteItem.html"" target=""_blank"">BatchWriteItem</a> APIs to insert items. Then, you can use the <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html"" target=""_blank"">GetItem</a>, <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_BatchGetItem.html"" target=""_blank"">BatchGetItem</a>, or, if composite primary keys are enabled and in use in your table, the <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html"" target=""_blank"">Query API</a> to retrieve the items you added to the table.
+"
+Q: Can DynamoDB be used by applications running on any operating system?,"
+Yes. DynamoDB is a fully managed cloud service that you access via API. Applications running on any operating system (such as Linux, Windows, iOS, Android, Solaris, AIX, and HP-UX) can use DynamoDB. We recommend using the <a href=""http://aws.amazon.com/dynamodb/developer-resources/"" target=""_blank"">AWS SDKs</a> to get started with DynamoDB.
+"
+Q: How am I charged for my use of DynamoDB?,"
+Each DynamoDB table has provisioned read-throughput and write-throughput associated with it. You are billed by the hour for that throughput capacity if you exceed the free tier. Note that you are charged by the hour for the throughput capacity, whether or not you are sending requests to your table. If you would like to change your table’s provisioned throughput capacity, you can do so using the <a href=""https://console.aws.amazon.com/console/home"" target=""_blank"">AWS Management Console</a>, the <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateTable.html"" target=""_blank"">UpdateTable API</a>, or the <a href=""https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_PutScalingPolicy.html"" target=""_blank"">PutScalingPolicy API</a> for auto scaling. Also, DynamoDB charges for data storage as well as the standard internet data transfer fees.
+To learn more about DynamoDB pricing, see the <a href=""https://aws.amazon.com/dynamodb/pricing"" target=""_blank"">DynamoDB pricing page</a>.
+"
+Q: What is the maximum throughput I can provision for a single DynamoDB table?,"
+DynamoDB is designed to scale without limits. However, if you want to exceed throughput rates of 10,000 write capacity units or 10,000 read capacity units for an individual table, you must first <a href=""http://portal.aws.amazon.com/gp/aws/html-forms-controller/DynamoDB_Limit_Increase_Form"" target=""_blank"">contact Amazon</a>. If you want to provision more than 20,000 write capacity units or 20,000 read capacity units from a single subscriber account, you must first <a href=""http://portal.aws.amazon.com/gp/aws/html-forms-controller/DynamoDB_Limit_Increase_Form"" target=""_blank"">contact us</a> to request a limit increase.
+"
+Q: What is the minimum throughput I can provision for a single DynamoDB table?,"
+ The smallest provisioned throughput you can request is 1 write capacity unit and 1 read capacity unit for both auto scaling and manual throughput provisioning. Such provisioning falls within the free tier which allows for 25 units of write capacity and 25 units of read capacity. The free tier applies at the account level, not the table level. In other words, if you add up the provisioned capacity of all your tables, and if the total capacity is no more than 25 units of write capacity and 25 units of read capacity, your provisioned capacity would fall into the free tier.
+"
+Q:  Data models and APIs,"
+ For more information about data models and APIs, see <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.html"" target=""_blank"">Amazon DynamoDB: How It Works</a>. 
+"
+"Q: Scalability, availability, and durability","
+For information about scalability, availability, and durability, see <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html"" target=""_blank"">Amazon DynamoDB Product Details</a>.
+"
+Q: Auto scaling,"
+ For information about DynamoDB auto scaling, see <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html"" target=""_blank"">Managing Throughput Capacity Automatically with DynamoDB Auto Scaling</a>.
+"
+Q: Security and control,"
+ For information about DynamoDB security and control, see <a href=""https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/authentication-and-access-control.html"" target=""_blank"">Authentication and Access Control for Amazon DynamoDB</a>.
+"

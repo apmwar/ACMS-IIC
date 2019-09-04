@@ -1,0 +1,828 @@
+label	description
+AWS Certificate Manager	"Intermediate Certificate missing from ACM
+Hi All, 
+
+I created a SSL/TLS certificate using AWS Certificate Manager.  Assigned that certificate to an Application Load Balancer.  I checked the URLs through online ssl certificate checker https://www.digicert.com/help/ and noticed at the bottom of page error ""the server is not sending the required intermediate certificate"".  Is there a way to configure/use AWS Certificate Manager to include the intermediate certificate?  Thanks! 
+
+Thanks, 
+John"
+AWS Certificate Manager	"Re: Intermediate Certificate missing from ACM
+John -
+
+The SSL certificate checker you are using appears to expect certain intermediates when they are not required. For example, the endpoint acm.us-east-1.amazonaws.com has a correct vended chain, yet the checker says that you need to include DigiCert's intermediate certificate. ACM certificates do not chain to a DigiCert intermediate! I would suggest that you try an agnostic checker such as https://www.ssllabs.com/ssltest/.
+
+Regards,
+
+Dave B"
+AWS Certificate Manager	"Re: Intermediate Certificate missing from ACM
+www.aibmsdatasecurity.com (AIB Merchant service ) is saying the same thing. Our website is running on AWS certificate and Application load balancer. AND PCI DSS scan is failed due to CA SSL certificate in the certificate chain has been signed using a weak hashing algorithm.
+
+See :
+RESULT:
+The following known CA certificates were part of the certificate
+chain sent by the remote host, but contain hashes that are considered
+to be weak.
+|-Subject : C=US/O=Starfield Technologies, Inc./OU=Starfield Class 2 Certification Authority
+|-Signature Algorithm : SHA-1 With RSA Encryption
+|-Valid From : Jun 29 17:39:16 2004 GM"
+AWS Certificate Manager	"DNS Validation for GoDaddy domain with ACM
+I have a domain that is managed by GoDaddy. I requested a new certificate for this domain via ACM and am attempting to validate the GoDaddy domain via DNS. 
+
+I've added a DNS CNAME record in GoDaddy using the values provided in the ACM dashboard...but the ACM dashboard is stuck on pending. Have tried doing this multiple times, yet nothing seems to work. 
+
+Any bright ideas?"
+AWS Certificate Manager	"Re: DNS Validation for GoDaddy domain with ACM
+I am having the same issue!"
+AWS Certificate Manager	"Re: DNS Validation for GoDaddy domain with ACM
+Hi there,
+
+Thank you for writing into AWS Forums. I understand that your ACM certificate is in “Pending Validation” status for your domain and have opted for the DNS validation [1] to verify the ownership of your domain. 
+
+First of all, I apologize for any inconvenience this may have caused to you. Pleas note that DNS validation may take sometime to get the certificate “Issued”. It also depends upon the DNS service provider as how fast it propagates the CNAME record which you created in order to verify the ownership of your domain. I reproduced the same scenario in my environment (using Route 53 as the DNS service provider) and it is usually fast to propagate the CNAME record (my certificate was issued in between 3 to 4 minutes). I am not sure about the other DNS service providers as how fast they propagate the CNAME records. If your certificate is still in the “Pending Validation” Status, please private message me the ARN of the certificate and I would be happy to look into it further.
+
+I hope this helps!
+
+Best regards,
+Krish
+
+Reference:
+[1] Use DNS to Validate Domain Ownership: https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html"
+AWS Certificate Manager	"Re: DNS Validation for GoDaddy domain with ACM
+I'm still seeing the same issue even after it's already propagated btw. I think there's either some major issue or some serious misstep in the documentation somewhere.
+
+Jacks-MacBook-Pro:~ juminoz$ dig TXT +short +noshort _8b5b7f441c9efa6c1eed3186e44fe8a2.tokayme.com.
+_8b5b7f441c9efa6c1eed3186e44fe8a2.tokayme.com. 120 IN CNAME apps-1720509775.us-east-1.elb.amazonaws.com.
+
+Any idea?"
+AWS Certificate Manager	"Re: DNS Validation for GoDaddy domain with ACM
+I just lost several hours trying to solve the ""validation pending"" problem so I'm spamming comment this everywhere to help others:
+
+Assuming your domain is example.com, you get these CNAME values from Amazon:
+
+NAME: _ho9hv39800vb302vejvnw3vnewoib3u.example.com.
+VALUE: _cjhwou20vhu20uvoneouw20vuyb2ovb9.j9s73ucn9vy.acm-validations.aws.
+
+So you go to you domain name manager, log in, navigate to the DNS settings, create a new CNAME record, and add the above fields (maybe your domain provider labels the fields ""host"" and ""target"" instead of ""name"" and ""value"", respectively), set the minimum TTL value, and save the record. Now you wait a while (2 mins up to a few hours) and it still says ""validation pending"".
+
+Here's what might have happened: Some domain name providers will automatically add example.com on to the end of the name/host field. So if you enter _xx.example.com, they'll ""silently"" change it to _xx.example.com.example.com
+
+This is currently the case with namecheap, as I've painfully learned. I think it may actually be an error on their part because apparently if you end your DNS value in a period/dot (and I did), this specifies that the domain shouldn't be added to the end. So namecheap is not respecting this dot. https://help.directadmin.com/item.php?id=541"
+AWS Certificate Manager	"Re: DNS Validation for GoDaddy domain with ACM
+@joe12345.  Thank you!  Exactly my problem on GoDaddy.
+
+I pasted in the Name-Value pairs generated by AWS.  I noticed that GoDaddy did not persist the '.' at the end of the name.  I allowed the name to remain.  The validation request failed after 72 hours.
+
+I generated a new certificate request.  This time I only entered the host name (not the 'example.com.' portion).  AWS validated within minutes.
+
+Thanks again!"
+AWS Certificate Manager	"Re: DNS Validation for GoDaddy domain with ACM
+Omg, thank you so much!! I struggled with this issue for 3 weeks, and now that its connected i am so grateful to you!"
+AWS Certificate Manager	"Re: DNS Validation for GoDaddy domain with ACM
+Thanks for the great info!
+
+This is the exact problem that I had with GoDaddy. For everyone else out there, if you get the following from AWS:
+
+RECORD NAME: _ho9hv39800vb302vejvnw3vnewoib3u.example.com.
+RECORD VALUE: _cjhwou20vhu20uvoneouw20vuyb2ovb9.j9s73ucn9vy.acm-validations.aws.
+
+use the following for GoDaddy:
+
+NAME: _ho9hv39800vb302vejvnw3vnewoib3u
+VALUE: _cjhwou20vhu20uvoneouw20vuyb2ovb9.j9s73ucn9vy.acm-validations.aws.
+
+Be sure to only remove your apex domain name (last part) and not your sub-domains (if you specified any) before you trim it.
+
+Cheers!"
+AWS Certificate Manager	"Re: DNS Validation for GoDaddy domain with ACM
+Hi,
+
+The problem with GoDaddy is that, they auto-append the domain name at the end of the ""host"" field when creating a CNAME record. Therefore, you are required to omit the apex domain from the ""name"" string provided to you by ACM when adding it to ""host"" on GoDaddy.
+
+Hope this helps.
+
+Thank You."
+AWS Certificate Manager	"Problems assigning SSL to EC2 Instance
+Hi,
+
+I have created an AWS Certificate *.mydomain.com which has been approved.
+
+I have 3 EC2 instances set up eg :
+
+
+35.177.200.282
+3.8.87.56
+18.130.169.239  
+
+which I can access without issues when using http:   .  
+
+Our domain is managed by a third part provider. Within the DNS management settings I have added a CNAME record of 'databank' that points to 3.8.87.56.  This now enables me to access my web page by typing Http://databank.mydomain.com.
+
+Since the AWS Certificate was approved I have tried accessing https://databank.mydomain.com but it wont connect...  Is there a way to get this to work?
+
+I have also checked that https is open with the security group too.
+
+Many thanks,
+Fiorano"
+AWS Certificate Manager	"Re: Problems assigning SSL to EC2 Instance
+Hi,
+
+I understand that you have requested a certificate from ACM and would like to use it to enable HTTPS on your domains.
+
+Note that mere requesting and getting a certificate issued will not help you achieve https for your domain. You will have to put the certificate into use. Please note that you can not install a certificate issued by ACM directly on a web-server. You can use an ACM certificate only with the following services-
+
+1. Elastic Load Balancer
+2. CloudFront
+3. API Gateway
+4. Elastic Beanstalk
+
+If you do not wish to use these services, you can not use ACM issued certificate to achieve https on your domain. You will have to procure a third party certificate and install the certificate on the web-server.
+
+Hope this helps.
+
+Thank You."
+AWS Certificate Manager	"Where to find DNS CNAME info for existing certificates?
+Hello. One on my certificates is up for renewal. I'd like to change it to DNS based renewal for the future. In my listing of certificates in ACM, nowhere can I find this link or button. The help article here: https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html is completely pointless as it only shows how to create DNS based validation of new domains, not existing ones. Would appreciate a pointer. Thanks!"
+AWS Certificate Manager	"Re: Where to find DNS CNAME info for existing certificates?
+Hi. Thank you for your question. There is no shortcut today for converting an email-validated certificate into a DNS-validated one. You can create a new DNS validated certificate to replace the email-validated one that's expiring. 
+
+-Todd C."
+AWS Certificate Manager	"Re: Where to find DNS CNAME info for existing certificates?
+Amazon really needs to get some UX designers. Thanks for the clarity. Recreating the cert setup is the silliest way to implement this. I suppose I’ll first have to delete the old certificates?"
+AWS Certificate Manager	"Re: Where to find DNS CNAME info for existing certificates?
+Thanks for your feedback. I'll pass it on to the service team. To avoid a gap in which you don't have a cert for your site or application, you can keep the old certificates in place until the new ones are issued. Once the new certificates are ready, replace the old ones where you've associated them."
+AWS Certificate Manager	"About DNS record value change in ACM DNS validation
+There is a certificate that performed DNS verification with a value with an underscore at the beginning (""_**************.acm-validations.aws."").
+Is it OK to delete the underscore of the DNS record used above?
+
+Thank you."
+AWS Certificate Manager	"Re: About DNS record value change in ACM DNS validation
+I confirmed that there was no problem, so close the thread."
+AWS Certificate Manager	"Certificate Renewal Still Pending Despite CNAME Record Update
+I'm receiving notifications that one of my certificates needs renewal:
+
+AWS Certificate Manager (ACM) was unable to renew the certificate automatically using DNS validation. You must take action to ensure that the renewal can be completed before Feb 10, 2019 at 12:00:00 UTC. If the certificate is not renewed and the current certificate expires, your website or application may become unreachable.
+
+I've confirmed (multiple times) that the required CNAME record is present in our Route 53 entry."
+AWS Certificate Manager	"AWS Certificate Manager Demonstrates SOC, PCI DSS and ISO Compliance
+For more information about ACM compliance see the latest forum announcement:  https://forums.aws.amazon.com/ann.jspa?annID=6552
+
+Edited by: JoshuaR-AWS on Feb 5, 2019 6:32 AM"
+AWS Certificate Manager	"ACM AWS Issued Certificate Suddenly Changes To Pending Validation
+We have been using an ACM AWS issued certificate on one of our domains, all of a sudden it has turned to pending validation status with no further information about why this has happened.
+
+Are there any places where I could check the reasons of it?"
+AWS Certificate Manager	"Re: ACM AWS Issued Certificate Suddenly Changes To Pending Validation
+Hi, 
+
+As you mentioned, you've been using AWS ACM issued certificate, so at this stage it's in renewal process. If you use email validation , please go check your email addresses (shown below) to click the approval link, 
+
+    administrator@your_domain_name
+    hostmaster@your_domain_name
+    postmaster@your_domain_name
+    webmaster@your_domain_name
+    admin@your_domain_name
+
+If you use DNS validation , please check if it's in ""pending auto renewal"" there is no action will need to be taken from you. However, if it's in ""pending validation"", please make sure you have put/update the CNAME record correctly. The new cname name and value can be found in your AWC ACM console.
+
+[+] Managed Renewal for ACM's Amazon-Issued Certificates  - https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html
+
+Thanks and Best Regards,"
+AWS Certificate Manager	"list-certificates returns incorrect results filtered by certificate status
+Hi,
+
+When I run the queries
+
+aws acm list-certificates --certificate-statuses ISSUED
+
+and 
+aws acm list-certificates --certificate-statuses EXPIRED
+
+
+I have a certificate (same arn) that is listed in both results.
+
+The certificate is issues and has been renewed, but is listed in the expired query. The certificate is working as expected in CloudFront.
+
+The issue is that we have monitoring set up to alert us to expired certificates.
+
+How can a certificate be in the both the ISSUED results and EXPIRED results?
+
+Is this a bug in the cli?
+
+Cheers, Stephen"
+AWS Certificate Manager	"Re: list-certificates returns incorrect results filtered by certificate status
+Hi,
+
+Is there any update on this? We are still consistently seeing certificates show up in queries for both ISSUED and EXPIRED statuses.
+
+We have the same issue across multiple accounts and multiple regions.
+
+Below is an example with some details removed:
+
+iMac$ aws acm list-certificates --certificate-statuses ISSUED
+{
+    ""CertificateSummaryList"": [
+        {
+            ""CertificateArn"": ""arn:aws:acm:ap-southeast-2:1234:certificate/aaaaaaaaaa-8cb31c1c63b2"", 
+            ""DomainName"": ""xxxx.com.au""
+        }
+    ]
+}
+iMac$ aws acm list-certificates --certificate-statuses EXPIRED
+{
+    ""CertificateSummaryList"": [
+        {
+            ""CertificateArn"": ""arn:aws:acm:ap-southeast-2:1234:certificate/aaaaaaaaaa-8cb31c1c63b2"", 
+            ""DomainName"": ""xxxx.com.au""
+        }
+    ]
+}
+
+
+Cheers, Stephen"
+AWS Certificate Manager	"[solved] IAM Identity Provider fingerprint update / Renewal notification
+We're currently evaluating a migration of our SSL certificates to ACM to gain automatic renewal functionality.
+
+However for some services we're using a IAM Identity Provider to authenticate clients against a custom OIDC provider. The IAM Identity Providers require the SSL Certificate fingerprint/thumbprint to be whitelisted before the provider can be used.
+
+The provider URL we're using is backed by a ALB which is supposed to retrieve a AWS issued certificate from ACM. Now we're seeing the issue, that the ACM certificate might be renewed at any given time and the ALB would immediately pick up the certificate, but this will also break the identity provider since the new certificate would not be whitelisted there. 
+
+That brings me to two questions:
+
+1) Is there currently (or in the near future) a way to automatically get the identity provider updated when the ACM certificate is replaced?
+
+2) Is there a way to retrieve notifications when ACM certificates are replaced/renewed?
+
+Since we haven't found anything that seemed to provide an automatic update for the identity provider we've thought about using a Lambda function to trigger this update. In order to minimize the delay between the renewal and the IdP update, we'd like to trigger this Lamda using some kind of event that may be emitted by ACM but we haven't found any details if this is actually possible to have for example ACM send a message to SNS/SQS when a renewal is done. If none of this is possible we might just implement a scheduled lambda that verifies the fingerprint every couple of minutes.
+
+Update: Only the CA thumbprint needs to get whitelisted, therefore this is solved. Also noticed that there are Cloudwatch events for issued certificates.
+
+Edited by: Beck on Jan 24, 2019 10:45 AM"
+AWS Certificate Manager	"Cannot Delete Certificate from ACM after deleting Client VPN Endpoint
+Hi!
+
+I am trying to deleting my certificates i was using in my Client VPN Endpoint.
+
+I deleted first the Client VPN Endpoint. Now when i am trying to delete the corresponding certificate it says:
+
+The certificate XXXX (XXXXXXXX) is in use (associated with other AWS resources) and cannot be deleted. Disassociate the certificate from each resource in the list and try again.
+ 
+Associated resources
+aws:clientvpn:XXXXX:prod/cvpn-endpoint-XXXXXX
+
+
+But the Client VPN Endpoint doesn't exist anymore!
+
+Does anyone have a solution?"
+AWS Certificate Manager	"Which type of Domains supported by ACM ?
+Hello,
+
+Need to know, what type of domain is supported by ACM?
+
+Like ACM supports .com, .in or need to know from you what ACM supports?
+
+Please help me out I have two domains .tech & .travel. Will ACM issue the certificate or not?
+
+Please help me out in this query.
+
+Thanks in advance.
+Aman
+
+Edited by: fasteraman on Jan 23, 2019 2:30 AM"
+AWS Certificate Manager	"Re: Which type of Domains supported by ACM ?
+Hello Aman, 
+
+Yes, ACM does support different domain. So, you will be able to issue ACM certificates for both your domain .tech/.travel
+
+I hope the information addressed your needs.:)
+
+Thanks and Regards,"
+AWS Certificate Manager	"AWS Cert Manager no longer e-mailing whois contacts?
+Back in October 2017 I requested a certificate on AWS Certificate Manager for a subdomain using the e-mail verification option and received the verification e-mail and was able to register the domain.
+
+Today, I had to add another subdomain to the same cert, so I created a new one and selected the e-mail verification option, but instead of e-mailing the WHOIS contacts as it did previously, it just sent e-mails to the generic addresses webmaster@..., hostmaster@..., admin@..., etc.
+
+Did something change with how their system sends these verification e-mails?  The documentation still states it uses the WHOIS data for the domain."
+AWS Certificate Manager	"Re: AWS Cert Manager no longer e-mailing whois contacts?
+Hello,
+
+Yes , AWS Cert Manager no longer e-mailing whois contacts due to many registrars have stopped populating contact information in WHOIS data recently. If your domain registrar no longer includes contact email addresses in WHOIS data and you would like to continue to use email validation, we recommend you ensure at least one of the five following email addresses are valid and monitored for your domain.
+
+administrator@yourdomainname
+hostmaster@yourdomainname
+postmaster@yourdomainname
+webmaster@yourdomainname
+admin@yourdomainname
+
+Alternatively, you can choose to switch to using DNS validation. In order to switch to DNS validation, please re-create the certificate and select DNS validation as the validation mechanism. You can switch to DNS validation at no additional cost to you.
+
+You can find more information about validating with DNS here: https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html
+
+For more information about validating with email please see: https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-email.html
+
+I hope the information addressed your needs  
+
+Thanks and Regards,"
+AWS Certificate Manager	"DNS updated but Certificate request keep being Failed
+Hi, 
+I did generate a certificate for the domain www.brisbaneisuzutrucks.com.au and then updated the DNS with the CNAME Record from the certificate 2 months later. But when I was regenerating the certificate for issuing I found that the certificate always being failed. Could anyone tell me what is going on and how to issue the certificate? Thank you.
+
+Regards
+Feng"
+AWS Certificate Manager	"Re: DNS updated but Certificate request keep being Failed
+Hello Feng, 
+
+When you use DNS Validation and it's still in pending state means the ACM are unable to validate ownership of this domain because the expected DNS CNAME is not present.
+
+To troubleshoot Certificate Validation Problems, please make sure you've added right cname value in your route53 host zone. You can also do a dig command to verify if your domain can be resolved or use this third party link https://dnschecker.org/. Sometime you might put wrong cname such as with extra domain name ""brisbaneisuzutrucks.com.au"" with your cname value ...etc.
+
+The dig command :
+
+dig ""your cname record of your certificate"" CNAME
+
+For more information,
+
+[+] Troubleshoot Certificate Validation Problems - https://docs.aws.amazon.com/acm/latest/userguide/troubleshooting-validation.html
+[+] https://www.linux.com/learn/check-your-dns-records-dig
+
+I hope the information addressed your concern 
+
+Thanks and Best Regards,"
+AWS Certificate Manager	"Certificate Request still Pending Validation
+Hello.
+
+I am using AWS for a long time and utilizing AWS Certificate Manager for two of my domains. Recently I bought a new domain via AWS Route53 and request certificate for it. I selected validation by DNS and clicked ""Create record in Route53"", after few hours nothing happened. I tried to delete and request a certificate a few more times and waited for days, but nothing happened - certificate still pending validation. I desperate to receive help.
+
+I will appreciate the response very much."
+AWS Certificate Manager	"Re: Certificate Request still Pending Validation
+Hello, 
+When you use DNS Validation and it's still in pending state means the ACM are unable to validate ownership of this domain because the expected DNS CNAME is not present.
+
+To troubleshoot Certificate Validation Problems, please make sure you've added right cname value, you can also do a dig command to verify if your domain can be resolved or use this third party link https://dnschecker.org/.  Sometime you might put wrong cname such as with extra domain name ...etc.
+
+For more information, 
+[+] Troubleshoot Certificate Validation Problems - https://docs.aws.amazon.com/acm/latest/userguide/troubleshooting-validation.html
+[+] https://www.linux.com/learn/check-your-dns-records-dig
+
+I hope the information addressed your concern 
+
+Thanks and Best Regards,"
+AWS Certificate Manager	"Re: Certificate Request still Pending Validation
+Thanks for responding. Since I bought the domain on AWS after click on ""Create record in Route 53"" CNAME record was added automatically. My domain is booksconcepts.com and Certificate was requested in the us-east-1 region."
+AWS Certificate Manager	"Re: Certificate Request still Pending Validation
+I did everything possible but got no certificate. I even tried to recreate hosted zones. It sucks!"
+AWS Certificate Manager	"Stuck in ""pending validation"" certificate for a domain in route53
+Greetings,
+I've tried several times to create a certificate for a domain (annacloud.it), but it stuck in ""pending validation until it expires. i've add the right dns record for validation vi buton in CM but no way. what i'm doing wrong?
+thanks"
+AWS Certificate Manager	"Re: Stuck in ""pending validation"" certificate for a domain in route53
+Hello,
+
+When you use DNS Validation and it's still in pending state means the ACM are unable to validate ownership of this domain because the expected DNS CNAME is not present.
+
+To troubleshoot Certificate Validation Problems, please make sure you've added right cname value in your route53 host zone.  You can also do a dig command to verify if your domain can be resolved or use this third party link https://dnschecker.org/. Sometime you might put wrong cname such as with extra domain name ...etc.
+
+For more information,
+
+[+] Troubleshoot Certificate Validation Problems - https://docs.aws.amazon.com/acm/latest/userguide/troubleshooting-validation.html
+[+] https://www.linux.com/learn/check-your-dns-records-dig
+
+I hope the information addressed your concern 
+
+Thanks and Best Regards,"
+AWS Certificate Manager	"AWS Network Load Balancing
+Hi,
+I converted a test site to use network load balancing and I am seeing intermittent security messaging stating:
+
+SSL received a record that exceeded the maximum permissible length. Error code: SSL_ERROR_RX_RECORD_TOO_LONG
+
+And it happens more often when doing a hard-refresh of the site.
+
+When the site is not using the network load balancer it does not have this issue.
+
+This is Windows Server 2016 w/IIS.
+
+Any help would be appreciated."
+AWS Certificate Manager	"Re: AWS Network Load Balancing
+Here is some more info that may help.
+
+Firefox periodically states:
+SSL_ERROR_RX_RECORD_TOO_LONG
+
+Chrome periodically states:
+ERR_SSL_PROTOCOL_ERROR"
+AWS Certificate Manager	"Re: AWS Network Load Balancing
+I believe the issue is fixed, was an issue with targets going to multiple ports."
+AWS Certificate Manager	"Additional verification required for new cert
+Hello,
+
+I am attempting to create a certificate in US-East-1 with DNS validation. The zone is hosted in Route 53 and the sub-domain has been delegated. The request identifier is  3d39d1ee-3587-481f-a404-bbd614c8109e. I'm requesting assistance in getting this specific name whitelisted.
+
+Thank you
+Trey"
+AWS Certificate Manager	"Re: Additional verification required for new cert
+Hello Trey, 
+
+I understand that you're looking for whitelisting your domain name. Can you please open a ticket/case to our customer service team and then they will help you to proceed this procedure. : ) 
+
+Thank you."
+AWS Certificate Manager	"Re: Additional verification required for new cert
+Hello,
+I did manage to get assistance on this through a technical support case, but I am glad to now know it can be handled with a billing/limit-increase request such that Basic Support is sufficient. For future users that encounter this issue for the first time, perhaps the Help documentation could offer more information on what's required to resolve the issue -- namely, that the domain can't be whitelisted solely through a post in the Forums.
+Trey"
+AWS Certificate Manager	"Action Required - Your certificate renewal
+Good morning, need help with how to renew existing Production certificates without using email validation, #2 below, because I don't know where the emails to the domain addresses go. No one knows. (https://docs.aws.amazon.com/acm/latest/userguide/troubleshoot-iodomains.html)
+
+Therefore I would like to understand more about Option #1 without interrupting any of the production operations. What pre-cautions should I use to do this. 
+
+Also just found that the domain is registered under AWS Route 53 but the registered contacts are no longer valid since the employee no longer works with the company. 
+
+Can someone from AWS support help me or reach out to me? Thank you!
+
+Below is the part email I received. 
+
+""ACM was unable to automatically renew your certificate. The domain owner or someone authorized by the domain owner must take one of the following actions before Jan 23, 2019 at 12:00:00 UTC. If no action is taken, the certificate will expire, which might cause your website or application to become unreachable.
+
+1. If you can write records into your DNS configuration, create and install DNS-validated certificates to replace all of your existing email-validated certificates. After you add a CNAME record to your DNS configuration, ACM can automatically renew your certificate as long as the record remains in place. You can learn more about DNS validation in the ACM User Guide.[1]
+
+2. If you want to continue using email validation to renew this certificate, the domain owners must use the approval link that was sent in a separate validation request email. That email was last sent on Dec 09, 2018 at 12:15:09 UTC. The link in that email is valid for three days from the time the email was sent. If you did not use the link within three days, go to the ACM console to have AWS resend the validation email. For instructions, see the AWS Support website.[2]"""
+AWS Certificate Manager	"Re: Action Required - Your certificate renewal
+Hi, 
+
+I understand you don't want to use email validation, however, you can use DNS to Validate Domain Ownership as the email you received from AWS.   Please refer to the link that provides the steps with DNS validation. https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html
+
+If you do not have those five following email addresses, you will have to create them. However, it's an IT administrator task of your company to create those email address.  
+
+Thanks."
+AWS Certificate Manager	"Generate Certificate in Multiple Regions
+Hi, I'm with an error that when I generate the certificate that I need per region (creating it with terraform or manually) in most of regions it works as expected but in a few of them it keeps as pending validation.
+
+I'm creating now the certificates for these regions:
+
+ap-northeast-1
+ap-south-1
+ap-southeast-1
+ap-southeast-2
+eu-central-1
+eu-north-1
+sa-east-1
+us-east-1
+us-west-2
+
+
+And I create one certificate with this configuration:
+Domain name: xxxxx.com
+Additional names: *.xxxxx.com, yyyyy.com, *.yyyyy.com, zzzzz.com, *.zzzzz.com
+
+And I can't validate the certificate in these regions:
+
+ap-south-1 - I can't validate the zzzzz.com and *.zzzzz.com
+ap-southeast-1 - I can't validate xxxxx.com and *.xxxxx.com
+
+
+(I'm having problems with regions ap-south-1, ap-southeast-1, ap-southeast-2, ap-northeast-1, sa-east-1)
+But in the other regions all is validating as usual, and I already verified all CNAME values and names, and it's the same for all regions.
+I don't know why in just a few regions can't validate the same cname and value if the other regions can validate it.
+
+Also I notice that if I delete it and create other they is possible that a different domain stop being validated and the one that wasn't working start working.
+
+Could you help me?"
+AWS Certificate Manager	"Re: Generate Certificate in Multiple Regions
+Hi, 
+
+Can you provide what is error message you got ? However, the link provides Troubleshoot Certificate Validation Problems - Validation Not Complete - https://docs.aws.amazon.com/acm/latest/userguide/troubleshooting-validation.html#troubleshooting-incomplete , can you also please double check if the value of record has been setting up correct. 
+
+Thanks,"
+AWS Certificate Manager	"Get a certificate PEM for PHP websockets
+I need to download the PEM file certificate for a public certificate used in CloudFront, etc. for a URL.
+
+To do this I have used:
+
+aws acm get-certificate --certificate-arn arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-1234567890ab
+
+and copied the certificate part into a PEM file (not the certificate chain), but it doesn't seem to work when loaded using the PHP function ""stream_context_create()"".
+
+My suspicions are that I do not have the correct key pair certificate and that the certificate does not contain the private key, but I can't find where I can get the private key from.
+
+https://docs.aws.amazon.com/cli/latest/reference/acm/get-certificate.html
+
+Edited by: jplevene on Dec 23, 2018 7:15 PM"
+AWS Certificate Manager	"Re: Get a certificate PEM for PHP websockets
+Hello,
+
+Please note that it is not possible to retrieve the private key of an ACM certificate: https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html Refer to exceptions. The reason for this is- we do not store the plaintext version of the private key, it is always encrypted using an AWS managed KMS key (aws/acm). Nobody including any employee of AWS can access the plaintext version of a certificate's private key.
+
+Thank You"
+AWS Certificate Manager	"How can I verify that I updated the CNAMES correctly for DNS validation?
+Even though I have my domain managed by Route 53, I received an email from AWS telling me that 
+
+""AWS Certificate Manager (ACM) was unable to renew the certificate automatically using DNS validation ... If the certificate is not renewed and the current certificate expires, your website or application may become unreachable ... To renew this certificate, you must ensure that the proper CNAME records are present in your DNS configuration for each domain listed below.""
+
+I added the CNAME names and values as requested. My question is how can I verify that I followed the instructions correctly? What if I've done it wrong, how would I know (other than by having the certificate expire on me)?
+
+Edited by: mkhv on Jan 12, 2019 9:03 PM
+
+Edited by: mkhv on Jan 12, 2019 9:03 PM"
+AWS Certificate Manager	"Re: How can I verify that I updated the CNAMES correctly for DNS validation?
+Hello,
+
+There are a couple of ways to verify that you have added the provided CNAMES correctly.
+
+1. Using the Command Line Interface (CLI)
+
+When you requested the certificate. you would have received a name-value pair, say
+name: _xxxxx1111122222333.domain.com
+value: _yyyyy6666666.acmvalidations.com
+
+Run the following command from the CLI
+
+$ dig _xxxxx1111122222333.domain.com +short
+
+If the returned answer matches _yyyyy6666666.acmvalidations.com character by character then you have added the CNAME correctly, if it does not then you have made an error.
+
+2. Using online tools
+
+You can use the following website to check if you added the CNAME rightly.
+http://whatsmydns.net/ Paste the name part in the empty box, choose CNAME and click search. If the returned answer matches _yyyyy6666666.acmvalidations.com character by character then you have added the CNAME correctly, if it does not then you have made an error.
+
+Thank You."
+AWS Certificate Manager	"Additional verification required
+AWS Support Required.
+
+I am trying to register a popular domain in N.Virginia and require AWS Support to move the request forward.
+
+
+ACM requires additional information to process this certificate request. To provide this information, use the Support Center to contact AWS Support. If you don't have a support plan, post a new thread in the AWS Certificate Manager discussion forum.
+
+AWS Support can PM me if you have additional questions.
+
+Thank you
+
+Edited by: sailias on Dec 20, 2018 10:57 AM"
+AWS Certificate Manager	"Re: Additional verification required
+Hello,
+
+As you rightly said, the Additional Verification required Error is thrown when you request a certificate for a popular domain. Please note that in such cases we are required to whitelist the domain in question. For this we would require your account number, the region where you want the certificate in and the domain name. Please do not add the information here. Instead please open a case with our AWS customer support team for domain whitelisting and they should be able to take it forward from there. Please refer to this: https://docs.aws.amazon.com/awssupport/latest/user/getting-started.html#case-example for creating a case. You may choose service limit increase/ Account & billing.
+
+Thank You."
+AWS Certificate Manager	"PCA basic constraints extension error even though CA:TRUE value set
+Trying to setup a subordinate CA in ACM PCA. Created self-signed CA and used it to sign CSR with the following extensions file
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid
+basicConstraints = critical, CA:TRUE
+keyUsage = critical, digitalSignature, keyCertSign, cRLSign
+
+This yields the following certificate
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 12203464343947518395 (0xa95b6a2a022321bb)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=<cn>, O=<org>
+        Validity
+            Not Before: Apr 20 09:02:29 2018 GMT
+            Not After : Apr 20 09:02:29 2019 GMT
+        Subject: C=<c>, O=<org>
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (4096 bit)
+                Modulus:
+                    <key>
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Subject Key Identifier:
+                B7:CE:54:65:4C:71:7D:2F:08:BF:86:D2:31:E7:10:2E:B1:73:A4:F9
+            X509v3 Authority Key Identifier:
+                0.
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+    Signature Algorithm: sha256WithRSAEncryption
+         <key>
+
+When importing this certificate and the chain PCA complains with a MalformedCertificateException that ""The basic constraints extension must specify that the certificate is for a CA.""
+
+What gives?"
+AWS Certificate Manager	"Re: PCA basic constraints extension error even though CA:TRUE value set
+Honestly I think the ACM PCA system is just extremely broken. Looking at your results it's clear that it is enabled as a CA-
+
+           X509v3 Basic Constraints: critical
+              CA:TRUE
+
+But it doesn't work. I have similar issues where it's claiming that I'm using a CSR from a different certificate, even though I can easily verify with the command line that everything actually does match.
+
+I was pretty excited for the ACM PCA service, but it seems like it doesn't work all that well yet. I'm hoping the kinks will be worked out soon though.
+
+Edited by: Robradai on Apr 24, 2018 6:06 PM"
+AWS Certificate Manager	"Re: PCA basic constraints extension error even though CA:TRUE value set
+I had a similar problem, but this worked for me
+
+basicConstraints = critical,CA:TRUE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer:always
+keyUsage = cRLSign, keyCertSign
+
+
+But then I ran into the following error:
+
++ aws acm-pca import-certificate-authority-certificate --profile=Testing --certificate-authority-arn arn:aws:acm-pca:eu-west-1:962061657011:certificate-authority/0f59280c-a529-4b36-8dd7-0132e0c29b85 --certificate file://sub-ca.crt --certificate-chain file://ca.crt
+ 
+An error occurred (MalformedCertificateException) when calling the ImportCertificateAuthorityCertificate operation: Invalid certificate. The certificate is not PEM-encoded or is not valid.
+
+
+I know the certs are valid in PEM format and are valid
+
++ openssl x509 -inform PEM -in ca.crt -noout
++ openssl x509 -inform PEM -in sub-ca.crt -noout
+++ openssl req -noout -modulus -in sub-ca.csr
+++ openssl md5
++ REQ_MODULUS=7c85ca5d30d4911d3975a84d39a3a4b0
+++ openssl x509 -noout -modulus -in sub-ca.crt
+++ openssl md5
++ CRT_MODULUS=7c85ca5d30d4911d3975a84d39a3a4b0
++ '[' 7c85ca5d30d4911d3975a84d39a3a4b0 == 7c85ca5d30d4911d3975a84d39a3a4b0 ']'
++ echo Modulus matches for sub-ca.csr and sub-ca.crt
+Modulus matches for sub-ca.csr and sub-ca.crt
++ openssl verify -CAfile ca.crt sub-ca.crt
+sub-ca.crt: OK
+
+
+Cannot figure why it will not import.
+
+Edited by: gf-rshayman on Apr 26, 2018 7:05 AM"
+AWS Certificate Manager	"Re: PCA basic constraints extension error even though CA:TRUE value set
+I am having the same problem - malformed certificate.
+
+Has anyone on the Internet gotten this to work?"
+AWS Certificate Manager	"Re: PCA basic constraints extension error even though CA:TRUE value set
+I contacted AWS Support for the similar case and received a workaround which just worked. Using OpenSSL and extension config, instead of using authorityKeyIdentifier = keyid:always,issuer:always
+ use authorityKeyIdentifier  = keyid:always,issuer
+ to sign CSR.
+
+Also, it was mentioned that ACM team is aware of the issue and but still there is no ETA."
+AWS Certificate Manager	"Re: PCA basic constraints extension error even though CA:TRUE value set
+I've had a lot of trouble myself trying to get the CSR signed, and this was the only forum post I could find on trying to get it working. I also needed to create my own root CA as well.
+
+I've created a set of scripts that will create a working PCA signed certificate:
+
+https://github.com/theogravity/aws-pca-ca-gen"
+AWS Certificate Manager	"CertificateMismatchException
+I'm struggling to upload a SSL cert that I purchased from GoDaddy into the ACM. I have managed to generate and export the CSR and have downloaded the crt file. When I go to import the certificate, I enter the crt file as the certificate body and the respective certificate chain (GoDaddy Certificate Bundles - G2) from GoDaddy's repository as the certificate chain. However it is giving me a ""CertificateMismatchException - Certificate does not chain up to certificate chain provided"" error and I'm not sure what I am doing wrong. Any help or pointers would be very much appreciated!"
+AWS Certificate Manager	"Validated ownership by DNS, but keep getting certificate expired emails
+Hi there,
+
+I have verified my ownership through issuing a certificate from Certificate Manager, wrote it to DNS records using Route 53 (I checked it, its there) and received verified status (Status: Issued, Validation Status: Success), however I am still getting your certificate (SSL/TLS certificate) has expired notification emails. Am I missing something?
+Thank you for your time"
+AWS Certificate Manager	"How To Secure Wordpress Multisite With Multiple Domains
+I have a Wordpress Multisite install, and I am unable to add additional domains to my SSL cert; maxed out. How should I go about securing multiple domains being served by a single server? Do I need to create a new ELB for every 10 domains I add so I can have multiple SSL certs? What's the best practice here? Thanks!"
+AWS Certificate Manager	"Is ACM Certificate Request Validation DNS Record a Secret?
+I am doing Infrastructure as Code (CloudFormation) and I'm wondering whether I should leave the details of the ACM Certificate Request Validation DNS record in the code or should I extract it as a secret parameter? Is it secret like a database password or like an s3 bucket name or even less secret?
+
+Edited by: Jazeps on Dec 26, 2018 5:51 AM"
+AWS Certificate Manager	"Cannot request more certificates in this account
+Trying to get a certificate for a cloud front distribution and getting ""Cannot request more certificates in this account"" we only have 10 certificates. How do I increase this limit?"
+AWS Certificate Manager	"Re: Cannot request more certificates in this account
+Hi, 
+
+To request higher limits, create a case at the AWS Support Center[1].
+
+Please refer to the document here[2] to find out AWS Certificate Manager (ACM) limits that apply to each AWS region and each AWS account. 
+
+References:
+[1] https://console.aws.amazon.com/support/v1#/case/create?issueType=service-limit-increase&limitType=service-code-acm
+[2] https://docs.aws.amazon.com/acm/latest/userguide/acm-limits.html"
+AWS Certificate Manager	"Requesting a certificate is failing with ""Require additional info"" error ms
+Hi, I am trying to request a certificate for my web application deployed on kubernetes with an external service endpoint The status of this certificate request is ""Failed"". The domain name that I am trying to use is : ""*.us-west-2.elb.amazonaws.com"". Is there any recommendation on how to do that?"
+AWS Certificate Manager	"Re: Requesting a certificate is failing with ""Require additional info"" error ms
+Hello,
+
+You cannot request a certificate for Amazon-owned domain names such as those ending in amazonaws.com, cloudfront.net, or elasticbeanstalk.com as mentioned in our public documentation.
+https://docs.aws.amazon.com/acm/latest/userguide/troubleshooting-requests.html#failed-additional-verification-required
+
+Let us know know in case you require further assistance."
+AWS Certificate Manager	"Certificate request failed
+Hello,
+
+I tried to get a certificate for a subdomain which I hold and got the error:
+Request failed
+
+Status: Failed
+Failure Reason: Additional verification required
+
+No more information is given about how to provide the additional verification.
+The interesting part is that I already got a few certs for other subdomains of this one without any problem but deleted these and have this problem since that.
+
+The certificate identifier is: 4a633e4e-3e0d-498c-bf69-d68b8dff9ef7
+
+How can I provide the verification and how can I succeed this request at all?
+
+Kind regards
+Felix"
+AWS Certificate Manager	"Re: Certificate request failed
+Hi,
+
+If the domain you are requesting certificate for is a popular domain name, we take additional measures to ensure that only the domain owners, domain registrants, or those authorized to manage the domain name are allowed to make requests for these domain names. Therefore, ACM requires additional information to process such certificate requests. 
+
+In order to continue with your request which is currently failing with the error ""Additional Verification Required"", your account has to be whitelisted to request certificates for the domain names you want this certificate for. 
+
+I would request you to please provide me with the following information:
+1) The domain names for which you are requesting the certificate.
+2) The region in which you are requesting the certificate.
+
+Alternatively, you can use the Support Center to contact AWS Support, to provide this information."
+AWS Certificate Manager	"ACM Validation Failing due to ACM issuing non-existent CNAME endpoints
+I'm trying to create a certificate for my LightSail load balancer, but it's failing to verify.
+
+Three of the ACM validation endpoints are not resolving, meaning it can't validate.
+
+How can I force AWS/ACM to re-create these endpoints? (I've created the CNAMEs that point to these in Route 53)
+
+_df0367dd3ff5ede91f81ce82f7f27f9e.tljzshvwok.acm-validations.aws.
+_2f1fb3bd106b88308f7fa62eabb339be.tljzshvwok.acm-validations.aws.
+_5d7fdfbde08f7cb5a52b471ec802938e.tljzshvwok.acm-validations.aws.
+
+I've tried deleted and re-creating the certificate request, but ACM gives me the same non-working endpoints again!"
+AWS Certificate Manager	"Re: ACM Validation Failing due to ACM issuing non-existent CNAME endpoints
+Hi There,
+
+I just responded to your support center case. We are currently investigating this and will update that case again shortly."
+AWS Certificate Manager	"Re: ACM Validation Failing due to ACM issuing non-existent CNAME endpoints
+After getting the case raised in the support portal (more difficult than it should be for a basic plan member when the fault is within the AWS infrastructure and not customer error), AWS staff re-created the missing DNS entries in their zone that the LightSail ACM interface hadn't created.
+
+Still not sure why it didn't create them in AWS's ACM validation DNS zone in the first place."
+AWS Certificate Manager	"Re: ACM Validation Failing due to ACM issuing non-existent CNAME endpoints
+I am having the same issue I think.
+
+How can I do without technical support?
+My endpoint is _1eee4f76a80a336801f085185b12488f.tljzshvwok.acm-validations.aws."
+AWS Certificate Manager	"Secure cert not working
+Hi all
+
+I created a cert for my site in cert manager, but when I browse to it with https: I get the 'not secure' warning. Have I missed a step? Do I need to do something after creating the cert? I chose the option for cert manager to update DNS and I can see that has worked.
+
+Also, I tried to create an autodiscover endpoint - this also isn't working... It's like I am missing something there as well.
+
+Any advice??
+Thanks"
+AWS Certificate Manager	"Certificate request stuck in ""pending validation""
+Hi there,
+
+I've requested a new certificate for my domain, and the request seems to be stuck in ""pending validation"". I've chosen to use the DNS validation, as I'm using Route53 to host my domain name. I've had AWS automatically create the required CNAME entry in Route53 and have confirmed that the entry does in fact exist. It's now been 36 hours since I began the process and it's still in ""pending validation"".
+
+I've requested certificates in the past for different domain names, using the same process, and have had it complete in 30 minutes or so. Any advice on why this might be happening, or how to go about discovering why the process is stuck for myself, would be greatly appreciated.
+
+Cheers,
+Luke"
+AWS Certificate Manager	"ACM failing CAA
+I can't seem to get a certificate set up for my domain (rasslingcats.com) because of CAA checks.
+The status of this certificate request is ""Failed"". One or more domain names have failed validation due to a Certificate Authority Authentication (CAA) error.
+
+I didn't have any CAA records (which seems to disable validation according to this - https://docs.aws.amazon.com/acm/latest/userguide/troubleshooting-caa.html) but CAA checks failed. I created a CAA record, created a new cert, still failing. Waited a few hours, tried again, still failed. My CAA record just has this
+0 issue ""amazon.com""
+0 issuewild ""amazon.com""
+
+Anything I'm missing?"
+AWS Certificate Manager	"The certificate is not valid. Choose Previous button below and fix it.
+Hello...
+
+I have purchased a SSL certificate from Comodo. 
+
+I tried to import it in ACM but I received the error ""The certificate is not valid. Choose Previous button below and fix it.""
+
+After I enter PEM contents (certificate and private key pem's), ACM shows this:
+
+Domains	domain.cl, www.domain.cl
+Expires in	364 Days
+Public key info	RSA-2048
+Signature algorithm	SHA256WITHRSA
+
+That means the certificate was decoded in ACM but the error is shown after I press ""Import"" button.
+
+Any help will be greatly appreciated,
+
+Thanks
+Jaime"
+AWS Certificate Manager	"Re: The certificate is not valid. Choose Previous button below and fix it.
+I have this exact same problem.  My hosting company who provided the certificate are most unhelpful so I'm completely stuck here, unable to import the certificate and thus completely unable to use CloudFront with my SSL-enabled domain."
+AWS Certificate Manager	"Re: The certificate is not valid. Choose Previous button below and fix it.
+Hello.
+
+Experiencing the same problem with godaddy certificate as OP. Were you able to solve the problem?
+
+UPD: Solved my case. 
+I've noticed that there is  a single trailing space after 
+------END CERTIFICATE-----
+line.
+
+ACM refused to accept this certificate until i deleted this trailing space symbol.
+
+Edited by: Pavel077 on Oct 19, 2018 5:04 AM"
+AWS Certificate Manager	"Re: The certificate is not valid. Choose Previous button below and fix it.
+Hey Pavel,
+
+Removing the trailing space helped me as well, thanks!)"
+AWS Certificate Manager	"Private and public keys
+The application is on a single instance of Elastic Beanstalk and uses Tomcat.  I've gone through all the documentation and now have to create some conf files in .ebextenstions.  No problems there.  However, I have to supply both the private and public keys.  In the example code, the private key is server.key and the public one server.crt.
+I have found cert.pem in /etc/pki/tls and both ca-bundle.crt  and ca-bundle.trust.crt in /etc/pki/tls/certs.  Are these the keys of the certificate I requested from AWS?  Is cert.pem the private key?  I've looked at all with Nano and am not too sure.  What's the deal with the other two files?
+According to the documentation, one should load the private key to S3.  If cert.pem is the private key, how do I do that from the command line once logged in and should I save that as server.key?
+I will appreciate any help."

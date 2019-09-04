@@ -1,0 +1,500 @@
+label	description
+AWS Serverless Application Repository	"AWS SAM Authorizer not working
+My goal is to be able to test my API locally using ""sam local start-api"" in the CLI.
+The authorizer at the moment is a user pool that is defined in my template.yaml file.
+But I get the following error:
+
+$ sam local start-api
+Error:  ('myApi', 'property Auth not defined for resource of type AWS::Serverless::Api')
+
+My API in the template file looks like the following:
+myApi:
+    Type: AWS::Serverless::Api
+    Properties:
+        StageName: Dev
+        Auth:
+            DefaultAuthorizer: myAuthorizer
+            Authorizers:
+                myAuthorizer:
+                    UserPoolArn: !GetAtt myUserPool.Arn
+
+My question is this:
+How can I get rid of this error and test my API while using my authorizer to extract information about the user so I can make POST http request methods.
+
+If this is not possible can I use an existing user pool and by setting UserPoolArn to the Arn of an existing user pool and test then test my API locally?"
+AWS Serverless Application Repository	"Re: AWS SAM Authorizer not working
+Thank you for posting! SAM CLI does not yet support debugging the Authorizers feature, so local testing of this feature is not yet available."
+AWS Serverless Application Repository	"Re: AWS SAM Authorizer not working
+Thanks for response keetonaws 
+
+I am wondering what would be a good solution to get around this so I can test my code locally?
+
+The solution I came up with is adding code to my Lambda function that adds to the request object so that I can read user attributes (username, age, etc) and essentially mock Cognitio User Pool as an Authorizer when I am testing locally on my machine.
+
+Is there a better way of achieving what I am currently doing?"
+AWS Serverless Application Repository	"Re: AWS SAM Authorizer not working
+I don't currently know of a better way."
+AWS Serverless Application Repository	"Certain SAM applications will not nest and fail changeset creation
+All (to be) nested applications described below have been successfully independently deployed from the command line and the Serverless Application Repository.
+
+I was able to deploy one of the applications as a nested application without problem. When I attempted to nest the other application I received the following failure upon deploy (from commmand line or SAR)
+
+Failed to create the changeset: Waiter ChangeSetCreateComplete failed: Waiter encountered a terminal failure state Status: FAILED. Reason: Received malformed response from transform AWS::Serverless-2016-10-31
+
+
+Based on my understanding this can happen with an invalid template, but I was able to successfully deploy mine independently.
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    fax_downloader
+ 
+    A component that allows for the downloading of SFax faxes
+ 
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: fax-manager-fax-downloader
+    Description: A component that allows for the downloading of SFax faxes
+    SemanticVersion: 0.1.1
+    Author: 3Derm Systems Inc
+    SpdxLicenseId: 0BSD
+    LicenseUrl: privatelicense.txt
+ 
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+    Function:
+        Timeout: 3
+ 
+Parameters:
+  SystemsManagerParameterScope:
+    Type: String
+    Default: test
+ 
+Resources:
+    InboundFaxTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            SSESpecification:
+              SSEEnabled: True
+            AttributeDefinitions:
+              - AttributeName: FaxId
+                AttributeType: S
+            KeySchema:
+              - AttributeName: FaxId
+                KeyType: HASH
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+            StreamSpecification:
+                StreamViewType: NEW_IMAGE
+ 
+    InboundFaxDatabaseWritingRole:
+        Type: AWS::IAM::Role
+        Properties:
+          AssumeRolePolicyDocument:
+            Version: ""2012-10-17""
+            Statement:
+                -
+                    Effect: ""Allow""
+                    Principal:
+                      Service:
+                        - ""apigateway.amazonaws.com""
+                    Action:
+                      - ""sts:AssumeRole""
+          Policies:
+            -
+                PolicyName: ""root""
+                PolicyDocument:
+                    Version: ""2012-10-17""
+                    Statement:
+                      -
+                        Effect: ""Allow""
+                        Action: [
+                            ""dynamodb:PutItem""
+                        ]
+                        Resource: [
+                            !GetAtt InboundFaxTable.Arn
+                        ]
+ 
+    InboundFaxReceiver:
+        Type: AWS::Serverless::Api
+        Properties:
+            StageName: Prod
+            DefinitionBody:
+                swagger: 2.0
+                paths:
+                  ""/inboundfax"":
+                    get:
+                      consumes:
+                        - ""application/json""
+                      produces:
+                        - ""application/json""
+                      responses:
+                        ""200"":
+                          description: ""200 response""
+                          schema:
+                            $ref: ""#/definitions/Empty""
+                      x-amazon-apigateway-integration:
+                        httpMethod: POST
+                        type: AWS
+                        uri: !Sub ""arn:aws:apigateway:${AWS::Region}:dynamodb:action/PutItem""
+                        credentials: !GetAtt InboundFaxDatabaseWritingRole.Arn
+                        requestTemplates:
+                          application/json: { 'Fn::Sub': [""{ \n\
+                          \t\""TableName\"": \""${InboundFaxTableName}\"",\n\
+                          \t\""Item\"": {\n\
+                          \t\t\""FaxId\"": {\n\
+                          \t\t\t\""S\"": \""$input.params('faxid')\""\n\
+                          \t\t},\n\
+                          \t\t\""SendingFaxNumber\"": {\n\
+                          \t\t\t\""S\"": \""$input.params('infromfaxnumber')\""\n\
+                          \t\t},\n\
+                          \t\t\""ReceivingFaxNumber\"": {\n\
+                          \t\t\t\""S\"": \""$input.params('intofaxnumber')\""\n\
+                          \t\t},\n\
+                          \t\t\""FaxTimestamp\"": {\n\
+                          \t\t\t\""S\"": \""$input.params('faxdateiso')\""\n\
+                          \t\t},\n\
+                          \t\t\""ApiKey\"": {\n\
+                          \t\t\t\""S\"": \""$input.params('apikey')\""\n\
+                          \t\t},\n\
+                          \t\t\""Token\"": {\n\
+                          \t\t\t\""S\"": \""$input.params('token')\""\n\
+                          \t\t},\n\
+                          \t\t\""FaxStatus\"": {\n\
+                          \t\t\t\""N\"": \""$input.params('faxsuccess')\""\n\
+                          \t\t}\n
+                          \t}\n}"", {""InboundFaxTableName"" : !Ref InboundFaxTable} ]}
+                        responses:
+                          default:
+                            statusCode: ""200""
+ 
+    FaxesThatFailedToDownloadQueue:
+        Type: AWS::SQS::Queue
+ 
+    FaxesToDownloadQueue:
+        Type: AWS::SQS::Queue
+        Properties:
+          VisibilityTimeout: 200
+          RedrivePolicy:
+            deadLetterTargetArn: !GetAtt FaxesThatFailedToDownloadQueue.Arn
+            maxReceiveCount: 10
+ 
+    WriteUpdatedFaxToDownloadQueueFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: write_updated_fax_to_download_queue/ 
+            Handler: app.lambda_handler
+            Runtime: python3.6
+            Events:
+                DynamoDBEvent:
+                    Type: DynamoDB # More info about DynamoDB Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb
+                    Properties:
+                        Stream:
+                            !GetAtt InboundFaxTable.StreamArn
+                        StartingPosition: TRIM_HORIZON
+                        BatchSize: 1
+            Environment:
+                Variables:
+                    QueueUrl: !Ref FaxesToDownloadQueue
+            Policies:
+               - AWSLambdaExecute # Managed Policy
+               - Version: '2012-10-17' # Policy Document
+                 Statement:
+                   - Effect: Allow
+                     Action:
+                       - sqs:SendMessage
+                     Resource: [
+                        !GetAtt FaxesToDownloadQueue.Arn
+                     ]
+ 
+    DownloadedFaxBucket:
+        Type: AWS::S3::Bucket
+        Properties:
+            BucketEncryption:
+                ServerSideEncryptionConfiguration:
+                    - ServerSideEncryptionByDefault:
+                        SSEAlgorithm: ""AES256""
+ 
+    DownloadFaxFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: download_fax/ 
+            Handler: app.lambda_handler
+            Runtime: python3.6
+            Timeout: 100
+            Events:
+                SQSEvent:
+                    Type: SQS # More info about DynamoDB Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb
+                    Properties:
+                        Queue: !GetAtt FaxesToDownloadQueue.Arn
+                        BatchSize: 1
+ 
+            Environment:
+                Variables:
+                    DownloadBucketName: !Ref DownloadedFaxBucket
+                    SystemsManagerParameterScope: !Ref SystemsManagerParameterScope
+            Policies:
+               - AWSLambdaExecute # Managed Policy
+               - Version: '2012-10-17' # Policy Document
+                 Statement:
+                   - Effect: Allow
+                     Action:
+                       - sqs:ReceiveMessage
+                       - sqs:DeleteMessage
+                       - sqs:GetQueueAttributes
+                     Resource: [
+                        !GetAtt FaxesToDownloadQueue.Arn
+                     ]
+                   - Effect: Allow
+                     Action:
+                       - s3:PutObject
+                       - s3:GetObject
+                     Resource: [
+                        !Join [""/"", [!GetAtt DownloadedFaxBucket.Arn, ""*""]]
+                     ]
+                   - Effect: Allow
+                     Action:
+                       - ssm:GetParameter
+                       - ssm:GetParameters
+                     Resource: [
+                        !Sub ""arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${SystemsManagerParameterScope}/sfax/*""
+                     ]
+ 
+    DownloadedFaxNotification:
+        Type: AWS::SNS::Topic
+ 
+    DownloadedFaxEventTransformerFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: downloaded_fax_event_transformer/ 
+            Handler: app.lambda_handler
+            Runtime: python3.6
+            Events:
+                S3FileCreatedEvent:
+                  Type: S3
+                  Properties:
+                    Bucket: !Ref DownloadedFaxBucket
+                    Events: s3:ObjectCreated:*
+            Environment:
+                Variables:
+                    OutputTopicArn: !Ref DownloadedFaxNotification
+                    TableName: !Ref InboundFaxTable
+            Policies:
+               - AWSLambdaExecute # Managed Policy
+               - Version: '2012-10-17' # Policy Document
+                 Statement:
+                   - Effect: Allow
+                     Action:
+                       - sns:Publish
+                     Resource: [
+                        !Ref DownloadedFaxNotification
+                     ]
+                   - Effect: Allow
+                     Action:
+                       - dynamodb:GetItem
+                     Resource: [
+                        !GetAtt InboundFaxTable.Arn
+                     ]
+ 
+    TriggerOldFaxDownloadFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: trigger_old_fax_download/ 
+            Handler: app.lambda_handler
+            Runtime: python3.6
+            Timeout: 100
+            Environment:
+                Variables:
+                    TableName: !Ref InboundFaxTable
+                    SystemsManagerParameterScope: !Ref SystemsManagerParameterScope
+            Policies:
+               - AWSLambdaExecute # Managed Policy
+               - Version: '2012-10-17' # Policy Document
+                 Statement:
+                   - Effect: Allow
+                     Action:
+                       - dynamodb:PutItem
+                       - dynamodb:UpdateItem
+                     Resource: [
+                        !GetAtt InboundFaxTable.Arn
+                     ]
+                   - Effect: Allow
+                     Action:
+                       - ssm:GetParameter
+                       - ssm:GetParameters
+                     Resource: [
+                        !Sub ""arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${SystemsManagerParameterScope}/sfax/*""
+                     ]
+ 
+    ResendDownloadedNotifications:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: resend_downloaded_notifications/ 
+            Handler: app.lambda_handler
+            Runtime: python3.6
+            Timeout: 100
+            Environment:
+                Variables:
+                    DownloadBucketName: !Ref DownloadedFaxBucket
+                    OutputTopicArn: !Ref DownloadedFaxNotification
+                    TableName: !Ref InboundFaxTable
+            Policies:
+               - AWSLambdaExecute # Managed Policy
+               - Version: '2012-10-17' # Policy Document
+                 Statement:
+                   - Effect: Allow
+                     Action:
+                       - sns:Publish
+                     Resource: [
+                        !Ref DownloadedFaxNotification
+                     ]
+                   - Effect: Allow
+                     Action:
+                       - s3:ListBucket
+                     Resource: [
+                        !GetAtt DownloadedFaxBucket.Arn
+                     ]
+                   - Effect: Allow
+                     Action:
+                       - dynamodb:GetItem
+                     Resource: [
+                        !GetAtt InboundFaxTable.Arn
+                     ]
+ 
+Outputs:
+    InboundFaxAPI:
+      Description: ""API Gateway endpoint URL for Prod stage for SFax webhook""
+      Value: !Sub ""https://${InboundFaxReceiver}.execute-api.${AWS::Region}.amazonaws.com/Prod/inboundfax""
+ 
+    DownloadedFaxBucket:
+        Description: ""The bucket where downloaded faxes will be stored""
+        Value: !Ref DownloadedFaxBucket
+ 
+    DownloadedFaxNotificationTopic:
+        Description: ""The topic where new messages will be sent when a fax has been downloaded""
+        Value: !Ref DownloadedFaxNotification
+ 
+    TriggerOldFaxDownloadFunctionManualFunction:
+        Description: ""Add old faxes""
+        Value: !GetAtt TriggerOldFaxDownloadFunction.Arn
+ 
+    ResendDownloadedNotificationsManualFunction:
+        Description: ""Resend a notification for each downloaded item""
+        Value: !GetAtt ResendDownloadedNotifications.Arn
+ 
+
+
+Parent application code is
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    fax-handler
+ 
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: fax-manager
+    Description: An application that allows for the downloading and syncing of SFax faxes
+    SemanticVersion: 0.1.0
+    Author: 3Derm Systems Inc
+    SpdxLicenseId: 0BSD
+    LicenseUrl: privatelicense.txt
+ 
+Parameters:
+  SystemsManagerParameterScope:
+    Type: String
+    Default: test
+ 
+Resources:
+    FaxDownloader:
+      Type: AWS::Serverless::Application
+      Properties:
+        Location:
+          ApplicationId: arn:aws:serverlessrepo:us-east-1:{Redacted}:applications/fax-manager-fax-downloader
+          SemanticVersion: 0.1.0
+        Parameters:
+          SystemsManagerParameterScope: !Ref SystemsManagerParameterScope
+
+
+Does anyone know what a potential cause might be or at least how to get a more verbose error message?
+
+Edited by: elliotswart on Jan 30, 2019 2:17 PM"
+AWS Serverless Application Repository	"Re: Certain SAM applications will not nest and fail changeset creation
+Your nested application has a Semantic Version of 0.1.1 in the metadata and the parent application is referencing 0.1.0. Could this be the issue?"
+AWS Serverless Application Repository	"SAM template doesn't display AWS::CloudFormation::Interface
+The problem I started with was arranging the parameter fields during deployment to another arrangement other than alphabetical.
+In CloudFormation the solution is to use AWS::CloudFormation::Interface. I tried using that in my SAM (the template is attached) and it didn't work at all, it was as if I didn't add the Metadata, interface and everything at all.
+I found this issue on SAM's repo on github:  https://github.com/awslabs/serverless-application-model/issues/153 and it seems the guy has exactly my problem, but it was marked as ""wontfix"" and there is no workaround proposed, and ""it is a bug in CLoudFormation UI"".
+I have no idea how to file a bug to the CloudFormation UI guys so here I am.
+
+Any help would greatly be appreciated, even a workaround as to how to arrange the parameters the way I want in a SAM deployment.
+
+Thanks in advance."
+AWS Serverless Application Repository	"Re: SAM template doesn't display AWS::CloudFormation::Interface
+Currently, the AWS Serverless Application Repository's app deployment experience in the AWS Lambda console does not support displaying app parameters according to AWS::CloudFormation::Interface metadata in the app template. It uses an algorithm for grouping certain parameters logical ids from the template if they're only referenced by that logical id."
+AWS Serverless Application Repository	"SAM Refused with ""Template can not be parsed into a string. template=null""
+Have a SAM template that successfully deploys a serverless stack (API GW + Lambda + DynamoDB Table) using CloudFormation.
+
+That same SAM, used to publish an application in the serverless repo is refused with:
+
+""Template can not be parsed into a string. template=null""
+
+In fact, this new SAM is derived from another SAM I used months ago to successfully publish an applications in the serverless repo. And, today, that former SAM is also refused with the same error message.
+
+Any idea?
+
+The SAM template I'm talking about is the one at  https://raw.githubusercontent.com/PaloAltoNetworks/fqdn-service/master/sam_template.yaml"
+AWS Serverless Application Repository	"Re: SAM Refused with ""Template can not be parsed into a string. template=null""
+Hi, thanks for reporting this issue. I was able to reproduce the error you encountered based off of  your sample template. We're looking into this issue now.
+
+Edited by: JamesH@AWS on Sep 19, 2018 2:41 PM"
+AWS Serverless Application Repository	"Re: SAM Refused with ""Template can not be parsed into a string. template=null""
+This problem is now fixed in all supported regions. Thanks again for reporting the issue!
+
+Edited by: JamesH@AWS on Sep 26, 2018 1:21 PM"
+AWS Serverless Application Repository	"CChangeSet cannot be executed
+Hey folks, 
+
+I'm working my way through the facts tutorial, and I keep getting the above whenever I try to deploy the factskill application. I have no idea what's going on--I've tried two different browsers. So maybe it's not me? Does anyone have any suggestions?"
+AWS Serverless Application Repository	"S3 acting as a serverless repository for the project deployed in lambda
+I work on .net applications. The .net application/project taking the input from the Aws S3 bucket once got deployed into the Aws Lambda automatically creating the zip file of the project in the s3. The S3 is acting as a repository. I use TFS as a code repository & by this automatic storage s3 making me to have two code repositories which is unnecessary for us. Is there any way that we can stop the file of a project to be automatically getting stored to s3? Is it default that asp.net projects automatically gets stored in s3 after it is deployed into Aws Lambda??
+
+Edited by: sunny on Jul 16, 2018 7:31 AM
+
+Edited by: sunny77 on Jul 16, 2018 12:55 PM"
+AWS Serverless Application Repository	"Uploads to Cloud search
+0
+down vote
+favorite
+I'm putting together a custom search engine for a planet friendly NGO. There are two steps involved
+
+Creating the index schema
+Uploading the data documents
+Some issues:
+
+Converting csv to JSON or sql to JSON the index messes up - doesn't relate to the original schema
+It appears that the AWSCS console is not splitting the JSON rows into documents -- it uploads a whole table dump as one document
+Can anyone offer any tips as how to get an AWSCS valid conversion from either SQL or CSV?
+
+These things would really help
+
+
+A fragment of a known working format
+Any tool that might help
+Thanks for taking a look at this -- any comments appreciated
+
+
+Edited by: Prema on May 2, 2018 3:42 PM"
+AWS Serverless Application Repository	"Re: Uploads to Cloud search
+Please ignore this -- wrong forum"
+AWS Serverless Application Repository	"cannot be executed in its current status of [FAILED]
+I'm trying to run some of your applications just because i don't understand SAR.
+
+i get this:
+
+ChangeSet [arn:aws:cloudformation:us-east-1:(account number):stack/aws-serverless-repository-lex-book-trip-python/ (...)
+cannot be executed in its current status of https://forums.aws.amazon.com/,
+
+When I go to CloudFormation console, it says REVIEW_IN_PROGRESS.
+
+I am working from an IAM user in a separate account."

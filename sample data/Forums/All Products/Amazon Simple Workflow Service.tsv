@@ -1,0 +1,2442 @@
+label	description
+Amazon Simple Workflow Service	"Sending signals to workflows under test
+I'm designing a workflow that uses @Signal annotations and trying to unit test them, following the relevant guide in the Flow framework documentation, and I keep hitting the wall.
+
+Basically I have a test implementation of my activity which sends it's Thread to sleep for 5000 millisec to simulate manual completion. In the test method, I try to wait for 1000 millisec before I invoke the signal-method on my workflow:
+
+myWorkflowClient.executeWorkflow(myData);
+Thread.sleep(1000);
+System.out.println(""Send cancel signal"");
+myWorkflowClient.mySignal();
+...
+public static class MyActivityImpl() {
+    @Override
+     public void doActivity() {
+          System.out.println(""Starting activity"");
+          Thread.sleep(5000);
+          System.out.println(""Completed activity"");
+     }
+}
+
+
+Note: pseudo-code, the mandatory ""try{...} catch (InterruptedException e){....}"" blocks are omitted
+
+That fails because the test runner can't find the workflow execution. Interestingly, if I disable the line with ""mySignal"", I get the following output:
+
+Send cancel signal
+Starting activity
+Completed activity
+
+
+It seems to me that the workflow is ""not really"" executed asynchronously, so the first ""Thread.sleep()"" blocks the entire thread and the actual workflow get's executed only after the Thread awakes again. 
+
+I tried to wrap the first ""Thread.sleep()"" into a new Thread, like this: 
+
+Thread(new Runnable(){
+     System.out.println(""Send cancel signal"");
+     myWorkflowClient.mySignal();
+}).start()) 
+
+
+but the only result is:  ""Attempt to execute asynchronous code outside of AsyncScope.doAsync() method"", so I'm out of ideas now. I followed the guides in any respect, I'm using ""FlowBlockJUnit4ClassRunner"" and I have at least one test passing that is not relying on Signals, so I assume the general setup is correct.
+
+Any ideas how I can test my Signals properly? 
+
+Regards,
+
+Joerg
+
+Edited by: joerg_henning on Jan 20, 2013 10:52 PM
+
+Edited by: joerg_henning on Jan 20, 2013 10:53 PM - formatting fixes"
+Amazon Simple Workflow Service	"Re: Sending signals to workflows under test
+Well, just a minute after my previous post I remembered the workflow recipes had a similar scenario and et voila, I found my answer there. The magic trick is 
+
+Promise<?> runId = myClient.getRunId();
+
+
+which becomes ready after the workflow execution has started, so I can safely send my signal exactly then. Never mind.
+
+Edited by: joerg_henning on Jan 20, 2013 11:23 PM"
+Amazon Simple Workflow Service	"Re: Sending signals to workflows under test
+All workflow and activities code is executed by the same thread when AWS Flow Framework unit test integration is used. So Thread.sleep cannot be used anywhere in the test code including activities implementation. The code in @Test method is executed in a context of a dummy workflow. So such code should be asynchronous and follow the same rules and restrictions of any other workflow code. For example myWorkflowClient.executeWorkflow(myData) creates a child workflow of the dummy worklfow. Child workflow creation is an asynchronous operation. The workflow client getRunId method returns a Promise that becomes ready as soon as child workflow has started. So the following pattern should be used to send signal to a workflow under unit test:
+@Test
+public void testCancelSignal() {
+  myWorkflowClient.executeWorkflow(myData);
+  Promise<String> runId = myWorkflowClient.getRunId();
+  sendCancelSignal(runId);
+}
+ 
+@Asynchronous
+private void sendCancelSignal(Promise<String> runId) {
+   myWorkflowClient.mySignal();
+}
+
+To delay signal sending the WorkflowClock timer should be used:
+@Test
+public void testCancelSignal() {
+  myWorkflowClient.executeWorkflow(myData);
+  Promise<String> runId = myWorkflowClient.getRunId();
+  Promise<Void> delay = workflowClock.createTimer(1); // seconds
+  sendCancelSignal(runId, delay);
+}
+ 
+@Asynchronous
+private void sendCancelSignal(Promise<?>... waitFor) {
+   myWorkflowClient.mySignal();
+}
+
+The above code is going to send signal to the tested workflow after workflow has started with at least one second delay. 
+
+It is still not enough to test the activity cancellation as Thread.sleep is not allowed inside its test implementation. As activity implementation code is expected to be synchronous WorkflowClock.createTimer is also prohibited. The solution is to mock activity client directly instead of activity implementation. As client is executed in the context of a workflow it can use any asynchronous code including WorkflowClock.createTimer.
+
+public class MyActivityClientTestImpl implements MyActivityClient {
+ 
+    public Promise<Void> doActivity() {
+          return workflowClock.createTimer(3);
+    }
+ 
+    ...
+}
+ 
+public class MyWorkfowImpl implements MyWorkflow {
+     private MyActivityClient activity;
+ 
+     // Constructor or setter used to set activity field
+     // to MyActivityClientImpl or MyActivityClientTestImpl
+     ...
+ 
+}
+
+To test scenarios that can take long time (some workflows are expected to run for months) it is possible to speed up WorkflowClock through WorkflowTest.setClockAccelerationCoefficient method. For example if you specify speed up of 1000 your unit test should complete in a few milliseconds instead of at least a second."
+Amazon Simple Workflow Service	"Re: Sending signals to workflows under test
+Wow. Good that I asked anyway.  That's much clearer to me now, thanks for the detailed explanation!"
+Amazon Simple Workflow Service	"Re: Sending signals to workflows under test
+Mmh, how can I inject my client directly into the workflow implementation? Seems to me that I can only register a workflow type with the TestWorkflow, but not a concrete instance. Do you suggest that I start the workflow execution synchronously, like this:
+
+MyWorkflowImpl workflowImpl = new MyWorkflowIml(/* dependencies here */);
+workflowImpl.executeWorkflow();
+
+
+Seems odd to me, but so far I don't see another way..."
+Amazon Simple Workflow Service	"Re: Sending signals to workflows under test
+Your options are:
+
+
+Extend your workflow class. The test  subclass can instantiate all necessary test dependencies. Register the subclass with the WorkflowTest.
+Use Spring and SpringWorkflowTest to inject dependencies.
+Instantiate workflow directly exactly as in your sample. Note that such approach can be used to test any part of a workflow not only its top level object."
+Amazon Simple Workflow Service	"Re: Sending signals to workflows under test
+Thanks for these examples.
+
+We're following this pattern to unit test our deciders that support signals. It works well most of the time, but sometimes our unit tests fail because the runner seems to get interrupted:
+
+[ERROR] Tests run: 537, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 5.155 s <<< FAILURE! - in TestSuite
+[ERROR] <...>)(<test name>)  Time elapsed: 0.034 s  <<< FAILURE!
+java.lang.InterruptedException: sleep interrupted
+
+
+Do you know why this would be happening? We are using the FlowBlockJUnit4ClassRunner, and we're creating new workflow clients for each test in the @Before method."
+Amazon Simple Workflow Service	"Re: Sending signals to workflows under test
+Could it be the unit test timeout?"
+Amazon Simple Workflow Service	"Manual approvals with serverless lambda functions made simple with Guflow
+Latest release of Guflow: https://github.com/gurmitteotia/guflow will now let you easily implement support for manual approvals using serverless lambda functions. Here is a very simple example showing ""WaitForAnySignal"" API:
+    [WorkflowDescription(""1.0"")]
+    public class ExpenseWorkflow : Workflow
+    {
+        public ExpenseWorkflow()
+        {
+            ScheduleLambda(""ApproveExpense"")
+              .OnCompletion(e=>e.WaitForAnySignal(""Accepted"", ""Rejected""))
+              .WithInput(_=>new{Id});  //Send workflow id to lambda functions to send signals to this workflow.
+            ScheduleLambda(""SubmitToAccount"").AfterLambda(""ApproveExpense"")
+              .When(_=>Signal(""Accepted"").IsTriggered());
+            ScheduleLambda(""SendRejectEmail"").AfterLambda(""ApproveExpense"")
+              .When(_=>Signal(""Accepted"").IsTriggered());
+        }
+    }
+
+Other APIs that you can use for waiting for signals are: WaitForAllSignals and WaitForSignal. These APIs will help you to move your workers from activities to serverless lambda functions. 
+
+You can call these APIs anywhere in workflow e.g. in the following example ""ApproveExpense"" is a child workflow:
+    [WorkflowDescription(""1.0"")]
+    public class ExpenseWorkflow : Workflow
+    {
+        public ExpenseWorkflow()
+        {
+            ScheduleChildWorkflow<ApproveExpense>()
+              .OnCompletion(e=>e.WaitForAnySignal(""Accepted"", ""Rejected""));
+            ScheduleLambda(""SubmitToAccount"").AfterLambda(""ApproveExpense"")
+              .When(_=>Signal(""Accepted"").IsTriggered());
+            ScheduleLambda(""SendRejectEmail"").AfterLambda(""ApproveExpense"")
+              .When(_=>Signal(""Accepted"").IsTriggered());
+        }
+    }
+
+You can find the detailed document about signal supports in Guflow here: https://github.com/gurmitteotia/guflow/wiki/Workflow-signals
+
+Other interesting examples of manual approvals using lambda functions can be found here: https://github.com/gurmitteotia/guflow-samples/tree/master/ServerlessManualApproval."
+Amazon Simple Workflow Service	"activity timing out on large exception
+As there is 32K limit on activity result I see activities just timing out when result is larger while it is OK for normal cases, in case when activity is throwing an exception I cannot see the error reason.
+
+Specifically we are using SWF Java Flow Framework. Besides we use Hibernate with Spring. When data access layer throws  exception, its text (including all the stack) is longer than 32K. In this case we see no activity failure, but just timeout. We could resolve it using custom serializer, but I would prefer a solution using fewer custom components.
+
+Is there such a solution?"
+Amazon Simple Workflow Service	"Re: activity timing out on large exception
+I'm not sure what generic solution would help here. Due to the size limit some information must be lost. IMHO logging the exception from the activity and returning a different exception that misses the stack trace (or part of it) is a reasonable workaround."
+Amazon Simple Workflow Service	"Re: activity timing out on large exception
+Thank you Maxim!
+
+Is there any standard mechanism to implement a ""stardard global"" exception handler in between completion of activity and activity worker process?
+
+Thank you"
+Amazon Simple Workflow Service	"Re: activity timing out on large exception
+It looks like (https://github.com/aws/aws-swf-flow-library/blob/master/src/main/java/com/amazonaws/services/simpleworkflow/flow/pojo/POJOActivityImplementation.java#L100) that DataConverter is used to serialize the exception. So you can create a custom DataConverter to implement this logic."
+Amazon Simple Workflow Service	"Re: activity timing out on large exception
+Thanks a lot. We'll go that way."
+Amazon Simple Workflow Service	"UnknownResourceException: Unknow Execution
+I have a workflow that contains a manual activity that is getting a ""UnknownResourceException: Unknown Execution: workflow-id:.....; UnknownResourceFault..."". At first, I believed this to be a timeout issue, but my console does not show a timeout event. When inspecting my logs, my manual activity is sometimes being completed as soon as the workflow starts. The basics of my workflow and timing are as follows:
+
+Workflow starts - 2018-12-2 10:32:45
+Activity starts, activity completes -  2018-12-2 10:32:45
+Activity starts, activity completes -  2018-12-2 10:32:45
+Manual actvitiy starts, manual actvitiy completes -  2018-12-2 10:32:45 - ERROR thrown Unknown ExecutionException....Unknown Execution:...
+
+I am starting to think this is a race condition where the manual complete activity is completing before SWF is even ready for it, but was hoping to find someone else experiencing this. My workflows are able to complete with added retry logic catching this exception but I am looking for some insight highlighting something I may be doing wrong.
+
+Thanks!"
+Amazon Simple Workflow Service	"Re: UnknownResourceException: Unknow Execution
+From you message is not clear what is recorded in the history in this case for the manual activity."
+Amazon Simple Workflow Service	"Guflow now supports the all the relevant features of Amazon SWF
+Guflow now supports all the relevant features of Amazon SWF. The latest releases now fully supports scheduling of child workflows. I have created a simple example-https://github.com/gurmitteotia/guflow-samples/tree/master/ChildWorkflow, to show scheduling of a child workflow and coordination using signals. A few lines of code handle many concurrent situations elegantly.
+
+Feature highlights:
+-Supports all relevant features of Amazon SWF
+-Allows creation of complex workflows with ease
+-Supports fork/join and parallel execution of workflow branches
+-Supports activity throttling
+-Allows async/sync methods for activity
+-Powerful query APIs to parse event history (very useful in making custom decisions)
+-Supported by behavioural unit tests and integration tests. Even the small improvements released to the community.
+
+There are many nice features in the pipeline and it is open to the contributions from community.
+Guflow, hosted on github-https://github.com/gurmitteotia/guflow,  is a C#.Net open source library to program Amazon SWF.
+
+Gurmit"
+Amazon Simple Workflow Service	"TimerCancelled event does not cause DecisionTaskScheduled event
+I have noticed that when a decider cancel a scheduled timer then DecisionTaskScheduled event is not raised. I have attached the screenshot of history events. Is that intended behaviour or a bug?
+
+This behaviour will leave the workflows in zombie state which can never be finished at their own. This behaviour has left CancelTimer decision pretty useless.
+I am happy to provide many more examples where this behaviour will cause the issue."
+Amazon Simple Workflow Service	"Re: TimerCancelled event does not cause DecisionTaskScheduled event
+This is by design and is not expected to cause any issues. The cancel timer decision is to indicate to SWF that this timer shouldn't be fired in the future, not to schedule a new decision. As a timer is cancelled immediately and its cancellation cannot fail (unless the timer doesn't exist which is a bug in the decider code) any action that is expected to be taken doesn't need to wait for this event and can be scheduled immediately. 
+
+What is the exact use case you are trying solve that requires TimerCancelled to cause the decision scheduling?
+
+BTW: Check out Cadence which is an open source version of SWF: https://github.com/uber/cadence"
+Amazon Simple Workflow Service	"Re: TimerCancelled event does not cause DecisionTaskScheduled event
+Appreciate your response.
+
+Yes agree given the behavior of SWF, decider has to send the extra decisions along with CancelTimer decision. Technically it will work but IMHO for consistency and making the intention clear in decider logic it would have been better to raise DecisionTaskScheduled event. This would have helped in handling the cancelled event for activity, child workflow and timer in uniform way. But now activities and child workflow’s cancelled events are handled differently than timer canceled event.
+
+BTW, I have written an open source C#.NET library Guflow:https://github.com/gurmitteotia/guflow around Amazon SWF. I was responding to a requirement like below: 
+“Implement a Order workflow where user can cancel a order within 30 minutes of placing it”
+
+Under the current mechanism of SWF it will be implemented as below in Guflow:
+public class OrderWorkflow : Workflow
+{
+	public OrderWorkflow()
+	{
+	//Customer has 30 minutes to cancel the placed order. You can write in different styles as well.
+		ScheduleTimer(""GracePeriod"").FireAfter(TimeSpan.FromMinutes(30))
+                            .OnFired(_=>Jump.ToActivity<ShipOrder>());
+		
+		ScheduleActivity<OrderCancelled>().AfterTimer(""GracePeriod"");
+		ScheduleActivity<ShipOrder>().AfterTimer(""GracePeriod"");
+	}
+	
+	[WorkflowEvent(EventName.CancelRequest)]
+	public WorkflowAction CancelRequest()
+	{
+		var timer = Timer(""GracePeriod"")
+		if(timer.IsActive)
+			return CancelRequest.ForTimer(timer) + Jump.ToActivity<OrderCancelled>();
+               return Ignore;
+	}
+}
+
+
+However if DecisionTaskScheduled event were raised for TimerCancelled event then user can write as below, which is bit more expressive and consistent with the way activity and child workfow can be cancelled:
+
+public class OrderWorkflow : Workflow
+{
+	public OrderWorkflow()
+	{
+	    //Customer has 30 minutes to cancel the placed order
+		ScheduleTimer(""GracePeriod"").FireAfter(TimeSpan.FromMinutes(30))
+				.OnCancelled(_=>Jump.ToActivity<OrderCancelled>());
+				.OnFired(_=>Jump.ToActivity<ShipOrder>());
+		
+		ScheduleActivity<OrderCancelled>().AfterTimer(""GracePeriod"")
+					
+		ScheduleActivity<ShipOrder>().AfterTimer(""GracePeriod"");
+	}
+	
+	[WorkflowEvent(EventName.CancelRequest)]
+	public WorkflowAction CancelRequest()
+	{
+		var timer = Timer(""GracePeriod"")
+		if(timer.IsActive)
+			return CancelRequest.ForTimer(timer);
+                return Ignore;
+	}
+}
+
+
+Now you might say that is a client library problem on how to express it but that is not entirely true. Underlying inconsistency will be revealed to user irrespective of client library.
+
+I will update the Guflow to align with current SWF implementation. But I would prefer to convey this in form of feature request to SWF developer. Do you know where they are approachable? I hardly see them on this forum.
+
+I will be interested to see on how Cadence’s Java client library express above workflow.
+Thanks again for your response.
+
+Edited by: Gurmit S. on Sep 19, 2018 5:26 AM"
+Amazon Simple Workflow Service	"Re: TimerCancelled event does not cause DecisionTaskScheduled event
+As timer cancellation never fails the corresponding fake event can be created immediately during the execution of the decision task that produced the CancelTimer decision. So you can invoke whatever cancellation handler immediately without any wait. Adding the decision task scheduled increases latency and wastes service and client resources. The API your framework provides doesn't depend on this feature. Both of the listed implementations are possible even with the current SWF API.
+
+Here is how the example looks using the Cadence library:
+  public interface OrderActivities {
+    void shipOrder();
+    void orderCancelled();
+  }
+ 
+  public class OrderWorkflowImpl implements OrderWorkflow {
+ 
+    private final OrderActivities activities = 
+        Workflow.newActivityStub(OrderActivities.class);
+ 
+    @Override
+    public void order() {
+      try {
+        Workflow.sleep(Duration.ofMinutes(30));
+        activities.shipOrder();
+      } catch (CancellationException e) {
+        // Run in the detached cancellation scope as any call to a timer
+        // or an activity in the default workflow scope is going to fail 
+        // with a CancellationException after the workflow is cancelled.
+        Workflow.newDetachedCancellationScope(() -> activities.orderCancelled());
+      }
+    }
+  }
+
+
+I believe the best model for .NET client for SWF/Cadence would be .NET durable tasks: https://github.com/Azure/durabletask. Now they are superseded by the Azure Durable Functions: https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-overview
+
+It is not surprising that the durabletask project was seeded by the original member of SWF team who now works with me on Cadence ."
+Amazon Simple Workflow Service	"Re: TimerCancelled event does not cause DecisionTaskScheduled event
+Thank you for idea. I have added Timer.OnCancel api instead of Timer.OnCancelled API.
+
+Adding the decision task scheduled increases latency and wastes service and client resources. The API your framework provides doesn't depend on this feature
+
+I can not believe that adding of 3 event entries will cause so much pain . It looks simplicity and consistency has no weightage.
+
+I have not looked at Azure Durable task but Microsoft is communicating with developer community in far better way than Amazon.
+
+Edited by: Gurmit S. on Sep 23, 2018 8:55 AM"
+Amazon Simple Workflow Service	"Re: TimerCancelled event does not cause DecisionTaskScheduled event
+I can not believe that adding of 3 event entries will cause so much pain . It looks simplicity and consistency has no weightage.
+
+I think avoiding unnecessary DecisionTask (which involves multiple DB updates and two RPC calls) is a reasonable goal. 
+
+The API is consistent. By design it only creates decision tasks for externally (from a decider point of view) initiated events (like ActivityTaskCompleted/TimedOut, WorkflowExecutionSignaled, TimerFired etc) which require some action by a decider. Events that are created from decisions (like ActivityTaskScheduled, TimerStarted, TimerCanceled, etc) do not represent external events from the decider point of view and thus to not require a new decision task scheduling."
+Amazon Simple Workflow Service	"Re: TimerCancelled event does not cause DecisionTaskScheduled event
+Apologies for the late response. I got busy in releasing the new version.
+API users should not care about SWF internals and it should be left to the brilliant minds of SWF developers to optimise the solution. 
+The API is consistent
+I do not think so. Decision task is raised when child workflow is started but not when lambda function or activity is started. As a API user and without knowing about the SWF internals this looks inconsistent to me.
+As a user of SWF API, timer cancellation is the only occasion I have found where user has to send an extra decision in anticipation along with timer cancel decision. So this is inconsistent behaviour for API user.
+Recently one of the user of Guflow library raised the request to reschedule/reset the already scheduled timer on receiving a signal but given the current behaviour of timer cancellation it can't be achieved in straightforward way. I can't reuse the same timer id again in rescheduling it. But I will not face this constraint (reuse of Ids) for rest of items- activity, lambda, or child workflow. Agree it can be workaround but again it is inconsistent for API users.
+
+Even if we assume that API is 100% consistent, the cancel aspect of timer is resulting in inconsistent experience for API users.
+
+Edited by: Gurmit S. on Oct 30, 2018 1:25 PM"
+Amazon Simple Workflow Service	"Re: TimerCancelled event does not cause DecisionTaskScheduled event
+I agree that timer cancellation and subsequent scheduling should be allowed in the same decision. If it fails then it is not consistent and should be fixed.
+
+As far as not scheduling decision on activity start I agree that it is not consistent with the child workflow start and should be made configurable when activity or child workflow is scheduled. In most cases activity invoker doesn't care if it was started, but child workflow creator frequently cares about it as it cannot send signals to it before it is actually started.
+
+Unfortunately I don't think these issues would be ever fixed in the SWF API as I didn't see any changes to SWF for the last few years."
+Amazon Simple Workflow Service	"Limit workers to run one activity at a time
+Hello,
+
+Is it possible to limit an activity worker to run only one activity at a time? Even if it's possible for a worker to run two or more activities simultaneously, I would like to limit it to only one at a time.
+
+Thanks,"
+Amazon Simple Workflow Service	"Re: Limit workers to run one activity at a time
+I assume that you are asking about Java AWS Flow Framework. Set ActivityWorker.TaskExecutorThreadPoolSize property to 1."
+Amazon Simple Workflow Service	"Re: Limit workers to run one activity at a time
+Thank you for your reply. Actually, I use Ruby Framework. I assume it's similar."
+Amazon Simple Workflow Service	"Re: Limit workers to run one activity at a time
+I'm sorry how is it done in Ruby?"
+Amazon Simple Workflow Service	"Re: Limit workers to run one activity at a time
+I'm not familiar with the Ruby framework. You'll have to dig through the code to find it out ."
+Amazon Simple Workflow Service	"Loop in a Decider. Is it allowed?
+Hello everyone,
+
+I have a simple question. Does SWF support iterations (loops)? For example, can I call an activity from inside a While or a For loop? I expected it to run the activity and when is done, it runs it again until the condition is satisfied. However, it acted abnormally. 
+
+Thanks in advance"
+Amazon Simple Workflow Service	"Re: Loop in a Decider. Is it allowed?
+Amazon SWF does not put any restriction about loops. It is down to decider code to implement it.
+
+I'm not sure which client library you're using to program Amazon SWF but if .NET is an option for you than you can look at Guflow: https://github.com/gurmitteotia/guflow , an open source C#.net libary (I'm the author of this library).
+
+It easily lets you reschedule the activities, lambdas. Here are some examples:
+
+Recurrent workflow: https://github.com/gurmitteotia/guflow-samples/blob/master/RecurrentScheduling/ProcessLogWorkflow.cs
+Loop through multiple steps, not just a single activity: https://github.com/gurmitteotia/guflow-samples/blob/master/LoopSupport/ProcessLogWorkflow.cs
+
+However if you're programming in Java or Ruby then AWS flow framework is you best bet. I do not know much about AWS flow framework but I'm sure someone else will be able to help you out.
+
+Gurmit
+
+Edited by: Gurmit S. on Sep 24, 2018 1:43 AM"
+Amazon Simple Workflow Service	"Re: Loop in a Decider. Is it allowed?
+It depends on a client side framework. The Ruby library does allow it. The AWS Flow Framework for Java is fully asynchronous so looping over an activity invocation requires a recursive call instead of a loop.
+
+The Cadence  https://github.com/uber/cadence-java-client (open source version of SWF) client is synchronous and you can call an activity from a loop without problem."
+Amazon Simple Workflow Service	"New version of Guflow now fully supports scheduling of AWS lambda functions
+A new version of Guflow, an open source C#.Net library, is released and it now fully supports the scheduling of AWS lambda functions. You will find Guflow, built on Amazon SWF, to be an alternative to Amazon Step Functions and the FlowFramework. It is hosted on github: https://github.com/gurmitteotia/guflow.
+
+Here is a simple Iterator example to compare:
+  1. Amazon Step Functions took approx 41 lines to implement.  https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-create-iterate-pattern-section.html
+  2. Guflow took 5 lines to implement. https://github.com/gurmitteotia/guflow-samples/blob/master/StepFunctions/Iterator/ProcessLogWorkflow.cs
+
+Some of other interesting examples:
+1. Pause workflow and usage of signals. https://github.com/gurmitteotia/guflow-samples/blob/master/Signal/OrderWorkflow.cs
+2. A close to production grade video transcoding workflow with following features-https://github.com/gurmitteotia/guflow-samples/blob/master/VideoTranscoding/TranscodeWorkflow.cs
+	- Parallel branches
+        - Retry on errors
+        - Task routing
+        - Elasticity - restart the workflow on timeouts	
+
+Guflow brings both simplicity and flexibility in one place. Some of the highlights are:
+ - Guflow lets you make use of all SWF features*.
+ - Allows to schedule Lambdas, Activities and Timers seamlessly.
+ - Allows parallel branches in the workflow.
+
+*Support for child workflows coming next.
+Guflow is supported by documentation, tutorials and examples.
+
+Any feedback from the community will help greatly in improving this library."
+Amazon Simple Workflow Service	"curl commands fail with UnknownOperationException
+I'm trying to integrate a bash script with SWF and whatever I do, I can't get curl to get SWF to do anything interesting; it always returns this little JSON fragment in a 200 OK response:
+
+ {""Output"":{""__type"":""com.amazon.coral.service#UnknownOperationException"",
+""message"":null},""Version"":""1.0""}
+
+
+It's not documented, and I'm not even sure if the signature is correct.  If I add the Content-Encoding request header (aws-1.0) (and sign it) the response turns into a 400 Bad Request, and the following JSON:
+
+{""__type"":""com.amazon.coral.service#InvalidSignatureException"",
+""message"":""The request signature we calculated does not match the signature
+ you provided. Check your AWS Secret Access Key and signing method. Consult
+ the service documentation for details.""}
+
+
+The documentation lists ""Common Query Parameters"" and ""Request Parameters"" but they are seemingly not really HTTP query parameters.  Should they be part of the payload or some magic X-Amz header?
+
+Use of security tokens seems optional, but most example code I see use security tokens; are they required?  None of the documentation's examples use them...
+
+The X-Aws-Target request header isn't documented anywhere other than in the examples, but this seems to be the only way for the server to know what operation I'm supposed to use.  Or should Action be part of the Json payload (in the documentation, everything is called a ""Request Parameter"").
+
+Can I use request parameters (i.e. the query string?)
+
+Finally, could you make a quick example of how to make a curl request from the command line?  The signature I can work out, but j"
+Amazon Simple Workflow Service	"Re: curl commands fail with UnknownOperationException
+Did you find the section in the developer guide?  The most interesting bits would be in ""Making HTTP Requests to the Amazon Simple Workflow Service"".  In this section we go into each item that needs to be included in the header, including the x-amz-target entry used to specify the operation that you are calling.  There are also a number of examples of raw POST requests to make calls to the service.  Let me know if this documentation isn't what you are looking for and we'll add more clarifying information."
+Amazon Simple Workflow Service	"Re: curl commands fail with UnknownOperationException
+Hi, Rick!
+
+Yes, I have found the section in the developer guide.  The POST requests here seem to be copied out of some browser (e.g. user agent and Accept headers), and are not the real bits over the wire, since the first line in a POST request should read ""POST / HTTP/1.0"" (but that's nitpicking, I'm not that picky; I understand what's happening here).
+
+Other places in this forum https://forums.aws.amazon.com/thread.jspa?messageID=346850&#346850, people have been told to use different values for X-Amz-Target; which (still) differs from the documentation
+
+The raw POST requests aren't as helpful, since I can't use them to test anything; I can only see that my own requests ""look"" the same, but since the signatures are opaque (by design) and since the web services fail fast (by design) then it's really hard to know what's missing other than by opensouring the code.
+
+An example of how to use curl from a bash script would be really helpful.  I've started on a little ""swf"" command that allows me to hook arbitrary commands and shell scripts as swf activity worker, complete with heartbeating, failure and cancellation handling and so on, and I've punted and used a tiny CLI interface written in Java to get signed messages through.  It would be nice to be able to rely only on curl or wget or something..."
+Amazon Simple Workflow Service	"Re: curl commands fail with UnknownOperationException
+For anyone else who stumbles upon this thread.
+
+As indicated in the above by the original poster there are several errors in the SWF documentation.
+
+1) As indicated in the OP's reference to another thread the doc is incorrect with regard to target strings.
+Documentation is bogus - ""com.amazonaws.swf.service.model.SimpleWorkflowService.DescribeDomain"")
+Correct: ""SimpleWorkflowService.DescribeDomain"")
+
+2) SWF documentation states to use Content-Type: application/json; charset=UTF-8
+    This always gives me the OP's reported error UnknownOperationException
+    My the DynamoDB code used Content-Type: application/x-amz-json-1.0
+    When one uses this content type I stopped seeing the UnknownOperationException and my SWF code started working.
+
+3) As indicated by the OP the SWF is incorrect with regards to the standard HTTP header line.  The SWF documentation incorrectly gives the entire URL which is just silly.
+Correct is: POST / HTTP/1.1
+
+Amazon PLEASE fix the doc.  Item 1) was posted by an AMZN AWS support developer and the yet the online SWF is still bogus."
+Amazon Simple Workflow Service	"Re: curl commands fail with UnknownOperationException
+I'm experiencing the same issue using Postman on any AWS API. For now I am using AWS Cognito IDP. I set the following conditions in Postman (note, Postman correctly supports Amazon Signature V4 out of the box):
+
+URL:https://cognito-idp.eu-west-1.amazonaws.com
+Method: POST
+Header: Host, Value: cognito-idp.eu-west-1.amazonaws.com (Set by Postman)
+Header: Content-Length, value: 18
+Header: X-Amz-Date, value: calculated by Postman
+Header: Authorization, value: calculated by Postman
+Header: Version, value: 2014-06-30
+Header: Action, value: ListIdentityPools
+Header: X-AMZ-TARGET, value: com.amazonaws.cognito.identity.model.AWSCognitoIdentityService.ListIdentityPools
+Header: Content-Type, value: application/json
+Body: {""MaxResults"":20}
+
+And get a response code 200 OK with payload:
+{
+    ""Output"": {
+        ""__type"": ""com.amazon.coral.service#UnknownOperationException"",
+        ""message"": null
+    },
+    ""Version"": ""1.0""
+}
+
+
+If I use the aws cli with the same access and secret used in Postman, I have no problems at all.
+Ultimately, I will build these HTTP requests into an automated integration, so cli is not an option really.
+
+Hints welcomed.
+
+Thank you.
+
+p.s. I tried the same request with an invalid access key and secret and get the same response, so it seems that it is something before the actual API that is returning this response?
+
+Edited by: StuartB on Jul 3, 2018 6:50 PM"
+Amazon Simple Workflow Service	"Workflow version not getting updated
+I'm going through the FlowFramework tutorial and have reached the HelloWorldWorkflowAsync section (https://docs.aws.amazon.com/amazonswf/latest/awsflowguide/getting-started-example-helloworldworkflowasync.html). I've updated the version throughout my code to 2.0, but when I start GreeterMain version 1.0 keeps appearing in the SWF console."
+Amazon Simple Workflow Service	"Re: Workflow version not getting updated
+The workflow registration is immutable. So updating the registration annotations is not going to change the registered values. You have to also bump the version to force the new registration."
+Amazon Simple Workflow Service	"Re: Workflow version not getting updated
+How would I ""bump the version"" to force the starter to use the new version?
+
+I would expect the (@Execute(version = ""2.0"")) in the GreeterWorkflow to do the trick, but your post implies there's more than just the annotation?
+
+@Workflow
+@WorkflowRegistrationOptions(defaultExecutionStartToCloseTimeoutSeconds = 3600)
+public interface GreeterWorkflow {
+
+   @Execute(version = ""2.0"")
+   public void greet();
+}"
+Amazon Simple Workflow Service	"Re: Workflow version not getting updated
+Changing version in @Execute is enough."
+Amazon Simple Workflow Service	"Leaving the Activity Worker run forever causing an SocketTimeOut Exception
+Our workflow needs to run forever with a frequency of once in a day. Hence Both the Workflow worker process and Activity Worker Processes are left to run forever. Since the Workers will be left running forever I am receiving read Timeout exception from both Activity Worker and Workflow worker
+
+Questions
+What is this exception about and how can I leave the Workers to run forever without causing these exceptions ?
+
+Few other related questions
+What is the best way to design workflows which should be left to run forever once in a day. I see 2 approaches
+Approach #1 Implement the Periodic Workflows using SWF framework to run at a frequency of once in a day for ever. Start all the worker processes (Both the Activity Workers and Workflow Worker) once from the bash shell and leave them to run forever and keep monitoring from SWF Console.
+Approach #2 Implement the Workflow to run only once after it gets started(non periodic Workflows). Create a Cron Job which gets scheduled once in a day. After Cron gets scheduled start all Worker Processes (both Workflow and Activity Workers) from within the cron job to start in their respective machines. Then start the workflow. If we go with this approach who should take care of shutting down Activity Workers and Workflow workers after they are completed (with loose coupling on the number of Worker processes)
+
+Exception from Workflow Worker
+2017-01-14 11:35:48,523 [SWF Decider companyidreminderworkflowlist 1] INFO  com.amazonaws.http.AmazonHttpClien
+	t- Unable to execute HTTP request: Read timed out
+	java.net.SocketTimeoutException: Read timed out
+	        at java.net.SocketInputStream.socketRead0(Native Method)
+	        at java.net.SocketInputStream.read(SocketInputStream.java:152)
+	        at java.net.SocketInputStream.read(SocketInputStream.java:122)
+	        at sun.security.ssl.InputRecord.readFully(InputRecord.java:442)
+	        at sun.security.ssl.InputRecord.read(InputRecord.java:480)
+	        at sun.security.ssl.SSLSocketImpl.readRecord(SSLSocketImpl.java:934)
+	        at sun.security.ssl.SSLSocketImpl.readDataRecord(SSLSocketImpl.java:891)
+	        at sun.security.ssl.AppInputStream.read(AppInputStream.java:102)
+	        at org.apache.http.impl.io.SessionInputBufferImpl.streamRead(SessionInputBufferImpl.java:139)
+	        at org.apache.http.impl.io.SessionInputBufferImpl.fillBuffer(SessionInputBufferImpl.java:155)
+	        at org.apache.http.impl.io.SessionInputBufferImpl.readLine(SessionInputBufferImpl.java:284)
+	        at org.apache.http.impl.conn.DefaultHttpResponseParser.parseHead(DefaultHttpResponseParser.java:140)
+	        at org.apache.http.impl.conn.DefaultHttpResponseParser.parseHead(DefaultHttpResponseParser.java:57)
+	        at org.apache.http.impl.io.AbstractMessageParser.parse(AbstractMessageParser.java:261)
+	        at org.apache.http.impl.DefaultBHttpClientConnection.receiveResponseHeader(DefaultBHttpClientConnectio
+	n.java:165)
+
+
+Exception from Activity Worker
+2017-01-15 14:34:16,564 [SWF Activity Poll sendreminderlist 1] INFO  com.amazonaws.http.AmazonHttpClient- Unable to execute HTTP request: Read timed out
+	java.net.SocketTimeoutException: Read timed out
+		at java.net.SocketInputStream.socketRead0(Native Method)
+		at java.net.SocketInputStream.read(SocketInputStream.java:152)
+		at java.net.SocketInputStream.read(SocketInputStream.java:122)
+		at sun.security.ssl.InputRecord.readFully(InputRecord.java:442)
+		at sun.security.ssl.InputRecord.read(InputRecord.java:480)
+		at sun.security.ssl.SSLSocketImpl.readRecord(SSLSocketImpl.java:934)
+		at sun.security.ssl.SSLSocketImpl.readDataRecord(SSLSocketImpl.java:891)
+		at sun.security.ssl.AppInputStream.read(AppInputStream.java:102)
+		at org.apache.http.impl.io.SessionInputBufferImpl.streamRead(SessionInputBufferImpl.java:139)
+		at org.apache.http.impl.io.SessionInputBufferImpl.fillBuffer(SessionInputBufferImpl.java:155)
+		at org.apache.http.impl.io.SessionInputBufferImpl.readLine(SessionInputBufferImpl.java:284)
+		at org.apache.http.impl.conn.DefaultHttpResponseParser.parseHead(DefaultHttpResponseParser.java:140)
+		at org.apache.http.impl.conn.DefaultHttpResponseParser.parseHead(DefaultHttpResponseParser.java:57)
+		at org.apache.http.impl.io.AbstractMessageParser.parse(AbstractMessageParser.java:261)
+		at org.apache.http.impl.DefaultBHttpClientConnection.receiveResponseHeader(DefaultBHttpClientConnection.java:165)
+		at org.apache.http.impl.conn.CPoolProxy.receiveResponseHeader(CPoolProxy.java:167)
+		at org.apache.http.protocol.HttpRequestExecutor.doReceiveResponse(HttpRequestExecutor.java:272)
+		at com.amazonaws.http.protocol.SdkHttpRequestExecutor.doReceiveResponse(SdkHttpRequestExecutor.java:82)
+		at org.apache.http.protocol.HttpRequestExecutor.execute(HttpRequestExecutor.java:124)
+		at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:271)
+		at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:184)
+		at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:184)
+		at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:82)
+		at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:55)
+		at com.amazonaws.http.apache.client.impl.SdkHttpClient.execute(SdkHttpClient.java:72)
+		at com.amazonaws.http.AmazonHttpClient.executeOneRequest(AmazonHttpClient.java:880)
+		at com.amazonaws.http.AmazonHttpClient.executeHelper(AmazonHttpClient.java:723)
+		at com.amazonaws.http.AmazonHttpClient.doExecute(AmazonHttpClient.java:475)
+		at com.amazonaws.http.AmazonHttpClient.executeWithTimer(AmazonHttpClient.java:437)
+		at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:386)
+		at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.doInvoke(AmazonSimpleWorkflowClient.java:3133)
+		at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.invoke(AmazonSimpleWorkflowClient.java:3103)
+		at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.pollForActivityTask(AmazonSimpleWorkflowClient.java:1860)
+		at com.amazonaws.services.simpleworkflow.flow.worker.SynchronousActivityTaskPoller.poll(SynchronousActivityTaskPoller.java:158)
+		at com.amazonaws.services.simpleworkflow.flow.worker.ActivityTaskPoller.pollAndProcessSingleTask(ActivityTaskPoller.java:81)
+		at com.amazonaws.services.simpleworkflow.flow.worker.GenericWorker$PollServiceTask.run(GenericWorker.java:94)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+		at java.lang.Thread.run(Thread.java:745)
+ 
+
+
+Edited by: shamshujjuhah on Jan 15, 2017 1:31 AM"
+Amazon Simple Workflow Service	"Re: Leaving the Activity Worker run forever causing an SocketTimeOut Exception
+It is due to socket timeout being lower that poll timeout. See http://stackoverflow.com/questions/40500888/aws-swf-decider-java-net-sockettimeoutexception-read-timed-out-when-polling/40501614#40501614"
+Amazon Simple Workflow Service	"Re: Leaving the Activity Worker run forever causing an SocketTimeOut Exception
+I had added the below code. Wont this be sufficient ? Anyway I have added this line as well ""config.setSocketTimeout(120 * 1000)""
+
+Present code
+ClientConfiguration config = new ClientConfiguration().withSocketTimeout(120 * 1000);
+
+
+Changed code
+ClientConfiguration config = new ClientConfiguration().withSocketTimeout(120 * 1000);
+config.setSocketTimeout(120 * 1000);
+
+
+Hope this should be fine.
+
+Thanks,
+Shamshujjuhah"
+Amazon Simple Workflow Service	"Re: Leaving the Activity Worker run forever causing an SocketTimeOut Exception
+Can you clarify below related question of mine from different post ?
+
+Link: https://forums.aws.amazon.com/thread.jspa?messageID=761611&#761611 
+
+Thanks,
+shamshujjuhah"
+Amazon Simple Workflow Service	"Re: Leaving the Activity Worker run forever causing an SocketTimeOut Exception
+Now I am receiving the below exception for long running Activity workers.
+How can I get rid of below exception ?
+
+2017-01-16 23:02:45,020 [SWF Activity Poll sendreminderlist 1] INFO  com.amazonaws.http.AmazonHttpClient- Unable to execute HTTP request: Connection reset
+java.net.SocketException: Connection reset
+	at java.net.SocketInputStream.read(SocketInputStream.java:196)
+	at java.net.SocketInputStream.read(SocketInputStream.java:122)
+	at sun.security.ssl.InputRecord.readFully(InputRecord.java:442)
+	at sun.security.ssl.InputRecord.read(InputRecord.java:480)
+	at sun.security.ssl.SSLSocketImpl.readRecord(SSLSocketImpl.java:934)
+	at sun.security.ssl.SSLSocketImpl.readDataRecord(SSLSocketImpl.java:891)
+	at sun.security.ssl.AppInputStream.read(AppInputStream.java:102)
+	at org.apache.http.impl.io.SessionInputBufferImpl.streamRead(SessionInputBufferImpl.java:139)
+	at org.apache.http.impl.io.SessionInputBufferImpl.fillBuffer(SessionInputBufferImpl.java:155)
+	at org.apache.http.impl.io.SessionInputBufferImpl.readLine(SessionInputBufferImpl.java:284)
+	at org.apache.http.impl.conn.DefaultHttpResponseParser.parseHead(DefaultHttpResponseParser.java:140)
+	at org.apache.http.impl.conn.DefaultHttpResponseParser.parseHead(DefaultHttpResponseParser.java:57)
+	at org.apache.http.impl.io.AbstractMessageParser.parse(AbstractMessageParser.java:261)
+	at org.apache.http.impl.DefaultBHttpClientConnection.receiveResponseHeader(DefaultBHttpClientConnection.java:165)
+	at org.apache.http.impl.conn.CPoolProxy.receiveResponseHeader(CPoolProxy.java:167)
+	at org.apache.http.protocol.HttpRequestExecutor.doReceiveResponse(HttpRequestExecutor.java:272)
+	at com.amazonaws.http.protocol.SdkHttpRequestExecutor.doReceiveResponse(SdkHttpRequestExecutor.java:82)
+	at org.apache.http.protocol.HttpRequestExecutor.execute(HttpRequestExecutor.java:124)
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:271)
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:184)
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:184)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:82)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:55)
+	at com.amazonaws.http.apache.client.impl.SdkHttpClient.execute(SdkHttpClient.java:72)
+	at com.amazonaws.http.AmazonHttpClient.executeOneRequest(AmazonHttpClient.java:880)
+	at com.amazonaws.http.AmazonHttpClient.executeHelper(AmazonHttpClient.java:723)
+	at com.amazonaws.http.AmazonHttpClient.doExecute(AmazonHttpClient.java:475)
+	at com.amazonaws.http.AmazonHttpClient.executeWithTimer(AmazonHttpClient.java:437)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:386)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.doInvoke(AmazonSimpleWorkflowClient.java:3133)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.invoke(AmazonSimpleWorkflowClient.java:3103)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.pollForActivityTask(AmazonSimpleWorkflowClient.java:1860)
+	at com.amazonaws.services.simpleworkflow.flow.worker.SynchronousActivityTaskPoller.poll(SynchronousActivityTaskPoller.java:158)
+	at com.amazonaws.services.simpleworkflow.flow.worker.ActivityTaskPoller.pollAndProcessSingleTask(ActivityTaskPoller.java:81)
+	at com.amazonaws.services.simpleworkflow.flow.worker.GenericWorker$PollServiceTask.run(GenericWorker.java:94)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:745)"
+Amazon Simple Workflow Service	"Re: Leaving the Activity Worker run forever causing an SocketTimeOut Exception
+How frequently do you get such error?"
+Amazon Simple Workflow Service	"Re: Leaving the Activity Worker run forever causing an SocketTimeOut Exception
+Can be this the source of the problem?
+
+https://stackoverflow.com/questions/40500888/aws-swf-decider-java-net-sockettimeoutexception-read-timed-out-when-polling/40501614#40501614
+
+The currently default value for Socket Timeout is 50 seconds. The post answer suggests that value to be set to a value greater then 61 seconds."
+Amazon Simple Workflow Service	"Announcing Uber Cadence - open source version of SWF
+We've just released Uber Cadence that is an open source version of AWS SWF.
+Some highlights:
+  * API that is very close to the SWF one (uses Thrift instead of HTTP)
+  * Highly scalable and fault tolerant implementation
+  * Cassandra for persistence
+  * Runs from a Docker container
+  * MIT License
+  * Go client side library based on the same ideas as Flow Framework but with workflows using synchronous blocking code
+
+Contact us if you want to collaborate on its development. We especially interested in contributions of client side libraries in other languages. For example it should be pretty straightforward to port AWS SWF Framework to run on it.
+
+Server repository: https://github.com/uber/cadence
+Go Client repository: https://github.com/uber-go/cadence-client
+API Definition: https://github.com/uber-go/cadence-client/tree/master/idl/github.com/uber/cadence"
+Amazon Simple Workflow Service	"Re: Announcing Uber Cadence - open source version of SWF
+That's awesome news!  Do you have any documented steps for migrating a decider and activities from SWF to cadence?"
+Amazon Simple Workflow Service	"Re: Announcing Uber Cadence - open source version of SWF
+Cadence doesn't have an official Java client yet. It would be pretty straightforward to migrate SWF Flow Framework one to it if there is enough demand."
+Amazon Simple Workflow Service	"Re: Announcing Uber Cadence - open source version of SWF
+I currently use https://github.com/sclasen/swfsm for my deciders and activities.  Currently debating creating a branch of the swfsm framework that works with Cadence, but not sure how well their finite state machine will translate to what Cadence does.
+
+One question about Cadence... Any chance an http interface could still be provided in addition to Thrift?  About half of our activity workers are written in .net core.  There doesn't seem to be good support for Thrift.  This is the only library I found https://github.com/apache/thrift/tree/master/lib/netcore and it doesn't seem to have been updated to recently released versions of .net core.  If http isn't an option, perhaps gRPC?  It would seem to have broader/more recent support than Thrift.  e.g.  https://github.com/neuecc/MagicOnion"
+Amazon Simple Workflow Service	"Re: Announcing Uber Cadence - open source version of SWF
+I believe this was answered in the filed github Issue. For the record we are going to add HTTP endpoint to Cadence in the near future."
+Amazon Simple Workflow Service	"Re: Announcing Uber Cadence - open source version of SWF
+Videos from Cadence meetup:
+
+Writing workflow from scratch: https://www.youtube.com/watch?time_continue=21&v=Nbz6XUBKdbM
+
+Cadence internals: https://www.youtube.com/watch?time_continue=2&v=5M5eiNBUf4Q"
+Amazon Simple Workflow Service	"Re: Announcing Uber Cadence - open source version of SWF
+The Cadence Java Client is almost ready for a production release. Any feedback is appreciated.
+
+The client: https://github.com/uber-java/cadence-client
+The samples: https://github.com/mfateev/uber-java-cadence-samples
+
+The main differences from AWS SWF Flow Framework:
+
+No code generation
+No AspectJ
+Synchronous workflow code execution. Calls to activities and child workflows block.
+As operations are blocking multiple threads per workflow are supported.
+Asynchronous invocation of activities and child workflows returns Promise. The promise has interface similar to CompletableFuture with blocking get() call and asynchronous CompletionStage like APIs.
+An in-memory implementation of the Cadence service for unit testing. Allows fully test your workflows including replay as JUnit tests. The unit test framework skips time when a workflow is sleeping for fast testing of the long running workflows.
+Cadence service in a docker for local integration testing and development.
+
+Here is a complete running sample of a workflow including the code that initializes the worker and starts an execution:
+public class HelloActivity {
+ 
+  static final String TASK_LIST = ""HelloActivity"";
+ 
+  /**
+   *  Workflow interface has to have at least one method annotated with @WorkflowMethod.
+   */
+  public interface GreetingWorkflow {
+    /** @return greeting string */
+    @WorkflowMethod(executionStartToCloseTimeoutSeconds = 10, taskList = TASK_LIST)
+    String getGreeting(String name);
+  }
+ 
+  /** Activity interface is just a POJI. */
+  public interface GreetingActivities {
+    @ActivityMethod(scheduleToCloseTimeoutSeconds = 2)
+    String composeGreeting(String greeting, String name);
+  }
+ 
+  /** GreetingWorkflow implementation that calls GreetingsActivities#composeGreeting. */
+  public static class GreetingWorkflowImpl implements GreetingWorkflow {
+ 
+    /**
+     * Activity stub implements activity interface and proxies calls to it to 
+     * Cadence activity invocations. Because activities are reentrant, 
+     * only a single stub can be used for multiple activity invocations.
+     */
+    private final GreetingActivities activities =
+        Workflow.newActivityStub(GreetingActivities.class);
+ 
+    @Override
+    public String getGreeting(String name) {
+      // This is a blocking call that returns only after the activity has completed.
+      return activities.composeGreeting(""Hello"", name);
+    }
+  }
+ 
+  static class GreetingActivitiesImpl implements GreetingActivities {
+    @Override
+    public String composeGreeting(String greeting, String name) {
+      return greeting + "" "" + name + ""!"";
+    }
+  }
+ 
+  public static void main(String[] args) {
+    // Start a worker that hosts both workflow and activity implementations.
+    Worker worker = new Worker(DOMAIN, TASK_LIST);
+    // Workflows are stateful. So you need a type to create instances.
+    worker.registerWorkflowImplementationTypes(GreetingWorkflowImpl.class);
+    // Activities are stateless and thread safe. So a shared instance is used.
+    worker.registerActivitiesImplementations(new GreetingActivitiesImpl());
+    // Start listening to the workflow and activity task lists.
+    worker.start();
+ 
+    // Start a workflow execution. Usually this is done from another program.
+    WorkflowClient workflowClient = WorkflowClient.newInstance(DOMAIN);
+    // Get a workflow stub using the same task list the worker uses.
+    GreetingWorkflow workflow = workflowClient.newWorkflowStub(GreetingWorkflow.class);
+    // Execute a workflow waiting for it to complete.
+    String greeting = workflow.getGreeting(""World"");
+    System.out.println(greeting);
+    System.exit(0);
+  }
+}"
+Amazon Simple Workflow Service	"Can we pass state build its result with a value from it's input?
+Can we pass state build its result with a value from it's input? for eg.
+{
+""input"": ""mydata""
+}
+
+""passstate"":{ ""Type"": ""Pass"",
+""Result"": ""$.input""
+""ResultPath"": ""$.mynewdata""
+""Next"": ""nextstate""}
+
+In this the result comes back as ""$.input"" and not ""mydata"".
+
+Thanks"
+Amazon Simple Workflow Service	"Re: Can we pass state build its result with a value from it's input?
+Anyone has a solution?"
+Amazon Simple Workflow Service	"Re: Can we pass state build its result with a value from it's input?
+I would recommend asking in the step functions forum: https://forums.aws.amazon.com/forum.jspa?forumID=237&start=0"
+Amazon Simple Workflow Service	"Migrating three tier web application to AWS
+Hi
+
+I would like to know how we can migrate three tier application to AWS  i.e steps needs tobe taken.
+
+Thanks"
+Amazon Simple Workflow Service	"Problem when testing workflow with daemon task
+Hi
+I have an workflow like the one from amazon docs
+
+public class MyWorkflowImpl implements MyWorkflow {
+  MyActivitiesClient activitiesClient = new MyActivitiesClientImpl();
+ 
+  @Override
+  public void startMyWF(int a, String b) {
+    activitiesClient.doUsefulWorkActivity();
+    monitorHealth();
+  }
+ 
+  @Asynchronous(daemon=true)
+  void monitorHealth(Promise<?>... waitFor) {
+    activitiesClient.monitoringActivity();
+  }
+}
+
+the monitorHealth() runs an infinite loop
+public void monitorHealth (...) {
+     ActivityExecutionContext context = contextProvider.getActivityExecutionContext();
+      do {
+            //sleep 1 min
+           ...
+            //print progress
+            ....
+            context.recordActivityHeartbeat(""monitor progress of "" + remaining + "" remaining items"");
+      } while (true);
+}
+
+
+When I run this workflow, everything works fine, when doUsefulWorkActivity() completes, the monitorHealth() is cancelled via the heartbeat mechanism.
+
+When I test this workflow with @RunWith(FlowBlockJUnit4ClassRunner.class)
+ and WorkflowTest,  the monitorHealth() runs forever after the doUsefulWorkActivity() has finished. I did some debugging and noticed that the ActivityExecutionContext used in this context does not implement recordActivityHeartbeat() so that could be the cause. 
+
+How do I test such workflow or what changes should I do to make it testable?
+
+Thanks,
+Dan"
+Amazon Simple Workflow Service	"Lamba functions as deciders
+It seems like it would be really useful to be able to register a lambda function as a decider. They are very fast to execute and this way you wouldn't have to set up a separate container / EC2 instance to poll for decisions.
+
+Are there any plans to add this?"
+Amazon Simple Workflow Service	"Re: Lamba functions as deciders
+I'd like to hear a response on this as well.  Lambda seems to be ideally suited for decider logic; short run execution, needs to be available 24x7 but doesn't consume much CPU time.  This seems far better a fit to the SWF model than the Lambda Tasks.  My tasks typically run for minutes to hours, not for seconds.
+
+Any AWS guys in the audience who can chime in here?"
+Amazon Simple Workflow Service	"Re: Lamba functions as deciders
+Can you elaborate on your ideal vision of the integration a bit more?
+
+Today, you can register a Workflow and Activity type via the console or API and leverage a Lambda function to poll against the appropriate APIs to either make decisions or process activities. Of course, your Lambda has to be invoked. Are you thinking of a long lived type of Lamba that acts as a decider?"
+Amazon Simple Workflow Service	"Re: Lamba functions as deciders
+The problem with using a lambda as a decider currently is that it has to poll. And lambdas will be killed when their timer expires, so you could end up getting killed in the middle of making a decision if the timing was just right.
+
+What I am envisioning is a lambda that does not poll, but instead gets invoked immediately when a decision needs to be made. There would be no polling."
+Amazon Simple Workflow Service	"Re: Lamba functions as deciders
+That sounds great.
+
+I'll pass this onto the engineering and product management teams for further review."
+Amazon Simple Workflow Service	"Re: Lamba functions as deciders
+Any update on that ?:
+
+""...lambda gets invoked immediately when a decision needs to be made. There would be no polling.""
+
+It would be great to use lambda functions as deciders on my current project.
+
+Edited by: alehm7 on Apr 15, 2016 1:35 PM"
+Amazon Simple Workflow Service	"Re: Lamba functions as deciders
+Any update on using Lambda functions as deciders without having to resort to long polling? It seems obvious to do it this way."
+Amazon Simple Workflow Service	"Re: Lamba functions as deciders
+Any update on this ?"
+Amazon Simple Workflow Service	"Re: Lamba functions as deciders
+We're still using SWF for many flows per day.  Having Lambda deciders would simplify our architecture a bit.  Has there been any updates on this request in the last 18 months?  At all?  I know Step Functions got released at re:Invent, but it seems limited in functionality compared to SWF for now.  Specifically, dynamic numbers of activities (tasks?) based on input.  It's the top three forum requests on the Step Functions forum.
+
+Or just hire me and I'll code it for you.  You already have trigger logic to fire Lambda activities.  Firing a Lambda decider should tightly integrate with the framework.  6-8 weeks of development, another 6 weeks of testing, and will be ready for production at this re:Invent.  Hint hint, wink wink, nudge nudge."
+Amazon Simple Workflow Service	"Re: Lamba functions as deciders
++10000"
+Amazon Simple Workflow Service	"Re: Lamba functions as deciders
+Does Amazon even read these forums any more?"
+Amazon Simple Workflow Service	"Re: Lamba functions as deciders
+Apparently not."
+Amazon Simple Workflow Service	"ActivityTaskCompleted not devliered to the decider
+Hi,
+
+We're seeing a weird and hard to reproduce issue - in one of our workflows, things progressed nicely until a whole batch of activity tasks completed, but the decider did not receive any messages about the completion, resulting in the workflow eventually timing out. 
+
+What's happening there, and how can we fix it? 
+
+Thanks,
+
+Ori Pessach"
+Amazon Simple Workflow Service	"Re: ActivityTaskCompleted not devliered to the decider
+Are you sure that activity tasks completion call succeeded?
+Also it looks like you want smaller start to completion (and potentially heartbeat) timeout for these activities."
+Amazon Simple Workflow Service	"Re: ActivityTaskCompleted not devliered to the decider
+Yes, the activity tasks' completion call succeeded for all tasks, as evidenced by our application log and by the fact that the ActivityTaskCompleted events appear in the workflow's event history as exepcted.
+
+The timeouts are set appropriately for the tasks, and the tasks don't time out - the complete successfully. 
+
+The problem is that the events are never seen by the decider - only for this one workflow (that we were able to catch.) There might have been other cases when this happened - this is just the one where we have the diagnostic trail to allow us to investigate the issue. 
+
+Ori"
+Amazon Simple Workflow Service	"Re: ActivityTaskCompleted not devliered to the decider
+I see. So events are in the history. Would you define what does ""never seen by the decider"" mean? Does it mean that decision task is never generated when they are received or that decider doesn't make forward progress when processing correspondent decision task? 
+Are you using Java AWS Flow Framework or some other way to write deciders?"
+Amazon Simple Workflow Service	"Re: ActivityTaskCompleted not devliered to the decider
+I'm using python and boto3.
+
+The decider never received the decision tasks. It does for other workflows and it's otherwise working fine."
+Amazon Simple Workflow Service	"Re: ActivityTaskCompleted not devliered to the decider
+Was decision task scheduled? Or was it started, but never received? If the latter then make sure that decision task timeout is set to some low value (let's say 10 seconds) for decision task to be retried."
+Amazon Simple Workflow Service	"Re: ActivityTaskCompleted not devliered to the decider
+Just to clarify. It is possible that decision task is lost in transit after DecisionTaskStartedEvent is written to the history. When decision task timeout is small it doesn't cause any issues for running workflows as it is retried."
+Amazon Simple Workflow Service	"Re: ActivityTaskCompleted not devliered to the decider
+Just to clarify on my end - a DecisionTaskStartedEvent event is never written to the history. The last thing in the history is an ActivityTaskCompleted event, and then nothing until the workflow times out.
+
+Here are the last events in the history:
+
+Mon Feb 05 21:16:52 GMT-700 2018 95 WorkflowExecutionTimedOut
+Mon Feb 05 15:48:22 GMT-700 2018 94 ActivityTaskCompleted
+Mon Feb 05 15:48:14 GMT-700 2018 93 ActivityTaskCompleted
+Mon Feb 05 15:48:13 GMT-700 2018 92 ActivityTaskCompleted
+Mon Feb 05 15:48:11 GMT-700 2018 91 ActivityTaskCompleted
+Mon Feb 05 15:47:42 GMT-700 2018 90 ActivityTaskCompleted
+Mon Feb 05 15:47:35 GMT-700 2018 89 ActivityTaskCompleted
+Mon Feb 05 15:47:29 GMT-700 2018 88 ActivityTaskCompleted
+Mon Feb 05 15:47:19 GMT-700 2018 87 ActivityTaskCompleted
+Mon Feb 05 15:47:19 GMT-700 2018 86 ActivityTaskCompleted
+Mon Feb 05 15:47:12 GMT-700 2018 85 ActivityTaskCompleted
+Mon Feb 05 15:47:03 GMT-700 2018 84 ActivityTaskCompleted
+Mon Feb 05 15:46:59 GMT-700 2018 83 ActivityTaskCompleted
+Mon Feb 05 15:46:56 GMT-700 2018 82 ActivityTaskCompleted
+Mon Feb 05 15:46:42 GMT-700 2018 81 ActivityTaskCompleted
+Mon Feb 05 15:46:36 GMT-700 2018 80 ActivityTaskCompleted
+Mon Feb 05 15:46:33 GMT-700 2018 79 ActivityTaskCompleted
+Mon Feb 05 15:46:33 GMT-700 2018 78 ActivityTaskStarted
+
+I can't think of anything we can do on our end to fix this.  Doesn't look like setting a timeout on decision tasks will help, since decision tasks aren't being scheduled.
+
+Edited by: OriPessach on Feb 7, 2018 8:22 AM"
+Amazon Simple Workflow Service	"Re: ActivityTaskCompleted not devliered to the decider
+It indeed looks like a serious server side bug. Contacting AWS support is the best option for this one.
+
+Shameless plug:
+You might consider switching to Cadence (https://github.com/uber/cadence) which is open source alternative of SWF I'm working on right now. It already has a lot of features that SWF lacks and much more timely support .
+
+Edited by: Maxim Fateev on Feb 7, 2018 10:40 AM"
+Amazon Simple Workflow Service	"Re: ActivityTaskCompleted not devliered to the decider
+Could you give more info about the history? DecisionTaskStarted is not written, what about DecisionTaskScheduled?"
+Amazon Simple Workflow Service	"Re: ActivityTaskCompleted not devliered to the decider
+Some more digging in our application logs suggests that it might actually be a bug on our end, but I'm still investigating. I'd like to either find the bug or rule it out before blaming a server bug."
+Amazon Simple Workflow Service	"Announcing open source .NET library to program Amazon SWF
+I have created an open source .NET library -Guflow: https://github.com/gurmitteotia/guflow  to program Amazon SWF.  Some of the main features are:
+
+
+Simplify the writing of complex workflows
+Provide equal supports for scheduling the activities written in other framework/language
+Supports async/sync activity method
+Supports activity throttling and cancellation
+Use async task for polling for new decisions and activity tasks
+Supports parallel execution of activities and branches in workflow
+Supported by behavioural unit tests and continously released.
+
+
+Guflow is supported by-
+documentation  https://github.com/gurmitteotia/guflow/wiki , 
+tutorial https://github.com/gurmitteotia/guflow/wiki/Tutorial
+samples https://github.com/gurmitteotia/guflow-samples."
+Amazon Simple Workflow Service	"Re: Announcing open source .NET library to program Amazon SWF
+Nice,
+Have you considered porting your library to Cadence?
+
+https://github.com/uber/cadence"
+Amazon Simple Workflow Service	"Re: Announcing open source .NET library to program Amazon SWF
+That is interesting. I quite like to explore sometime later however at the moment I will focus on implementing the remaining SWF features.
+Good to know about alternatives."
+Amazon Simple Workflow Service	"Complex workflow
+Hello,
+
+We are designing a workflow for the following:
+1. a long running task executing external process generates many(maybe in thousands) output files
+2. each the output files needs to be processed by 2-4 additional steps
+3. the number of concurrent files being processed in 2. needs to be limited to 4-6. 
+4. step 2. should be started as soon as an output file if generated (the workflow watches stdout of running process and knows a new file is generated) subject to 3.
+
+My understanding is the following limits affect the decision:
+no more than 100 activities scheduled in single decision
+no more than 1000 open activity tasks
+
+What is best approach to implement this?"
+Amazon Simple Workflow Service	"Re: Complex workflow
+I would implement it as two types of workflows. The first would control the long running task. This task would heartbeat back to the workflow and include its progress into the heartbeat message. If it fails the workflow gets an exception that contains the progress and restarts the task passing it as a parameter. This way it continues since the last progress.
+
+The second type of the workflow would control processing the files. There are various ways to ensure that no more than 6 of the files are processed at the same time. Is this 6 limit per box or global across all workers?"
+Amazon Simple Workflow Service	"Re: Complex workflow
+Maxim,
+
+Thank you for the response. 
+Do you the file processing workflows to be started by the long running activity as independent workflow (as opposed to child workflow)? 
+I believe since we have limit of 1000 child WFs per execution, we have to start them as independent WFs and implement some mechanism of completion watch
+
+Thank you"
+Amazon Simple Workflow Service	"Re: Complex workflow
+It depends, if you are not starting all the 1000 workflows at the same time then the limit doesn't apply. But in your case I think using independent workflows would be simpler."
+Amazon Simple Workflow Service	"Re: Complex workflow
+Thank you, Maxim!
+
+We ended up implementing it as independent WFs (not child) and an activity in main WF is controlled by heartbeat and periodically reads DB that is updated by ""child"" WFs
+
+Thank you,
+Akbar"
+Amazon Simple Workflow Service	"Activity Worker instance (poll) associated with concrete workflow execution
+Greetings,
+I'm not sure if the subject of this topic rings any bell, so I'll start by giving a little info about how my current SWF solution works. I'm using web api for triggering SWF Workflow. When I call a concrete endpoint of this web api, I call SWF to start a workflow execution. If the workflow was launched successfully, I create a thread in a fire-and-forget manner. Inside of this thread, I launch one instance of Decider and Activity Worker, both in a while loop making a poll and doing their stuff. When Decider finishes its work, it informs the thread to clean up and close itself. Works good, but...
+
+when I launch workflow concurrently, Activity Worker sometimes fetches work that was created by a Decider from a different thread. So what I want to achieve is that Decider and Activity Worker that work in the same thread will always do their job within the scope of one, the same Workflow execution.
+
+So my first thought is to make a Decider skip its work (redo a poll) until the poll response has the same execution workflow id with the one that actually started the Decider. Any help or advice will be appreciated.
+
+Thanks,
+JCzerniakiev"
+Amazon Simple Workflow Service	"Re: Activity Worker instance (poll) associated with concrete workflow execution
+Just use different task list for both decision and activity tasks for each thread."
+Amazon Simple Workflow Service	"Re: Activity Worker instance (poll) associated with concrete workflow execution
+Hi Maxim,
+You are of course right. One important detail that I forgot to read... Thanks.
+
+With regards,
+JCzerniakiev"
+Amazon Simple Workflow Service	"Re: Activity Worker instance (poll) associated with concrete workflow execution
+Just out of curiosity. Could you explain why do you create workers per request instead of just running a single activity and decider worker per process?"
+Amazon Simple Workflow Service	"UnrecognizedClientException: security token included is invalid
+I am trying to register a SWF Domain using API gateway calls through an iOS Device using swift. First i am acquiring the temporary access key, secretKey and sessionKey from Amazon Cognito. Then I am using these values to create the request. But I am getting the following error in response.
+
+{
+    ""__type"" = ""com.amazon.coral.service#UnrecognizedClientException"";
+    message = ""The security token included in the request is invalid"";
+}
+ 
+
+This is the String to sign that i am using to create the signature:
+POST
+/ 
+ 
+content-encoding:amz-1.0
+host:swf.us-west-2.amazonaws.com
+x-amz-date:Fri, 29 Dec 2017 22:01:09 GMT
+x-amz-target:com.amazonaws.swf.service.model.SimpleWorkflowService.RegisterDomain
+ 
+{""name"": ""867530902"",""description"": ""music"",""workflowExecutionRetentionPeriodInDays"": ""60""}
+
+
+These are the headers that I am passing : 
+[
+     ""Content-Type"": ""application/json; charset=UTF-8"", 
+     ""Host"": ""swf.us-west-2.amazonaws.com"", 
+     ""X-Amz-Target"": ""com.amazonaws.swf.service.model.SimpleWorkflowService.RegisterDomain"",
+     ""X-Amz-Date"": ""Fri, 29 Dec 2017 22:01:09 GMT"", 
+     ""Content-Encoding"": ""amz-1.0"", 
+     ""X-Amzn-Authorization"": ""AWS3  AWSAccessKeyId=ASIAJOMSLML2YH77E5DQ, Algorithm=HmacSHA256, SignedHeaders=Content-Encoding;Host;X-Amz-Date;X-Amz-Target, Signature=wau9hcyGaVWF0YnxkHgfk0GSwT98Ym9538N8aLGkNeg=""
+]
+
+
+The following are the url and the request body for the POST request : 
+URL : https://swf.us-west-2.amazonaws.com/
+Request body : 
+{""name"": ""867530902"",""description"": ""music"",""workflowExecutionRetentionPeriodInDays"": ""60""}
+
+
+Documentation Reference : http://docs.aws.amazon.com/amazonswf/latest/developerguide/UsingJSON-swf.html
+
+P.S. I also tried sending the session token in ""X-Amz-Security-Token"" header (both as signed header and not signed header) in which I get the following error : 
+{
+    ""__type"" = ""com.amazon.coral.service#InvalidSignatureException"";
+    message = ""The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. Consult the service documentation for details."";
+}"
+Amazon Simple Workflow Service	"Re: UnrecognizedClientException: security token included is invalid
+Use the examples listed here to verify your signature code is computing the correct signatures for the examples.
+
+https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html"
+Amazon Simple Workflow Service	"Pool Specific Task/Get List of tasks
+Hello,
+
+In my use case, multiple activities can be scheduled for a worker. However, the worker has the ability of getting a specific one, and work on it. Basically, like a task scheduler. This is still  in the context of a workflow, so I still need a decider, and assign one task to one worker only, and all of the other SWF features.
+
+I read the API, and I don't see a way to get a ""list of scheduled activity tasks"" for a specific tasklist (in my use case or idea, I was thinking to create 1 tasklist = 1 specific human worker)
+
+We assign task to specific workers (human workers), based on who started the workflow (with a target human Id), and they work on them based on their preference, **there's no priority nor FIFO**. We need to get a list for them (required).
+
+Is there a way for me to do that? I could, schedule an activity (respond with decision), pool all activities  (get the task tokens), analyze the task(s), see who's the target worker (which human, based on input), and then create my own ""pending task list tokens"" and maintain these ""pending tasks"" somewhere else. So, when a human respond for a task, the decider will go there and remove the task from the list. It could more less work, but I'd like to know if there's something I'm missing here.
+
+My problem with that, is, that I need to maintain certain status outside SWF, I also, can't control timeouts. As, upon pollTask(), for SWF, the task is being worked on (dispatched to worker, even tho, in reality, we are most likely waiting for a human to get the task, and work on it). Among other concerns.
+
+Another Idea I had it  to get current running workflows ListOpenWorkflowExecutions, get the history GetWorkflowExecutionHistory, get the scheduled tasks and tokens... but I don't see the task tokens there, so even if the task is pending, I don't really have a way to maintain my list.
+
+Is there something I'm missing here? Perhaps, this is not the right tool for my problem?
+Appreciated any input or reference posts
+
+Edited by: ITTOFR on Dec 21, 2017 9:16 AM
+
+Edited by: ITTOFR on Dec 21, 2017 9:32 AM"
+Amazon Simple Workflow Service	"Re: Pool Specific Task/Get List of tasks
+The current SWF API does not support such use case directly. The standard solution is to have a separate data store that keeps ""human tasks"" and implements different ways to index them. 
+Then the workflow uses multiple activities to update this data store. Also it is expected that this datastore is not updated directly from UI, but on every action a signal is sent to  a workflow which in turn dispatches an activity to update task data. This way race conditions on updating multiple data stores is eliminated. Also multiple activities can be used to update data store: insert task, update task, cancel task, etc."
+Amazon Simple Workflow Service	"Re: Pool Specific Task/Get List of tasks
+Thanks. This is what I imagined, as I couldn't find any way to perform this. Thanks for the insight, what you recommended about updating tasks thru SWF and not directly, I'll take a look into that way of architecting my use case."
+Amazon Simple Workflow Service	"SWF's ""workflow"" scope not working
+I implemented the SWF using spring in the same way as in the link below
+https://github.com/sprylab/aws-swf-spring-demo/blob/master/src/main/java/com/sprylab/aws/swf/AppConfiguration.java
+
+I implemented the Workflow in the way given in the below link.
+https://github.com/ralph-tice/AWSFlowRecipes/blob/master/src/com/amazonaws/services/simpleworkflow/flow/recipes/waitforsignal/WaitForSignalWorkflowImpl.java
+
+I'm able to run the workflow too. But the only problem is, the same instance of WorkflowImpl is fetched for all the workflow executions.
+The issue is more amplified in case of signals implementation as I have a settable object and its status is always in Ready state.
+
+Can anyone please help me identify what is that I'm doing wrong here."
+Amazon Simple Workflow Service	"Cannot unchain from a value which is ready
+I have a workflow (using Java) with multiple TryCatchFinaly's and sometimes I'm getting ""Cannot unchain from a value which is ready"" exception even when no error occurred (all activities completed successfully).
+
+I do have the exception being rethrown in the doCatch and some activites executing from doFinally. 
+Is it a valid approach?
+
+What possible reasons for the exception?
+What is best practice to implement multi-level exception handling?"
+Amazon Simple Workflow Service	"Re: Cannot unchain from a value which is ready
+You probably want to protect unchain calls with:
+if (!v.isReady()) {
+    v.unchain();
+}"
+Amazon Simple Workflow Service	"Re: Cannot unchain from a value which is ready
+Maxim, thank you for the response.
+
+However, the issue is that I do not call unchain directly.  It is being called by flow framework's TryCatchFinally"
+Amazon Simple Workflow Service	"Re: Cannot unchain from a value which is ready
+I see. Do you have a unit test that reproduces the problem? In retrospect unchaining shouldn't really fail in this case. Or it should have an option to not fail when called on cleanup."
+Amazon Simple Workflow Service	"Re: Cannot unchain from a value which is ready
+Maxim,
+
+The following is my simplified WF class (could not attach source) . If I I remove remove the rethrowing statement from doCatch, I do not get ""unchain"" errors, but the problem with that approach is that I loose workflow retries  and (this is not that important maybe) the parent WF gets no exception (we are calling this WF as a child from another WF).  
+
+Any suggestions ? Thank you
+=====================
+package com.example.test;
+
+import com.amazonaws.services.simpleworkflow.flow.annotations.Asynchronous;
+import com.amazonaws.services.simpleworkflow.flow.annotations.ExponentialRetry;
+import com.amazonaws.services.simpleworkflow.flow.annotations.NoWait;
+import com.amazonaws.services.simpleworkflow.flow.core.Promise;
+import com.amazonaws.services.simpleworkflow.flow.core.Settable;
+import com.amazonaws.services.simpleworkflow.flow.core.TryCatchFinally;
+
+public class TestWFImpl implements TestWF {
+	private TestActivitiesClient activities = null;
+	@Override
+	@ExponentialRetry(initialRetryIntervalSeconds = 5,maximumAttempts = 3, excludeExceptions = TestException.class)
+	public Promise<String> process() {
+		final Settable<String> result = new Settable<String>();
+		new TryCatchFinally() {
+
+			@Override
+			protected void doTry() throws Throwable {
+				activities = new TestActivitiesClientImpl(); 
+				Promise<String> res = activities.getResult(42); 
+				setResult(result, res);
+			}
+
+			@Override
+			protected void doCatch(Throwable e) throws Throwable {
+				if(e instanceof TestException){
+					String msg = e.getMessage();
+					setResult(result, Promise.asPromise(msg));
+				}
+				else
+					throw e;
+
+			}
+
+			@Override
+			protected void doFinally() throws Throwable {
+				String res = ""ERROR"";
+				setResult(result, Promise.asPromise(res));
+				if(activities != null)
+					activities.cleanup();
+			}
+
+		};
+
+		return result;
+	}
+
+
+
+	@Asynchronous
+	private void setResult(@NoWait Settable<String> result, Promise<String> res){
+		if(!result.isReady())
+			result.set(res.get());
+	}
+
+}"
+Amazon Simple Workflow Service	"Re: Cannot unchain from a value which is ready
+Could you post the stack trace of unchain failure?
+BTW your setResult method is exactly what chaining provides:
+
+     Promise<String> res = activities.getResult(42);
+     setResult(result, res)
+
+    is the same as 
+     Promise<String> res = activities.getResult(42);
+    result.chain(res);
+
+or shorter
+     result.chain(activities.getResult(42));
+
+
+Edited by: Maxim Fateev on Dec 7, 2017 5:01 PM"
+Amazon Simple Workflow Service	"Re: Cannot unchain from a value which is ready
+Solved! Removing the setResult call in doFinally resolved the issue, though I the reason is not clear to me. 
+
+The following is the stacktrace as reported by SWF console. Here getResult throws exception. After third time (activity retry is set to 3) I get the following stacktrace in WorkflowExecutionFailed event.
+
+So I consider the issue to be resolved, but it would be interesting to understand the reason for the the error.
+Thank you for pointing to the use of chain, I'll use it instead of my ""construct"" 
+
+Thank you a lot, Maxim!
+============
+[""java.lang.IllegalStateException"",{""cause"":null,""stackTrace"":,""localizedMessage"":""Cannot unchain from a value which is ready"",""message"":""Cannot unchain from a value which is ready"",""suppressed"":[""]}]
+Event Timestamp	Friday, December 8, 2017 8:24:16 AM UTC-6
+Reason	Cannot unchain from a value which is ready"
+Amazon Simple Workflow Service	"Re: Cannot unchain from a value which is ready
+I'm not sure if you can see the full stack. I can see it only when editing. 
+In view mode it gets somehow condensed"
+Amazon Simple Workflow Service	"Re: Cannot unchain from a value which is ready
+I cannot see it. Try surrounding it with {code} tags."
+Amazon Simple Workflow Service	"Flow Framework : Data Converter Issue
+I was trying out Simple Workflow Service to move some of offline jobs. And we do use our custom Jackson Serializers for our  fields in the Pojos. 
+
+Hence when i used the Simple Workflow Service with Default JsonConverter, it failed with exception:
+
+{""stackTrace"":{""methodName"":""invoke0"",""fileName"":""NativeMethodAccessorImpl.java"",""lineNumber"":-2,""className"":""sun.reflect.NativeMethodAccessorImpl"",""nativeMethod"":true},{""methodName"":""invoke"",""fileName"":""NativeMethodAccessorImpl.java"",""lineNumber"":62,""className"":""sun.reflect.NativeMethodAccessorImpl"",""nativeMethod"":false},{""methodName"":""invoke"",""fileName"":""DelegatingMethodAccessorImpl.java"",""lineNumber"":43,""className"":""sun.reflect.DelegatingMethodAccessorImpl"",""nativeMethod"":false},{""methodName"":""invoke"",""fileName"":""Method.java"",""lineNumber"":497,""className"":""java.lang.reflect.Method"",""nativeMethod"":false},{""methodName"":""invokeMethod"",""fileName"":""POJOWorkflowDefinition.java"",""lineNumber"":150,""className"":""com.amazonaws.services.simpleworkflow.flow.pojo.POJOWorkflowDefinition"",""nativeMethod"":false},{""methodName"":""access$1"",""fileName"":""POJOWorkflowDefinition.java"",""lineNumber"":148,""className"":""com.amazonaws.services.simpleworkflow.flow.pojo.POJOWorkflowDefinition"",""nativeMethod"":false},{""methodName"":""doTry"",""fileName"":""POJOWorkflowDefinition.java"",""lineNumber"":76,""className"":""com.amazonaws.services.simpleworkflow.flow.pojo.POJOWorkflowDefinition$1"",""nativeMethod"":false},{""lineNumber"":0,""className"":""--- continuation ---"",""nativeMethod"":false},{""methodName"":""execute"",""fileName"":""POJOWorkflowDefinition.java"",""lineNumber"":66,""className"":""com.amazonaws.services.simpleworkflow.flow.pojo.POJOWorkflowDefinition"",""nativeMethod"":false},{""methodName"":""doAsync"",""fileName"":""AsyncDecider.java"",""lineNumber"":70,""className"":""com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecider$WorkflowExecuteAsyncScope"",""nativeMethod"":false}],""localizedMessage"":""argument type mismatch"",""message"":""argument type mismatch""}
+
+Then i tried Using CusotmDataConverter, but  it again failed with the same error which is :
+
+{""stackTrace"":,""localizedMessage"":""argument type mismatch"",""message"":""argument type mismatch""}
+
+So my question : Is there any constraint  on Json marshalling ? And if yes, then why ?"
+Amazon Simple Workflow Service	"Re: Flow Framework : Data Converter Issue
+Could you put a breakpoint at the failure location and find what type of argument is passed to the method being invoked? It could be that deserializer returns different type of object."
+Amazon Simple Workflow Service	"Persist activityTaskData on clien side.
+I want to implement simple manual approval workflow using step functions
+Use case :
+       Employee submits the data his manager.
+       Manager approves/ disapproves the data.  
+
+As per my current implementation, when user ( Manager ) click the tab to see the list of the data to be approved. I need to call activityTaskData to get the payloads which are scheduled for the manual approval step.
+Issue is I get one payload at a time and second issue is I get the payload data only once. Even though the activity task still in state machine waiting for the approval, I am not able to get that task using activityTaskData.
+
+I want to know, what is the ideal way to implement the above use case, Above issues tells me once I get the activityTasks I need to persist it in some way ..( May be using the database ). 
+But if we use the combination of both database and state machine, what is the advantage of using both in combination over  using just the database and maintain state."
+Amazon Simple Workflow Service	"Get the activity taskToken in lambda function without using polling
+Below example and many such examples use only the polling lambda function to get the activity task token in lambda.
+https://aws.amazon.com/blogs/compute/implementing-serverless-manual-approval-steps-in-aws-step-functions-and-amazon-api-gateway/ 
+Is there any other possible way to get the activity task token in the lambda function?
+
+Edited by: deepikagaonkar on Nov 21, 2017 3:30 AM"
+Amazon Simple Workflow Service	"AWS Flow Jar creation with Maven + Java 1.8
+Has anyone been able to compile an application with Java 1.8 + AWS Flow + Maven?
+
+I have an established Java application which has been created with Java 1.8 it uses the AWS library's and AWS flow framework. I'm looking to now automate the build of the product, I opted to use Maven. Until this point the project was exported manually within eclipse.
+
+I have reached a point where I can build a Jar which contains our generated workflow classes ( external clients + factories ) along with what I understand to be the aspect classes ( xxxxx$1.class, xxxxx$2.class ).
+
+The end goal is to get the weaving to happen at compile time. 
+
+However when running the maven built jar the workflows are not working as expected. The application completly ignoring the @Asynchronous annotation and results in a not ready state. As a result it will cancel the scheduling the activity we wish to execute.
+
+I have created a simple application with a single workflow and activity to show the issues that I'm experiencing. This version has been exported via eclipse and works, but get the error shown when building via the POM.
+
+Start with message: With Comp
+Created Workers
+Added implentations
+Nov 28, 2016 12:14:11 PM com.amazonaws.services.simpleworkflow.flow.worker.GenericWorker start
+INFO: start: GenericWorkflowWorker[super=GenericWorkflowWorker[service=com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient@163e4e87, domain=Experimental, taskListToPoll=TEST, identity=3174@ip-10-0-1-141, backoffInitialInterval=100, backoffMaximumInterval=60000, backoffCoefficient=2.0], workflowDefinitionFactoryFactory=com.amazonaws.services.simpleworkflow.flow.pojo.POJOWorkflowDefinitionFactoryFactory@56de5251]
+Nov 28, 2016 12:14:12 PM com.amazonaws.services.simpleworkflow.flow.worker.GenericWorker start
+INFO: start: GenericActivityWorker [super=GenericActivityWorker[service=com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient@4c60d6e9, domain=Experimental, taskListToPoll=TEST, identity=3174@ip-10-0-1-141, backoffInitialInterval=100, backoffMaximumInterval=60000, backoffCoefficient=2.0], taskExecutorThreadPoolSize=100]
+Start workers
+Now Sleep
+Sleep Done
+Make Call
+DECIDER 1
+DECIDER 2
+DECIDER DOING CATCH
+java.lang.IllegalStateException: not ready
+        at com.amazonaws.services.simpleworkflow.flow.core.Settable.get(Settable.java:91)
+        at com.amazonaws.services.simpleworkflow.flow.core.Functor.get(Functor.java:35)
+        at root.DeciderWFMethods.printMessage(DeciderWFMethods.java:79)
+        at root.DeciderWFMethods.access$100(DeciderWFMethods.java:6)
+        at root.DeciderWFMethods$1.doTry(DeciderWFMethods.java:54)
+        at --- continuation ---.(:0)
+        at root.DeciderWFMethods.workflowExecute(DeciderWFMethods.java:42)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at com.amazonaws.services.simpleworkflow.flow.pojo.POJOWorkflowDefinition.invokeMethod(POJOWorkflowDefinition.java:150)
+        at com.amazonaws.services.simpleworkflow.flow.pojo.POJOWorkflowDefinition.access$1(POJOWorkflowDefinition.java:148)
+        at com.amazonaws.services.simpleworkflow.flow.pojo.POJOWorkflowDefinition$1.doTry(POJOWorkflowDefinition.java:76)
+        at --- continuation ---.(:0)
+        at com.amazonaws.services.simpleworkflow.flow.pojo.POJOWorkflowDefinition.execute(POJOWorkflowDefinition.java:66)
+        at com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecider$WorkflowExecuteAsyncScope.doAsync(AsyncDecider.java:70)
+DECIDER DOING FINALLY
+
+
+Having compared the contents of the generated jar from both eclipse and maven builds there is nothing obviously different to me.
+
+I have searched the net for something useful but only really found example for Java 1.6 / 1.7 nothing for 1.8.
+
+It's at this point that I should mention i'm new to maven but believe its more likely to be an AspectJ configuration / AWS build tools issue rather than Maven problem. 
+
+Build & Run
+
+The sample application is being run on an EC2 instance using EC2 IAM roles to execute to a Workflow domain called 'Experimental'
+
+It accepts a string which the activity upper cases, the decider should then print the message from the activity.
+
+To build.
+
+mvn clean
+
+mvn package
+
+
+Then running the compiled jar 
+
+java -jar Test.jar ""a test message""
+
+
+GitHub Link 
+https://github.com/jwhitefield-hark/aws-flow-maven
+
+Any advice would be greatly appreciated."
+Amazon Simple Workflow Service	"Re: AWS Flow Jar creation with Maven + Java 1.8
+By the deafening silence in this thread I assume this is not currently possible. If I had a programming based seasonal wish it would be that I could get this working."
+Amazon Simple Workflow Service	"Re: AWS Flow Jar creation with Maven + Java 1.8
+I've posted this issue under the aws-swf-build-tools project github. Where another developer has confirmed the issue.
+
+https://github.com/aws/aws-swf-build-tools/issues/4#issuecomment-270723506
+
+Real shame.. prevents fully automated Java project builds using current tools, if anyone anywhere is working on this ( or facing the same issue ) it would be nice to know.
+
+J"
+Amazon Simple Workflow Service	"Re: AWS Flow Jar creation with Maven + Java 1.8
+I was able to reproduce the problem using your github repo. I was able to come up with a working pom file that was based on https://github.com/Barlog-M/aspectj-maven-example.
+Here it is:
+
+<?xml version=""1.0"" encoding=""UTF-8""?>
+<project xmlns=""http://maven.apache.org/POM/4.0.0""
+         xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+         xsi:schemaLocation=""http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"">
+    <modelVersion>4.0.0</modelVersion>
+ 
+    <groupId>li.barlog.asjex</groupId>
+    <artifactId>aspectj-maven-example</artifactId>
+    <name>AspeсtJ Maven Example</name>
+    <version>0.1-SNAPSHOT</version>
+ 
+    <properties>
+        <source.dir>src</source.dir>
+ 
+        <java.version>1.8</java.version>
+ 
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+ 
+        <aspectj.version>1.8.5</aspectj.version>
+ 
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <aws.java.sdk.version>1.11.58</aws.java.sdk.version>
+        <freemarker.version>2.3.21</freemarker.version>
+ 
+    </properties>
+ 
+    <dependencies>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>${aws.java.sdk.version}</version>
+        </dependency>
+ 
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-swf-build-tools</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+            <version>1.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>${freemarker.version}</version>
+        </dependency>
+    </dependencies>
+ 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <!--compilerArgument>-proc:none</compilerArgument-->
+                    <compilerVersion>${java.version}</compilerVersion>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+ 
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>1.9</version>
+                <configuration>
+                    <complianceLevel>${java.version}</complianceLevel>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <showWeaveInfo>true</showWeaveInfo>
+                    <sources>
+                        <source>
+                            <basedir>${source.dir}</basedir>
+                            <includes>
+                                <include>**/*.java</include>
+                            </includes>
+                        </source>
+                    </sources>
+                    <aspectLibraries>
+                        <aspectLibrary>
+                            <groupId>com.amazonaws</groupId>
+                            <artifactId>aws-java-sdk-swf-libraries</artifactId>
+                        </aspectLibrary>
+                    </aspectLibraries>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjtools</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>li.barlog.asjex.App</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <!-- add Main-Class to manifest file -->
+                                <transformer implementation=""org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"">
+                                    <mainClass>root.Main</mainClass>
+                                </transformer>
+                            </transformers>
+
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>"
+Amazon Simple Workflow Service	"Re: AWS Flow Jar creation with Maven + Java 1.8
+Hi Maxim, 
+
+Thanks for your response.
+Using your example managed to compile our project. Which is a great result.
+
+Our problem were two fold.
+
+We had compiler arguments set to <compilerArgument>-proc:none</compilerArgument> this prevented the build from completing.
+
+Also within our aspectj-maven plugin we had set the execution to <phase>process-sources</phase> which appears to be the crux of our problem as this is preventing a good build being created and also not showing us the errors which were being generated as a result of including our compiler arguments.
+
+As a side note within the aspectj-maven-plugin we had set the targets to 1.6 this is not required. We tried as it appeared that eclipse may have been using these setting. Either way these properties seem to have no affect.
+
+We also changed the aspectj library from aws-java-sdk-swf-libraries to aws-swf-build-tools to keep it upto date.
+
+Many Thanks for your help"
+Amazon Simple Workflow Service	"Re: AWS Flow Jar creation with Maven + Java 1.8
+I can't seem to get this to work. My goal is to be able to pull my code down from git onto a server with maven installed and run a maven command to created the .jar files needed to start my decider and worker. I initially setup my project using Load-time weaving and I get files generated in apt_generated anytime I save (automatic build is checked in eclipse). I'd like to keep that functionality. 
+
+But when the project is moved to the build server, it can't take advantage of load-time weaving bc i'm building the files with maven. I don't understand the process involved in generating these files and using aspectJ. AWS documentation is extremely unhelpful. 
+
+Does anyone have this working for Java 8?
+
+Can you explain which maven plugins were required and their purpose?
+
+Can I leave load-time weaving enabled in eclipse and also use maven to do compile time weaving on my build server?
+
+How do you a Decider.jar and a Worker.jar with all of it's dependencies with 1 run command? (i'm trying to use the shade plugin for this)"
+Amazon Simple Workflow Service	"Re: AWS Flow Jar creation with Maven + Java 1.8
+I was able to make it work. Look at the following github repos:
+
+https://github.com/mfateev/swf-flow-library-java 
+and
+https://github.com/mfateev/swf-flow-library-samples-java"
+Amazon Simple Workflow Service	"Re: AWS Flow Jar creation with Maven + Java 1.8
+Hi Maxim,
+(using Eclipse on Windows 8)
+
+I cloned those 2 repos. I ran maven install on the swf-flow-library to build a jar and have installed in my local repo. Now I'm looking at swf-flow-samples and eclipse is indication some errors. The java files that refer to the clients (ie. BookingActivitiesClient) have errors bc I'm assuming the project having not been built yet, does have the generated clients yet.  (ie BookingWorkflowImpl.java)
+
+I ran a maven build with goal of package and I see these clients get generated, but in multiple places.(com/amazonaws... ,target/generated-sources.... and target/classes...) Eclipse still indicates errors for BookingWorkflowImpl.java. This is bc there is no import statement for the clients that were just generated. Do i need to add any of these new folders that just got created to my build batch so i can then add an import statement? If so, which folder?
+
+Any other steps I'll need to take after that? Am I on the right path to creating jars for worker and decider that could be pushed to an EC2 instance?
+
+Final question, your Readme refers to an build.xml ant file, but I don't see that anywhere.
+
+Thanks for all the help."
+Amazon Simple Workflow Service	"Re: AWS Flow Jar creation with Maven + Java 1.8
+I ended up enabling annotation processing in Eclipse. This auto generated the client classes allowing the errors to go away. (which would make dev a bit easier) I don't think maven uses these, i think it creates it's own versions and uses those (which is fine). when running 'maven clean package', the jar produced doesn't include any of the project dependencies. I added the maven-assembly-plugin and that allowed me to produce 1 jar with all the files needed. I moved that jar to an EC2 instance and used  'nohup java -cp {jar-name} {class-name} &' to start up an Activity and Worker process running in the background. Then use the same command to start the HelloWorld workflow and it ran successfully. 
+
+I had to modify the host classes so they wouldn't immediately exit. I want them to continue to run in the background as a process. I basically commented everything out after worker.start(). Is that the best approach?
+
+Is anything i did here incorrect? My final concern is whether the async code will really wait or not, indicating that aspectj is working correctly. I think some of the other samples should test that. 
+
+<plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>"
+Amazon Simple Workflow Service	"Re: AWS Flow Jar creation with Maven + Java 1.8
+Awesome!
+You only need to comment code that waits for user input:
+        System.out.println(""Please press any key to terminate service."");
+        try {
+            System.in.read();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+and ideally run it under some sort of process manager that restarts it in case of a catastrophic failure.
+
+To test asynchronous you can have something like:
+
+ Promise<Void> timer = clock.createTimer(1);
+ foo(timer);
+ 
+ @Asynchronous
+ void foo(Promise<Void> b) {
+     if (!b.isReady()) throw new RuntimeException(""not ready"");
+ }"
+Amazon Simple Workflow Service	"SWF cron job running activities twice
+Hi,
+
+The cronjob used in the examples from AWS executes an activity twice sequencially.
+My job runs every minute and continues as new every 3 minutes.
+
+Is there a solution for this issue?
+
+Thanks"
+Amazon Simple Workflow Service	"Re: SWF cron job running activities twice
+Sorry for the delayed reply. There is indeed a problem with the CronInvocationSchedule class that caused multiple activity invocations. I want to emphasize that this problem is not caused by any issues with the core Flow Framework and is not related to replay behavior. 
+Here is the fix that fixes the issue in my repository: https://github.com/mfateev/swf-flow-library-java/commit/5581573164e8eeb4e70ce6487c284b411242ec56
+
+I'm going to submit pull request to the official AWS repo. I'm not sure when (if ever) it would be accepted."
+Amazon Simple Workflow Service	"Cron activity runs multiple times on each invocation - Java Flow Framework
+I'm having a frustrating time setting up cron workflow. I am developing a workflow that is started by a cron activity. Each step calls the same activity, but with different parameters. It is working fine except that the cron (1st) activity usually, but not always, runs twice. Sometimes it only runs once, as it should and I've seen it run up to 4 times.
+
+For testing, I'm running it every minute (0 * * * * *). It completes in 20-30 sec. Expiration is 90 sec. 
+
+Here is the code that schedules the cron task.
+ActivitySchedulingOptions schedOptions = new ActivitySchedulingOptions();
+schedOptions.withStartToCloseTimeoutSeconds(job.maxRunTime)
+		.withTaskList(""batchtest"");
+long startTime = clock.currentTimeMillis();
+Date expiration = new Date(startTime
+		+ options.getContinueAsNewAfterSeconds() * SECOND);
+TimeZone tz = TimeZone.getTimeZone(options.getTimeZone());
+CronDecorator cronDecorator = new CronDecorator(
+		options.getCronExpression(), expiration, tz, clock);
+SchedulerActivitiesClient cronDecoratedActivities = cronDecorator
+		.decorate(SchedulerActivitiesClient.class, operations);
+ 
+Promise<Void> p = cronDecoratedActivities.runMScript(job.script,
+		job.options, schedOptions, waitFor);
+ 
+
+
+Any idea what might be happening here?
+
+Cheers
+Dan"
+Amazon Simple Workflow Service	"Re: Cron activity runs multiple times on each invocation - Java Flow Framework
+Are you sure that you are checking actual activity execution but not logging activity invocation from the decider process? Code in the decider is expected to execute the same code path multiple times by design. But activity is expected to be executed at most once per invocation.
+
+Look at the workflow execution history to see how many times the given activity is scheduled."
+Amazon Simple Workflow Service	"Re: Cron activity runs multiple times on each invocation - Java Flow Framework
+Yes, Maxim, I'm looking at the Activity tab of the console Workflow Execution and the log written by the scripts run on my clients by the activity worker. The first activity task definitely runs multiple times.
+
+My test workflow has 4 activity tasks. The second and third are dependent on completion of the first. The fourth is dependent on the completion of the second and third.
+
+When the first runs multiple times, the second and third only run after the last run of the first completes.
+
+Dan"
+Amazon Simple Workflow Service	"Re: Cron activity runs multiple times on each invocation - Java Flow Framework
+I believe the invocation of the decorated activity returns ready promise only after the last activity invocation. For example if your cron tells it to run every minute and expiration is 4 minutes it gets  executed 3 times and only then the resulting promise becomes ready with the result of the last activity execution.
+
+So my guess is that your cron expression (which I believe is to run once an hour as ""* * * * * * "" is to run each minute) may be incorrectly interpreted leading to immediate activity reexecution which gives up to 4 executions in 90 second interval.  You can add log statement (or breakpoint) at AsyncScheduledExecutor to see the delay for the next activity invocation. 
+
+If you want to execute all four activities on each cron invocation then wrap all of them in a single method and use cron to invoke it. You could use AsyncScheduledExecutor instead of the decorator to avoid creation of a separate interface to wrap."
+Amazon Simple Workflow Service	"Re: Cron activity runs multiple times on each invocation - Java Flow Framework
+Hi Maxim
+
+Actually, as I noted in my first message, my cron expression is ""0 * * * * *"" which runs every minute on the minute. 
+
+Nevertheless, I tried implementing my cron using AsyncScheduledExecutor as you recommended. I moved my workflow to run method of an inner Class that implements AsyncRunnable. I thought that had solved the problem as each activity task was running only once per scheduled run. However, I quickly realized that the workflow was running too often. The entire workflow runs 3 times per workflow execution. It runs twice immediately after the scheduled time. It then runs once at the next scheduled time. After that it hits the ContinueAsNew time (90 sec) and the cycle repeats in a new execution.
+
+Here is the key code. Have any idea why it is repeating?
+
+CronInvocationSchedule schedule = new CronInvocationSchedule( cronOptions.getCronExpression(), expiration, tz);
+AsyncScheduledExecutor executor = new AsyncScheduledExecutor(schedule, clock);
+RunBatchJob run = new RunBatchJob();
+executor.execute(run);
+
+
+Edited by: Daniel R. Kibler on Jul 8, 2015 1:55 PM"
+Amazon Simple Workflow Service	"Re: Cron activity runs multiple times on each invocation - Java Flow Framework
+Hi Daniel
+
+There is same issue for me. Although I use CronInvocationSchedule and AsyncScheduledExecutor directly. There will always occur duplicate DecisionTaskScheduled event unexpected times randomly.
+Although I run the SDK example with argument ""*/10 * * * * *"" GMT+8 60, the result always execute 1, 2 or more times per 10 second randomly. It let me very confused.
+
+My environment is:
+JDK: 1.8.0_51
+AWS SDK: 1.10.5.1
+AspectJ: 1.8.6 with LTW"
+Amazon Simple Workflow Service	"Re: Cron activity runs multiple times on each invocation - Java Flow Framework
+Hi,
+
+I am facing the same issue. Did you guys find any workaround for this?
+
+Thanks"
+Amazon Simple Workflow Service	"Re: Cron activity runs multiple times on each invocation - Java Flow Framework
+Could you post more information about the problem you are facing? Ideally include the source code and the history."
+Amazon Simple Workflow Service	"Re: Cron activity runs multiple times on each invocation - Java Flow Framework
+I am developing a workflow that is started by a cron activity. Each step calls the same activity, but different number of times. On each cron invocation, activity runs multiple times varying for one to ten executions of same activity. 
+
+Code for workflowImpl :
+    public void startCron(final CronWorkflowOptions options) {
+        long startTime = clock.currentTimeMillis();
+        Date expiration = new Date(startTime + options.getContinueAsNewAfterSeconds() * SECOND);
+        TimeZone tz = TimeZone.getTimeZone(options.getTimeZone());
+//        CronDecorator cronDecorator = new CronDecorator(options.getCronExpression(), expiration, tz, clock);
+//        DynamicActivitiesClient cronDecoratedActivities = cronDecorator.decorate(DynamicActivitiesClient.class, activities);
+//
+//        cronDecoratedActivities.scheduleActivity(options.getActivity(), options.getActivityArguments(), null, Void.class);
+  //      cronDecoratedActivities.scheduleActivity(options.getActivity(), options.getActivityArguments(), null, Void.class);
+
+        CronInvocationSchedule cronSchedule = new CronInvocationSchedule(options.getCronExpression(), expiration, tz);
+        AsyncScheduledExecutor scheduledExecutor = new AsyncScheduledExecutor(cronSchedule, clock);
+//        ExponentialRetryPolicy retryPolicy = createRetryPolicyFromOptions(options);
+//        final AsyncRetryingExecutor retryExecutor = new AsyncRetryingExecutor(retryPolicy, clock);
+        scheduledExecutor.execute(new AsyncRunnable() {
+            @Override
+            public void run() throws Throwable {
+                activities.scheduleActivity(options.getActivity(), options.getActivityArguments(), null, Void.class);
+            }});
+
+        // Start new workflow run as soon as cron decorator exits due to expiration.
+        // The call to self client indicates the desire to start the new run.
+        // It is started only after all other tasks in the given run are completed.
+        selfClient.startCron(options);
+    }
+
+
+I have tried both approaches (CronDecorator & AsyncScheduledExecutor) but results are same.
+
+Can you please elaborate on this issue?
+
+Edited by: dipeshpatel on Jun 5, 2017 10:49 PM"
+Amazon Simple Workflow Service	"Re: Cron activity runs multiple times on each invocation - Java Flow Framework
+Do you see multiple activity invocations in the workflow history?"
+Amazon Simple Workflow Service	"Re: Cron activity runs multiple times on each invocation - Java Flow Framework
+Yes. In SWF UI, I can see multiple activity invocation for each cron invocation."
+Amazon Simple Workflow Service	"Re: Cron activity runs multiple times on each invocation - Java Flow Framework
+Is there any solution to this, I am facing the same issue.
+
+public class CronWorkflowImpl implements CronWorkflow {
+    private static final int SECOND = 1000;
+ 
+    // for deterministic reasons
+    private final WorkflowClock clock;
+    private final DynamicActivitiesClient activities;
+    // to reset the workflow to reset history
+    private final CronWorkflowSelfClient selfClient;
+ 
+    CronActivitiesClient client = new CronActivitiesClientImpl();
+ 
+ 
+    public CronWorkflowImpl(){
+        this(new DecisionContextProviderImpl().getDecisionContext().getWorkflowClock(),
+                new DynamicActivitiesClientImpl(),
+                new CronWorkflowSelfClientImpl());
+    }
+ 
+    public CronWorkflowImpl(WorkflowClock clock, DynamicActivitiesClient activities, CronWorkflowSelfClient selfClient) {
+        this.clock = clock;
+        this.activities = activities;
+        this.selfClient = selfClient;
+    }
+ 
+    @Override
+    public void startCron(final CronWorkflowOptions options) {
+        long startTime = clock.currentTimeMillis();
+        Date expiration = new Date(startTime + options.getContinueAsNewAfterSeconds() * SECOND);
+        TimeZone tz = TimeZone.getTimeZone(options.getTimeZone());
+ 
+ 
+        CronInvocationSchedule schedule = new CronInvocationSchedule(options.getCronExpression(), expiration, tz);
+        AsyncScheduledExecutor executor = new AsyncScheduledExecutor(schedule, clock);
+ 
+        executor.execute(new AsyncRunnable() {
+            @Override
+            public void run() throws Throwable {
+                runJob();
+            }
+        });
+ 
+ 
+        selfClient.startCron(options);
+    }
+ 
+    @Asynchronous
+    private Promise<Void> runJob() {
+        client.work(""param"");
+        return Promise.Void();
+    }
+}
+ 
+
+It fires every minute: String cronPattern = ""0 0/1 * * * ?"";
+
+The result when the method executes twice is: 
+Fri Jul 07 11:40:01 GMT+100 2017
+52
+ActivityTaskCompleted
+Fri Jul 07 11:40:01 GMT+100 2017
+51
+ActivityTaskStarted
+Fri Jul 07 11:40:01 GMT+100 2017
+50
+ActivityTaskScheduled
+Fri Jul 07 11:40:01 GMT+100 2017
+49
+DecisionTaskCompleted
+Fri Jul 07 11:40:00 GMT+100 2017
+48
+DecisionTaskStarted
+Fri Jul 07 11:40:00 GMT+100 2017
+47
+DecisionTaskScheduled
+Fri Jul 07 11:40:00 GMT+100 2017
+46
+ActivityTaskCompleted
+Fri Jul 07 11:40:00 GMT+100 2017
+45
+ActivityTaskStarted
+Fri Jul 07 11:40:00 GMT+100 2017
+44
+ActivityTaskScheduled
+Fri Jul 07 11:40:00 GMT+100 2017
+43
+DecisionTaskCompleted
+Fri Jul 07 11:39:59 GMT+100 2017
+42
+DecisionTaskStarted
+Fri Jul 07 11:39:59 GMT+100 2017
+41
+DecisionTaskScheduled
+Fri Jul 07 11:39:59 GMT+100 2017
+40
+TimerFired
+
+Once at 11:40:00 and again at 11:40:01. The activity executes twice.
+
+Is there something wrong with the code?
+Looks like its a general problem..."
+Amazon Simple Workflow Service	"Re: Cron activity runs multiple times on each invocation - Java Flow Framework
+Sorry for the delayed reply. There is indeed a problem with the CronInvocationSchedule class that caused multiple activity invocations. I want to emphasize that this problem is not caused by any issues with the core Flow Framework and is not related to replay behavior. 
+Here is the fix that fixes the issue in my repository: https://github.com/mfateev/swf-flow-library-java/commit/5581573164e8eeb4e70ce6487c284b411242ec56
+
+I'm going to submit pull request to the official AWS repo. I'm not sure when (if ever) it would be accepted."
+Amazon Simple Workflow Service	"Registered domains not appearing in the domain dropdown list in aws console
+Hi!
+I have registered a domain using aws console using the 'Manage Domains' section. Now when I go to the SWF dashboard and try to select the domain from the domain dropdown list, the registered domain does not appear in the list. Any thoughts what's happening here?"
+Amazon Simple Workflow Service	"Re: Registered domains not appearing in the domain dropdown list in aws console
+Make sure that you have the same region selected in the console as the one used to create the domain."
+Amazon Simple Workflow Service	"Tracking Downloads
+In S3, I have stored around 60 files of approximately 1GB each.  When my client downloads, I would like to track, whether it got fully or partially downloaded. If it is partially downloaded, I would like to know, how many bytes got downloaded.
+
+Note: I am sure whether I am in the correct Category of this Discussion forum.  If I am not in the right Category, please mention the right Category to post this question.
+Thanks
+
+Edited by: Davviid on Oct 7, 2017 8:51 PM
+
+Edited by: Davviid on Oct 7, 2017 8:52 PM"
+Amazon Simple Workflow Service	"Create StateMachine Recursively
+I need to create a State Machine recursively using AWS Step Functions Java APIs. For example, my states would be like this:
+
+Step1
+  -> Step 1.1
+  -> Step 1.2
+      -> Step 1.2.1
+      -> Step 1.2.2
+   -> Step 1.3
+Step2
+..
+
+StepN
+(& so on..)
+
+To begin with, I want all Step 1 to StepN to start immediately. Later when Step1 is completed Step 1.1 & 1.2, 1.3 should start at the same time & so on.
+
+I wouldn't know how deep each tree would be so I need to create this StateMachine recursively. I am trying to figure out how I can do this using Builder API. Any pointers would be greatly appreciated.
+
+Thanks."
+Amazon Simple Workflow Service	"Task Tokens when re-running activities
+Hi,
+
+I've noticed that when restarting an activity - for example as a result of a timeout - that the restated  activity is assigned a new TaskToken.  If the activity is a @ManualActivityCompletion activity which token can be used to manually complete it? Is it:
+
+1) The TaskToken from the first activity run.
+2) The taskToken from the last activity run.
+3) A token from any run. For example, if the activity is re-run 5 times due to timeouts, can any of the five activity tokens that were created for it be used to manually complete the activity.
+
+I've run a few experiments and appears that any of the task tokens can be used, but is anyone able to confirm this? That is, does SWF keep track of all the task tokens that have been created for the activity and allow any one of them to be used to manually complete it?
+
+Many thanks
+
+Edited by: Jasonh955 on Sep 7, 2017 7:30 AM"
+Amazon Simple Workflow Service	"Re: Task Tokens when re-running activities
+~Resolved. It transpires that only the current TaskToken can be used. All those from previous schedules result in a resource not found error.
+
+This basically means that you need to refresh any stored taskTokens that you use to manually complete the activity each time the activity re-schedules. Could be a pain where you use a tasktoken to produce a barcode that's used to manually complete a task, although a workaround would be to store the original task token (i.e. the one used to create the barcode), and the current one (the one that can be used to manually complete the activity)."
+Amazon Simple Workflow Service	"Re: Task Tokens when re-running activities
+Another option is not to use signal instead of activity. Barcode would need workflow id only to send a signal. The drawback is additional complexity around operation timeouts."
+Amazon Simple Workflow Service	"'aws-flow-ruby' command executes even after the 'flow' directory is removed
+Referring to a quote from the AWS Flow Framework for Ruby Dev Guide
+ - http://docs.aws.amazon.com/amazonswf/latest/awsrbflowguide/programming-workers.html#using-runner-cmd-to-start-workers 
+The runner interprets this file and creates a set of workers as you specify, using the activities and workflows that are defined in activities.rb and workflows.rb files within the flow directory where the configuration file exists
+
+I have just removed the `flow` directory from the path and executed `$ aws-flow-ruby -f worker.json` hoping that some kind of error should be thrown (since the `activities.rb` and `workflows.rb` files are no longer present in the expected `./flow` path).
+
+However, the command ran successfully producing the following output:
+waiting on workers [5742, 5744, 5747, 5751] to complete
+
+What is going on here? Does the aws-flow-ruby binary somehow cache the worker files from previous executions?"
+Amazon Simple Workflow Service	"Is it possible to run a Python web scraper via AWS SWF and Lambda Function?
+I made a Python web scraper for downloading more than 4PB to 8PB data from the web. I have to run More than 1k + spider per sec for downloading data from 12 websites. Someone told me to use SWF.
+
+But I didn't find anything on the web About web scraper with SWF.
+Please send me some helpful link if possible.
+
+Edited by: SHOFIUR on Aug 10, 2017 10:32 AM
+
+Edited by: SHOFIUR on Aug 10, 2017 10:33 AM"
+Amazon Simple Workflow Service	"FlowDefault domain is deprecated? But the official dev guide talks about it
+Following the Flow framework for Ruby official dev guide http://docs.aws.amazon.com/amazonswf/latest/awsrbflowguide/helloworld.html , i have completed upto the ""Starting a Workflow Execution"" section. 
+
+Now in the ""Viewing your Execution with the AWS Management Console"" section in step 2, it talks about opening a domain called FlowDefault . But when i open it, the AWS management console says ""Note: The selected domain has been deprecated."". 
+
+Where do i go from here? How do i see my workflow executions?"
+Amazon Simple Workflow Service	"Will Activity Retry use the same parameters?
+Hi,
+
+I have a Activity method accepts a time based String as input parameter:
+
+@ExponentialRetry(
+            initialRetryIntervalSeconds = 1 * DateTimeConstants.SECONDS_PER_MINUTE,
+            maximumRetryIntervalSeconds = 5 * DateTimeConstants.SECONDS_PER_MINUTE,
+            maximumAttempts = 5,
+            excludeExceptions = { CancellationException.class })
+void loadFromKafka(String version);
+
+version is generated in workflow by:
+new DateTime(getWorkflowClock().currentTimeMillis().toString()
+
+I just want to know if this activity method failed with Exceptions and goes into retry, will each retry use the same version parameter?
+
+Edited by: Arvin on Jul 13, 2017 8:01 PM"
+Amazon Simple Workflow Service	"Re: Will Activity Retry use the same parameters?
+just had a try locally, the parameter was keep during each activity retry."
+Amazon Simple Workflow Service	"UnknownResourceFault on decider
+I'm having trouble with an error from my decider. Below is the stack trace generated by the decider. In the web console I can see the activity schedule, start and complete successfully. It is a long running activity, about 75 mins. The timeout for start to close on the activity is 3 hours. So that all seems ok. And the stuff the activity worker does all completes. The start to close timeout on my decider is 4 mins. For some reason, i think my decision tasks are taking longer than they should for this activity. That error message below references taskId 3144. If I go to the console, I see the task timed out with a type of START_TO_CLOSE. I can increase that timeout, but decision tasks should be quick i think. START_TO_CLOSE timeout is set to 4 mins which should be plenty.
+
+My workflow has about 600 activity tasks in it. All tasks execute in under an hour except 2. Both of these 2 longer running tasks (about 75 mins) are experiencing the same issue with the decider timing out. I don't know why the longer running tasks would cause an issue with the decider. When I look at the DecisionTaskScheduled, Started, Completed for other shorter activities, they run very quickly. (seconds)
+
+Any help would be greatly appreciated. Thanks
+
+Jul 06, 2017 5:44:09 AM com.amazonaws.services.simpleworkflow.flow.worker.DecisionTaskPoller pollAndProcessSingleTask
+WARNING: DecisionTask failure: taskId= 3144, workflowExecution={WorkflowId: Daily-c6f9edfe-bc6c-4e78-91f4-652e4743c2bc,RunId: 22syHNhA/8b2Mara50ZrvSH1Y4O4I/b6DDoNZIbtihdCg=}
+com.amazonaws.services.simpleworkflow.model.UnknownResourceException: Unknown decision task, scheduledEventId = 3142 (Service: AmazonSimpleWorkflow; Status Code: 400; Error Code: UnknownResourceFault; Request ID: a913ee11-622f-11e7-8886-830cc2732173)
+	at com.amazonaws.http.AmazonHttpClient.handleErrorResponse(AmazonHttpClient.java:1386)
+	at com.amazonaws.http.AmazonHttpClient.executeOneRequest(AmazonHttpClient.java:939)
+	at com.amazonaws.http.AmazonHttpClient.executeHelper(AmazonHttpClient.java:714)
+	at com.amazonaws.http.AmazonHttpClient.doExecute(AmazonHttpClient.java:465)
+	at com.amazonaws.http.AmazonHttpClient.executeWithTimer(AmazonHttpClient.java:427)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:376)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.doInvoke(AmazonSimpleWorkflowClient.java:3134)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.invoke(AmazonSimpleWorkflowClient.java:3104)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.respondDecisionTaskCompleted(AmazonSimpleWorkflowClient.java:2779)
+	at com.amazonaws.services.simpleworkflow.flow.worker.DecisionTaskPoller.pollAndProcessSingleTask(DecisionTaskPoller.java:205)
+	at com.amazonaws.services.simpleworkflow.flow.worker.GenericWorker$PollServiceTask.run(GenericWorker.java:94)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:748)
+ 
+Jul 06, 2017 5:44:09 AM com.amazonaws.services.simpleworkflow.flow.worker.DecisionTaskPoller.decisions pollAndProcessSingleTask
+WARNING: Failed taskId=3144 decisions={
+    StartTimer {
+        TimerId = 614;
+        StartToFireTimeout = 3
+    }
+}
+Jul 06, 2017 5:44:09 AM com.amazonaws.services.simpleworkflow.flow.worker.GenericWorker uncaughtException
+SEVERE: Failure in thread SWF Decider ETL1.2 1
+com.amazonaws.services.simpleworkflow.model.UnknownResourceException: Unknown decision task, scheduledEventId = 3142 (Service: AmazonSimpleWorkflow; Status Code: 400; Error Code: UnknownResourceFault; Request ID: a913ee11-622f-11e7-8886-830cc2732173)
+	at com.amazonaws.http.AmazonHttpClient.handleErrorResponse(AmazonHttpClient.java:1386)
+	at com.amazonaws.http.AmazonHttpClient.executeOneRequest(AmazonHttpClient.java:939)
+	at com.amazonaws.http.AmazonHttpClient.executeHelper(AmazonHttpClient.java:714)
+	at com.amazonaws.http.AmazonHttpClient.doExecute(AmazonHttpClient.java:465)
+	at com.amazonaws.http.AmazonHttpClient.executeWithTimer(AmazonHttpClient.java:427)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:376)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.doInvoke(AmazonSimpleWorkflowClient.java:3134)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.invoke(AmazonSimpleWorkflowClient.java:3104)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.respondDecisionTaskCompleted(AmazonSimpleWorkflowClient.java:2779)
+	at com.amazonaws.services.simpleworkflow.flow.worker.DecisionTaskPoller.pollAndProcessSingleTask(DecisionTaskPoller.java:205)
+	at com.amazonaws.services.simpleworkflow.flow.worker.GenericWorker$PollServiceTask.run(GenericWorker.java:94)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:748)"
+Amazon Simple Workflow Service	"Re: UnknownResourceFault on decider
+Could you find out from the logs the decision task processing time? As history is large the decider uses pagination to load it which could be slow for workflow that got out of cache. 
+I recommend using child workflows to reduce size of the history."
+Amazon Simple Workflow Service	"Re: UnknownResourceFault on decider
+so most of my decision tasks are quick, but some are quite slow. Up to 3 minutes. My concern is the replay behavior. The messages that are serialized and passed between worker and decider can become large. To handle that, I use a custom DataConverter to store them in S3 and pull them down on the other side. My chain of dependencies can be quite long (ie. a task can be dependent on 3 tasks, which are each dependent on 3 task and so on for many levels). For tasks at the top of these decision trees, I assume it has to replay all it's child tasks to determine if it can run or not (and use custom  DataConverter). And I'm guessing this is what's taking so long. I've changed my timeout time on decision tasks to 4 mins, but this really just feels like a bandaid. 
+
+My concern is that I've made a poor decision on the messages that are passed between worker and decider. I think i need to make these as small as possible, although that seems very difficult. 
+
+I essentially have a java class i call an ETLTask that contains all the info a worker needs to run that task. It also has a property called dependencies which is a list of ETLTask objects. each containing the info that tasks needs. I create this large dependency tree (from settings stored in a DB) in my Starter code and pass it in as I start my workflow. So you can imagine this can be a fairly large object (~2MB). The decider recursively waits for all the dependencies of a task to become ready before it executes the task.  Essentially it's a DAG processor (https://en.wikipedia.org/wiki/Directed_acyclic_graph)
+
+My only thought is to pass only the id that identifies the data needed for each task to do its work, and each worker has to fetch its settings from the DB once it's assigned a task to work on. Seems like a like of DB connections. Any general help on design patterns around this would be great. 
+
+Thanks
+
+Edited by: AndrewHallHarmon on Jul 12, 2017 1:54 PM"
+Amazon Simple Workflow Service	"Re: UnknownResourceFault on decider
+Could you pass to activities the references to S3 objects instead of loading them in the decider? I doubt that you need them to make a decision which next operation to run."
+Amazon Simple Workflow Service	"IllegalStateException in DecisionStateMachineBase
+IllegalStateException in DecisionStateMachineBase
+
+We've started to see intermittent failures in a workflow that we can't track down, as the issue appears to be in the decider state machine; the SWF event history doesn't record the output of decisions, so we're at a bit of a loss to work out what's wrong. 
+
+An example exception we're seeing is below. We've seen others, the main thing they have in common is that they tend to be related to activity events, but it's hard to be sure.
+
+ava.lang.IllegalStateException: id=DecisionId [type=ACTIVITY, id=25], transitions=[CREATED, cancel, COMPLETED, handleInitiatedEvent] at com.amazonaws.services.simpleworkflow.flow.worker.DecisionStateMachineBase.failStateTransition(DecisionStateMachineBase.java:194) at com.amazonaws.services.simpleworkflow.flow.worker.DecisionStateMachineBase.handleInitiatedEvent(DecisionStateMachineBase.java:102) at com.amazonaws.services.simpleworkflow.flow.worker.DecisionsHelper.handleActivityTaskScheduled(DecisionsHelper.java:172) at com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecider.processEvent(AsyncDecider.java:267) at com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecider.decide(AsyncDecider.java:515) at com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecisionTaskHandler.handleDecisionTask(AsyncDecisionTaskHandler.java:50) at com.amazonaws.services.simpleworkflow.flow.worker.DecisionTaskPoller.pollAndProcessSingleTask(DecisionTaskPoller.java:201) at com.amazonaws.services.simpleworkflow.flow.worker.GenericWorker$PollServiceTask.run(GenericWorker.java:94) at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) at java.lang.Thread.run(Thread.java:745)"
+Amazon Simple Workflow Service	"Re: IllegalStateException in DecisionStateMachineBase
+One possible cause is a backward incompatible change in the decider logic or other cause of non determinism."
+Amazon Simple Workflow Service	"SWF Java Flow - UNHANDLED_DECISION FailWorkflowExecutionFailed
+Hi,
+
+We've started getting FailWorkflowExecutionFailed errors with the cause being ""UNHANDLED_DECISION"".
+From what I can glean from the docs, this might occur when activities are completing while the workflow is processing other tasks completing (we can have a few hundred tasks running async)? 
+
+I can't find any documentaiton about how to deal with this in Java Flow. Can you point me to the right bit of doc, or provide some suggestions how to handle this?  Am I even on the right track with my thinking about what's causing this?
+
+Example execution ID: 22jF2cGa2yrqTzsuBAVqkcBLD4E5a9e9unheM6AbEzRQM=
+
+Thanks."
+Amazon Simple Workflow Service	"Re: SWF Java Flow - UNHANDLED_DECISION FailWorkflowExecutionFailed
+Could you post the exception stack trace? It sounds like a bug in the Flow Framework."
+Amazon Simple Workflow Service	"Re: SWF Java Flow - UNHANDLED_DECISION FailWorkflowExecutionFailed
+Hi, Stack trace below.  
+
+From what I can gather from other forum posts, the first one shouldn't be seen in a prod type environment - and it probably means our workflow code is taking too long to execute? We're using SpringWorkflowWorker - is there a way to increase the maximum token lifetime? Or if this is the cause, do we just need to try and make our workflow code run faster?
+
+Stack traces:
+One instance of this:
+07:11:55.094 [SWF Decider simpleWorkflowTaskList 1] ERROR c.a.s.s.flow.worker.AsyncDecider - Failing workflow {WorkflowId: RM2660E~0~EN~EN~BASE~0,RunId: 22jF2cGa2yrqTzsuBAVqkcBLD4E5a9e9unheM6AbEzRQM=}
+com.amazonaws.services.simpleworkflow.model.AmazonSimpleWorkflowException: Specified token has exceeded its maximum lifetime (Service: AmazonSimpleWorkflow; Status Code: 400; Error Code: ValidationException; Request ID: e82e2501-5650-11e7-9c0b-8d2a15aa4bb9)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleErrorResponse(AmazonHttpClient.java:1588)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeOneRequest(AmazonHttpClient.java:1258)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeHelper(AmazonHttpClient.java:1030)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.doExecute(AmazonHttpClient.java:742)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeWithTimer(AmazonHttpClient.java:716)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.execute(AmazonHttpClient.java:699)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.access$500(AmazonHttpClient.java:667)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutionBuilderImpl.execute(AmazonHttpClient.java:649)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:513)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.doInvoke(AmazonSimpleWorkflowClient.java:2793)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.invoke(AmazonSimpleWorkflowClient.java:2769)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.executePollForDecisionTask(AmazonSimpleWorkflowClient.java:1761)
+	at com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient.pollForDecisionTask(AmazonSimpleWorkflowClient.java:1737)
+	at com.amazonaws.services.simpleworkflow.flow.worker.DecisionTaskPoller.poll(DecisionTaskPoller.java:171)
+	at com.amazonaws.services.simpleworkflow.flow.worker.DecisionTaskPoller.access$0(DecisionTaskPoller.java:158)
+	at com.amazonaws.services.simpleworkflow.flow.worker.DecisionTaskPoller$DecisionTaskIterator.next(DecisionTaskPoller.java:62)
+	at com.amazonaws.services.simpleworkflow.flow.worker.DecisionTaskPoller$DecisionTaskIterator.next(DecisionTaskPoller.java:1)
+	at com.amazonaws.services.simpleworkflow.flow.worker.HistoryHelper$EventsIterator.next(HistoryHelper.java:64)
+	at com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecider.decide(AsyncDecider.java:463)
+	at com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecisionTaskHandler.handleDecisionTask(AsyncDecisionTaskHandler.java:50)
+	at com.amazonaws.services.simpleworkflow.flow.worker.DecisionTaskPoller.pollAndProcessSingleTask(DecisionTaskPoller.java:201)
+	at com.amazonaws.services.simpleworkflow.flow.worker.GenericWorker$PollServiceTask.run(GenericWorker.java:94)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+
+
+Several instances of this
+07:12:24.199 [SWF Decider simpleWorkflowTaskList 1] ERROR c.a.s.s.flow.worker.AsyncDecider - Failing workflow {WorkflowId: RM2660E~0~EN~EN~BASE~0,RunId: 22jF2cGa2yrqTzsuBAVqkcBLD4E5a9e9unheM6AbEzRQM=}
+java.lang.IllegalArgumentException: Unknown DecisionId [type=SELF, id=null]. The possible causes are nondeterministic workflow definition code or incompatible change in the workflow definition.
+	at com.amazonaws.services.simpleworkflow.flow.worker.DecisionsHelper.getDecision(DecisionsHelper.java:613)
+	at com.amazonaws.services.simpleworkflow.flow.worker.DecisionsHelper.handleFailWorkflowExecutionFailed(DecisionsHelper.java:412)
+	at com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecider.processEvent(AsyncDecider.java:289)
+	at com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecider.decide(AsyncDecider.java:515)
+	at com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecisionTaskHandler.handleDecisionTask(AsyncDecisionTaskHandler.java:50)
+	at com.amazonaws.services.simpleworkflow.flow.worker.DecisionTaskPoller.pollAndProcessSingleTask(DecisionTaskPoller.java:201)
+	at com.amazonaws.services.simpleworkflow.flow.worker.GenericWorker$PollServiceTask.run(GenericWorker.java:94)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)"
+Amazon Simple Workflow Service	"Re: SWF Java Flow - UNHANDLED_DECISION FailWorkflowExecutionFailed
+I don't see UNHANDLED_DECISION  in these stack traces. What is the error attached to the WorkflowExecutionFailed event?"
+Amazon Simple Workflow Service	"Re: SWF Java Flow - UNHANDLED_DECISION FailWorkflowExecutionFailed
+Aah - yes - I see.
+
+I've just found the springWorkflowWorker UncaughtExceptionHandler isn't set, so we've probably lost that stack trace. It looks like the stack traces I've posted above are the framework handling the FailWorkflowExecutionFailed event - what you need is the trace that came before that...
+
+I'll add more logging and add on here when reproduced. Thanks.
+
+chrisbu - I meant springWorkflowWorker, not springActivityWorker"
+Amazon Simple Workflow Service	"Pricing for Child workflows
+Hi,
+
+I want to understand the pricing when I am using the child workflow. If I have 100 child workflows in my workflow, will I be charged for 1 workflow or 101 workflows?"
+Amazon Simple Workflow Service	"Re: Pricing for Child workflows
+I believe for 101 workflows."
+Amazon Simple Workflow Service	"Activity started but never completed (java flow, spring)
+Hi
+
+Background:
+Using Java Flow Framework and SpringActivityWorker configured with taskExecutorThreadPoolSize=100 and pollThreadCount=10, running in a tomcat elastic beanstalk envt (and also local developer tomcat envt).
+
+Problem:
+Sometimes, Activities are listed as ""started"" and not completed. At the moment, I have one workflow  (runId: 22vJ9FANtU18rCB1nxaaKBWv/Wv0jI2Sb9DjeOagavWJY= ) that has 26 activities started (out of a total 150 ish that are listed.  
+
+Activities themselves take around 5 mins each to complete (and no code actually running to perform the activity). 
+I've not played around with correct timeouts yet and timeouts are set quite high.  
+The server isn't starting and stopping pollers and this isn't running in a unit test.
+
+My research
+It sounds like it could be the same issue as https://forums.aws.amazon.com/thread.jspa?threadID=242428 ""Activitiy not called in Java Flow Framework"".
+
+Also, I've seen the docs on this page 
+http://docs.aws.amazon.com/amazonswf/latest/awsflowguide/features-retry.html
+where the first line says:
+Activities sometimes fail for ephemeral reasons, such as a temporary loss of connectivity. At another time, the activity might succeed, so the appropriate way to handle activity failure is often to retry the activity, perhaps multiple times. 
+and then goes on to give examples to retry.
+
+My question
+Is an activity being marked as started but not actually being processed by a worker something I just have to deal with using the retry documentation above and adjusting the timeouts to sensible values?  Or is this something other problem that I've not worked out yet?"
+Amazon Simple Workflow Service	"Re: Activity started but never completed (java flow, spring)
+The correct way is to rely on activity timeout. For long running activities use heartbeat to get failure faster. Then after a timeout if activity is idempotent retry it from the workflow. Also double check that your AWS Client has correct timeout configured. If it is set to less than a minute the long poll is broken in the middle that could lead to activities being not delivered. 
+
+My experience is that in production environment with correct HTTP client timeout where connections are not broken frequently such ""lost"" activities are very rare."
+Amazon Simple Workflow Service	"Activity creation rate exceeded exception
+trying to spawn off 1000 tasks for a hello world example printHello call, and got the following exception that causes the workflow execution to fail:
+
+what does this exception mean?
+
+Decision Task Completed Event Id:	545
+Details:	[""com.amazonaws.services.simpleworkflow.flow.ScheduleActivityTaskFailedException"",{""failureCause"":""ACTIVITY_CREATION_RATE_EXCEEDED"",""activityId"":""194"",""activityType"":,""eventId"":240,""cause"":null,""message"":""ACTIVITY_CREATION_RATE_EXCEEDED for activityId=\""194\"" of activityType={Name: PrintHello, Version: 1.0, }"",""localizedMessage"":""ACTIVITY_CREATION_RATE_EXCEEDED for activityId=\""194\"" of activityType={Name: PrintHello, Version: 1.0, }"",""stackTrace"":[{""className"":""com.amazonaws.services.simpleworkflow.flow.worker.GenericActivityClientImpl"",""fileName"":""GenericActivityClientImpl.java"",""lineNumber"":163,""methodName"":""handleScheduleActivityTaskFailed"",""nativeMethod"":false},{""className"":""com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecider"",""fileName"":""AsyncDecider.java"",""lineNumber"":231,""methodName"":""processEvent"",""nativeMethod"":false},{""className"":""com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecider"",""fileName"":""AsyncDecider.java"",""lineNumber"":484,""methodName"":""decide"",""nativeMethod"":false},{""className"":""com.amazonaws.services.simpleworkflow.flow.worker.AsyncDecisionTaskHan"
+Amazon Simple Workflow Service	"Re: Activity creation rate exceeded exception
+This exception indicates that activity creation was throttled as the maximum activity scheduling rate was exceeded for your account. If you find that you are frequently throttled or your application encounters frequent spikes, please follow the instructions on this page https://w.amazon.com/index.php/SWF to increase your limits.
+
+Edited by: cangaws on Jun 2, 2017 9:10 AM"
+Amazon Simple Workflow Service	"Re: Activity creation rate exceeded exception
+""... Upto 10,000 workflow executions can be open at a time in each domain, which means that upto a million executions can be open simultaneously in each user account. ...""
+
+All I did was to convert the following snippet in the helloworld SWF example from:
+
+client.printHello(name);
+
+to 
+
+for (int i = 0; i < 1000; i++) {
+	client.printHello(name + "":"" + i);
+}
+
+and I expect to see 1000 executions to be submitted and executed among two activity hosts (evenly distributed).  This is far less than the 1 million simultaneous executions limit mentioned in that form...
+
+so where is that throttle coming from?  
+
+Thanks for your help!"
+Amazon Simple Workflow Service	"Re: Activity creation rate exceeded exception
+SWF limits not only number of open executions and open activities and timers per execution but also the rate of their creation. In your case if you slow down calls to helloWorkflow you'll be able to get to 1 million limit (using multiple domains).
+
+If you feel that any of the current limits are too strict for your use case we'll be happy to relax them. Just fill the form."
+Amazon Simple Workflow Service	"Re: Activity creation rate exceeded exception
+okay, thanks!
+
+But it's still not clear to me what is the activity creation rate throttle setting (100 per second, 200 per second.....?), how can I be sure that my activity creation rate is within the published rate limit.
+
+Thanks!"
+Amazon Simple Workflow Service	"Re: Activity creation rate exceeded exception
+We currently do not publish throttling rates but work with customers to understand their use case and set throttling rates as appropriate for their use cases. 
+
+Please follow the instructions on this page: https://w.amazon.com/index.php/SWF to increase your throttles.
+
+Edited by: cangaws on Jun 2, 2017 9:12 AM"
+Amazon Simple Workflow Service	"Re: Activity creation rate exceeded exception
+Hi @AWS,
+
+We hit same exception. I just filled the 'limit increase' form. I put our use case and other information. I provided email and phone number in the form. We would like to hear from you soon. ( the whole team is staring behind me as I type, we all are eager to hear from the AWS SWF team as we started our load/performance tests).
+
+Thanks,
+
+Genene
+
+(ggeda@ghx.com)"
+Amazon Simple Workflow Service	"Re: Activity creation rate exceeded exception
+Hi Genene,
+
+Hopefully the adjustments we put in place for your activity rates have met the needs of your application.  Thanks for providing us with all the details to get your new limits in place."
+Amazon Simple Workflow Service	"Re: Activity creation rate exceeded exception
+Hi @AWS,
+
+I got the same exception then I just filled up  the form  with the use case, also my email address and phone number. Would you please look at this? 
+
+Thank you very much.
+
+Regards,
+KhanhDM."
+Amazon Simple Workflow Service	"Long running workers - unexpected history events to decide + lost decisions
+Hi!
+
+I'm trying to use SWF as a worker pool to run a configured set of long running workers. My PoC code is here:
+
+https://github.com/mfine/swp 
+
+I set all *-toCloseTimeout timeouts to NONE or 365 days. I use 15s ScheduleToStartTimeout. I use 15s HearbeatTimeout for the activities.
+
+For the most part, this works ok. But I have run into edge cases of as I exercise the PoC code.
+
+1. I get unexpected history events to decide: ActivityTaskScheduled, ActivityTaskStarted, RequestCancelActivityTaskFailed, and FailWorkflowExecutionFailed - I kind of understand the latter two, but am perplexed by the former two. In all cases I end up failing the workflow - though potentially I should consider terminating the workflow? What should I be doing in the case of getting ActivityTaskScheduled or *ActivityTaskStarted*? Neither quite make sense to me to handle.
+
+2. I lose decisions and no timeouts kick in. Attached you can see two cases. One with a dangling DecisionTaskStarted and one with a dangling DecisionTaskScheduled with WorkflowExecutionCancelRequested events on top of it. Somehow my decider never received these decisions - that's ok - but I never get a timeout. My tasks are stuck in limbo for the next year! What should I be doing? I have set ScheduleToStartTimeout to 15s, but it never expires. I can't set a timeout on the task completing because it's effectively an unbounded task. What should I do here to unblock the tasks?
+
+Thanks for any and all help! Love using SWF in new and unexpected ways.
+
+Mark"
+Amazon Simple Workflow Service	"Re: Long running workers - unexpected history events to decide + lost decisions
+1. There are two types of events. The first type are events that just record decisions received by the service. For example ScheduleActivityTaskDecision is recorded into the history as ActivityTaskScheduled event. Similar event exists for every possible decision. Most decisions also have special failure events. For example if activity cannot be scheduled for some reason instead of the ActivityTaskScheduled an ScheduleActivityTaskFailedEvent is recorded. So RequestCancelActivityTaskFailed indicates that RequestCancelActivityTaskDecision wasn't accepted.
+
+The second type of events corresponds to other events that happen to the workflow execution. For example when activity is picked up by a worker ActivityTaskStarted event with worker identity is recorded. When activity completes ActivityTaskCompleted event is recorded. When an activity times out ActivityTaskTimedOut event is recorded.
+
+2. ScheduleToStart timeout applies only to activity tasks and it is the maximum time an activity task can stay queued in a task list. StartToClose timeout is the timeout of the maximum execution time.
+So for workflow type define short task StartToCloseTimeout to make sure that when a decision task is lost it is quickly rescheduled. 
+
+Writing a robust decider that takes care of all edge cases is non trivial task. I would recommend using the existing Flow framework which is available in Java and Ruby. If you decide to write your own make sure that you consult http://docs.aws.amazon.com/amazonswf/latest/apireference/"
+Amazon Simple Workflow Service	"Re: Long running workers - unexpected history events to decide + lost decisions
+Maxim Fateev wrote:
+2. ScheduleToStart timeout applies only to activity tasks and it is the maximum time an activity task can stay queued in a task list. StartToClose timeout is the timeout of the maximum execution time.
+So for workflow type define short task StartToCloseTimeout to make sure that when a decision task is lost it is quickly rescheduled. 
+
+Hi Max!
+Sorry, but I'm confused about StartToClose timeout - you're saying that its both the timeout of the maximum execution time AND the way to make sure that a task is quickly rescheduled when a decision is lost? I'm trying to run tasks with very long execution times - is it not possible to do that AND recover from lost decisions quickly? Is there another way of running long execution tasks AND recovering lost decisions quickly?
+
+Writing a robust decider that takes care of all edge cases is non trivial task. I would recommend using the existing Flow framework which is available in Java and Ruby. If you decide to write your own make sure that you consult http://docs.aws.amazon.com/amazonswf/latest/apireference/
+
+Thanks - yes, I'm using those libraries as reference to figure out SWF's logic. Thanks for your response and your continued support of SWF - it's amazing!
+
+Mark"
+Amazon Simple Workflow Service	"Re: Long running workers - unexpected history events to decide + lost decisions
+There are activity tasks and decision tasks. Both of them have their own StartToClose timeout. For both of them it is the maximum time worker can take to execute the task. For long running tasks this timeout should be as the maximum time the task can execute. Activities can also specify TaskHeartbeat timeout to fail faster than StartToClose interval. Decisions are usually very fast so specifying long timeout for them doesn't make sense and leads to situations when decision task is not rescheduled for a long time."
+Amazon Simple Workflow Service	"Re: Long running workers - unexpected history events to decide + lost decisions
+Maxim Fateev wrote:
+There are activity tasks and decision tasks. Both of them have their own StartToClose timeout. For both of them it is the maximum time worker can take to execute the task. For long running tasks this timeout should be as the maximum time the task can execute. Activities can also specify TaskHeartbeat timeout to fail faster than StartToClose interval. Decisions are usually very fast so specifying long timeout for them doesn't make sense and leads to situations when decision task is not rescheduled for a long time.
+
+Ahhh - the StartToCloseTimeout in RegisterWorkflow and StartWorkflowExecution is for decisions tasks and is not related to the StartToCloseTimeout in RegisterActivityType (for activity tasks). That makes sense and helps me over what I was getting tripped up on! Thanks for the clarification - I've been able to work out the rest of my issues.
+
+Mark"
+Amazon Simple Workflow Service	"SWF Workflow to run once in a day, will long polling be costly
+Hi All,
+
+Can someone guide me in this?
+We have a requirement in our project, where we will be running the SWF workflow once in a day, preferably at night, to do some cleanup in our AWS hosted service. Our workers and activities will be deployed in EC2 machines, and will be started when the machines are booted. 
+My concern is, as known the workers will be talking to the AWS SWF through long polling, to execute the activities. Since my workflow is something which runs only once in a day, wont it be a overhead to do the long poll throughout the day, to execute the workflow JUST ONCE? Is there any other alternate approach other than doing the long polling?
+
+One more question, can the frequency of polling be configured? I mean, increase the polling interval, so that the number of polling requests are reduced.
+
+Thanks.
+
+Edited by: Chenbaga on May 22, 2017 4:59 AM
+
+Edited by: Chenbaga on May 22, 2017 5:00 AM"
+Amazon Simple Workflow Service	"Re: SWF Workflow to run once in a day, will long polling be costly
+Long polling per se is not expensive as it executes request once a minute. Also what you pay doesn't  depend on number of polls. The only real overhead is a process that has to stay in memory all the time. If you don't want workers in memory you could start them from a local cron a few minutes before workflow itself is started."
+Amazon Simple Workflow Service	"Re: SWF Workflow to run once in a day, will long polling be costly
+Thanks Maxim.
+I think i wrongly used the term 'costly'. Actually I meant to ask whether the continuous polling be an overhead, when the workflow has to be executed only once in a day. You clarified the doubt and thanks for the suggestion of starting the workers and starters through OS cron. 
+
+Another programmatic doubt: We start the workers using calls ActivityWorker.start() and WorflowWorker.start(). How do we detect that the workers have done their job and exit/shutdown the workers processes?
+
+Edited by: Chenbaga on May 22, 2017 7:15 PM
+
+Edited by: Chenbaga on May 23, 2017 1:44 AM"
+Amazon Simple Workflow Service	"Re: SWF Workflow to run once in a day, will long polling be costly
+You can make it part of the workflow. The last activity of it can notify a worker process that it can die after some time to allow close workflow decision. But it adds complexity as every worker should be notified independently using its own task list. Another option is just shutdown workers after some time which is enough for workflow to complete. But obviously if workflow takes longer it is going get stuck.
+IMHO any such solution is not worth implementing. Just run the workers 24/7. Long poll uses almost 0 CPU.
+Obviously the ideal solution would be SFW supporting lambda functions running deciders. But it would make it compete with the new shiny Step Functions. So my bet is that it never going to happen."
+Amazon Simple Workflow Service	"Re: SWF Workflow to run once in a day, will long polling be costly
+Thanks Maxim"
+Amazon Simple Workflow Service	"Deployment of Java-based SWF application
+Does anyone know of any tool that can be used to deploy Java-based SWF application to EC2 instance? I know that AWS offers the deployment of Ruby-based SWF application using OpsWorks(https://aws.amazon.com/about-aws/whats-new/2014/09/08/you-can-now-deploy-your-amazon-swf-apps-with-aws-opsworks/), but couldn't get any information about Java-based SWF."
+Amazon Simple Workflow Service	"Re: Deployment of Java-based SWF application
+I'm also looking for help on this. Whenever I run the workflowhost as a service on linux or as nohup with user credentials, I get immediate socket timeout errors. I have to do screen, start with ec2-user credentials, then detach screen to get running stable. I'm disappointed the Java SDK docs don't have any information on this, only their demo code."
+Amazon Simple Workflow Service	"Re: Deployment of Java-based SWF application
+This is the solution I settled on and I guess it shows my Java/Linux noobness.  I kept getting AbortException AbortIfNeeded and socket closed when running as a service.  I removed the system.in.read() that the samples had in the WorkflowHost and ActivityHost and replaced with 
+while (true)
+               Thread.sleep(10);
+
+
+I suspect there's a better way to do this but sometimes the easiest questions are the hardest to google. (Normally a C# developer)"
+Amazon Simple Workflow Service	"Why doesn't Amazon start supporting Cloudformation deployment of SWF?
+I find this a real nuisance.. Using CloudFormation is really an important feature of AWS for my company, where we can't deploy stack for different environments or developers. All except for SWF, which really is a pain to setup for parallel deployments. When will SWF be a 1st class citizen ?"
+Amazon Simple Workflow Service	"Re: Why doesn't Amazon start supporting Cloudformation deployment of SWF?
+I understand that you would like to request a new feature for CloudFormation to support SWF natively.
+
+We do currently have an internal open feature request for it and I have just contacted the responsible team to make them aware that you would like this improved as well, to escalate such request on your behalf.
+
+Unfortunately, we can't share any ETA on this. However, as soon as it gets released, it should be publicly announced in either one of the following links:
+
+
+
+
+AWS blogs: http://blogs.amazon.com/
+CFN Forums: https://forums.aws.amazon.com/forum.jspa?forumID=92
+AWS CloudFormation Release Notes: https://aws.amazon.com/releasenotes/AWS-CloudFormation
+Whats New: http://aws.amazon.com/new/
+
+
+
+
+In the meantime, you can use an AWS Lambda-backed Custom Resources [1] within your CloudFormation stack to accomplish such task, by using the AWS SDK [2] in your Lambda function.
+
+References:
+
+[1] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources-lambda.html
+[2] https://aws.amazon.com/tools/"
+Amazon Simple Workflow Service	"Re: Why doesn't Amazon start supporting Cloudformation deployment of SWF?
+Thanks for the follow up.
+This should be a very simple support, because it is mostly about generating physical domain names from logical domains. Workflow definitions and activity definitions are always in the scope of the domain.
+Of course having the possibility to delete a domain would also be very welcome. Having to come to the forums to ask for it to humans is very un-amazonic ...."
+Amazon Simple Workflow Service	"Re: Why doesn't Amazon start supporting Cloudformation deployment of SWF?
++1"
+Amazon Simple Workflow Service	"Re: Why doesn't Amazon start supporting Cloudformation deployment of SWF?
+I'm managing this currently by adding them as bash scripts in my Amazon Linux AMI template in CloudFormation. I used the CloudFormer template as a head start."
+Amazon Simple Workflow Service	"Problem with Flink 1.2 on newest EMR [please move to correct category]
+Hi,
+
+we get sometimes the following error message when running our Java Flink 1.2 application in EMR 5.4.0:
+
+org.apache.flink.client.program.ProgramInvocationException: The program execution failed: Cannot initialize task 'DataSink (CsvOutputFormat (path: s3://ourbucket/ourkey, delimiter: ,))': org.apache.hadoop.conf.Configuration.addResource(Lorg/apache/hadoop/conf/Configuration;)V
+        at org.apache.flink.client.program.ClusterClient.run(ClusterClient.java:427)
+        at org.apache.flink.yarn.YarnClusterClient.submitJob(YarnClusterClient.java:210)
+        at org.apache.flink.client.program.ClusterClient.run(ClusterClient.java:400)
+        at org.apache.flink.client.program.ClusterClient.run(ClusterClient.java:387)
+        at org.apache.flink.client.program.ContextEnvironment.execute(ContextEnvironment.java:62)
+....
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.apache.flink.client.program.PackagedProgram.callMainMethod(PackagedProgram.java:528)
+        at org.apache.flink.client.program.PackagedProgram.invokeInteractiveModeForExecution(PackagedProgram.java:419)
+        at org.apache.flink.client.program.ClusterClient.run(ClusterClient.java:339)
+        at org.apache.flink.client.CliFrontend.executeProgram(CliFrontend.java:831)
+        at org.apache.flink.client.CliFrontend.run(CliFrontend.java:256)
+        at org.apache.flink.client.CliFrontend.parseParameters(CliFrontend.java:1073)
+        at org.apache.flink.client.CliFrontend$2.call(CliFrontend.java:1120)
+        at org.apache.flink.client.CliFrontend$2.call(CliFrontend.java:1117)
+        at org.apache.flink.runtime.security.HadoopSecurityContext$1.run(HadoopSecurityContext.java:43)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at javax.security.auth.Subject.doAs(Subject.java:422)
+        at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1698)
+        at org.apache.flink.runtime.security.HadoopSecurityContext.runSecured(HadoopSecurityContext.java:40)
+        at org.apache.flink.client.CliFrontend.main(CliFrontend.java:1117)
+Caused by: org.apache.flink.runtime.client.JobExecutionException: Cannot initialize task 'DataSink (CsvOutputFormat (path: s3://ourbucket/ourkey, delimiter: ,))': org.apache.hadoop.conf.Configuration.addResource(Lorg/apache/hadoop/conf/Configuration;)V
+        at org.apache.flink.runtime.executiongraph.ExecutionGraphBuilder.buildGraph(ExecutionGraphBuilder.java:136)
+        at org.apache.flink.runtime.jobmanager.JobManager.org$apache$flink$runtime$jobmanager$JobManager$$submitJob(JobManager.scala:1274)
+        at org.apache.flink.runtime.jobmanager.JobManager$$anonfun$handleMessage$1.applyOrElse(JobManager.scala:477)
+        at scala.runtime.AbstractPartialFunction$mcVL$sp.apply$mcVL$sp(AbstractPartialFunction.scala:33)
+        at scala.runtime.AbstractPartialFunction$mcVL$sp.apply(AbstractPartialFunction.scala:33)
+        at scala.runtime.AbstractPartialFunction$mcVL$sp.apply(AbstractPartialFunction.scala:25)
+        at org.apache.flink.runtime.clusterframework.ContaineredJobManager$$anonfun$handleContainerMessage$1.applyOrElse(ContaineredJobManager.scala:100)
+        at scala.PartialFunction$OrElse.apply(PartialFunction.scala:162)
+        at org.apache.flink.runtime.LeaderSessionMessageFilter$$anonfun$receive$1.applyOrElse(LeaderSessionMessageFilter.scala:36)
+        at scala.runtime.AbstractPartialFunction$mcVL$sp.apply$mcVL$sp(AbstractPartialFunction.scala:33)
+        at scala.runtime.AbstractPartialFunction$mcVL$sp.apply(AbstractPartialFunction.scala:33)
+        at scala.runtime.AbstractPartialFunction$mcVL$sp.apply(AbstractPartialFunction.scala:25)
+        at org.apache.flink.runtime.LogMessages$$anon$1.apply(LogMessages.scala:33)
+        at org.apache.flink.runtime.LogMessages$$anon$1.apply(LogMessages.scala:28)
+        at scala.PartialFunction$class.applyOrElse(PartialFunction.scala:118)
+        at org.apache.flink.runtime.LogMessages$$anon$1.applyOrElse(LogMessages.scala:28)
+        at akka.actor.Actor$class.aroundReceive(Actor.scala:467)
+        at org.apache.flink.runtime.jobmanager.JobManager.aroundReceive(JobManager.scala:118)
+        at akka.actor.ActorCell.receiveMessage(ActorCell.scala:516)
+        at akka.actor.ActorCell.invoke(ActorCell.scala:487)
+        at akka.dispatch.Mailbox.processMailbox(Mailbox.scala:238)
+        at akka.dispatch.Mailbox.run(Mailbox.scala:220)
+        at akka.dispatch.ForkJoinExecutorConfigurator$AkkaForkJoinTask.exec(AbstractDispatcher.scala:397)
+        at scala.concurrent.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)
+        at scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
+        at scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
+        at scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
+Caused by: java.lang.NoSuchMethodError: org.apache.hadoop.conf.Configuration.addResource(Lorg/apache/hadoop/conf/Configuration;)V
+        at com.amazon.ws.emr.hadoop.fs.EmrFileSystem.initialize(EmrFileSystem.java:93)
+        at org.apache.flink.runtime.fs.hdfs.HadoopFileSystem.initialize(HadoopFileSystem.java:320)
+        at org.apache.flink.core.fs.FileSystem.getUnguardedFileSystem(FileSystem.java:271)
+        at org.apache.flink.core.fs.FileSystem.get(FileSystem.java:310)
+        at org.apache.flink.core.fs.Path.getFileSystem(Path.java:293)
+        at org.apache.flink.api.common.io.FileOutputFormat.initializeGlobal(FileOutputFormat.java:279)
+        at org.apache.flink.runtime.jobgraph.OutputFormatVertex.initializeOnMaster(OutputFormatVertex.java:84)
+        at org.apache.flink.runtime.executiongraph.ExecutionGraphBuilder.buildGraph(ExecutionGraphBuilder.java:133)
+        ... 26 more
+
+Changing the classpath as discussed in  http://apache-flink-user-mailing-list-archive.2336050.n4.nabble.com/Integrate-Flink-with-S3-on-EMR-cluster-td5894.html  does not help.
+Could it be that there is some version issue with the Flink version installed in EMR?
+
+Edited by: sunflower on Mar 20, 2017 2:23 PM"
+Amazon Simple Workflow Service	"Re: Problem with Flink 1.2 on newest EMR [please move to correct category]
+same issue on EMR 5.5.0"

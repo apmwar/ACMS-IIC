@@ -1,0 +1,9 @@
+label,NumberOfThreads
+Amazon EC2,87638
+Amazon RDS,10527
+Amazon S3,16181
+Amazon CloudFront,5852
+Amazon VPC,6980
+Amazon SNS,1743
+Amazon Elastic Beanstalk,7486
+Amazon Lambda,3200

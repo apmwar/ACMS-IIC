@@ -1,0 +1,2577 @@
+label	description
+AWS X-Ray	"X-Ray can't poll SampleRules
+Hi, I deployed my Java application using as an ECS Task. My task definition creates a task definition for xray daemon as specified in the documentation with port mappings as udp 2000. Also I've set the environment variable 'AWS_XRAY_DAEMON_ADDRESS' as 'xray-daemon:2000' and docker containers are linked using 'links' attribute. Added servlet filter to my webapp thats running on tomcat. Also added servletContextListener with following:
+
+        AWSXRayRecorderBuilder builder = AWSXRayRecorderBuilder.standard().withPlugin(new ECSPlugin());
+        AWSXRayRecorder recorder = builder.build();
+        recorder.setContextMissingStrategy(new LogErrorContextMissingStrategy());
+        AWSXRay.setGlobalRecorder(recorder);
+
+I can see traces being generated in AWS XRay console. I've not created any rules yet so it should be using default ones. But there are also exceptions appearing in my application logs as following. Any idea how can I fix the exceptions? It seems its trying to connect to xray daemon using HTTP at 2000 port but in task definition I've specified protocol as 'udp' as specified in the documentation could that be an issue?
+
+20 Feb 2019 09:41:23,747 https://forums.aws.amazon.com/ INFO com.amazonaws.xray.strategy.sampling.pollers.RulePoller - Polling sampling rules.
+20 Feb 2019 09:41:24,578 https://forums.aws.amazon.com/ ERROR com.amazonaws.xray.strategy.sampling.pollers.RulePoller - Encountered error polling GetSamplingRules:
+com.amazonaws.SdkClientException: Unable to execute HTTP request: Connect to aws-xray-daemon:2000 http://aws-xray-daemon/172.17.0.2 failed: Connection refused (Connection refused)
+at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleRetryableException(AmazonHttpClient.java:1134) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeHelper(AmazonHttpClient.java:1080) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.AmazonHttpClient$RequestExecutor.doExecute(AmazonHttpClient.java:745) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeWithTimer(AmazonHttpClient.java:719) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.AmazonHttpClient$RequestExecutor.execute(AmazonHttpClient.java:701) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.AmazonHttpClient$RequestExecutor.access$500(AmazonHttpClient.java:669) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.AmazonHttpClient$RequestExecutionBuilderImpl.execute(AmazonHttpClient.java:651) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:515) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.services.xray.AWSXRayClient.doInvoke(AWSXRayClient.java:1257) ~aws-java-sdk-xray-1.11.398.jar:?
+at com.amazonaws.services.xray.AWSXRayClient.invoke(AWSXRayClient.java:1226) ~aws-java-sdk-xray-1.11.398.jar:?
+at com.amazonaws.services.xray.AWSXRayClient.invoke(AWSXRayClient.java:1215) ~aws-java-sdk-xray-1.11.398.jar:?
+at com.amazonaws.services.xray.AWSXRayClient.executeGetSamplingRules(AWSXRayClient.java:568) ~aws-java-sdk-xray-1.11.398.jar:?
+at com.amazonaws.services.xray.AWSXRayClient.getSamplingRules(AWSXRayClient.java:539) ~aws-java-sdk-xray-1.11.398.jar:?
+at com.amazonaws.xray.strategy.sampling.pollers.RulePoller.pollRule(RulePoller.java:65) ~aws-xray-recorder-sdk-core-2.2.0.jar:?
+at com.amazonaws.xray.strategy.sampling.pollers.RulePoller.lambda$start$0(RulePoller.java:46) aws-xray-recorder-sdk-core-2.2.0.jar:?
+at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515) https://forums.aws.amazon.com/
+at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:305) https://forums.aws.amazon.com/
+at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305) https://forums.aws.amazon.com/
+at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128) https://forums.aws.amazon.com/
+at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628) https://forums.aws.amazon.com/
+at java.lang.Thread.run(Thread.java:834) https://forums.aws.amazon.com/
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to aws-xray-daemon:2000 http://aws-xray-daemon/172.17.0.2 failed: Connection refused (Connection refused)
+at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:373) ~httpclient-4.5.6.jar:4.5.6
+at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~https://forums.aws.amazon.com/
+at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~https://forums.aws.amazon.com/
+at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~https://forums.aws.amazon.com/
+at java.lang.reflect.Method.invoke(Method.java:566) ~https://forums.aws.amazon.com/
+at com.amazonaws.http.conn.ClientConnectionManagerFactory$Handler.invoke(ClientConnectionManagerFactory.java:76) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.conn.$Proxy126.connect(Unknown Source) ~https://forums.aws.amazon.com/
+at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:394) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:83) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:56) ~httpclient-4.5.6.jar:4.5.6
+at com.amazonaws.http.apache.client.impl.SdkHttpClient.execute(SdkHttpClient.java:72) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeOneRequest(AmazonHttpClient.java:1256) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeHelper(AmazonHttpClient.java:1072) ~aws-java-sdk-core-1.11.398.jar:?
+... 19 more
+Caused by: java.net.ConnectException: Connection refused (Connection refused)
+at java.net.PlainSocketImpl.socketConnect(Native Method) ~https://forums.aws.amazon.com/
+at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:399) ~https://forums.aws.amazon.com/
+at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:242) ~https://forums.aws.amazon.com/
+at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:224) ~https://forums.aws.amazon.com/
+at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:403) ~https://forums.aws.amazon.com/
+at java.net.Socket.connect(Socket.java:591) ~https://forums.aws.amazon.com/
+at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:373) ~httpclient-4.5.6.jar:4.5.6
+at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~https://forums.aws.amazon.com/
+at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~https://forums.aws.amazon.com/
+at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~https://forums.aws.amazon.com/
+at java.lang.reflect.Method.invoke(Method.java:566) ~https://forums.aws.amazon.com/
+at com.amazonaws.http.conn.ClientConnectionManagerFactory$Handler.invoke(ClientConnectionManagerFactory.java:76) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.conn.$Proxy126.connect(Unknown Source) ~https://forums.aws.amazon.com/
+at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:394) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:83) ~httpclient-4.5.6.jar:4.5.6
+at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:56) ~httpclient-4.5.6.jar:4.5.6
+at com.amazonaws.http.apache.client.impl.SdkHttpClient.execute(SdkHttpClient.java:72) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeOneRequest(AmazonHttpClient.java:1256) ~aws-java-sdk-core-1.11.398.jar:?
+at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeHelper(AmazonHttpClient.java:1072) ~aws-java-sdk-core-1.11.398.jar:?"
+AWS X-Ray	"Re: X-Ray can't poll SampleRules
+Hey,
+
+it looks like this issue might be happening because the IP address of the daemon is set literally as ""aws-xray-daemon"" instead of its IP address, which should be ""127.0.0.1"" if the Daemon is running on the same machine. I would recommend checking your configuration to make sure this is set properly
+
+In your case, try setting the environment variable 'AWS_XRAY_DAEMON_ADDRESS' as '127.0.0.1:2000'
+
+Let me know if this helps!
+
+Thanks,
+Chan Chiem Jeffery Saeteurn"
+AWS X-Ray	"Re: X-Ray can't poll SampleRules
+Thanks for the reply. Forgot to mention that my ECS cluster runs with EC2 launch type. Anyway I changed address to 127.0.0.1:2000 but that didn't work. Got same exception:
+
+22 Feb 2019 10:20:21,096 https://forums.aws.amazon.com/ ERROR com.amazonaws.xray.strategy.sampling.pollers.RulePoller - Encountered error polling GetSamplingRules: 
+com.amazonaws.SdkClientException: Unable to execute HTTP request: Connect to 127.0.0.1:2000 [/127.0.0.1] failed: Connection refused (Connection refused)
+
+I followed the documentation from here: https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-ecs.html
+And my task definition looks like following (some parts omitted):
+
+ {
+    ""name"": ""aws-xray-daemon"",
+    ""image"": ""${repository_url}/aws-xray-daemon:latest"",
+    ""cpu"": 32,
+    ""memory"": 256,
+    ""portMappings"": [
+      {
+        ""hostPort"": 2000,
+        ""containerPort"": 2000,
+        ""protocol"": ""udp""
+      }
+    ],
+    ""logConfiguration"":  {
+      ""logDriver"":  ""awslogs"",
+      ""options"":  {
+        ""awslogs-region"":  ""${region}"",
+        ""awslogs-group"":  ""${environment}/xxx"",
+        ""awslogs-stream-prefix"": ""xray-daemon""
+      }
+    }
+  },
+  {
+    ""name"": ""xxx"",
+    ""image"": ""${repository_url}/xxx:${image_tag}"",
+    ""cpu"": ${cpu},
+    ""memory"": ${memory},
+    ""environment"": [
+      {
+        ""name"": ""AWS_XRAY_DAEMON_ADDRESS"",
+        ""value"": ""127.0.0.1:2000""
+      }
+    ],
+    ""portMappings"": [
+      {
+        ""hostPort"": 0,
+        ""containerPort"": ${port},
+        ""protocol"": ""tcp""
+      }
+    ],
+  ""logConfiguration"":  {
+      ""logDriver"":  ""awslogs"",
+      ""options"":  {
+        ""awslogs-region"":  ""${region}"",
+        ""awslogs-group"":  ""${environment}/xxx"",
+        ""awslogs-stream-prefix"": ""tomcat""
+      }
+    },
+    ""links"": [
+      ""aws-xray-daemon""
+    ],
+    ""essential"":  true
+  }
+
+Any more ideas?"
+AWS X-Ray	"Re: X-Ray can't poll SampleRules
+It looks like this error is happening when the internal poller's attempts to call getSamplingTargets and fails, most likely because the Daemon isn't serving the request. The call to GetSamplingTargets sends an HTTP call to the Daemon. Since it's an HTTP call, it's utilizing TCP. What I think is happening on your end is your configuration for the TCP port mappings in your container might be redirecting the call to a wrong port:
+
+""portMappings"": [
+{
+""hostPort"": 0,
+""containerPort"": ${port},
+""protocol"": ""tcp""
+}
+
+By default, the Daemon serves both TCP and UDP on port 2000. Try setting both the hostPort to 2000 and containerPort to 2000 for your TCP port mapping just like how you did with the UDP. So the configuration looks like this:
+
+""portMappings"": [
+{
+""hostPort"": 2000,
+""containerPort"": 2000,
+""protocol"": ""tcp""
+}"
+AWS X-Ray	"Re: X-Ray can't poll SampleRules
+Thanks for your reply. I changed my x-ray daemon container definition to have 2000 port for tcp as well:
+{
+    ""name"": ""aws-xray-daemon"",
+    ""image"": ""${repository_url}/aws-xray-daemon:latest"",
+    ""cpu"": 32,
+    ""memory"": 256,
+    ""portMappings"": [
+      {
+        ""hostPort"": 2000,
+        ""containerPort"": 2000,
+        ""protocol"": ""udp""
+      },
+      {
+        ""hostPort"": 2000,
+        ""containerPort"": 2000,
+        ""protocol"": ""tcp""
+      }
+    ],
+    ""logConfiguration"":  {
+      ""logDriver"":  ""awslogs"",
+      ""options"":  {
+        ""awslogs-region"":  ""${region}"",
+        ""awslogs-group"":  ""${environment}/xxx"",
+        ""awslogs-stream-prefix"": ""xray-daemon""
+      }
+    }
+  }
+
+No difference, still get the exact same connection error. Doesn't matter if I mention AWS_XRAY_DAEMON_ADDRESS to 127.0.0.1:2000 or aws-xray-daemon:2000."
+AWS X-Ray	"Re: X-Ray can't poll SampleRules
+Hmm this is very strange. It looks like the port mappings are correct and the container links that you had configured in the beginning looks correct. 
+
+So everything seems to function correctly except for the log errors? If that is the case, then the link that you used to locate the Daemon from your other container seems to work fine. This means that the traces are sent and received through port 2000 using UDP. 
+
+The issue here is seems is that the HTTP (TCP) requests aren't going through to the Daemon or the container isn't receiving a response back. Are you able to look at the Daemon's logs and see if it is encountering any issues?"
+AWS X-Ray	"Re: X-Ray can't poll SampleRules
+Thanks, functionality looks fine. I can see traces in xray console. No errors in daemon logs either. Its just that exception in logs is annoying and create lots of noise."
+AWS X-Ray	"Re: X-Ray can't poll SampleRules
+What version of the Daemon are you using? Make sure you have the latest version of the Daemon which is 3.x."
+AWS X-Ray	"Re: X-Ray can't poll SampleRules
+XRay daemon version is 3.0.0. Thanks"
+AWS X-Ray	"Integration with opentracing?
+Is there any plan for x-ray to adhere to open tracing specification? so that any application with Open Tracing implementation move to AWS"
+AWS X-Ray	"Re: Integration with opentracing?
+Hi Tosheer,
+
+Could you please provide any additional details on your use case for OpenTracing support? Is there a specific library, framework, or programming language that you're looking for support in X-Ray? Or is your use case more about portability across different vendors? Any additional information to help us better understand your use case is appreciated.
+
+For additional context, we've investigated providing OpenTracing compatible instrumentation shims for our SDK's. However, since OpenTracing only defines an API specification for instrumentation and doesn't define a header or data format for the backend, this makes it such that each instrumentation library only supports a limited number of backends. This implies that even if X-Ray was to provide an OpenTracing compatible instrumentation library, you would need to swap out your current OpenTracing instrumentation library for the X-Ray implementation.
+
+Best,
+AbhishekS
+
+Edited by: AbhishekS@AWS on Jan 30, 2018 10:57 AM"
+AWS X-Ray	"Re: Integration with opentracing?
+Hi Abhishek,
+
+We are developing a monitoring framework for few of our project which are currently not hosted on AWS. But down the line we will be moving to AWS, so we were thinking to check if guys will be adhering to Open Tracing specification so that we don't need to change the project code (traces added in the application) or Just the O(1) change once we move it to AWS.
+
+Also as per my understanding changing the open tracing tracer implementation from one to other say from (Zipkin to Jaeger) will not impact the application tracing implementation or needs the minimal changes.
+
+Thanks
+Tosheer"
+AWS X-Ray	"Re: Integration with opentracing?
+Hi,
+
+I have a use case. My company have several PHP codebases that use Molten (https://github.com/chuan-yun/Molten) to provide implicit tracing (means no code change). Currently we use that to hook with opentracing but for storage, maintenance, cross language (e.g. PHP <-> Python app) support reasons we hope AWS x-ray could help with that."
+AWS X-Ray	"Re: Integration with opentracing?
+We would like to have a seamless integration with our OpenTracing implementation and X-Ray data collection.   We would like to cover both scenarios where tracing starts.  
+
+Scenario 1: Parent trace is OpenTracing and NOT X-Ray
+A trace is originated outside of AWS X-Ray instrumentation where an OpenTracing trace is started.   OpenTracing segments are appended to the existing OpenTracing trace.   Once the trace enters an X-Ray aware service, X-Ray will take the OpenTracing trace ID and use that as the trace instead of creating a new X-Ray trace.   It will then append an X-Ray segment to that trace ID (inside of X-Ray's repository).  Likewise, it will pass the trace in a format that can be read by both X-Ray & OpenTracing so that downstream implementations (X-Ray or OpenTracing) can append segments.   Consider the data repository to be out of scope.  3rd party reporting collectors can be constructed to pull X-Ray segments from a parent trace ID into the OpenTracing repository.   
+
+Scenario 2: Parent trace is X-Ray and NOT OpenTracing
+A trace is originated in X-Ray and appended in X-Ray aware services.  A service that is not X-Ray aware but OpenTracing will be able to use the trace ID and consider it to be an OpenTracing trace ID.   Segments can be appended to that trace ID and placed in OpenTracing.   The repositories will remain isolated but a shared trace ID is available to join the segments and trace information.   The trace durations will be skewed however the segments that align with the traces will be accurate.   
+
+Alternatively, have X-Ray act as a collector that supports OpenTracing API for publish and reporting.   This allows 3rd party integration to push trace information and mine / analyze the data points.   
+
+https://github.com/apache/incubator-skywalking
+http://opentracing.io/
+https://github.com/openzipkin
+https://github.com/jaegertracing/jaeger
+https://github.com/openzipkin/zipkin-aws"
+AWS X-Ray	"Re: Integration with opentracing?
+Hi all,
+
+At my company we built a thin set of OpenTracing wrappers around the X-Ray libraries and I'm pleased to say that we've now open-sourced them:
+
+https://github.com/skylight-ipv/opentracing-java-aws-xray
+
+The original code was written in Scala and has been used in production for about six months now, so we're reasonably confident in it. However, we decided to translate to Java when open-sourcing it to make it more widely usable, so I've marked the Java version as ""alpha"" for now (we're in the process of switching to it here, and will fix any issues we find).
+
+I'm still in the process of figuring out building and deploying to maven repos, but if you'd like to build and test locally, and give any feedback, that would be awesome 
+
+Ashley
+
+---
+Ashley Mercer
+Head of Development, Skylight IPV"
+AWS X-Ray	"SubSegments Not Showing Up Using Manual Mode aws-x-ray-sdk-core
+Note: we are attempting to use manual mode to trace calls that don't go through AWS infrastructure.
+
+I'm aware that the aws-xray-sdk-core
+ is ultimately just a convenient way of constructing the payload for datagrams fired to the daemon, but while I see the segments at the top level of a trace I can't find the subsegments.  Perhaps I'm doing something wrong?
+
+Basically, we create a new segment at the top level and pass it down in a fashion as such:
+
+export const handler = (config: IConfig) => 
+  async (queryParams: QueryParams, xRaySegment: Segment) => {
+    const someSegment = xRaySegment.addNewSubsegment('useful name')
+    try {
+      // some logic here
+   } finally {
+     someSegment.close()
+}
+
+
+I am aware that subsegments won't appear in the service map (and that is fine), but I would think I could find them in the traces themselves... and I can't.  I only see:
+
+{
+    ""Duration"": 1.176,
+    ""Id"": ""1-5c65e39c-5a8138a019644610e29ed270"",
+    ""Segments"": [
+        {
+            ""Document"": {
+                ""id"": ""4a5d76ae7b446ca9"",
+                ""name"": ""athlinks-api-results-dev-irp_by_id"",
+                ""start_time"": 1550181276.975,
+                ""end_time"": 1550181278.115,
+                ""parent_id"": ""0ddab75d2e389a4e"",
+                ""aws"": {
+                    ""function_arn"": ""arn:aws:lambda:us-east-1:540178083184:function:athlinks-api-results-dev-irp_by_id"",
+                    ""resource_names"": [
+                        ""athlinks-api-results-dev-irp_by_id""
+                    ],
+                    ""account_id"": """"
+                },
+                ""trace_id"": ""1-5c65e39c-5a8138a019644610e29ed270"",
+                ""origin"": ""AWS::Lambda::Function""
+            },
+            ""Id"": ""4a5d76ae7b446ca9""
+        },
+        {
+            ""Document"": {
+                ""id"": ""0ddab75d2e389a4e"",
+                ""name"": ""athlinks-api-results-dev-irp_by_id"",
+                ""start_time"": 1550181276.959,
+                ""end_time"": 1550181278.135,
+                ""http"": {
+                    ""response"": {
+                        ""status"": 200
+                    }
+                },
+                ""aws"": {
+                    ""request_id"": ""822a2162-e05d-4ac8-af1d-449761e0c8b8""
+                },
+                ""trace_id"": ""1-5c65e39c-5a8138a019644610e29ed270"",
+                ""origin"": ""AWS::Lambda"",
+                ""resource_arn"": ""arn:aws:lambda:us-east-1:540178083184:function:athlinks-api-results-dev-irp_by_id""
+            },
+            ""Id"": ""0ddab75d2e389a4e""
+        }
+    ]
+}
+
+
+The SDK supports nesting segments and subsegments (and subsegments seem to be able to drill down quite far).  I am aware of the 64k limit, but these are still pretty tiny.  And as far as I can grok from the source, close
+ calls flush
+.  Again, I see all Segment
+s but no SubSegment
+s (fwiw, this is TS and I had to start generating a .d.ts file to use the SDK, if the code seems odd)
+
+Update
+While close is being called on each segment, flush never is (I wrapped the flush calls to diagnose).  Is this an issue with manual mode?
+
+Edited by: mweaver on Feb 15, 2019 1:51 PM"
+AWS X-Ray	"Re: SubSegments Not Showing Up Using Manual Mode aws-x-ray-sdk-core
+Hey,
+
+Could you provide a sample of how you're obtaining the parent segment? Since this is done in Lambda, where the immutable, parent segment is generated for you, things can go wrong if you attempt to mutate it.
+
+And as you mentioned that flush() is never called, this is as a result of a counter condition not being held, so it would be easier to diagnose the issue if we understood more of the context if you problem and find the root cause of this.
+
+Thanks,
+Chan Chiem Jeffery Saeteurn"
+AWS X-Ray	"xray daemon and xray python SDK locally giving issues.
+Hi I have a question, I'm trying to run xray daemon locally on a mac. In production, my flask Application does run on aws lambda. However, I am trying to test out xray locally to determine how and what I want my segments/traces to consist of. It's my understanding that running the xray Daemon in a docker container in conjunction to having the x-ray SDK running would initiate calls to aws API to create traces of what I have locally.
+
+I am using connexion, (Swagger First framework for Python on top of Flask)
+
+Here is what my code looks like
+/__init__.py
+from aws_xray_sdk.core.context import Context
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
+ 
+xray_recorder.configure(
+    sampling=True,
+    context_missing='LOG_ERROR',
+    daemon_address='127.0.0.1:2000',
+    # plugins=('ec2_plugin'),
+    service='my-app',
+    context=Context()
+)
+XRayMiddleware(app.app, xray_recorder)
+
+
+/docker-compose.yml
+services:
+  x-ray-daemon:
+    image: amazon/aws-xray-daemon
+    ports:
+      - ""2000:2000/udp""
+    command: --local-mode
+    networks:
+      - myapp
+    # volumes:
+    #   - ~/.aws/:/root/.aws/:ro
+    environment:
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=****
+      - AWS_SECRET_ACCESS_KEY=***
+
+
+/tester.py
+@xray_recorder.capture('fetch')
+def fetch():
+    app.app.logger.info(""hello"")
+    # xray_recorder.begin_segment('name')
+    # xray_recorder.begin_subsegment('name')
+    # some code block you want to record
+    # xray_recorder.end_subsegment()
+ 
+    # xray_recorder.end_segment()
+ 
+    # app.app.logger.info(xray_recorder)
+ 
+    return 200
+
+with these commented out, I get no errors or response except for the ""hello"" im printing. With them uncommented out I get the following. 
+cannot find the current segment/subsegment, please make sure you have a segment open.
+No subsegment to end.
+AttributeError: 'NoneType' object has no attribute 'put_http_meta'
+
+
+Not sure where I'm going wrong. I specifically included context=Context() because I'm running everything locally.
+
+Edited by: shrr on Feb 15, 2019 12:48 PM"
+AWS X-Ray	"Re: xray daemon and xray python SDK locally giving issues.
+For reference, this conversation was started on this github issue:
+https://github.com/aws/aws-xray-sdk-python/issues/129
+
+And the conversation will be continued here for better searchability purposes.
+
+After hearing that you're using a framework built on top of Flask called Connexion, that might be the cause of the issue. We don't officially support web frameworks other than Flask and Django at the moment, so anything that's built on top of it may or may not work.
+
+It looks like the main cause of your issue is that parent segments aren't being generated outside of your captured fetch() method call. In the implementation of our Flask Middleware patcher, it registers a method that automatically generates/ends segments using Flask's before_request() and after_request() methods, and in the case of this Connexion framework, it may not be invoking the same calls as what Flask does, so the middleware patcher may not work with Connexion the same way with Flask. This may be the reason the middleware is not automatically beginning a segment prior to handling the incoming requests.
+
+I would suggest opening up an issue on our Python SDK to add support for this framework.
+
+Update:
+Upon further inspection on my end, I can confirm that the patcher's call to connexion's Flask's before_request() doesn't actually perform the intended function, so no segments were ever created. This might be the reason why you experienced an exception at the very beginning and needed to set your context missing strategy to logging.
+
+Edited by: JeffS-AWS on Feb 15, 2019 2:57 PM"
+AWS X-Ray	"Python requests.Session() does not capture traces for HTTP call made
+I am using python requests library to make HTTP calls to downstream services. I am using it as following -
+
+from botocore.vendored import requests
+from aws_xray_sdk.core import patch_all
+
+patch_all()
+
+session = requests.Session()
+session.get(...)
+
+This interaction is not captured by X-Ray. Appreciate any help with this issue.
+
+Thanks,
+Gaurav"
+AWS X-Ray	"Re: Python requests.Session() does not capture traces for HTTP call made
+Hey Gaurav,
+
+Thanks for using X-Ray! So to understand your situation a little more, I have a few questions to ask you:
+
+1. Is there a requirement to use Botocore's vendored Request package?
+2. Are you using this in a Lambda Environment?
+3. What version of Botocore are you using?
+4. Is it possible for you to update Botocore to the latest version?
+
+The reason why this issue is happening is because our patcher is designed to only patch the original Requests package, and because of this, it doesn't yet have functionality to patch Botocore's vendored version. A solution could be to modify the X-Ray SDK so that it also patches Botocore's vendored Request package and would instrument the session.get() you showed us as expected; however this can cause some issues: The older versions (before 1.11.0) of Botocore utilize this vendored Requests package to make outgoing Requests for the boto clients. By patching this, it's possible that X-Ray will generate nested subsegments for boto client calls due to the vendored Requests package calls. In the newer versions (after and including 1.11.0), Botocore no longer has its vendored version of Requests as a dependency and will not exhibit the mentioned behavior.
+
+Looking forward to hearing back from you!
+
+Thanks,
+Chan Chiem Jeffery Saeteurn"
+AWS X-Ray	"Multiple account API gateway traces
+Is it possible to get Api Gateway to forward traces to a different account?
+
+The set-up I am looking to trace is an application in account 1 that then makes requests to API gateway in account 2. Account 2 then forwards that request to a lambda which interacts with multiple services in Account 2. 
+
+When I look at the trace from the perspective of account 1, all of the work done in account 2 shows up as a single node. since I've set up tracing in account 2 as well I can see the trace I expect there with a node per service reporting as expected. 
+
+What I would like to know: Can get managed services like API gateway to push its trace data to a different account?"
+AWS X-Ray	"Re: Multiple account API gateway traces
+Hi there,
+
+Cross account support on managed services is on our roadmap. We don't have an ETA yet. Please stay tuned and thank you for your patience.
+
+Regards,
+Haotian
+
+Edited by: haotianw@AWS on Jan 31, 2019 11:27 AM"
+AWS X-Ray	"X-Ray and S3 notification
+Hello,
+
+I have a pipeline which is as follow:
+lambda1 -> S3 -> lambda2
+
+Lambda1 put an object in an S3 bucket and lambda2 is invoked by the S3 notification
+
+X-Ray doesn't make the link between lambda1 and lambda2. I tried to do it programmatically  by making lambda1 pass its trace_id and segment id to lambda2 and then in lambda2 call putTraceSegments. Actually it worked but then nothing more is traced from lambda2. I guess it's because the trace_id computed by AWS in lambda2 doesn't match the one used to create the segment in lambda2. However, even if it were working,  it's quite a lot of work to make this link.
+
+1) Is there any plan to integrate this kind of scenario in X-Ray ? I saw in this thread https://forums.aws.amazon.com/thread.jspa?threadID=292267&tstart=0 that there is work going on for SNS integration. Would S3 notification be part of it ? 
+
+2) In such scenario lambda1 -> S3 -> lambda2
+Wouldn't be better if X-Amzn-Trace-Id is forwarded between lambda1 and lambda2? Correlation between components of our pipeline is made difficult , it seems that only custom code would achieve it but I would like to avoid it at maximum.
+
+Thanks in advance"
+AWS X-Ray	"Re: X-Ray and S3 notification
+Hi there,
+
+Thank you four sharing your use case and feedback. The link of S3 notification to Lambda is a popular request and this is already in our roadmap. We cannot provide an ETA but we will try to get this done the soonest we can. Please stay tuned and thank you for your patience.
+
+Regards,
+Haotian"
+AWS X-Ray	"Re: X-Ray and S3 notification
+Hi Haotian,
+
+Thank you very much for your return on this. That's great for it already being in the roadmap.
+
+Regards,
+Alain"
+AWS X-Ray	"How send data to xray in .NET framework.
+Hi,
+I wrote a simple .NET console application to test aws xray. I can't see any data sending to Xray. The program below works fine and no error:
+    class Program
+    {
+        public static void Main(string[] args)
+        {
+            AWSSDKHandler.RegisterXRayForAllServices(); //place this before any instantiation of AmazonServiceClient
+            AWSXRayRecorder.Instance.BeginSegment(""add products"");
+            AmazonDynamoDBClient client = new AmazonDynamoDBClient(RegionEndpoint.APSoutheast2); // AmazonDynamoDBClient is automatically registered with X-Ray
+            DynamoDBContext context = new DynamoDBContext(client);
+            var productBatch = context.CreateBatchWrite<Product>();
+            var product1 = new Product { Id = 1, Name = ""Sony 50 inch"", Categories = new List<string> { ""tv"", ""sony"" } };
+            var product2 = new Product { Id = 2, Name = ""Samsung 50 inch"", Categories = new List<string> { ""tv"", ""Samsung"" } };
+ 
+            //add products
+            productBatch.AddPutItem(product1);
+            productBatch.AddPutItem(product2);
+            productBatch.Execute();
+            AWSXRayRecorder.Instance.EndSegment();
+ 
+            //delete products
+            AWSXRayRecorder.Instance.BeginSegment(""delete products"");
+            productBatch = context.CreateBatchWrite<Product>();
+            productBatch.AddDeleteItem(product1);
+            productBatch.AddDeleteItem(product2);
+            productBatch.Execute();
+            AWSXRayRecorder.Instance.EndSegment();
+        }
+    }
+ 
+    [DynamoDBTable(""Product"")]
+    public class Product
+    {
+        [DynamoDBTable(""Product"")]
+         public int Id { get; set; }
+ 
+        public string Name { get; set; }
+        
+        [DynamoDBProperty(""Categories"")]
+        public List<string> Categories { get; set; }
+    }
+
+
+I can see that the items are written to dynamodb. I saw the logging option in app.configu but the only options are ""None, Log4Net, SystemDiagnostics"". So how can i write the log directly to Xray. What am I missing here?
+
+Any help is highly appreciated.
+
+Cheers,
+Tung
+
+Edited by: tungnguyen on Jan 14, 2019 10:01 PM"
+AWS X-Ray	"Re: How send data to xray in .NET framework.
+Hi @tungnguyen,
+Did you run  X-Ray daemon : https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-local.html locally on your instance. If not, it is required to do so.
+
+Once you run the daemon, you would see following log statement in the X-Ray daemon logs when you run your console app. 1 segments successfully sent
+
+
+X-Ray SDK by default send segments to localhost:2000 over UDP and the X-Ray daemon by default listens on the same port and sends data to X-Ray service. 
+
+To enable logging for X-Ray SDK for your console application, please refer this documentation :https://github.com/aws/aws-xray-sdk-dotnet/tree/master#logging-net. Currently, the SDK support underlying AWS SDK options for logging.
+
+X-Ray SDK sends Segment/Subsegment to X-Ray service using the daemon and logging for X-Ray SDK happens on the instance that runs your application.
+
+Please let me know if you have questions.
+
+Thanks,
+Yogi"
+AWS X-Ray	"Re: How send data to xray in .NET framework.
+Thanks Yogi.
+That well explains why it doesn't send any data. I will test it out and let you know.
+
+Cheers,
+Tung"
+AWS X-Ray	"Re: How send data to xray in .NET framework.
+Hi Yogi,
+It works. So, as you instructed, I installed the xray deamon and ran it like this: 
+.\xray_windows.exe -o -n us-east-2
+
+Use the -o option to run in local mode, and -n to set the region.
+
+I can see the data in aws Xray now. Thanks for your help.
+
+Cheers,
+Tung"
+AWS X-Ray	"AWS Lambda not using X-Ray Sampling rules
+We have a data pipeline that starts with a Lambda function reading from an SQS queue. The Lambda function is written in Java, and as the first step in our pipeline it is responsible for creating the first segment in our X-Ray trace. We would expect traces to be sampled based upon the default configuration we have in the AWS console. However, every SQS message the Lambda receives gets its own trace, so it doesn't seem to be following the sampling rules at all. 
+
+We tried configuring the Lambda to use active tracing and to use the AWS X-Ray SDK for java with active tracing turned off, but neither followed the sampling rules. Does Lambda support X-Ray sampling rules? If not, is there a way to configure the X-Ray SDK to follow the rules we specify in the console?  
+
+Thanks."
+AWS X-Ray	"Re: AWS Lambda not using X-Ray Sampling rules
+Hello,
+
+AWS Lambda uses its own sampling strategy today if your traces start at the Lambda function. For this use case, the requests are sampled at 1 request per second and %5 anything above that. The sampling rate for AWS Lambda can be adjusted by submitting a support case. We are working with AWS Lambda team for service sampling rule support but don't have any ETA at the moment. Please stay tuned.
+
+Best,
+Haotian"
+AWS X-Ray	"Re: AWS Lambda not using X-Ray Sampling rules
+I am not seeing the sampling rate of 1 request per second and %5 anything above that. Instead, every request (which is an sqs message) is getting traced. So 100 messages in SQS leads to 100 traces in X-Ray. I tried creating a new sampling rule targeted at my service and it had no impact. In case this was something strange with the Java X-Ray SDK I also tried tracing with a basic python lambda and it also traced every request (see below). 
+
+def handle_request(event, context):
+    for record in event['Records']:
+        payload=record[""body""];
+        print(str(payload))
+
+
+Any thoughts?"
+AWS X-Ray	"Re: AWS Lambda not using X-Ray Sampling rules
+Lambda samples all requests in low volume case. The sampling logic within lambda will not be affected by the X-Ray SDK code. We are working with Lambda team to get better customer experience on this. Unfortunately there is no workaround for SQS triggered lambda functions.
+
+Thanks,
+Haotian"
+AWS X-Ray	"Re: AWS Lambda not using X-Ray Sampling rules
+What is considered a ""low volume"" case? By putting more data into our SQS queue I was able to see some sampling, but nothing near the 5% after 1/s. The more data in SQS and the faster lambda was executed, the fewer traces that were sampled. For example, when I drop 10,000 messages as fast as I could into SQS, ~20% of the messages were sampled. However, if I placed 10 messages a second into SQS, which more closely resembles our use case, ~85% of the messages had traces. Creating my own sampling rules had no affect on these values. 
+
+From your response below, are you saying that the reason we are seeing sampling that does not match the rules is because lambda is invoked by an SQS event?"
+AWS X-Ray	"Re: AWS Lambda not using X-Ray Sampling rules
+Based on how lambda function is triggered by SQS messages on this AWS blog https://aws.amazon.com/blogs/aws/aws-lambda-adds-amazon-simple-queue-service-to-supported-event-sources/, depending on how fast you are sending messages and how fast for consumer function to drain the queue, lambda will try to drain messages as fast as possible by applying concurrent invocation with batching APIs, as described in the blog. So it is non-deterministic of how many function invocations could happen.
+
+Whichever event triggers a lambda function it samples on the invocation request, which could contain batching events due to reasons discussed above. So the sampling rate is not meaningful if calculated by number of messages or events like DynamoDB streams or Kinesis records.
+
+Lambda uses its own sampling strategy that will not be affected by changing X-Ray SDK code or creating sampling rules on X-Ray console. It is a populate request for lambda sampling to be easily configurable and we are working closely with Lambda team on this.
+
+What are you trying to achieve here? Are you estimating costs or you are trying to reach some certain rate for investigation? If you could explain a little bit more on your use case we can bring lambda team to further help.
+
+Thanks,
+Haotian
+
+Edited by: haotianw@AWS on Jan 16, 2019 4:49 PM"
+AWS X-Ray	"Re: AWS Lambda not using X-Ray Sampling rules
+Cost estimate/management is what I am trying to do. I thought from a previous response you had mentioned configuring the sampling rules, but from this response it is clear that configuring the sampling rules will not affect how Lambda samples, nor will using the X-RAY SDK. 
+
+Unfortunately, if we cannot configure the sampling rate of Lambda it does not seem cost effective for us to use X-Ray right now. I'm glad to hear you are working on making the Lambda sampling rate easily configurable and I'll be excited to hear about any updates.
+
+Thanks,
+
+Bill"
+AWS X-Ray	"Start Lambda segment with existing traceId
+At one point in my workflow I Use Lambda triggered by new message in SQS. The message in SQS has a field with an existing traceId of the process that got that message into SQS.
+
+My question is how can I set Lambda's context/segment to be part of that trace ?
+
+For example in a custom script I could do (python SDK) :
+
+message_content = json.loads(SQSmessage.body)
+xray_recorder.begin_segment('Name', traceid=message_content.get('traceId'), sampling=1)
+
+and that would start this message in the same trace. How to do that for Lambda triggered by SQS message ?"
+AWS X-Ray	"Re: Start Lambda segment with existing traceId
+Unfortunately there is no way of doing this on yourself. This requires service change on SQS and Lambda so the trigger can carry the X-Ray tracing context. This support is in our backlog and we are working closely with SQS and Lambda team for better customer experiences. We cannot provide an ETA but we will update this forum post as soon as we make progress.
+
+Thanks,
+Haotian"
+AWS X-Ray	"Re: Start Lambda segment with existing traceId
+Thank you for the previous response. Do you have any expectation regarding when Lambda functions executed by SQS will be able to use tracing context passed in by SQS?
+
+The system we are trying to track looks like this:
+Lambda1->SNSTopic1->SQSQueue1->Lambda2
+
+Apart from enabling x-ray for the lambdas, setting up the required permissions, importing the relevant x-ray sdk libraries (including the instrumentor so that aws clinets can pass on tracing context), is there anything else that we would need to do in order for this setup to work?
+
+We are seeing SegmentNotFoundException errors being logged which I am guessing is a result of SQS not passing the TraceId through. Is this correct or could this be the result of any missing components/setup?
+
+The lambdas are written in Java and the packages we are importing are:
+
+    compile 'com.amazonaws:aws-xray-recorder-sdk-core:2.+'
+    compile 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.+'
+    compile 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor:2.+'"
+AWS X-Ray	"Re: Start Lambda segment with existing traceId
+SQS support on passing traceid is in our road map but we cannot provide an ETA. We will work on our best to deliver better user experience on this use case.
+
+I think you have correct setup. The exception you are seeing, is it in your local testing or in a really lambda function? could you provide some stack trace and related code snippet so I can take a closer look?
+
+-Haotian"
+AWS X-Ray	"Re: Start Lambda segment with existing traceId
+Thank you for the reply! After digging into the logs I figured that a lot of the errors were in fact due to using X-Ray instrumented AWS SDK clients inside new threads, which is a known issue that I saw in the docs. After applying the suggested solution I'm not longer seeing the errors in relation to new threads.
+
+UPDATE: A second category of these errors has been identified. Whenever we instantiate AWS clients in JAVA lambda handler class constructors, instead of doing it inside the actual handler method call, the clients get instantiated with no context and fail to record the trace. We found that this was also mentioned in the docs and fixed the issue on our end.
+
+Edited by: YMilchev on Jan 11, 2019 12:47 PM"
+AWS X-Ray	"Maven: aws-java-sdk-xray version is not in sync with xray and aws boms
+Hi guys,
+
+The latest version of aws-xray-recorder-sdk-core is this
+http://central.maven.org/maven2/com/amazonaws/aws-xray-recorder-sdk-core/2.1.0/aws-xray-recorder-sdk-core-2.1.0.pom
+It references aws-java-sdk-xray of version 1.11.398
+
+The problem is that my team also uses this bom - aws-java-sdk-bom which surprisingly also specifies its own version of aws-java-sdk-xray. So, we are using aws-java-sdk-bom of version 1.11.475 and thus the version of aws-java-sdk-xray becomes 1.11.475, not 1.11.398 as expected by aws-xray-recorder-sdk-core.
+This seems not so bad right now, because the version is newer than expected, but it bit us when we had the version of aws-java-sdk-bom much lower than expected with ClassNotFound.
+The question is how should we keep those two in sync? Why would AWS have
+aws-java-sdk-bom
+aws-xray-recorder-sdk-bom
+with their own versions of aws-java-sdk-xray?
+
+Thanks,
+Ruslan"
+AWS X-Ray	"Re: Maven: aws-java-sdk-xray version is not in sync with xray and aws boms
+Hi, sorry for the inconvenience. The X-Ray SDK has a different release cycle so its dependency on AWS X-Ray client might not be always up-to-date. We will try to keep in sync with latest aws-java-sdk-bom for each release. Would this work for you or do you have any suggestions?
+
+Thanks,
+Haotian"
+AWS X-Ray	"Re: Maven: aws-java-sdk-xray version is not in sync with xray and aws boms
+Hi Haotian,
+
+I'm not sure I understand. How will you be able to keep it in sync if the versions of 
+aws-java-sdk-bom
+aws-xray-recorder-sdk-bom
+are specified by the end user?
+
+So, once I upgrade the version of aws-xray-recorder-sdk-bom that will also increase the version of aws-xray-recorder-sdk-core which will have a transitive dependency on aws-java-sdk-xray of a higher version with possibly new classes. That is all perfectly fine in isolation. But if I'm also using aws-java-sdk-bom in my project and I don't upgrade aws-java-sdk-bom along with aws-xray-recorder-sdk-bom then aws-java-sdk-bom will override the version of aws-java-sdk-xray (keep it the old one), so I will get ClassNotFound at runtime again.
+As for the suggestions - I just don't understand why aws-java-sdk-xray has to be specified in aws-java-sdk-bom. Those two boms are basically conflicting with each other.
+
+Ruslan"
+AWS X-Ray	"Re: Maven: aws-java-sdk-xray version is not in sync with xray and aws boms
+By default Maven resolves version conflicts with a nearest-wins strategy. If you are using aws-java-sdk-bom it will resolve aws-java-sdk-xray to that version instead of the version aws-xray-sdk-recorder-core really needs.
+
+In the feature of service sampling rules, the X-Ray recorder starts to call two new service APIs which require newer AWS SDK client. On the public documentation it says:
+
+The SDK depends on the following libraries at compile and runtime:
+  AWS SDK for Java version 1.11.398 or later
+
+But due to how Maven resolve conflict by default and how bom works, this version requirement cannot be forced on compile time. So in a bad case there is NoSuchMethod at runtime.
+
+I don't have a better answer than suggesting having aws-java-sdk-bom version to be 1.11.398 or newer. But please share any thoughts you have.
+
+-Haotian"
+AWS X-Ray	"Re: Maven: aws-java-sdk-xray version is not in sync with xray and aws boms
+Hi Haotian,
+
+I was just hoping that it can be fixed somehow as it's the purpose of a bom to have all the versions in sync (as there is usually just 1 bom coming from a vendor if I'm not mistaken), but now I see that it's the user responsibility to keep those two in sync unfortunately  The maven behavior is clear, but since it's two overlapping boms then probably it's safer to just get rid of them both and do version synching via a maven property.
+
+Thanks,
+Ruslan"
+AWS X-Ray	"CentralizedSamplingStrategy preventing Tomcat to shutdown (a bug?)
+Hi guys,
+
+It seems that there is a bug in how CentralizedSamplingStrategy behaves in terms of thread pools. When using this default strategy (i.e. not configuring it at all) my Tomcat instance doesn't shutdown which seems there is a thread pool still open. When I configure X-Ray to use the localized strategy:
+builder.withSamplingStrategy(new LocalizedSamplingStrategy());
+
+the problem goes away.
+
+Also I got this stacktrace
+INFO: Illegal access: this web application instance has been stopped already.  Could not load com.amazonaws.services.xray.model.SamplingStatisticsDocument.  The eventual following stack trace is caused by an error thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access, and has no functional impact.
+java.lang.IllegalStateException
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1612)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1571)
+	at com.amazonaws.xray.strategy.sampling.rule.CentralizedRule.snapshot(CentralizedRule.java:133)
+	at com.amazonaws.xray.strategy.sampling.manifest.CentralizedManifest.snapshots(CentralizedManifest.java:111)
+	at com.amazonaws.xray.strategy.sampling.pollers.TargetPoller.pollManifest(TargetPoller.java:45)
+	at com.amazonaws.xray.strategy.sampling.pollers.TargetPoller.lambda$start$0(TargetPoller.java:37)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+
+
+I'm pretty sure this is due to the fact that the scheduled executor is created and never closed here in com.amazonaws.xray.strategy.sampling.pollers.TargetPoller:
+public void start() {
+    Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            try {
+                pollManifest();
+            } catch (Exception ex) {
+                logger.error(""Encountered error polling GetSamplingTargets: "", ex);
+            }
+        }, 0, getJitterInterval(), TimeUnit.MILLISECONDS);
+    }
+
+Which should be closed like this
+ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(...
+ 
+//then somewhere with a hook where the client can initiate the X-Ray shutdown it could be:
+executorService.shutdown()
+
+
+Guys, please confirm my reasoning and let me know if this issue is going to be fixed.
+
+Thanks!
+Ruslan"
+AWS X-Ray	"Re: CentralizedSamplingStrategy preventing Tomcat to shutdown (a bug?)
+Hi,
+
+Thank you for reporting the issue and providing suggestions. This is an issue on the SDK side and a proper shutdown API should be provided. We will fix this issue as soon as possible. A PR is also welcome at https://github.com/aws/aws-xray-sdk-java if you have suggestion on what the API should look like. Thank you four your patience.
+
+Best,
+Haotian"
+AWS X-Ray	"Re: CentralizedSamplingStrategy preventing Tomcat to shutdown (a bug?)
+Hi,
+
+Just want to let you know we've added a public API to shutdown the resources created by the pollers: https://github.com/aws/aws-xray-sdk-java/blob/master/aws-xray-recorder-sdk-core/src/main/java/com/amazonaws/xray/strategy/sampling/CentralizedSamplingStrategy.java#L97. This is released as part of 2.1.0. Please let me know your thoughts and any additional suggestions.
+
+Thanks,
+Haotian
+
+Edited by: haotianw@AWS on Nov 20, 2018 4:59 PM"
+AWS X-Ray	"Re: CentralizedSamplingStrategy preventing Tomcat to shutdown (a bug?)
+Thank you, Haotian!
+
+I haven't had a chance to test it yet, but it looks like the problem is resolved. Thanks!
+
+Ruslan"
+AWS X-Ray	"Re: CentralizedSamplingStrategy preventing Tomcat to shutdown (a bug?)
+I'm not sure how to use the hook properly."
+AWS X-Ray	"Re: CentralizedSamplingStrategy preventing Tomcat to shutdown (a bug?)
+Haotian,
+
+Here are the problems that I see so far:
+
+1) It would be better if there were a global shutdown method on the global recorder, because now I have to remember that one specific component requires me to invoke its ""shutdown"" even when I don't configure it at all (CentralizedSamplingStrategy is always created by default)
+2) Even though I remember to shutdown the strategy on the global recorder that I build and set myself - there are still some recorders that are created behind the scenes that create DefaultSamplingStrategy which is an alias for CentralizedSamplingStrategy:
+private static AWSXRayRecorder globalRecorder = AWSXRayRecorderBuilder.defaultRecorder()
+in AWSXRay
+So, when I'm setting up my recorder - should I shutdown this default recorder's strategy first?
+Also see
+samplingRequest.setServiceType(AWSXRayRecorderBuilder.defaultRecorder().getOrigin())
+in CentralizedSamplingStrategy
+That line will also instantiate a CentralizedSamplingStrategy. Who will shutdown that one? The reference is not kept here.
+3) Not clear if I can just reconfigure the current global default recorder as the docs suggest to build my own and then set it as the default: https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-java-configuration.html?shortFooter=true
+4) Even when I want to disable the CentralizedSamplingStrategy
+com.amazonaws.xray.AWSXRayRecorderBuilder#build will do AWSXRayRecorder client = new AWSXRayRecorder() which will create CentralizedSamplingStrategy right before setting my LocalizedSamplingStrategy
+5) Probably a bug:
+here https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-java-configuration.html?shortFooter=true it is suggested to use ServletContextListener for Tomcat, but contextInitialized will be invoked after AWSXRayServletFilter object is created. When AWSXRayServletFilter is created with this constructor:
+com.amazonaws.xray.javax.servlet.AWSXRayServletFilter#AWSXRayServletFilter(com.amazonaws.xray.strategy.SegmentNamingStrategy)
+it captures the default global recorder, so it never cares that I have set my own global recorder afterwards 
+
+Ruslan
+
+Edited by: metaruslan on Dec 29, 2018 6:36 PM"
+AWS X-Ray	"Re: CentralizedSamplingStrategy preventing Tomcat to shutdown (a bug?)
+Thank you for your feedback.
+
+1) Yes we will add a public method on recorder level so it is easier for discovery.
+
+2) The X-Ray recorder is designed to be a singleton. You can either build a custom recorder and set it to be the global one or configure the one statically initialized. AWSXRay class always hold a reference to that singleton. https://github.com/aws/aws-xray-sdk-java/blob/master/aws-xray-recorder-sdk-core/src/main/java/com/amazonaws/xray/AWSXRay.java. If it is not the case, it is most likely a bug in the SDK. The line you pointed out at CentralizedSamplingStrategy is indeed a bug and we will fix it as soon as possible.
+
+3) It is the recommended way to build your own and set it as mutating current one is not a good practice.
+
+4) The pollers are lazy loaded so as long as the CentralizedSamplingStrategy is not being used to do sampling decision there won't be any poller running.
+
+5) Yes you are right. The servlet filter should lazy load the recorder if the recorder is not explicitly set. We will track this issue. A PR is also very welcome.
+
+Hope I answered all your questions.
+
+Thanks,
+Haotian"
+AWS X-Ray	"Re: CentralizedSamplingStrategy preventing Tomcat to shutdown (a bug?)
+Hi Haotian,
+
+Here are my follow-ups.
+
+1) Sounds good, thanks!
+
+2,3,4) The problem here is a bit different from the initial problem of having the executor not closed. Technically speaking, there is no problem here per se with the executors not closed as my team has figured it out, the pollers are really not started as long as the CentralizedSamplingStrategy's shouldTrace method is not invoked. So we are good as long as we are invoking ""shutdown"" only on the CentralizedSamplingStrategy object that has been used. But that seems to be implementation detail. What we are trying to do now is to follow the current interface contract as much as possible, so we don't get into trouble after future upgrades. And since we have the ""shutdown"" method right on the interface and no documentation about ""when to call it"", we can only assume that every object of any class implementing SamplingStrategy should be closed with ""shutdown"". But the X-Ray SDK itself is not shutting down every such object, hence the confusion. Let me know if our assumption is wrong.
+
+5) Thanks!
+
+Ruslan"
+AWS X-Ray	"Re: CentralizedSamplingStrategy preventing Tomcat to shutdown (a bug?)
+I will add more comments on the shutdown API of the SamplingStrategy interface. The intention is to shutdown all extra resources (executors, worker threads etc) created under that strategy. It is not necessary to implement it and call it if there are no such extra resources.
+
+Ideally the recorder should have shutdown that is either no-op or closing any extra resources. Users should not worry about the details but simply call it for clean exit. 
+
+Thoughts?"
+AWS X-Ray	"Re: CentralizedSamplingStrategy preventing Tomcat to shutdown (a bug?)
+That sounds good!
+
+Thank you,
+Ruslan"
+AWS X-Ray	"Rule pollers are throwing errors when the daemon is not up
+Hi guys,
+
+I have two questions on the rule pollers (CentralizedSamplingStrategy):
+1) Why do they poll via the daemon and not directly? I would understand the normal tracing requests would go via the daemon to make them async, but the pollers are async already as they are run within their own executors.
+2) Why do they throw errors when the daemon is not up? The reason I ask is that the normal tracing requests do not throw any errors when the daemon is not up which is convenient for the local development. So why those are not consistent?
+
+Thanks,
+Ruslan"
+AWS X-Ray	"Re: Rule pollers are throwing errors when the daemon is not up
+Hi,
+
+1) The daemon is a signing proxy for calling X-Ray APIs GetSamplingRules and GetSamplingTargets. There is no credential/role needed on the application. All X-Ray related operations are in one role (used by daemon) for security and isolation.
+
+2) Sending trace data from application to daemon is over UDP so the application cannot get any error message even if there is something wrong. This is a downside where some customers ask about daemon health check to know if the data is sent or not. The daemon will buffer the trace data and directly call X-Ray public API PutTraceSegments and any error will show on daemon log.
+
+For rule poller and target poller the daemon is just a signing proxy. The actually poll is a TCP call made from AWS SDK X-Ray client to X-Ray service. If the daemon is not up running, a normal connection error will be raised.
+
+The SDK does best it can for logging any abnormality without breaking the user application. Do you have any concerns or see any impacting behaviors?
+
+Thanks,
+Haotian"
+AWS X-Ray	"Re: Rule pollers are throwing errors when the daemon is not up
+Hi Haotian,
+
+Thank you very much for such a detailed explanation.
+Now I understand the rationale and it looks good to me now.
+I guess my team has to continue the current approach to have LocalizedSamplingStrategy for the local environment (so we don't have to always run the daemon on the laptop to eliminate the connection error logs and so we don't pollute x-ray console with unit test traces if we do run the deamon) and use CentralizedSamplingStrategy for dev/prod environments.
+
+Thanks,
+Ruslan"
+AWS X-Ray	"SegmentNotFoundException in SQL Client
+Hi,
+I am using spring-boot-starter-data-jpa library along with PostgreSQL DB to manage my entities. My DB resides in Amazon RDS
+I followed the guideline at  https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-java-sqlclients.html 
+. However my application fails during startup. It throws the following exception:
+
+Caused by: com.amazonaws.xray.exceptions.SegmentNotFoundException: Failed to begin subsegment named 'myusername@mydbaddress.com': segment cannot be found.
+at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[na:1.8.0_181]
+at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[na:1.8.0_181]
+at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[na:1.8.0_181]
+at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[na:1.8.0_181]
+at com.amazonaws.xray.strategy.RuntimeErrorContextMissingStrategy.contextMissing(RuntimeErrorContextMissingStrategy.java:17) ~[aws-xray-recorder-sdk-core-2.1.0.jar!/:na]
+at com.amazonaws.xray.contexts.ThreadLocalSegmentContext.beginSubsegment(ThreadLocalSegmentContext.java:23) ~[aws-xray-recorder-sdk-core-2.1.0.jar!/:na]
+at com.amazonaws.xray.AWSXRayRecorder.beginSubsegment(AWSXRayRecorder.java:418) ~[aws-xray-recorder-sdk-core-2.1.0.jar!/:na]
+at com.amazonaws.xray.AWSXRay.beginSubsegment(AWSXRay.java:92) ~[aws-xray-recorder-sdk-core-2.1.0.jar!/:na]
+at com.amazonaws.xray.sql.postgres.TracingInterceptor$TracingStatementProxy.invoke(TracingInterceptor.java:156) ~[aws-xray-recorder-sdk-sql-postgres-2.1.0.jar!/:na]
+at com.sun.proxy.$Proxy171.executeQuery(Unknown Source) ~[na:na]
+at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_181]
+at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[na:1.8.0_181]
+at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:1.8.0_181]
+at java.lang.reflect.Method.invoke(Method.java:498) ~[na:1.8.0_181]
+at org.apache.tomcat.jdbc.pool.StatementFacade$StatementProxy.invoke(StatementFacade.java:114) ~[tomcat-jdbc-8.5.27.jar!/:na]
+at com.sun.proxy.$Proxy171.executeQuery(Unknown Source) ~[na:na]
+at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:42) ~[hibernate-core-5.0.12.Final.jar!/:5.0.12.Final]
+at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:64) ~[hibernate-core-5.0.12.Final.jar!/:5.0.12.Final]
+at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60) ~[hibernate-core-5.0.12.Final.jar!/:5.0.12.Final]
+at org.hibernate.tool.hbm2ddl.SchemaValidator.validate(SchemaValidator.java:80) ~[hibernate-core-5.0.12.Final.jar!/:5.0.12.Final]
+at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:475) ~[hibernate-core-5.0.12.Final.jar!/:5.0.12.Final]
+at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:444) ~[hibernate-core-5.0.12.Final.jar!/:5.0.12.Final]
+at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:879) ~[hibernate-entitymanager-5.0.12.Final.jar!/:5.0.12.Final]
+... 37 common frames omitted
+
+
+Any idea why?"
+AWS X-Ray	"Re: SegmentNotFoundException in SQL Client
+You have SQL schema check during startup. The X-Ray SDK will try to capture those queries but it cannot find a segment which represent the full request/response cycle. You can either manually create a segment during startup to wrap every traced operation to avoid this error. Alternatively you can set environment variable ""AWS_XRAY_CONTEXT_MISSING"" to ""LOG_ERROR"" so no exception is thrown. You can see the configuration details here https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-java-configuration.html#xray-sdk-java-configuration-envvars
+
+Please let me know if this helps.
+
+Thanks,
+Haotian"
+AWS X-Ray	"Re: SegmentNotFoundException in SQL Client
+Thanks for the quick reply.
+
+How can i manually create a segment during startup to wrap every traced operation in spring boot?"
+AWS X-Ray	"Working example of tracing outgoing requests using Node.js
+I'm struggling a bit to trace outgoing requests in a Node.js service.
+
+I'm aware of the documentation stating that «AWSXRay.captureHTTPsGlobal(require('http'));» is the way to go, but it doesn't seem to be doing anything (no data is produced).
+
+How my service works:
+
+At any time, triggered by ""something"" (incoming request or another trigger), the service can make an outgoing request to a http(s) server using Axios / Request....
+
+
+Goal:
+
+I want to be able to see these requests as outgoing dependencies to the service in x-ray.
+
+
+Questions:
+
+Is this possible using x-ray?
+Does this involve wrapping the external call in an «captureAsyncFunc»?
+Does anybody have an actual working example of doing something like this (and can share it)?
+
+
+Edited by: jornkiMW on Dec 12, 2018 3:09 AM"
+AWS X-Ray	"Re: Working example of tracing outgoing requests using Node.js
+Hi,
+
+See https://github.com/aws-samples/eb-node-express-sample/blob/aee54deecfc17355fb59175fc47e751bd6ac7630/app.js#L107 for an example of how outbound HTTP requests can be traced.
+
+Best,
+AbhishekS"
+AWS X-Ray	"X-Ray Not Adding Parent_Id
+Hi,
+
+I have and node.js application and when I test this locally it works perfectly.
+After I deployed it to my ElasticBeanstalk, but the same request that I make in local and works is split in the ElasticBeanstalk.
+I'm using the last version of X-Ray SDK to node.js, also I verified the configuration and it's all OK, I tried to change the sampling rule, but didn't work.
+
+I think maybe could be the different ClientIP, because the flow would be:
+
+Client request the page ""http://localhost:3030/en/rates/india/""
+The express call ""http://localhost:3030/api/reviews/en/3/"" to get the reviews information, this API is in the same express
+The express return the page
+
+
+In the elasticbeanstalk when the express call it self, it has the own IP, that's different from the Client, but I'm not sure if is that.
+
+This is the trace that I get when I run in local, it set's the parent_id correctly:
+{
+    ""Duration"": 0.846,
+    ""Id"": ""1-5bf405cf-e7b45b6f58a325d891774702"",
+    ""Segments"": [
+        {
+            ""Document"": {
+                ""id"": ""cef905db90fdb992"",
+                ""name"": ""http://localhost:3030"",
+                ""start_time"": 1542718927.205,
+                ""end_time"": 1542718927.246,
+                ""parent_id"": ""83c2ca37e302734f"",
+                ""http"": {
+                    ""request"": {
+                        ""url"": ""http://localhost:3030/api/reviews/en/3/"",
+                        ""method"": ""GET"",
+                        ""user_agent"": ""Rendr RestAdapter; Node.js"",
+                        ""client_ip"": ""::ffff:127.0.0.1""
+                    },
+                    ""response"": {
+                        ""status"": 200
+                    }
+                },
+                ""aws"": {
+                    ""xray"": {
+                        ""sdk"": ""X-Ray for Node.js"",
+                        ""sdk_version"": ""2.0.1"",
+                        ""package"": ""aws-xray-sdk""
+                    }
+                },
+                ""service"": {
+                    ""version"": ""unknown"",
+                    ""runtime"": ""node"",
+                    ""runtime_version"": ""v10.12.0"",
+                    ""name"": ""unknown""
+                },
+                ""trace_id"": ""1-5bf405cf-e7b45b6f58a325d891774702"",
+                ""origin"": ""AWS::ElasticBeanstalk::Environment""
+            },
+            ""Id"": ""cef905db90fdb992""
+        },
+        {
+            ""Document"": {
+                ""id"": ""18eea54bc37a1aa4"",
+                ""name"": ""http://localhost:3030"",
+                ""start_time"": 1542718927.083,
+                ""end_time"": 1542718927.929,
+                ""http"": {
+                    ""request"": {
+                        ""url"": ""http://localhost:3030/en/rates/india/"",
+                        ""method"": ""GET"",
+                        ""user_agent"": ""Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36"",
+                        ""client_ip"": ""::1""
+                    },
+                    ""response"": {
+                        ""status"": 200
+                    }
+                },
+                ""aws"": {
+                    ""xray"": {
+                        ""sdk"": ""X-Ray for Node.js"",
+                        ""sdk_version"": ""2.0.1"",
+                        ""package"": ""aws-xray-sdk""
+                    }
+                },
+                ""service"": {
+                    ""version"": ""unknown"",
+                    ""runtime"": ""node"",
+                    ""runtime_version"": ""v10.12.0"",
+                    ""name"": ""unknown""
+                },
+                ""trace_id"": ""1-5bf405cf-e7b45b6f58a325d891774702"",
+                ""origin"": ""AWS::ElasticBeanstalk::Environment"",
+                ""subsegments"": [
+                    {
+                        ""id"": ""83c2ca37e302734f"",
+                        ""name"": ""localhost"",
+                        ""start_time"": 1542718927.2,
+                        ""end_time"": 1542718927.251,
+                        ""http"": {
+                            ""request"": {
+                                ""url"": ""http://localhost:3030/api/reviews/en/3/"",
+                                ""method"": ""GET""
+                            },
+                            ""response"": {
+                                ""status"": 200
+                            }
+                        },
+                        ""namespace"": ""remote""
+                    }
+                ]
+            },
+            ""Id"": ""18eea54bc37a1aa4""
+        }
+    ]
+}
+
+This is the both traces in elasticbeanstalk, but somehow the X-Ray in the Elasticbeanstalk think is a diferent trace, but it should have the parent_id:
+{
+    ""Duration"": 0.061,
+    ""Id"": ""1-5bf4060d-aed09c674211189e77cd05e1"",
+    ""Segments"": [
+        {
+            ""Document"": {
+                ""id"": ""c513b86cdbc01aa4"",
+                ""name"": ""X-RAY APP NAME"",
+                ""start_time"": 1542718989.232,
+                ""end_time"": 1542718989.293,
+                ""http"": {
+                    ""request"": {
+                        ""url"": ""http://URL/en/rates/india/"",
+                        ""method"": ""GET"",
+                        ""user_agent"": ""Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36"",
+                        ""client_ip"": ""MY IP"",
+                        ""x_forwarded_for"": true
+                    },
+                    ""response"": {
+                        ""status"": 200
+                    }
+                },
+                ""aws"": {
+                    ""ec2"": {
+                        ""instance_id"": ""i-08e07af3f5b45fdbf"",
+                        ""availability_zone"": ""eu-central-1a""
+                    },
+                    ""elastic_beanstalk"": {
+                        ""environment"": ""ENVIRONMENT_NAME"",
+                        ""version_label"": ""code-pipeline-1542717351797-FxFSpqAMuQRAx2FVtRe4LdgEEPL6TqNb"",
+                        ""deployment_id"": 753
+                    },
+                    ""xray"": {
+                        ""sdk"": ""X-Ray for Node.js"",
+                        ""sdk_version"": ""2.1.0"",
+                        ""package"": ""aws-xray-sdk""
+                    }
+                },
+                ""service"": {
+                    ""version"": ""1.0.0"",
+                    ""runtime"": ""node"",
+                    ""runtime_version"": ""v10.13.0"",
+                    ""name"": ""SERVICE_NAME""
+                },
+                ""trace_id"": ""1-5bf4060d-aed09c674211189e77cd05e1"",
+                ""origin"": ""AWS::ElasticBeanstalk::Environment""
+            },
+            ""Id"": ""c513b86cdbc01aa4""
+        }
+    ]
+}
+
+Second:
+{
+    ""Duration"": 0.001,
+    ""Id"": ""1-5bf4060d-b4bbe71672d900a27f33bb1f"",
+    ""Segments"": [
+        {
+            ""Document"": {
+                ""id"": ""c5db081097deb8e5"",
+                ""name"": ""X-RAY APP NAME"",
+                ""start_time"": 1542718989.265,
+                ""end_time"": 1542718989.266,
+                ""http"": {
+                    ""request"": {
+                        ""url"": ""http://URL/api/reviews/en/3/"",
+                        ""method"": ""GET"",
+                        ""user_agent"": ""Rendr RestAdapter; Node.js"",
+                        ""client_ip"": ""CLIENT_IP"",
+                        ""x_forwarded_for"": true
+                    },
+                    ""response"": {
+                        ""status"": 200
+                    }
+                },
+                ""aws"": {
+                    ""ec2"": {
+                        ""instance_id"": ""INSTANCE_ID"",
+                        ""availability_zone"": ""eu-central-1c""
+                    },
+                    ""elastic_beanstalk"": {
+                        ""environment"": ""ENVIRONMENT_NAME"",
+                        ""version_label"": ""VERSION"",
+                        ""deployment_id"": 754
+                    },
+                    ""xray"": {
+                        ""sdk"": ""X-Ray for Node.js"",
+                        ""sdk_version"": ""2.1.0"",
+                        ""package"": ""aws-xray-sdk""
+                    }
+                },
+                ""service"": {
+                    ""version"": ""1.0.0"",
+                    ""runtime"": ""node"",
+                    ""runtime_version"": ""v10.13.0"",
+                    ""name"": ""SERVICE_NAME""
+                },
+                ""trace_id"": ""1-5bf4060d-b4bbe71672d900a27f33bb1f"",
+                ""origin"": ""AWS::ElasticBeanstalk::Environment""
+            },
+            ""Id"": ""c5db081097deb8e5""
+        }
+    ]
+}
+
+Could you guys help me?
+Any configuration or something that I missed?
+
+Edited by: EdisonHarada on Nov 20, 2018 5:28 AM"
+AWS X-Ray	"Generating Temporary Keys for Front End
+Hi,
+
+I need to send information to X-Ray in front end and I'm using this javascript sdk(https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/XRay.html).
+But I need to inform ""accessKeyId"", ""secretAccessKey"" and ""sessionToken"", but this is in front end, and any user can have access to this keys (that I think they shouldn't), also in my company we just use temporary key (with roles), because we don't want to have a key without a life time.
+
+Could you send me a documentation, or tips to solve this?"
+AWS X-Ray	"Re: Generating Temporary Keys for Front End
+You can use Amazon Cognito to achieve what you're after. See https://github.com/aws-samples/eb-java-scorekeep/tree/xray-cognito as an example of authenticating on the client using Cognito.
+
+Best,
+AbhishekS"
+AWS X-Ray	"Two use cases for XRay together
+I would like to use XRay in 2 usecases:
+
+1. Regular, sampled. This gives me overview of operations, kind of dashboard, cursory glance on overall performance. Sampled because I don't need every record for such an overview and I can save money. 
+
+2. Investigate sporadic or periodic slowdowns.  For this mode, I need say 1% of the records having highest latency. I would like to select these top 1% and look into dependency calls to trace the impediment.
+
+I can mimic this mode in the code: decide to include the segment or not biased on the segment duration. Every service has its own ""threshold"" and I need to support long table and change it with every performance-related release.  
+
+Bigger problem is that I can not combine both: having dashboard and investigate laggard same time. Or at least switch them in console. 100% sampling solves the problem but is way expensive."
+AWS X-Ray	"Re: Two use cases for XRay together
+Hi,
+
+Thanks for sharing the detailed use case. We're looking into a plan to solve this. I would like to clarify one more thing. If your traffic is large enough the sampled trace data will be statistically significant, which means you get accurate P99 regardless of 5% sampling or 100% sampling. But for fault biased sampling works better if the fault is very rare but you do care about each single fault. Please let me know your thoughts.
+
+Thanks,
+Haotian"
+AWS X-Ray	"X-Ray does not show that Lambda function publishes to SNS
+Hello,
+
+I've got two lambda functions written in Python 3.6 that constitute my data pipeline.
+The first function enrich my data and publishes messages to a SNS topic.
+The second function is triggered by any message in the topic and does something with the message.
+Apart from SNS, I use also other services such as RDS and s3.
+
+X-ray does not make the link between those two lambdas. Any idea how I could get it to show the full trace?
+
+Thanks in advance.
+
+Edited by: aflaiser on Oct 25, 2018 2:20 AM
+
+Edited by: aflaiser on Oct 25, 2018 7:39 AM"
+AWS X-Ray	"Re: X-Ray does not show that Lambda function publishes to SNS
+Hi there,
+
+Unfortunately there is no workaround to continue the trace context from SNS to the triggered lambda right now. This requires a change on SNS side to put the trace context when it invokes the target lambda function. We are already aware of this feature request and we are looking into a plan with SNS and Lambda team to provide better customer experience. Please stay tuned.
+
+Best,
+Haotian"
+AWS X-Ray	"X-ray with step function
+Hi,
+
+My service path is 
+(api-gateway) -> (lambda1) -> (step functions with few lambdas)
+
+1. Is there a way to integrate lambda with step functions so they could have the same trace-id and could be linked together on the X-Ray service map? 
+As I've tested it,  lambda1 and lambda from step function had different trace-id for one message flow.
+2. Is it possible to set custom trace-id inside lambda?
+
+Regards
+Rafal
+
+Edited by: rzukowski on Mar 23, 2018 8:20 AM
+
+Edited by: rzukowski on Mar 23, 2018 8:21 AM"
+AWS X-Ray	"Re: X-ray with step function
+Hi,
+
+StepFunctions is not integrated with X-Ray today. For setting custom trace-id, since Lambda service and container send segments separately, setting trace-id inside the lambda function will not work. 
+
+Lambda will respect the trace header passed from ""Invoke"" call which contains a trace id. If you use X-Ray SDK to patch AWS SDK Lambda client in your lambda1, the SDK will construct this trace header and passed it down when you invoke the the next function lambda2. This way lambda2 will have the same trace id with lambda1. 
+
+However, if your few lambda functions are in step functions, they are not invoked with X-Ray trace header available. We will submit the feature request to StepFunctions team.
+
+Please let me know if you have other concerns.
+
+-Haotian"
+AWS X-Ray	"Re: X-ray with step function
+Hello, Are X-Ray trace header available in Step Functions?"
+AWS X-Ray	"limit on span reads/write per minute?
+does such a limit exist? 
+where i can i find it?"
+AWS X-Ray	"Re: limit on span reads/write per minute?
+Hi there,
+
+The rate limits for AWS X-Ray API's aren't currently publicly published. We are working on making these limits more transparent in the future. If you have a workload or use case where you are running into issues with these limits, please open a support case and we can help you get them adjusted.
+
+Thanks,
+Haotian
+
+Edited by: haotianw@AWS on Oct 18, 2018 5:12 PM"
+AWS X-Ray	"AWS X-Ray Tracing with vanilla javascript web client
+Hi, I have a little question about X-Ray service. I need to use it to trace client side errors in a web app that is built with plain javascript and with jquery.
+I want to know if there is a SDK or something I can use... or a REST API to send requests to X-Ray service and trace errors, etc."
+AWS X-Ray	"Re: AWS X-Ray Tracing with vanilla javascript web client
+Hi there,
+
+A SDK for web client js is in our backlog. You can directly use the AWS SDK for Javascript to call the public X-Ray API PutTraceSegments to send the trace data to the service, see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/XRay.html#putTraceSegments-property. You will have to construct the segment documents yourself but we provide the full segment schema here: https://docs.aws.amazon.com/xray/latest/devguide/xray-api-segmentdocuments.html.
+
+You can also use some parts of our NodeSDK (js ES6 syntax) as your reference implementation: https://github.com/aws/aws-xray-sdk-node/blob/master/packages/core/lib/segments/segment.js.
+
+Please let me know if you need further help.
+
+Thanks,
+Haotian"
+AWS X-Ray	"timeline - no connecting edge between services?
+from what i can tell, when a serviceA segment has a child segment in serviceB - there no edge that shows this relation (as opposed to parent segment/child subsegment). 
+is this correct? 
+are segments in different services represented exactly the same in the timeline whether they're parent/child or completely unrelated?
+if this is wrong, can someone refer me to an example that shows the contrary?
+
+thanks
+
+Edited by: ts_cs on Oct 8, 2018 3:25 AM"
+AWS X-Ray	"Re: timeline - no connecting edge between services?
+Hi,
+Could you please share your trace? Typically the edge between two services are shown when you have a remote segment or an inferred segment. Please refer to https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html#xray-concepts-segments . 
+
+Regards,
+Bharath"
+AWS X-Ray	"Re: timeline - no connecting edge between services?
+i experimented with different attributes.
+in the segments below, none of the segments named ""ds..."" have an edge pointing to them (in the timeline).
+i was expecting the segments named ""child..."" would point to them.
+
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent0', 'id': 'fb8920cb995bf0b8'}
+{'name': 'child0', 'start_time': 1539088050.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'fb8920cb995bf0b8', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': '52dc6ca16de2b20b'}
+{'start_time': 1539088052.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'ds0', 'id': '995dac87b5b4ec03'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent1', 'id': 'c5d1786723ee8c65'}
+{'name': 'child1', 'start_time': 1539088050.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'c5d1786723ee8c65', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': '5d8d64f39c2b9314'}
+{'name': 'ds1', 'start_time': 1539088052.283, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'end_time': 1539088056.283, 'id': '5228fb417c6d26ff'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent2', 'id': 'e283eed7e0ca9bc3'}
+{'name': 'child2', 'start_time': 1539088050.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'e283eed7e0ca9bc3', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': '67051befa26d1ba6'}
+{'name': 'ds2', 'start_time': 1539088052.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': '67051befa26d1ba6', 'end_time': 1539088056.283, 'id': 'e21094d1bbf43281'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent3', 'id': '04605e6fdf48af39'}
+{'name': 'child3', 'start_time': 1539088050.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': '04605e6fdf48af39', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': '8c1e56fe74a8e4ff'}
+{'name': 'ds3', 'start_time': 1539088052.283, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': '8c1e56fe74a8e4ff', 'end_time': 1539088056.283, 'id': '5efd12863abc35bf'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent4', 'id': '51c39f324a2e35b8'}
+{'name': 'child4', 'start_time': 1539088050.283, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': '51c39f324a2e35b8', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': 'c63ddaa1b1ce761a'}
+{'start_time': 1539088052.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'ds4', 'id': '484f2d65979fdc62'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent5', 'id': 'b32d79f6958c5f52'}
+{'name': 'child5', 'start_time': 1539088050.283, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'b32d79f6958c5f52', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': 'c30dfe5fe6e56d84'}
+{'name': 'ds5', 'start_time': 1539088052.283, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'end_time': 1539088056.283, 'id': '91849007ef18fe4f'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent6', 'id': 'b769a87be9f25da8'}
+{'name': 'child6', 'start_time': 1539088050.283, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'b769a87be9f25da8', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': 'b4b2c8358a5b17c6'}
+{'name': 'ds6', 'start_time': 1539088052.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'b4b2c8358a5b17c6', 'end_time': 1539088056.283, 'id': '97ecc5d92c6e936d'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent7', 'id': '17c589c0041d77ba'}
+{'name': 'child7', 'start_time': 1539088050.283, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': '17c589c0041d77ba', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': '0c4367a2300c7c9d'}
+{'name': 'ds7', 'start_time': 1539088052.283, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': '0c4367a2300c7c9d', 'end_time': 1539088056.283, 'id': 'c6e0f086b8b9f30c'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent8', 'id': 'b57df95f5009a0fc'}
+{'name': 'child8', 'start_time': 1539088050.283, 'traced': True, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'b57df95f5009a0fc', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': '9cd6d5d3bb71c3c6'}
+{'start_time': 1539088052.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'ds8', 'id': '12b99eabd393d4dc'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent9', 'id': 'a12ccbcc5eb95fa2'}
+{'name': 'child9', 'start_time': 1539088050.283, 'traced': True, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'a12ccbcc5eb95fa2', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': '0637225d641c9f71'}
+{'name': 'ds9', 'start_time': 1539088052.283, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'end_time': 1539088056.283, 'id': 'eeeb0b93470ae9e7'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent10', 'id': '61f7934ee42cca39'}
+{'name': 'child10', 'start_time': 1539088050.283, 'traced': True, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': '61f7934ee42cca39', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': '57f385b361c5a4df'}
+{'name': 'ds10', 'start_time': 1539088052.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': '57f385b361c5a4df', 'end_time': 1539088056.283, 'id': 'e3a29472f3065fa9'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent11', 'id': 'db863ec61764a3e6'}
+{'name': 'child11', 'start_time': 1539088050.283, 'traced': True, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'db863ec61764a3e6', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': 'dd037799bde7003c'}
+{'name': 'ds11', 'start_time': 1539088052.283, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'dd037799bde7003c', 'end_time': 1539088056.283, 'id': '7e559e9a4673694d'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent12', 'id': 'a8bd168b247bcc2b'}
+{'name': 'child12', 'start_time': 1539088050.283, 'traced': True, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'a8bd168b247bcc2b', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': '7275ed145b197570'}
+{'start_time': 1539088052.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'ds12', 'id': '5cb883d3fa92d94d'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent13', 'id': '267cd7d6c7402231'}
+{'name': 'child13', 'start_time': 1539088050.283, 'traced': True, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': '267cd7d6c7402231', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': 'dc7366e89b35fc2c'}
+{'name': 'ds13', 'start_time': 1539088052.283, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'end_time': 1539088056.283, 'id': 'ad833aea795791e4'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent14', 'id': 'de4d492ac2127a25'}
+{'name': 'child14', 'start_time': 1539088050.283, 'traced': True, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'de4d492ac2127a25', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': 'a2ff48b2fe68fe05'}
+{'name': 'ds14', 'start_time': 1539088052.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'a2ff48b2fe68fe05', 'end_time': 1539088056.283, 'id': 'b28ce7575224c188'}
+{'start_time': 1539088046.283, 'end_time': 1539088056.283, 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'name': 'parent15', 'id': 'a3af23040c529a87'}
+{'name': 'child15', 'start_time': 1539088050.283, 'traced': True, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': 'a3af23040c529a87', 'end_time': 1539088056.283, 'type': 'subsegment', 'id': '747304892e46e5da'}
+{'name': 'ds15', 'start_time': 1539088052.283, 'namespace': 'remote', 'trace_id': '1-5bbc9eae-c78862b475c755078fdb643c', 'parent_id': '747304892e46e5da', 'end_time': 1539088056.283, 'id': 'e41b979a1f7bf4b3'}
+
+
+Edited by: ts_cs on Oct 9, 2018 5:32 AM"
+AWS X-Ray	"Re: timeline - no connecting edge between services?
+Hi,
+I see that your child* subsegment has the corresponding parent* segment's id as the parent_id. Can you please elaborate on why child* should be pointing to ds? 
+
+Regards,
+Bharath"
+AWS X-Ray	"Re: timeline - no connecting edge between services?
+let me try to rephrase - 
+when i have a flow that look like this one: 
+serviceA
+        store_log() ----->
+                     upload_file() --http--> 
+                                                      serviceB
+                                                                upload_file() ----->
+                                                                                       write_file()
+ 
+serviceA.store_log = ""parent""
+serviceA.upload_file = ""child""
+serviceB.upload_file = ""ds""
+
+is there a way to get xray to show the ""---http--->"" edge? or will two services never have a connected edge between them? 
+
+thanks"
+AWS X-Ray	"Re: timeline - no connecting edge between services?
+Hi,
+Thanks for the clarification. I suppose the serviceB is triggered over http once the serviceA uploads the file. Can you can pass the trace header (https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html#xray-concepts-tracingheader) in the http request to serviceB?
+
+Regards,
+Bharath"
+AWS X-Ray	"Will X-Ray SQL tracing work with DataSources configured from Tomcat JNDI ?
+The ""Tracing SQL Queries with the X-Ray SDK for Java"" documentation has 2 examples for configuring DataSources -- one using environment properties and one using tomcat DataSource setters for string values. I assume the second example is to illustrate using a Spring application properties file, as in Spring Boot. 
+
+X-Ray tracing does not work if the DataSource is defined as a Tomcat JNDI resource in the Tomcat server file. The Tomcat config returns a reference to the javax.sql.DataSource interface. X-Ray tracing expects a class reference to org.apache.tomcat.jdbc.pool.DataSource, which implements the interface. Providing the interface reference results in an exception ""Segment not found"" for the parent segment which prevents the sub-segment from being created.
+
+Many legacy apps configure data sources with the Resource configuration, and will not be able to take advantage of X-Ray SQL tracing. Are there plans to make X-Ray tracing work with Tomcat JNDI resources?"
+AWS X-Ray	"Re: Will X-Ray SQL tracing work with DataSources configured from Tomcat JNDI ?
+Hi dorothy,
+
+The `javax.sql.DataSource` interface does not provide the JDBC interception methods necessary for the AWS X-Ray SDK to trace its operation.
+
+However, the use of JNDI does not necessitate that the DataSource implementation returned be of any specific type. By modifying the `Resource` in the Tomcat `Context`, an alternative / custom resource factory may be specified.
+
+For example, a JNDI `Resource` may be modified to use the `org.apache.tomcat.jdbc.pool.DataSourceFactory` resource factory. The use of this factory ensures that the provided `javax.sql.DataSource` is of type `org.apache.tomcat.jdbc.pool.DataSource` -- for which tracing is supported by the X-Ray SDK.
+
+Hope this helps,
+
+James B."
+AWS X-Ray	"Re: Will X-Ray SQL tracing work with DataSources configured from Tomcat JNDI ?
+Hi James B.,
+
+Thanks for your response. 
+
+I have tried adding 'factory=""org.apache.tomcat.jdbc.pool.DataSourceFactory""' to my Resource config. This did not work for me. X-Ray tracing only works when the DataSource is defined within my application. I wrote a POC app with a javax.sql.DataSource reference.  When the reference is set from a datasource defined with code similar to your example it works. When the reference is set from JNDI with Tomcat DataSourceFactory, X-Ray tracing fails. When the X-Ray JDBC interceptor is removed from the Resource config, the page populates with the db entries correctly. 
+
+I know the reference created from the Resource tag is an 'org.apache.tomcat.jdbc.pool.DataSource' ref because I got ClassCast exceptions when I tried to cast it.  
+
+Being unable to trace SQL queries and db updates with X-Ray is a serious limitation for us. Our architect feels refactoring the app to configure the DataSource within the app would create db connection monitoring issues."
+AWS X-Ray	"Re: Will X-Ray SQL tracing work with DataSources configured from Tomcat JNDI ?
+Hi dorothy,
+
+We understand that tracing SQL queries and db updates is an integral part of the tracing experience. If you could send over private message the exception(s) you are seeing as well as some sample code, we will dig deeper into this issue.
+
+Thanks,
+
+James B."
+AWS X-Ray	"Re: Will X-Ray SQL tracing work with DataSources configured from Tomcat JNDI ?
+Was there any resolution to this issue in private chat that would benefit the larger population? I am in the same situation of needing to configure Hikari datasource with X Ray SQL tracing from configuration file/JNDI perspective."
+AWS X-Ray	"Re: Will X-Ray SQL tracing work with DataSources configured from Tomcat JNDI ?
+Hi there,
+
+We didn't get enough data to come with a solution. Do you mind providing how you configured the datasource and X-Ray tracing and what is the error you are getting?
+
+Thanks,
+Haotian"
+AWS X-Ray	"annotations and metadata size limits?
+are there any limitations on the size of annotation/metadata values (besides the global limit of 64kb per segment)?"
+AWS X-Ray	"Re: annotations and metadata size limits?
+Hi there, per https://docs.aws.amazon.com/xray/latest/devguide/xray-api-segmentdocuments.html#api-segmentdocuments-annotations
+
+Segments and subsegments can include a metadata object containing one or more fields with values of any type, including objects and arrays. X-Ray does not index metadata, and values can be any size, as long as the segment document doesn't exceed the maximum size (64 kB). You can view metadata in the full segment document returned by the BatchGetTraces API. Field keys (debug in the following example) starting with AWS. are reserved for use by AWS-provided SDKs and clients.
+
+Segments and subsegments can include an annotations object containing one or more fields that X-Ray indexes for use with filter expressions. Fields can have string, number, or Boolean values (no objects or arrays). X-Ray indexes up to 50 annotations per trace.
+
+Thanks,
+Haotian"
+AWS X-Ray	"what does it mean when a segment is striped?
+what does it mean when a segment in the timeline is striped? 
+example:
+https://dashbird.io/images/blog/02-05-2018/trace-4-aws-console.png
+what document attribute does this correspond with?"
+AWS X-Ray	"Re: what does it mean when a segment is striped?
+Could you provide more details on what you're trying to achieve?
+
+When a segment appears striped in the trace timeline, it implies that the segment was inferred from a remote client sub-segment. For example, if you called the Amazon payments API the X-Ray backend will infer that you're calling an external service that is not instrumented and create a placeholder segment for it so that you can see the complete call graph for your application on the service map.
+
+Best,
+AbhishekS"
+AWS X-Ray	"Re: what does it mean when a segment is striped?
+i'm writing custom instrumentation that writes traces/segments and i wanted to know how to produce all available segment types.
+in the case of striped segments - i tried different values for the 'type'/'namespace'/'traced' attributes and none of the combinations i tried produced a striped segment - where can i find more documentation about producing them?"
+AWS X-Ray	"Re: what does it mean when a segment is striped?
+Please see https://github.com/search?q=org%3Aaws+aws-xray-sdk-&unscoped_q=aws-xray-sdk- for source of our existing SDK's. This should provide you with a language specific example to produce the traces necessary.
+
+As I mentioned in my original response, the striped segments are inferred based on remote calls in the X-Ray backend so as such there isn't anything you need to do besides mark sub-segments for remote calls as remote. See https://docs.aws.amazon.com/xray/latest/devguide/xray-api-segmentdocuments.html for the segment document schema and example segments/sub-segments.
+
+Best,
+AbhishekS"
+AWS X-Ray	"timeline segment colors customization?
+is it possible to have the timeline view draw segments from different services using different colors?"
+AWS X-Ray	"Re: timeline segment colors customization?
+Hi,
+Could you please share your use case? Also, we have a specific color scheme to pinpoint success, errors, faults and throttle in your service graph. Please refer to https://docs.aws.amazon.com/xray/latest/devguide/xray-console.html
+
+Regards,
+Bharath"
+AWS X-Ray	"Re: timeline segment colors customization?
+the use case is simply to make a deeply nested trace more readable by coloring segments by the software module that output them or by related resource (similarly to jaeger)"
+AWS X-Ray	"Unable to See XRay Traces for API Gateway
+I was super excited to see that API Gateway support for XRay was announced earlier this month. Using the AWS CLI, I activated XRay tracing for all the stages of my account's API Gateway APIs, but I'm unable to see any trace information from my APIs or see my APIs in the XRay Service Map.
+
+I used the following documentation as guidance.
+
+https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-enabling-xray.html 
+
+I see that a AWSServiceRoleForAPIGateway role was created in my account and appears to have the proper XRay permissions as described in the documentation. I also see that tracing is enabled for each of the stages of my APIs in the API Gateway console.
+
+My APIs integrate with AWS Lambda functions which have been configured for PassThrough tracing. My Lambda functions run within an VPN.
+
+Did I miss an obvious configuration step or are my Lambdas misconfigured? I'm not sure how to resolve this issue and I really want to use the XRay product for performance optimizing my APIs. I'm happy to provide more details if needed. Thanks in advance!"
+AWS X-Ray	"Re: Unable to See XRay Traces for API Gateway
+Hi,
+Thanks for the post. We are looking into this issue, and we will keep you posted. In the meantime could you send us information on what you see when you run aws apigateway get-stage --rest-api-id <rest_api_id> --stage-name <stage_name> in the cli?
+
+Regards,
+Bharath
+
+Edited by: awsbharath on Sep 25, 2018 6:03 PM"
+AWS X-Ray	"Re: Unable to See XRay Traces for API Gateway
+Todds-MacBook:~ tbrunia$ aws apigateway get-stage --rest-api-id palpvep3nb --stage-name prod
+{
+    ""deploymentId"": ""udear5"",
+    ""stageName"": ""prod"",
+    ""cacheClusterEnabled"": false,
+    ""cacheClusterStatus"": ""NOT_AVAILABLE"",
+    ""methodSettings"": {
+        ""*/*"": {
+            ""metricsEnabled"": true,
+            ""loggingLevel"": ""INFO"",
+            ""dataTraceEnabled"": true,
+            ""throttlingBurstLimit"": 5000,
+            ""throttlingRateLimit"": 10000.0,
+            ""cachingEnabled"": false,
+            ""cacheTtlInSeconds"": 300,
+            ""cacheDataEncrypted"": false,
+            ""requireAuthorizationForCacheControl"": true,
+            ""unauthorizedCacheControlHeaderStrategy"": ""SUCCEED_WITH_RESPONSE_HEADER""
+        }
+    },
+    ""variables"": {
+        ""api_name"": ""xilution-api"",
+        ""product_name"": ""xilution"",
+        ""stage"": ""prod""
+    },
+    ""tracingEnabled"": true,
+    ""createdDate"": 1535811048,
+    ""lastUpdatedDate"": 1537914224
+}
+
+
+Edited by: ToddBruniaXilution on Sep 26, 2018 6:09 AM"
+AWS X-Ray	"Re: Unable to See XRay Traces for API Gateway
+Thanks for this information. We are expecting to have a fix for this issue by end of this week or early next. I will check-in with you then to see if this issue is resolved for you. 
+
+Regards,
+Bharath"
+AWS X-Ray	"Re: Unable to See XRay Traces for API Gateway
+That's great news, Bharath!"
+AWS X-Ray	"Re: Unable to See XRay Traces for API Gateway
+Hi,
+We have rolled out a fix for this issue. Could you please verify if you are able to see traces in X-Ray for your API Gateway resource?
+
+Regards,
+Bharath"
+AWS X-Ray	"Re: Unable to See XRay Traces for API Gateway
+I can see the traces now, Bharath! 
+
+This is awesome! Thank you so much for letting me know that this was fixed. I can't wait to use XRay to optimize my APIs."
+AWS X-Ray	"API Gateway with custom domain name doesn't show traces
+Hi , 
+I am also experiencing an issue with XRay and API Gateway with custom domain name and SSL Cert.
+If I call the API directly, not through the custom domain, then I get traces. But when I call the API via custom domain name then there are no traces for the API Gateway segment - but I always see the Lambda segment in any case.
+
+here is the cli call you might need :
+
+ aws apigateway get-stage --rest-api-id xxxxxxx --stage-name api
+{
+    ""stageName"": ""api"",
+    ""variables"": {},
+    ""cacheClusterEnabled"": false,
+    ""cacheClusterStatus"": ""NOT_AVAILABLE"",
+    ""deploymentId"": ""4myepl"",
+    ""lastUpdatedDate"": 1538056365,
+    ""createdDate"": 1528102150,
+    ""methodSettings"": {
+        ""*/*"": {
+            ""cacheTtlInSeconds"": 300,
+            ""loggingLevel"": ""OFF"",
+            ""dataTraceEnabled"": false,
+            ""metricsEnabled"": false,
+            ""unauthorizedCacheControlHeaderStrategy"": ""SUCCEED_WITH_RESPONSE_HEADER"",
+            ""throttlingRateLimit"": 10000.0,
+            ""cacheDataEncrypted"": false,
+            ""cachingEnabled"": false,
+            ""throttlingBurstLimit"": 5000,
+            ""requireAuthorizationForCacheControl"": true
+        }
+    }
+}
+
+
+Edited by: abivol on Sep 27, 2018 7:47 AM
+images
+
+Edited by: abivol on Sep 27, 2018 7:56 AM
+cli call
+
+Edited by: abivol on Sep 27, 2018 7:57 AM
+formatting
+
+Edited by: abivol on Sep 27, 2018 8:01 AM
+remove sensible data"
+AWS X-Ray	"Re: API Gateway with custom domain name doesn't show traces
+Thank you for reporting this. We are actively looking at this issue and working to get this resolved as soon as possible. I will update the thread once we have the fix out."
+AWS X-Ray	"Re: API Gateway with custom domain name doesn't show traces
+Hi,
+We have rolled out a fix for this issue. Could you please let us know if you are able to see traces in X-Ray for your API Gateway resource?
+
+Regards,
+Bharath"
+AWS X-Ray	"Re: API Gateway with custom domain name doesn't show traces
+Hello , 
+yes , I can now see traces from the API Gateway.
+Thanks !"
+AWS X-Ray	"AWS X-Ray not visible for MultiContainer Docker platform
+Hi,
+
+We have a go-lang application dockerized and deployed on elastic beanstalk (under multi-container docker options - custom platform).
+
+X-Ray option is not enabled/available for such a custom platform. 
+
+Any idea/suggestions on how to use x-ray in such scenarios? 
+
+Came across https://github.com/pottava/dockerized-aws-x-ray however still not very sure how would it send to AWS X-ray to check with respect to tracing."
+AWS X-Ray	"Re: AWS X-Ray not visible for MultiContainer Docker platform
+Hi there, for custom platform there is no difference with directly running on ECS. There is a user guide on how to achieve this https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-ecs.html and it also contains a open sourced sample app. Could you check this and let me know if you need further help?
+
+Thanks,
+Haotian"
+AWS X-Ray	"Missing sql query and django user in traces: django & aws-xray-sdk-python
+I do get traces, and the traces  do not contain the query as explained in the  docs: https://docs.aws.amazon.com/xray/latest/devguide/xray-api-segmentdocuments.html#api-segmentdocuments-sql 
+only:
+""sql"": {
+                            ""database_type"": ""mysql"",
+                            ""user"": ""******"" 
+                        },
+
+Do I need to add anything in RDS to allow for this to work? in the django settings? somewhere else
+I'm also missing the actual user, ( I do get the correct user Ip and browser agent, but not the authenticated user)
+I'm also missing 
+Django 1.11.15
+xray 2.1.0
+Connected to RDS mysql db"
+AWS X-Ray	"Re: Missing sql query and django user in traces: django & aws-xray-sdk-python
+Hi, sorry for the confusion on the documentation and we will make it clearer. The X-Ray SDKs don't support the query capture unless there is a reliable way to log the parameterized ones. For Python SDK only SQLAlchemy supports such capture. You can see the PR here: https://github.com/aws/aws-xray-sdk-python/pull/34.
+
+We have a few backlog items for expanding database client support and parameterized queries. Please stay tuned. A PR is always welcome.
+
+Regards,
+Haotian"
+AWS X-Ray	"X-Ray sampling behind API Gateway
+I have a JS lambda function behind API Gateway, active tracing is turned on, so sampling decisions will be made by lambda if there is no trace ID. 
+
+Whenever I call the lambda function directly or through the console, using the AWS_XRAY_DEBUG_MODE env var I can see lines such as 
+
+[DEBUG] Lambda trace data found: Root=1-5b73def1-c0a1af6831f7d7b0ff78c990;Parent=0e0299bc4098fb49;Sampled=1
+
+
+however every time it is invoked via api gateway I always get sampled = 0 
+e.g. 
+[DEBUG] Lambda trace data found: Root=1-5b73def1-c0a1af6831f7d7b0ff78c990;Parent=0e0299bc4098fb49;Sampled=0
+
+
+I've printed out the X-Amzn-Trace-Id header and see that it being passed through without any sampling decisions but for some reason lambda decides not to sample every request made API Gateway but not when calling the lambda function directly."
+AWS X-Ray	"Re: X-Ray sampling behind API Gateway
+Hi there,
+
+Just a few clarifications before we take a further look at the issue. Do you mean when calling through API Getaway NONE of the requests is sampled? Do you have the same traffic volume pattern when calling Lambda directly vs calling via API Gateway? Which region are these resources located at?
+
+Thanks,
+Haotian"
+AWS X-Ray	"Re: X-Ray sampling behind API Gateway
+Hi,
+
+Yeah none of the requests are sampled through API gateway.  Currently the volume is very low and it's in a testing phase, but I'm certainly hitting it enough when testing that it should sample.  We're calling with different rates from Lambda vs API Gateway, but the lambda one is every 5 minutes where API Gateway is whenever it's called from the front end during the testing phase. 
+
+They are in eu-west-1.
+
+Thanks.
+
+Edited by: JTray on Aug 16, 2018 12:54 AM"
+AWS X-Ray	"Re: X-Ray sampling behind API Gateway
+Hi,
+
+I can not repro what you saw. I have a sample APIGW in front of a sample Lambda function. I call APIGW with header ""X-Amzn-Trace-Id:root=1-5b75cc2a-fc5f1a323bb5aa93d8bb5192"" and the lambda segment got sampled. Here is the log entry emitted by APIGW:
+
+Thu Aug 16 19:11:24 UTC 2018 : Starting execution for request: 2b56e7c6-a188-11e8-b33f-4bdcb7c2be22
+Thu Aug 16 19:11:24 UTC 2018 : HTTP Method: GET, Resource Path: / 
+Thu Aug 16 19:11:24 UTC 2018 : Method request path: {}
+Thu Aug 16 19:11:24 UTC 2018 : Method request query string: {}
+Thu Aug 16 19:11:24 UTC 2018 : Method request headers: {X-Amzn-Trace-Id=root=1-5b75cc2a-fc5f1a323bb5aa93d8bb5192}
+Thu Aug 16 19:11:25 UTC 2018 : Endpoint response headers: {X-Amz-Executed-Version=$LATEST, x-amzn-Remapped-Content-Length=0, Connection=keep-alive, x-amzn-RequestId=2b5d9f3f-a188-11e8-806f-09b744fe9fd3, Content-Length=21, Date=Thu, 16 Aug 2018 19:11:25 GMT, X-Amzn-Trace-Id=root=1-5b75cc2a-fc5f1a323bb5aa93d8bb5192;sampled=1, Content-Type=application/json}
+
+
+How do you call APIGW in your case? How do you print out the request made towards APIGW?"
+AWS X-Ray	"Re: X-Ray sampling behind API Gateway
+Hi,
+
+I'm calling APIGW without any tracing header, but I was under the impression APIGW will add in a tracing ID without a sampling decision. 
+
+The line
+
+[DEBUG] Lambda trace data found: Root=1-5b73def1-c0a1af6831f7d7b0ff78c990;Parent=0e0299bc4098fb49;Sampled=0
+
+
+is printed out by setting the env var AWS_XRAY_DEBUG_MODE to true on the lambda function."
+AWS X-Ray	"Re: X-Ray sampling behind API Gateway
+Sorry for the late response. I'm not be able to reproduce the issue you saw. API Gateway just launched active tracing today. See more details here: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-xray.html. It might be easier to check if the sampling behavior is consistent on API Gateway segment and Lambda segment by just looking at the service graph. Could you let me know if there is still an issue? 
+
+Thanks,
+Haotian"
+AWS X-Ray	"Re: X-Ray sampling behind API Gateway
+Hi,
+
+Yeah getting the sampling decision from API gateway seems to work now.
+One thing I did notice, is that the services on the graph were't all connected but in the trace details the services appear together when in the same flow.
+
+Thanks,
+
+Jessen."
+AWS X-Ray	"Passing trace ID to ECS containers via CLI
+How do I send a trace ID from one application to another without using HTTP headers?  I want to share the trace ID between each AWS services and containers.
+
+Is there a way to set an environment variable that X-Ray SDK will use for new segments similar to HTTP headers?
+
+Workflow:  API Gateway-->Lambda-->SNS-->Lambda-->ECS Fargate-->Container
+
+Note: the containers are running as a task with CMD and ENV."
+AWS X-Ray	"Re: Passing trace ID to ECS containers via CLI
+Hi @DeeG,
+
+Can you help us with few clarification questions in order to understand your use case:
+
+1. Which part of the workflow are you looking for using ENV VAR? 
+
+2. What is your current interaction looks like w.r.t to AWS Service -> Container?
+
+3. Multiple applications you intend to trace are in the same Task or in different Task/ Containers?
+
+4. Which AWS X-Ray SDK are you using?
+
+Best,
+Yogi"
+AWS X-Ray	"Re: Passing trace ID to ECS containers via CLI
+Which part of the workflow are you looking for using ENV VAR? 
+Task containers
+
+2. What is your current interaction looks like w.r.t to AWS Service -> Container?
+API Gateway->Lambda->SNS->Lambda->ECS Fargate->Task/Container
+
+3. Multiple applications you intend to trace are in the same Task or in different Task/ Containers?
+they are in different task/containers
+
+4. Which AWS X-Ray SDK are you using?
+Go SDK"
+AWS X-Ray	"Re: Passing trace ID to ECS containers via CLI
+Hi @DeeG ,
+Thank you for your response. 
+
+We want to understand your case of using the ENV VAR and which part of the chain you are interested in passing the trace id.  For example SNS -> Lambda or Lambda -> ECS Container application 
+
+The X-Ray integration between SNS and Lambda component is in our backlog.
+
+Sorry if I was unclear previously, how do you interact from your lambda function to  ECS container application? 
+
+You can use NewSegmentFromHeader()  https://github.com/aws/aws-xray-sdk-go/blob/master/xray/segment.go#L203 to create segment from traceid present in the environment variable. Please make sure you extract the environment variable and construct trace header in order to pass to function: https://github.com/aws/aws-xray-sdk-go/blob/master/xray/handler.go#L92
+
+Please let me know if you have questions.
+
+Best,
+Yogi"
+AWS X-Ray	"Re: Passing trace ID to ECS containers via CLI
+Exactly, both SNS -> Lambda and Lambda -> ECS.  I will give the NewSegmentFromHeader a try, but I am looking forward to the integration support for SNS and Lambda.
+
+Edited by: DeeG on Sep 15, 2018 5:15 AM"
+AWS X-Ray	"Can X-Ray attach to running process on EC2?
+Hello,
+
+As documentation, we need to integrate X-Ray SDK into our app and send trace data to AWS X-Ray service via agent.
+
+Can X-Ray attach to the running process? without need extra code to integrate X-Ray SDK.
+There are some APM services work like that. Its simple to install agent at executing server and specify a process for tracing.
+
+Warm regards,"
+AWS X-Ray	"Re: Can X-Ray attach to running process on EC2?
+Hi Thanh,
+
+X-Ray doesn't support attaching to existing processes. This is something that we have received feedback from customers on and are investigating. Could you please provide some additional information on what's restricting you from making minor (1-2 line) code changes to your app? Is it because you have 3rd party code that doesn't provide you access to source? Or are you concerned about tying your code to X-Ray instrumentation API's?
+
+This information will help us better understand your use case and prioritize this request.
+
+Best,
+AbhishekS"
+AWS X-Ray	"Re: Can X-Ray attach to running process on EC2?
+Hi AbhishekS,
+
+Thank you for your assistant.
+
+There are some asp.net core applications for operating to live environment.
+I could not touch on source code to integrate X-Ray SDK. If possible to install X-Ray agent only then it will send the bulk of tracing data to X-Ray service for troubleshooting application performance.
+
+Besides that, I tried to setup X-Ray into asp.net core then collected-data only show the average of response time without such info: time-consuming functions, number of calls by each function etc.,
+Hope that X-Ray will add more useful features in near future.
+
+Warm regards,
+Thanh"
+AWS X-Ray	"Sending segment batch failed with: NoCredentialProviders: no valid provider
+Hi All,
+
+We are using X-Ray Daemon with Fargate. The container is located in the same task definition as our Spring Boot application that sends segments data to the daemon. Unfortunately in the logs of the daemon we see errors like:
+
+[Error] Sending segment batch failed with: NoCredentialProviders: no valid providers in chain. Deprecated.
+[Debug] Failed to send telemetry 6 record(s). Re-queue records. NoCredentialProviders: no valid providers in chain. Deprecated.
+
+
+We configured application and daemon as described on AWS site. Did we miss something?"
+AWS X-Ray	"Re: Sending segment batch failed with: NoCredentialProviders: no valid provider
+Hi, sorry to hear the issue. Did you look at this tutorial on running X-Ray on Fargate? https://github.com/aws-samples/aws-xray-fargate. It has sample task definitions for you to reference. This part also has instructions on how to setup permission for your task role. https://github.com/aws-samples/aws-xray-fargate/tree/master/src. Could you please let me know if this solves your problem?
+
+Thanks,
+Haotian"
+AWS X-Ray	"Lambda function name not shown in trace list
+We have a number of Lambda functions which we are instrumenting with X-Ray, but when we look at the trace list there is no easy way to determine which traces belong to which Lambda functions.  Having to open each trace to see which Lambda function it belongs to is very clunky.
+
+I have tried to add the `{http: request:{}}` fields to the root segment, but it's not working.  `process.env._X_AMZN_TRACE_ID` indicates that there is a parent and root trace - presumably this is set by API Gateway, so why aren't the http request details provided by API GW?
+
+Having to provide the http request details within our code is not an ideal solution, but the code below doesn't even work - what am I doing wrong?
+
+var AWSXRay = require('aws-xray-sdk-core');
+var AWS = AWSXRay.captureAWS(require('aws-sdk'));
+ 
+export function handler(event, context) {
+    let segment = AWSXRay.getSegment();
+ 
+//    segment.http = new AWSXRay.middleware.IncomingRequestData(event.request);
+    segment.http = new AWSXRay.middleware.IncomingRequestData({
+        method: 'GET',
+        url: 'my-lambda-function',
+        connection: {},  // remoteAddress
+        headers: {
+            'x-forwarded-for': '12.34.56.78',
+            'user-agent': 'TODO-user-agent'
+            // host
+        }
+    });
+ 
+    context.succeed();
+}"
+AWS X-Ray	"Re: Lambda function name not shown in trace list
+Hi, thanks for the feedback.
+
+API GW is passively integrated with X-Ray and it doesn't send any actual trace data to X-Ray service today. http://docs.aws.amazon.com/xray/latest/devguide/xray-services-apigateway.html. We know there are popular customer requests asking API GW propagate trace header and generate trace data. We are working closely with API GW team to make sure we can improve the customer experience.
+
+Trace list is account level so traces can come from difference components from your system. If you only want to see traces from a certain Lambda function, you can type query
+service(""your function name"")
+
+in the filter box. You can also go to service graph view and click the lambda function node you are interested in, then click 'view traces' button on the bottom right, then you will only get traces from that function in the trace list.
+
+The reason your code doesn't work is because the X-Ray SDK doesn't have access to the actual segment authored by Lambda worker. The segment you accessed inside your Lambda function is a facade segment that to keep the whole structure intact but that facade segment will never be sent to the service. So to add any custom data you have to create custom subsegment. We know this is a pain point and we are working on a plan to make it better for customers.
+
+Please let me know if your questions are answered.
+
+Thanks,
+Haotian
+
+Edited by: haotianw@AWS on Oct 24, 2017 10:56 AM"
+AWS X-Ray	"Re: Lambda function name not shown in trace list
+I just ran into this issue as well, and even attaching the HTTP data to a subsegment doesn't make that information visible in the X-Ray console except in the ""Raw Data"" section. I'm trying to make use of the full range of X-Ray, including the ""Trace overview"" section which lets you group by URL, User Agent, Status Code, etc.
+
+Is this a problem within Lambda/API Gateway itself, or is this something that can be fixed in the X-Ray SDK?"
+AWS X-Ray	"Re: Lambda function name not shown in trace list
+By design a segment represents a full request/response cycle for a web app and the X-Ray console only shows http information on segment. This segment is normally generated by X-Ray SDK provided middleware/servelet/filter for supported web frameworks.
+
+For Lambda a segment represents a full function invocation and this segment is sent by Lambda separately. The SDK doesn't have access to this segment currently.
+
+The root issue is that X-Ray/Lambda needs deeper integration so that X-Ray SDK can modify the Lambda segment to add http information. We are working with Lambda team to try to get better customer experience. Please stay tuned.
+
+Thanks,
+Haotian"
+AWS X-Ray	"Re: Lambda function name not shown in trace list
+Any news here yet? Its been a while."
+AWS X-Ray	"Re: Lambda function name not shown in trace list
+Hi, API Gateway with active X-Ray integration is launched. You can see more details here: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-xray.html. Feel free to leave any feedback on the new customer experience and we will continue improving it.
+
+Thanks,
+Haotian"
+AWS X-Ray	"ASP.NET Web API - Getting Entity doesn't exist in CallContext randomly
+I was successfully using the XRayRecorder SDK 1.1.2 with my ASP.NET Web api.  I'm trying to update to 2.3.0, but I'm running into a fairly frequent random issue with the missing CallContext problem.
+
+I added some log statements to the XRayRecorder code, and I believe it's a threading issue caused when ASP.Net switches thread and the context is not there on the new thread.
+
+I see this behavior from my log statements:
+
+End of Amazon.XRay.Recorder.Handlers.AspNet.AWSXRayASPNET.ProcessHTTPRequest
+
+   TraceContext.IsEntityPresent() is true
+   Thread.CurrentThread.ManagedThreadId is 15 (or any other threadid)
+
+Inside my Post method in ApiController, I check TraceContext.IsEntityPresent(), and normally its true and the ThreadId is the same.  But sometimes, its false, and the thread Id has changed. 
+
+
+I'm guessing ASP.NET is changing threads in some cases between the event to call ProcessHTTPRequest and the call to my Post method.  
+CallContext.LogicalSetData() seems to be thread specific, so whenever the thread is changed, the call context is null, which breaks everything.
+
+I'll see if I can come up with a simple web project to duplicate the behavior I'm getting.  Is anyone else seeing random failures?
+
+Thanks,
+Mike Ballou"
+AWS X-Ray	"Re: ASP.NET Web API - Getting Entity doesn't exist in CallContext randomly
+Hi @mballou,
+Thank you for the post and appreciate your detail analysis. We have one issue opened on public git repo:  https://github.com/aws/aws-xray-sdk-dotnet/issues/26
+Can you please verify whether you have similar issue. We would also welcome if you have any demo app for reproduction.
+
+The difference between XRayRecorder SDK 1.1.2 and 2.3.0 in terms of ASP.NET WEB API support is, 2.3.0 supports ASP.NET application framework and the handler used is AWSXRayASPNET.RegisterXRay() : https://github.com/aws/aws-xray-sdk-dotnet/tree/master#aspnet-framework-net--nuget
+
+We are also quite active on public git repo : https://github.com/aws/aws-xray-sdk-dotnet
+The preferred way is to open an issue , if not present, on the repo which helps developer community to keep track.
+
+Thanks,
+Yogi"
+AWS X-Ray	"Tracing more than one AWS service call in lambda
+Hello, 
+
+We are just getting started using XRay with .net core lambda (2.2.1-beta SDK). I am calling this in lambda constructor:
+Amazon.XRay.Recorder.Handlers.AwsSdk.AWSSDKHandler.RegisterXRayForAllServices();
+
+In a very basic sample with a DynamoDb .ListTables call and S3 ListObjectsV2 call. When the trace is viewed in console, only the first aws service call is listed. So if I change the order that those two calls are made, it will change which one gets traced. 
+
+Is it possible this is due to sampling configuration and lambda doesn't trace the second call? I'm not sure if a ""request"" considers the entire lambda function, or if request means a specific aws service call. I also read in documentation that the sampling behavior for lambda cannot be configured, so I'm not sure how I would go about verifying this.
+
+Thanks for any help understanding how to trace every aws service call within a lambda function."
+AWS X-Ray	"Re: Tracing more than one AWS service call in lambda
+Just to make this more clear:
+
+The behavior we're seeing is that Xray in Lambda only traces the first AWS service call made. If there are multiple AWS service calls within a function, they are not listed in the trace besides the first.
+
+Is this behavior:
+
+functioning as designed
+bug
+user error"
+AWS X-Ray	"Re: Tracing more than one AWS service call in lambda
+Hello @digitechryan ,
+Thank you for the post.
+The mentioned behavior is not as expected. X-Ray SDK records traces for all AWS SDK clients used in the Lambda function.
+As per the description, you are using Amazon.XRay.Recorder.Handlers.AwsSdk.AWSSDKHandler.RegisterXRayForAllServices();
+ 
+
+inside constructor of Lambda. 
+Can you please use above snippet in static block instead. Once 
+Amazon.XRay.Recorder.Handlers.AwsSdk.AWSSDKHandler.RegisterXRayForAllServices();
+ 
+is used, all clients created after this line execution are registered with X-Ray SDK. This ensures that no AWS SDK client remains unregistered.
+
+Please let me know if the solution works for you.
+
+Thanks,
+Yogi"
+AWS X-Ray	"Re: Tracing more than one AWS service call in lambda
+Thanks for the reply Yogi. I created project from scratch and seems to be working now. I'm not sure where the issue was."
+AWS X-Ray	"MissingEndTime error
+I'm following the tutorial found here https://docs.aws.amazon.com/xray-sdk-for-python/latest/reference/basic.html.
+
+I've written a script as follows:
+import boto3
+from aws_xray_sdk.core import xray_recorder, patch_all
+patch_all()
+ 
+codecommit = boto3.client(""codecommit"")
+ 
+xray_recorder.begin_segment(""Main"")
+xray_recorder.begin_subsegment(""CodeCommit"")
+ 
+codecommit.create_repository(repositoryName=""myrepo3"")
+ 
+xray_recorder.end_subsegment(""CodeCommit"")
+xray_recorder.end_segment(""Main"")
+
+
+But the X-Ray daemon is outputting this error:
+2018-07-27T11:30:07+08:00 [Info] Successfully sent batch of 1 segments (0.156 seconds)
+2018-07-27T11:30:07+08:00 [Error] Unprocessed segment: {
+  ErrorCode: ""MissingEndTime"",
+  Id: ""c630665ac8427b2e"",
+  Message: ""Invalid subsegment. ErrorCode: MissingEndTime, Cause: null""
+}
+2018-07-27T11:30:07+08:00 [Warn] Batch that contains unprocessed segments
+2018-07-27T11:30:07+08:00 [Warn] {""aws"": {""xray"": {""sdk"": ""X-Ray for Python"", ""sdk_version"": ""1.1.2""}}, ""end_time"": ""Main"", ""id"": ""c630665ac8427b2e"", ""in_progress"": false, ""name"": ""Main"", ""service"": {""runtime"": ""CPython"", ""runtime_version"": ""3.6.5""}, ""start_time"": 1532662164.2393625, ""subsegments"": [{""end_time"": ""CodeCommit"", ""id"": ""b9a60384c40910a8"", ""in_progress"": false, ""name"": ""CodeCommit"", ""namespace"": ""local"", ""parent_id"": ""c630665ac8427b2e"", ""start_time"": 1532662174.0815008, ""subsegments"": [{""aws"": {""operation"": ""CreateRepository"", ""region"": ""ap-southeast-1"", ""request_id"": ""4b3083a3-914d-11e8-9278-933113f968db""}, ""end_time"": 1532662179.827066, ""http"": {""response"": {""status"": 200}}, ""id"": ""4c8e1a6194512c20"", ""in_progress"": false, ""name"": ""codecommit"", ""namespace"": ""aws"", ""parent_id"": ""b9a60384c40910a8"", ""start_time"": 1532662178.8414533, ""subsegments"": [{""end_time"": 1532662179.3762014, ""http"": {""request"": {""method"": ""POST"", ""url"": ""https://codecommit.ap-southeast-1.amazonaws.com/""}}, ""id"": ""a38ed50eb3896423"", ""in_progress"": false, ""name"": ""https://codecommit.ap-southeast-1.amazonaws.com/"", ""namespace"": ""remote"", ""parent_id"": ""4c8e1a6194512c20"", ""start_time"": 1532662179.375886, ""trace_id"": ""1-5b5a9194-540a9ac9919d0576eb42b5a2"", ""type"": ""subsegment""}, {""end_time"": 1532662179.8235354, ""http"": {""request"": {""method"": ""POST"", ""url"": ""https://codecommit.ap-southeast-1.amazonaws.com/""}, ""response"": {""status"": 200}}, ""id"": ""981762fbec40a063"", ""in_progress"": false, ""name"": ""https://codecommit.ap-southeast-1.amazonaws.com/"", ""namespace"": ""remote"", ""parent_id"": ""4c8e1a6194512c20"", ""start_time"": 1532662179.3763087, ""trace_id"": ""1-5b5a9194-540a9ac9919d0576eb42b5a2"", ""type"": ""subsegment""}, {""end_time"": 1532662179.8253791, ""http"": {""request"": {""method"": ""READ"", ""url"": ""https://codecommit.ap-southeast-1.amazonaws.com/""}, ""response"": {""status"": 200}}, ""id"": ""336be10f8cc8b0a7"", ""in_progress"": false, ""name"": ""https://codecommit.ap-southeast-1.amazonaws.com/"", ""namespace"": ""remote"", ""parent_id"": ""4c8e1a6194512c20"", ""start_time"": 1532662179.8249145, ""trace_id"": ""1-5b5a9194-540a9ac9919d0576eb42b5a2"", ""type"": ""subsegment""}, {""end_time"": 1532662179.8257074, ""http"": {""request"": {""method"": ""READ"", ""url"": ""https://codecommit.ap-southeast-1.amazonaws.com/""}, ""response"": {""status"": 200}}, ""id"": ""f017c6703f7675e1"", ""in_progress"": false, ""name"": ""https://codecommit.ap-southeast-1.amazonaws.com/"", ""namespace"": ""remote"", ""parent_id"": ""4c8e1a6194512c20"", ""start_time"": 1532662179.8256676, ""trace_id"": ""1-5b5a9194-540a9ac9919d0576eb42b5a2"", ""type"": ""subsegment""}], ""trace_id"": ""1-5b5a9194-540a9ac9919d0576eb42b5a2"", ""type"": ""subsegment""}], ""trace_id"": ""1-5b5a9194-540a9ac9919d0576eb42b5a2"", ""type"": ""subsegment""}], ""trace_id"": ""1-5b5a9194-540a9ac9919d0576eb42b5a2""}
+
+
+What's causing this error?"
+AWS X-Ray	"Re: MissingEndTime error
+Hi there,
+
+I believe the issue is in this line:
+xray_recorder.end_segment(""Main"")
+
+
+You don't need to pass anything in an end function. The SDK will automatically get the epoch in seconds as the end time. You can also pass your own end time if you don't want to use the current. 
+
+The segment generated based on the log has end time value equal to ""Main"" which causing the X-Ray service to reject it.
+
+We will add some examples on passing value to end_segment to our documentation to improve readability. Hope this helps.
+
+Thanks,
+Haotian"
+AWS X-Ray	"benchmarked X-Ray against other tools
+Hi,
+
+In my recent blog post, I’ve benchmarked X-Ray against other observability tools. 
+
+You can find  it here https://medium.com/@azarboon/benchmarked-serverless-observability-tools-got-very-disappointed-e54f5e3381bf
+
+(I don't know why this forum doesn't show properly the link, but you should be able to copy paste it)
+
+I'm mentioning it here, so hopefully X-Ray team can take my comments into account for better experience.
+
+If you think any part of my review is wrong, any part could be improved, any plan you have to improve your tool, or in general any comment about current status of serverless observability, please write it there. I’m asking so from other vendors, so we can have a centralised discussion about it.
+
+Edited by: mahdi5 on Jul 11, 2018 12:14 AM"
+AWS X-Ray	"Re: benchmarked X-Ray against other tools
+Hi,
+Thanks for posting. We would be happy to setup a call and talk through. Could you please DM your email address, so that we can arrange a call? Thanks.
+
+Regards,
+Bharath"
+AWS X-Ray	"Re: benchmarked X-Ray against other tools
+hi,
+
+gladly. i have sent you a private message, included my email and phone  looking forward our call,
+
+Br"
+AWS X-Ray	"Feature Request: Able to set loglevel of X-Ray Daemon by ENV var
+Hi,
+
+We're using the pre-baked xray-daemon docker image as an ECS task next to our main application task. We would like to set the LOGLEVEL by enviroment variable, so the task-definition could look like:
+{
+    ""name"": ""xray-daemon"",
+    ""image"": ""806780372344.dkr.ecr.eu-west-1.amazonaws.com/xray-daemon"",
+    ""memoryReservation"": 8,
+    ""portMappings"": [
+      {
+        ""containerPort"": 2000,
+        ""protocol"": ""udp""
+      }
+    ],
+  ""environment"": [
+      {
+        ""name"": ""LOGLEVEL"",
+        ""value"": ""warn""
+      }
+    ],
+    ""logConfiguration"": {
+      ""logDriver"": ""awslogs"",
+      ""options"": {
+        ""awslogs-group"": ""${TASK_LOG_GROUP}"",
+        ""awslogs-region"": ""${AWS_REGION}"",
+        ""awslogs-stream-prefix"": ""${WERCKER_GIT_COMMIT}""
+      }
+    }
+  },
+ ....
+}"
+AWS X-Ray	"Re: Feature Request: Able to set loglevel of X-Ray Daemon by ENV var
+Hi,
+
+Thank you for your feedback. We will look into environment variables support for daemon configuration. Please let us know what other options you would like to have as environment variables. Feel free to open an issue or PR at Github repo https://github.com/aws/aws-xray-daemon.
+
+Thanks,
+Haotian"
+AWS X-Ray	"X-Ray in ECS: ""Get instance id metadata failed""
+Hello,
+
+I am trying to use X-Ray on my ECS Fargate service. I have followed the steps here: https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-ecs.html 
+
+I have used the first Dockerfile from that page.
+
+FROM amazonlinux
+RUN yum install -y unzip
+RUN curl -o daemon.zip https://s3.dualstack.us-east-2.amazonaws.com/aws-xray-assets.us-east-2/xray-daemon/aws-xray-daemon-linux-2.x.zip
+RUN unzip daemon.zip && cp xray /usr/bin/xray
+ENTRYPOINT [""/usr/bin/xray"", ""-b"", ""0.0.0.0:2000""]
+EXPOSE 2000/udp
+
+
+I have added the Docker image to an ECR repo and added one of these containers to my existing task definition. 
+
+In the logs for my container I see this:
+
+2018-07-09 13:17:172018-07-09T20:17:17Z [Error] Get instance id metadata failed: RequestError: send request failed
+2018-07-09 13:17:17caused by: Get http://169.254.169.254/latest/meta-data/instance-id: dial tcp 169.254.169.254:80: connect: invalid argument
+2018-07-09 13:17:162018-07-09T20:17:16Z [Info] Initializing AWS X-Ray daemon 2.1.3
+2018-07-09 13:17:162018-07-09T20:17:16Z [Info] Using buffer memory limit of 37 MB
+2018-07-09 13:17:162018-07-09T20:17:16Z [Info] 592 segment buffers allocated
+2018-07-09 13:17:162018-07-09T20:17:16Z [Info] Using region: us-west-2"
+AWS X-Ray	"Re: X-Ray in ECS: ""Get instance id metadata failed""
+Hi there,
+
+The X-Ray daemon will try to fetch EC2 metadata for telemetry data. This failure should not affect daemon functionality in any way except a log entry during start up as you see. You can turn it off by setting the daemon to local mode. See https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-configuration.html. Please let me know if you have any concern.
+
+Thanks,
+Haotian"
+AWS X-Ray	"What exactly is ""Initialization""?
+In our app the XRay sections called ""Initialization"" for Lambdas take about 2 seconds.
+What exactly is ""Initialization"" for a Lambda and what exactly is it constituted of?
+The docs say vaguely that it's “the initialization subsegment representing the function's initialization code that is run before the handler”: very unclear."
+AWS X-Ray	"Re: What exactly is ""Initialization""?
+When a Lambda function is invoked, AWS Lambda launches a temporary runtime environment based on the settings you configure, and downloads your function code and dependencies. The X-Ray section called initialization shows the time it takes the Lambda service to bootstrap this execution environment for your function code. This also includes the time it takes for static initialization of your function code (anything outside the handler). 
+
+You typically see this section when a Lambda function is invoked for the first time or after it has been updated because AWS Lambda tries to reuse the execution context for subsequent invocations of the Lambda function. To learn more about the AWS Lambda execution model, see: https://docs.aws.amazon.com/lambda/latest/dg/running-lambda-code.html."
+AWS X-Ray	"Empty ""SQL"" tab
+We've set up XRAY using:
+
+var AWSXRay = require('aws-xray-sdk');
+var mysql = AWSXRay.captureMySQL(require('mysql'));
+
+
+Although we do see the traces for SQL operations (the blue bars) like
+SQL: college-consortium.cluster-czr0rm52c5we.us-east-1....
+
+still, the SQL tab only shows URL and ""user"" and not the actual SQL query.
+
+Why doesn't it show the SQL query?
+Is it even supposed to?"
+AWS X-Ray	"Re: Empty ""SQL"" tab
+Hi there,
+
+The X-Ray SDK currently doesn't capture the actual SQL query so it will not show up anywhere. We do have an action item on our backlog to have the SDK captures the parameterized SQL query so no sensitive information is being recorded. Please stay tuned. A PR is always welcome at our public repo https://github.com/aws/aws-xray-sdk-node.
+
+Thanks,
+Haotian"
+AWS X-Ray	"Re: Empty ""SQL"" tab
+XRay doesn't support logging SQL queries"
+AWS X-Ray	"XRay service map not forming graph for segments with shared trace-id
+I am trying to create a service graph. Currently, I have a service that emits two segments for each request. The segments share a trace-id. XRay is correctly bundling them together as one trace when I query the server about a particular trace-id. Here is the raw json for trace-id 1-5b2bc103-1b45e3745b7c6a96bf359c96.
+
+
+{
+    ""Duration"": 0.178,
+    ""Id"": ""1-5b2bc103-1b45e3745b7c6a96bf359c96"",
+    ""Segments"": [
+        {
+            ""Document"": {
+                ""id"": ""30cc35c464d542d2"",
+                ""name"": ""dev.FOO.root"",
+                ""start_time"": 1529594115.4054503,
+                ""end_time"": 1529594115.582994,
+                ""http"": {
+                    ""request"": {
+                        ""url"": ""/iam/FOO/BAR/ETC"",
+                        ""method"": ""POST"",
+                        ""user_agent"": ""PostmanRuntime/7.1.5"",
+                        ""client_ip"": ""70.102.136.132"",
+                        ""x_forwarded_for"": true
+                    },
+                    ""response"": {
+                        ""status"": 201
+                    }
+                },
+                ""trace_id"": ""1-5b2bc103-1b45e3745b7c6a96bf359c96"",
+                ""user"": ""client:cdb99852ba294a6292fe5b59e3db9ebc""
+            },
+            ""Id"": ""30cc35c464d542d2""
+        },
+        {
+            ""Document"": {
+                ""id"": ""9ec2e3bf0e9c7988"",
+                ""name"": ""dev.FOO.send-telemetry"",
+                ""start_time"": 1529594115.581864,
+                ""end_time"": 1529594115.5829268,
+                ""trace_id"": ""1-5b2bc103-1b45e3745b7c6a96bf359c96""
+            },
+            ""Id"": ""9ec2e3bf0e9c7988""
+        }
+    ]
+}
+ 
+
+
+The service map does not display a graph relating the services. Here's a screenshot:
+https://imgur.com/a/h1IbAcT 
+
+Here's a screenshot of searching the traces by the traceid, showing that the server can correlate them:
+https://imgur.com/a/BxbGNc7 
+
+I have compared the raw data to raw data from requests that did successfully form a graph (in another service) and can't find any difference.
+
+Is there a piece of metadata that I need to be attaching to the segments to get them to form a graph? Any help in filling in the holes in my knowledge here would be helpful."
+AWS X-Ray	"Re: XRay service map not forming graph for segments with shared trace-id
+Hi there,
+
+What is the service graph structure you are expecting? From the raw trace data and trace timeline I am unable to tell if the second call is async and how it affects your service's response to the caller.
+
+If the second segment is part of the request/response cycle, you can add a json key parent_id to it, of which value will be same as the 16-digit id of your first segment. That way you will see an arrow from the first node to the second node reflecting the request processing has dependency on another service/endpoint. The second segment data in your example will look like this:
+{
+  ""Document"": {
+    ""id"": ""9ec2e3bf0e9c7988"",
+    ""name"": ""dev.FOO.send-telemetry"",
+    ""start_time"": 1529594115.581864,
+    ""end_time"": 1529594115.5829268,
+    ""trace_id"": ""1-5b2bc103-1b45e3745b7c6a96bf359c96"",
+    ""parent_id"": ""30cc35c464d542d2""
+  }
+}
+
+
+If the second segment reflects an async work which doesn't affect how the server responds to the caller at all, you can choose to see it as previously instructed or you can add {""type"": ""subsegment"", ""namespace"": ""local""}
+ to the second segment documentation so it doesn't appear. It should look like this:
+{
+  ""Document"": {
+    ""id"": ""9ec2e3bf0e9c7988"",
+    ""name"": ""dev.FOO.send-telemetry"",
+    ""type"": ""subsegment"",
+    ""namespace"": ""local"",
+    ""start_time"": 1529594115.581864,
+    ""end_time"": 1529594115.5829268,
+    ""trace_id"": ""1-5b2bc103-1b45e3745b7c6a96bf359c96""
+  }
+}
+
+
+Please let me know which use case work best for you. In addition, could you share which X-Ray SDK and web framework you are using so I can check if there is a better way to have the X-Ray SDK does all the capturing work for you?
+
+Thanks,
+Haotian"
+AWS X-Ray	"Understanding dependencies and their relation
+Hi,
+
+I've read the documentation couple of times, but still can't get some points. Could youp lease hlep me to understand it better by answering my questions (sorry for lengthy text, I just wanted to clarify my thoughts)
+
+I have a simple Serverless function, that saves an object into s3 and then writes a record into DynamoDB. I have commented the attached scenario1-image1.
+
+Question1: Looking into the trace, firstly S3 defined as subsegment, but then there is a new section, in there it is defined as segment. So is S3 part/phase a segment or subsegment?
+
+Now, looking at the attached scenario1-image2 which is service map for the same application:
+
+Question 2: 
+Looking at response distribution, Edge1 has little bit higher response latency than node1. This is understandable as edge latency includes network latency too. But surprisingly, the other two nodes have same response distribution / latency as their edge ( e.g. Node 3 and Edge 3). Why is this so? Logically, there will be a time that request reaches S3 service, and then it will be processed by S3. So, why the edge3 doesn't show any latency?
+
+*Question 3: *
+I have following assumptions:
+
+
+
+Statistical data for node2, are calculated inside a subsegment in Node number1 (they are inferred).
+Statistical data for node3, have been sent directly from S3 service as it supports x-ray.
+Also, I have put some comments on secnario1-image2. Are all my assumptions correct? And can I say that on Service Map, user can see only segments? Or a node can represent either segment or subsegment?
+
+
+
+
+Thanks in advance for your guide"
+AWS X-Ray	"Re: Understanding dependencies and their relation
+Hello
+
+Please find the answers to your questions below. I will try to be a bit verbose for the benefit of new X-Ray users. Feel free to ask again if something seems confusing.
+
+Some background:
+As you are already aware X-Ray allows you to send performance related data using segments / subsegments from multiple distributed services. Calls from multiple services are linked via a single trace id to form a trace.
+Each segment corresponds to work done within a microservice (conventional service or lambda function). A segment may perform local computation and may make calls to downstream services. Both local computations and downstream calls are represented as subsegments with namespace of subsegment being ""local"" (default) and ""remote"" / ""aws"" respectively. Hence S3 shows up as a subsegment. If the downstream service has X-Ray enabled then it will send a segment to represent its side of the computation. The subsegment represents client side experience (as you correctly recognize it will include network latency). If the downstream service is not traced, then a segment representing the computation from the service is projected using the client experience (subsegment). This makes your traces look symmetric and you can always expect a segment corresponding to a remote / aws call even if the downstream service is not traced.
+
+Question 1: SDK creates a subsegment for the S3 call and since S3 is currently not actively integrated with X-Ray, a segment is injected into the trace. This is inferred from the client side experience.
+
+Question 2: You are correct that Edge 1 has slightly higher latency than node 1 because of network latency and other similar things. Node 3 is projected from Edge 3 and hence the latency for the two is same.
+
+Question 3: Node 3 is also inferred. Both Node 2 and Node 3 represent inferred segments as currently, S3, and DynamoDB services are not actively integrated with X-Ray. Lambda is currently actively integrated with X-Ray and hence you see two nodes for ""test-normal-dev-save"" with types ""AWS::Lambda"" and ""AWS::Lambda::Function"". 
+A node in service graph is always a segment (may be inferred).
+""parent_id"" field on a segment document represents the id of the segment / subsegment that invoked this service. If ""parent_id"" is absent then the segment is a ""root"" service. This parent_id field is used to represent the interaction between the services and consequently draw edges between them. On a service map the segments are shown by segments and remote (or AWS) subsegments manifest as edges.
+
+Hope that helps!
+
+Thanks
+Rohit"
+AWS X-Ray	"Re: Understanding dependencies and their relation
+First of all, thanks a lot for your explanatory answer. You already answered my original question, but because you explain well, I would like to ask you some other questions that are related. I’m sure this topic can help others to understand X-Ray deeper. 
+
+I apologise again for my lengthy text:
+
+Question 1: Considering your previous answer, I conclude that Lambda service(AWS::Lambda) and Lambda function(AWS::Lambda::Function) are two different microservices (please correct me if I’m wrong). That’s why they are shown as two separate segments in service map. So, when Lambda service is calling the function, this downstream call is a subsegment. But why this is not shown as subsegment of AWS::Lambda? Unlike S3 and DynamoDB, whose subsegment is written in the lambda function. In the image 4, I have clarified this.
+
+Please look at the image 5. It’s a sample scenario from AWS summit. 
+
+Question 2:
+When you look at such trace, what do you understand about sequence of actions? To be specific, can I say that sequence of actions is so:
+oc-registry makes call to umsGenerateUrl, and umsGenerateUrl calls sharedCacheFetch, and sharedCacheFetch makes 3 remote calls. After all these calls completed(?), then saasGetstring calls sharedCatchFetch, and then it makes a remote call. And it continues  sequentially for rest. Is this correct?
+
+Q3: Why that action on is lying outside its parent? Can you please explain what makes such condition happen? (I heard its async, but I don't get it)
+
+Q4: some of those calls have a “remote” label, which is understandable. But sharedCatchFetch doesn’t have any “remote” label, so do you guess what is it? Is it another lambda function? (I would like to know if I can interpret the system by looking at its trace)
+
+Thanks again for your patience and answer
+
+Edited by: mahdi5 on Jun 6, 2018 6:54 AM"
+AWS X-Ray	"Re: Understanding dependencies and their relation
+Hello
+
+Please find the responses below:
+
+1. Yes nodes with ""Type"" - ""AWS::Lambda"" and ""AWS::Lambda::Function"" represent two different components or microservices of a single lambda function. Please note a caveat hidden in my previous answer above:
+
+`A node in service graph is always a segment (may be inferred).
+""parent_id"" field on a segment document represents the id of the segment / subsegment that invoked this service.`
+
+Thus one way to represent an edge is using a subsegment (most common). The destination of this edge is the segment with parent_id set to id of the subsegment.
+Another way is using a segment -> segment connection. Thus if two microservices each emit a segment and parent_id of second segment is set to id of the first segment. Then that represents an edge too. You may check the raw data to confirm that this is how the edge is represented in case of your trace.
+
+2. The lines in Image 5 have different indentation to indicate the nesting of calls or actions taking place as part of this segment. You may create subsegments inside your trace and the nesting will reflect the same. The timeline view on the right side of your image or the start and end times on the subsegments / segments can be used to understand the ordering of events assuming your code is instrumented correctly to populate these timestamps.
+From your image it seems umsGenerateUri calls and saasGetStrings calls are all happening concurrently as the timeline overlaps. Do you have asynchronous or parallel code paths in your code? That would explain it.
+The best way is to compare the trace timestamps with the start and end times on the raw data to ascertain for a few traces and relate that with the code structure.
+
+3. Yes it happens only in async code path. Do you have fire-and-forget code path that causes the cache look up to happen in a separate thread after closing the parent subsegment? If it happens in the same thread and it is still showing up outside the parent's timeline then it may be a bug in the instrumentation.
+
+4. It is likely not a lambda function. As long as the SDK is used correctly, if it was a lambda function then it would have showed up as a complete trace.
+It seems shared-cache is not marked as remote. It is a local subsegment. Hence in this case, it is not possible to infer this from trace data if it does not carry necessary information.
+What protocol are you using to access the shared cache? Is it in memory or HTTP or an Elasticache lookup or a MySQL call or some custom protocol over raw TCP? Usually using HTTP clients or JDBC clients instrumented with X-Ray SDK ensures that those calls are traced as remote calls and the subsegments are marked as remote. If you are using an uninstrumented HTTP client or other protocols then you can create your own handlers to create subsegments which are marked as remote and include relevant information for them. If you instrument all remote code paths with complete information, then it is possible to interpret the system just by looking at the trace. Please let us know if you have any questions about how to instrument access to shared cache based on protocol.
+
+Thanks
+Rohit"
+AWS X-Ray	"SQS error when trying to use X-Ray API in Java
+Hello,
+
+I'm hitting an exception on startup when trying to use the Java API in a Spring Boot application:
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'simpleMessageListenerContainer' defined in class path resource [org/springframework/cloud/aws/messaging/config/annotation/SqsConfiguration.class]: Invocation of init method failed; nested exception is com.amazonaws.xray.exceptions.SegmentNotFoundException: Failed to begin subsegment named 'AmazonSQS': segment cannot be found.
+...
+Caused by: com.amazonaws.xray.exceptions.SegmentNotFoundException: Failed to begin subsegment named 'AmazonSQS': segment cannot be found.
+...
+
+
+Here's the bean in question:
+    @Bean
+    public SimpleMessageListenerContainerFactory simpleMessageListenerContainerFactory(AmazonSQSAsync amazonSqs) {
+        SimpleMessageListenerContainerFactory factory = new SimpleMessageListenerContainerFactory();
+        factory.setAmazonSqs(amazonSqs);
+        factory.setAutoStartup(true);
+        factory.setMaxNumberOfMessages(10);
+        factory.setWaitTimeOut(20);
+        return factory;
+    }
+
+
+And my X-Ray specific code in the spring config file:
+
+    @Bean
+    public Filter TracingFilter() {
+    	return new AWSXRayServletFilter(""Envelope"");
+    }
+    
+    static {
+    	AWSXRayRecorderBuilder builder = AWSXRayRecorderBuilder.standard().withPlugin(new ECSPlugin());
+    	
+    	//TODO: store this file in git and pull in with spring config
+    	URL ruleFile = SpringAwsConfig.class.getResource(""file://x-ray-sampling-rules.json"");
+    	builder.withSamplingStrategy(new LocalizedSamplingStrategy(ruleFile));
+    	
+    	AWSXRay.setGlobalRecorder(builder.build());
+    }
+
+
+Did some digging and found this in the documentation: https://docs.aws.amazon.com/xray/latest/devguide/xray-troubleshooting.html
+
+Not quite the same since that talks about SNS and this is SQS, but I tried some of the steps there and still got the same error. It sounds like the reason this is happening is because SQS is making an AWS API call before the TracingFilter is initiated, but I'm not sure how to solve that short of removing the instrumenter and manually wrapping code in segments, which I'd like to avoid."
+AWS X-Ray	"Re: SQS error when trying to use X-Ray API in Java
+Hi daveallen,
+
+As you mention, the AWS X-Ray SDKs provide a mechanism to manually create segments outside of an HTTP request/response cycle. It is often useful to wrap startup tasks, such as this instantiation of an SQS client, in a custom segment. There shouldn't be a need to remove the AWSXRayServletFilter in this approach.
+
+More information may be found in the AWS docs, Instrumenting Startup Code: https://docs.aws.amazon.com/xray/latest/devguide/scorekeep-startup.html. Please let us know if we can provide additional details.
+
+Thanks,
+James B."
+AWS X-Ray	"pinging the xray daemon
+Hello,
+
+Is there a way to ping the xray daemon from my application (in golang) to check if it is running before I turn on tracing?
+
+Thanks"
+AWS X-Ray	"Re: pinging the xray daemon
+Hi @pgopal,
+Currently, there is no direct way to get status of X-Ray daemon using golang. You can use OS specific tools to get information of the X-Ray daemon.
+Please refer package : https://golang.org/pkg/os/exec/
+Following code snippet is tested on MacOS, Go version 1.9.4
+// use OS specific command
+cmd := exec.Command(""/bin/bash"", ""-c"", ""netstat -vanp udp | grep 2000"") 
+	out, err := cmd.Output()
+	if out == nil || err != nil {
+		fmt.Println(""X-Ray daemon not running"")
+	} else {
+		fmt.Println(""X-Ray daemon running"")
+	}
+
+Can you please let us know your motivation for checking status of the daemon and then enabling the tracing?
+
+Best,
+Yogi"
+AWS X-Ray	"Re: pinging the xray daemon
+I'd like to know if the daemon i'm sending traces to is actually up. We don't want to download and spin up external binaries (xray daemon) as part of our tool invocation. It seems like a health check port is reasonable to have, even just from a monitoring perspective."
+AWS X-Ray	"Re: pinging the xray daemon
+Hi,
+
+Thank you for the clarification. We will put this feature request to our backlog. Please feel free to create an issue on Github https://github.com/aws/aws-xray-daemon to also keep this in track with the open source community. Let us know if the workaround snippet provided above can unblock you or you need extra help.
+
+Please stay tuned and thank you for your patience.
+
+Best,
+Haotian"
+AWS X-Ray	"Re: pinging the xray daemon
++1 for this feature. Would also make integration into ALB + ECS easier, as currently there's no way to add to ALB due to lack of http health check options without adding a sidecar."
+AWS X-Ray	"Why Errors are so unclear in X-Ray? Any solution?
+Hi,
+
+1. I really would like to integrate X-Ray with my distributed application, but I have concerns about it's debugging capabilities. I use Lambda proxy integration with Node.js. How can I make X-Ray to show the client errors (4xx) arising from a new Error() object, in the trace -> Exceptions section or anywhere else where I can see and root cause the error? I
+
+2. I have deployed a simple Lambda proxy integration that writes a file to s3 and a record to DynamoDB. It works fine as far as I make individual requests. But If i start to make Performance Testing with 20 concurrent users, after awhile it starts returning 502 Bad Gateway error. AWS X-Ray service Map shows that lambda function has error, but interestingly, it doesn't show any error in the Exception list. After going through Cloudwatch logs, I realised that it's because lambda functions time out. But going through CW logs is a tedious work, and one of the purpose of X-Ray is to ease debugging. So, I'm wondering how can I show more precise errors to easily debugging the app (in this case, time out error)?
+Attached you can find screenshots of my X-Ray."
+AWS X-Ray	"Re: Why Errors are so unclear in X-Ray? Any solution?
+Hi,
+
+For 1, I would like to clarify a few things so I can provide further help. Are you deploying a web app to Lambda? Is the proxy manually written by yourself or you are using AWS API getaway or some other 3rd party services/tools? 
+
+For 2, the segment is generated by Lambda container. We are working with Lambda team to provide better customer experience on Lambda generated segment. We will make sure this feedback is addressed in the future improvement. Please let me know what specific behavior you are expecting for a timed out invocation so we can have more data to provide a better solution.
+
+Thanks,
+Haotian"
+AWS X-Ray	"Re: Why Errors are so unclear in X-Ray? Any solution?
+Thanks for your message.
+
+As for no2: I want it be like any other good debugging tool: show the exact error/reason that happened my system/request to fail. So I don't have to dig into my logs, to find out the reason. This is really cumbersome.
+
+As for no.1: I'm using Serverless framework. It automatically creates API Gateway and links my Lambda function to it as proxy integration. 
+
+Actually, I was playing with X-Ray SDK and could get some progress. I don't know how correct my way is: By using AWSXRay.captureAsyncFunc, I created a new subsegment, and by subsegment.addError(err), I could populate my own custom error into the Exception part of X-Ray console. But this way is a bit dirty, because an unnecessary subsegment is being created, just for debugging purpose. is there any way to catch the current/existing subsegment and add error to it?
+
+I have put my sample code with comments for clarification on here:
+https://jsfiddle.net/dexoey/x99x5anb/
+
+Imagine, my promise chain is long. So, by current way, I have to create a custom and ""parent"" subsegment whose purpose is debugging and error propagation, by the current method. Any suggestion or recommendation how can I improve this?
+
+Thank you"
+AWS X-Ray	"Re: Why Errors are so unclear in X-Ray? Any solution?
+Hi,
+
+Thank you for the clarification. Unfortunately there is no better way to achieve better debugging in your use case. API Getaway needs Lambda invocation to successfully return the response in order to return meaningful response to the external caller. Lambda container generates a separate segment for each invocation and sends it to X-Ray separately. As long as the invocation is successful, it will consider the segment a successful segment and it doesn't have knowledge of what's actually in the returned body. This Lambda generated segment right now is inaccessible within the function code so there is no way to add extra information to it.
+
+The code snippet you pasted is the best workaround at the moment. It's basically have the X-Ray SDK creates a subsegment so you can add whatever you want and the X-Ray SDK sends this subsegment to the back-end service. The X-Ray service will re-assemble Lambda generated segment and X-Ray SDK generated subsegment together as a complete trace. 
+
+We are totally aware of this use case and we are actively working with Lambda team and API Getaway team to improve the customer experience for this use case. Please stay tuned and thank you for your patience.
+
+Please let me know if you have any additional concerns or requests.
+
+Best,
+Haotian"
+AWS X-Ray	"Unable to launch daemon in ECS Fargate
+I'm following the AWS-provided example of running the X-Ray Daemon inside ECS (https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-ecs.html), and getting the following error in the Task log:
+
+2018-05-25 15:16:412018-05-25T19:16:41Z [Error] Get instance id metadata failed: RequestError: send request failed
+2018-05-25 15:16:41caused by: Get http://169.254.169.254/latest/meta-data/instance-id: dial tcp 169.254.169.254:80: connect: invalid argument
+2018-05-25 15:16:402018-05-25T19:16:40Z [Info] Using region: us-east-1
+2018-05-25 15:16:402018-05-25T19:16:40Z [Info] Initializing AWS X-Ray daemon 2.1.2
+2018-05-25 15:16:402018-05-25T19:16:40Z [Info] Using buffer memory limit of 79 MB
+2018-05-25 15:16:402018-05-25T19:16:40Z [Info] 1264 segment buffers allocated
+
+
+Seems like it's having an issue getting the isntance-id, which makes sense to me since it's running on FarGate and doesn't have an underlying EC2 instance but I'm not sure why it would need an instance id in the first place. Any ideas? Here's my Dockerfile:
+
+FROM amazonlinux:1
+ 
+# Download latest 2.x release of X-Ray daemon
+# Unpack archive, by default unzip is not installed so do that beforehand
+RUN yum install -y unzip && \
+    cd /tmp/ && \
+    curl https://s3.dualstack.us-east-2.amazonaws.com/aws-xray-assets.us-east-2/xray-daemon/aws-xray-daemon-linux-2.x.zip > aws-xray-daemon-linux-2.x.zip && \
+		unzip aws-xray-daemon-linux-2.x.zip && \
+		cp xray /usr/bin/xray && \
+		rm aws-xray-daemon-linux-2.x.zip && \
+    rm cfg.yaml
+ 
+# Expose port 2000 on udp
+EXPOSE 2000/udp
+ 
+ENTRYPOINT [""/usr/bin/xray""]
+ 
+# No cmd line parameters, use default configuration
+CMD ['']
+
+
+And here's some of the relevant CloudFormation script that creates the Service and Task:
+
+    XrayDaemonService: 
+        Type: AWS::ECS::Service
+        Properties: 
+            Cluster: !Ref Cluster
+            DeploymentConfiguration:
+                MaximumPercent: 200
+                MinimumHealthyPercent: 100
+            DesiredCount: !Ref DesiredCount
+            LaunchType: FARGATE
+            NetworkConfiguration:
+                AwsvpcConfiguration:
+                    AssignPublicIp: ENABLED
+                    SecurityGroups:
+                      - !Ref XrayDaemonSecurityGroup
+                    Subnets:
+                      - !Select [ 0, !Ref Subnets ]
+                      - !Select [ 1, !Ref Subnets ]
+            TaskDefinition: !Ref XrayDaemonTaskDefinition
+ 
+    XrayDaemonTaskDefinition:
+        Type: AWS::ECS::TaskDefinition
+        Properties:
+            Family: xray-daemon
+            Cpu: !Ref 'TaskCpu'
+            Memory: !Ref 'TaskMemory'
+            NetworkMode: awsvpc
+            RequiresCompatibilities:
+              - FARGATE
+            ExecutionRoleArn: !Ref ECSTaskExecutionRole
+            ContainerDefinitions:
+                - Name: xray-daemon
+                  Essential: true
+                  Image: (my ECR ARN)/top-gun-ecr-repository-xray-daemon:latest
+                  # CPU and Memory reservations are set to 50% of the default values specified above
+                  Cpu: 32
+                  Memory: 1024
+                  MemoryReservation: 256
+                  PortMappings:
+                    - ContainerPort: 2000
+                      Protocol: udp
+                  LogConfiguration:
+                    LogDriver: awslogs
+                    Options:
+                        awslogs-group: !Ref AWS::StackName
+                        awslogs-region: !Ref AWS::Region
+                        awslogs-stream-prefix: !Ref AWS::StackName"
+AWS X-Ray	"Re: Unable to launch daemon in ECS Fargate
+Hi there,
+
+The error message you saw came from here: https://github.com/aws/aws-xray-daemon/blob/master/daemon/telemetry/telemetry.go#L177. The instance id is used for Telemetry data. You can see from the source code that failing to talk to metadata service only results in an ERROR log entry and it should not affect the normal Daemon functionality. But please let us know if you see something different. 
+
+You can also set Daemon to local mode so the daemon will not talk to metadata service on startup. See X-Ray Daemon configuration https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-configuration.html.
+
+Hope this can help.
+
+Thanks,
+Haotian
+
+Edited by: haotianw@AWS on May 25, 2018 2:52 PM"
+AWS X-Ray	"Re: Unable to launch daemon in ECS Fargate
+In addition there is a sample app on Github for running Fargate with X-Ray https://github.com/aws-samples/aws-xray-fargate. Please let me know if you have additional questions regarding the provided example usage.
+
+Thanks,
+Haotian"
+AWS X-Ray	"Re: Unable to launch daemon in ECS Fargate
+Thank you! Good to know it's running properly despite the error. Just confirmed that to be the case."

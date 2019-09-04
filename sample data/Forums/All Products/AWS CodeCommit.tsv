@@ -1,0 +1,1806 @@
+label	description
+AWS CodeCommit	"Codecommit assume role error ?
+Hi,
+
+This is my codecommit role with policy .
+
+{
+    ""AWSTemplateFormatVersion"": ""2010-09-09"",
+    ""Description"": ""Cross Account Role to Allow Access to CodePipeline in Tools Account"",
+    ""Parameters"": {
+        ""ToolsAccount"": {
+            ""Description"": ""AWS AccountNumber for tools account"",
+            ""Type"": ""Number""
+        },
+        ""CMKARN"": {
+            ""Description"": ""ARN of the KMS CMK creates in Tools account"",
+            ""Type"": ""String""
+        }
+    },
+    ""Resources"": {
+        ""Role"": {
+            ""Type"": ""AWS::IAM::Role"",
+            ""Properties"": {
+                ""RoleName"":""CodePipelineCodeCommitRole""
+                },
+                ""AssumeRolePolicyDocument"": {
+                    ""Version"": ""2012-10-17"",
+                    ""Statement"": [
+                        {
+                            ""Effect"": ""Allow"",
+                            ""Principal"": {
+                                ""Service"": [
+                                    ""codepipeline.amazonaws.com""
+                                ]
+                            },
+                            ""Action"": [
+                                ""sts:AssumeRole""
+                            ]
+                        }
+                    ]
+                },
+                ""Path"": ""/""
+            }
+        },
+        ""Policy"": {
+            ""Type"": ""AWS::IAM::Policy"",
+            ""Properties"": {
+                ""PolicyName"":""CodePipelineCodeCommitPolicy""
+                },
+                ""PolicyDocument"": {
+                    ""Version"": ""2012-10-17"",
+                    ""Statement"": [
+                        {
+                            ""Effect"": ""Allow"",
+                            ""Action"": [
+                                ""codecommit:BatchGetRepositories"",
+                                ""codecommit:Get*"",
+                                ""codecommit:GitPull"",
+                                ""codecommit:List*"",
+                                ""codecommit:CancelUploadArchive"",
+                                ""codecommit:UploadArchive"",
+                                ""s3:*""
+                            ],
+                            ""Resource"": ""*""
+                        },
+                        {
+                            ""Effect"": ""Allow"",
+                            ""Action"": [
+                                ""kms:*""
+                            ],
+                            ""Resource"": {
+                                ""Ref"": ""CMKARN""
+                            }
+                        }
+                    ]
+                },
+                ""Roles"": [
+                    {
+                        ""Ref"": ""Role""
+                    }
+                ]
+            }
+        }
+    }
+}
+
+
+I am using this role in my codepipeline source stage
+
+{
+                        ""Name"": ""Source"",
+                        ""Actions"": [
+                            {
+                                ""Name"": ""App"",
+                                ""ActionTypeId"": {
+                                    ""Category"": ""Source"",
+                                    ""Owner"": ""AWS"",
+                                    ""Version"": 1,
+                                    ""Provider"": ""CodeCommit""
+                                },
+                                ""Configuration"": {
+                                    ""RepositoryName"": {
+                                        ""Ref"": ""ProjectName""
+                                    },
+                                    ""BranchName"": ""master""
+                                },
+                                ""OutputArtifacts"": [
+                                    {
+                                        ""Name"": ""SourceArtifact""
+                                    }
+                                ],
+                                ""RunOrder"": 1,
+								""RoleArn"": {
+                    ""Fn::GetAtt"": [
+                        ""Role"",
+                        ""Arn""
+                    ]
+                },
+                            }
+                        ]
+                    }
+					
+
+
+When i tried to run this in cloudformation it is throwing error like this
+
+ arn:aws:iam::123456789:role/sample-lambda-codepipeline-role is not a
+uthorized to perform AssumeRole on role arn:aws:iam::123456789:role/Codecommi
+tRole
+
+why is it coming?
+ANy help is appreciated."
+AWS CodeCommit	"how resolve the merging issue
+Hi,
+Using Code Commit console when I am trying to merge the branch I get the following error.
+
+There are conflicts between branch and master that cannot be merged in the AWS CodeCommit console. Merge conflicts must be resolved locally before merging.
+
+what step do I need to take to resolve the issue.  I am new to code commit."
+AWS CodeCommit	"Re: how resolve the merging issue
+Hi bshah,
+
+Sorry you are having problems merging branches in CodeCommit console. Don't worry if you are new, we can help you.
+
+CodeCommit supports only merging branches by Fast Forward, which means that merging is only possible if the branch you are trying to merge into (destination) has not advanced - don't have any new commit - after the branch you are using as source was created.
+
+If you are seeing that error message, it means that destination branch has indeed advanced and now you need to manually resolve that conflict.
+
+To resolved it, you need to fetch the Pull Request branch, rebase it with the destination branch and push the result back to CodeCommit, updating the Pull Request branch. After that, console should say the pull request is mergeable.
+
+There are more information here: https://docs.aws.amazon.com/codecommit/latest/userguide/how-to-close-pull-request.html?icmpid=docs_acc_console_pr#why-git-merge"
+AWS CodeCommit	"image links busted
+In the old console image links presented a warning and required you to accept image links.  New console does not ask and shows busted links.
+
+Trying to add a badge to a README.md, which seems to me to be what the badge is for? and yet CodeCommit will not display images.  What am I missing here?"
+AWS CodeCommit	"Re: image links busted
+Support indicates that image links are indeed busted in the new console."
+AWS CodeCommit	"Re: image links busted
+Hi,
+
+We are aware of this issue, I have passed your feedback to our console team and they will prioritize this issue. Your feedback is very appreciated!
+
+Thanks,
+Diane"
+AWS CodeCommit	"No access over IPv6
+I'm trying to use CodeBuild in a VPC without a NAT gateway (in order to save costs). This means that my build can only access IPv6 addresses on the internet. 
+Unfortunately, this seems to mean that the build cannot access CodeCommit in order to check out my code. In the DNS, there is no AAAA record for git-codecommit.eu-central-1.amazonaws.com.
+This also means that I cannot pull or push code from my laptop when I'm connected via an IPv6-only network.
+Are there any plans to enable IPv6 access to CodeCommit?"
+AWS CodeCommit	"Re: No access over IPv6
+Hi,
+
+CodeCommit doesn't support IPv6 access right now. Thank you for this feature request, I have passed it to the team for further review and consideration. Your feedback is very much appreciated.
+
+Best,
+Diane"
+AWS CodeCommit	"Notification Event Format
+Regarding the Notification Event Format for when a lambda function is triggred by a code change, I have several questions:
+{
+  ""Records"": [
+    {
+      ""awsRegion"": ""us-east-1"",
+      ""codecommit"": {
+        ""references"": [
+          {
+            ""commit"": ""971ec583f069a614f67fc71a36db909b65572665"",
+            ""ref"": ""refs/heads/master""
+          }
+        ]
+      },
+      ""customData"": """",
+      ""eventId"": ""1bcbcb91-3113-4194-a01f-651c99f9c3f6"",
+      ""eventName"": ""ReferenceChanges"",
+      ""eventPartNumber"": 1,
+      ""eventTotalParts"": 1,
+      ""eventSource"": ""aws:codecommit"",
+      ""eventSourceARN"": ""arn:aws:codecommit:us-east-1:***:***"",
+      ""eventTime"": ""2016-03-10T00:20:34.828+0000"",
+      ""eventTriggerConfigId"": ""914d66cf-f1aa-4efd-a93d-3f7857ffca3b"",
+      ""eventTriggerName"": ""test"",
+      ""eventVersion"": ""1.0"",
+      ""userIdentityARN"": ""arn:aws:iam::***:user/***""
+    }
+  ]
+}
+
+
+1. What are the possible values for `eventName`?
+2. What is the purpose of `eventPartNumber` and `eventTotalParts`? 
+3. Will I ever receive multiple records in the `Records` array?"
+AWS CodeCommit	"Re: Notification Event Format
+1. What are the possible values for `eventName`?
+TriggerEventTest (used when you test a trigger in the console or call the TestRepositoryTriggers API), ReferenceChanges (used when there is a push to the repo)
+
+2. What is the purpose of `eventPartNumber` and `eventTotalParts`?
+The event may be split into multiple messages due to payload size restrictions in SNS and Lambda. For example, this would happen when pushing more than 20 branches or tags in a single ""git push"", or when migrating a repository to CodeCommit that has many branches and tags. All messages for the same event will share the same ""eventId"", and can be re-assembled using ""eventPartNumber"" and ""eventTotalParts"".
+
+3. Will I ever receive multiple records in the `Records` array?
+We do not currently send multiple records in the Records array, but the format allows us to do so in the future."
+AWS CodeCommit	"Re: Notification Event Format
+How can I get the custom data from the CodeCommitEvent.Record in java. This field is not present in the class."
+AWS CodeCommit	"Commit has the wrong Author
+Hello,
+
+A commit to CodeCommit repository has an Author an IAM user X (the one used to initialize eb cli), while it has been pushed using the credentials of another IAM user Y which is the one having ""AWSCodeCommitFullAccess"" permission.
+
+I guess I am missing something here.
+Does anybody have a clue?"
+AWS CodeCommit	"Re: Commit has the wrong Author
+Hi,
+
+Git commits have two identifying pieces of information(author, and committer). In the AWS console, we (currently) only display the 'committer' value, (which is confusingly labeled as 'author'). I suspect your commit has differing author and committer values.
+
+To validate these values with CodeCommit, you can call our 'get-commit' api directly from the AWS CLI. To do this, first configure your system with the AWS CLI (follow instructions on https://aws.amazon.com/cli/), and configure the CLI with credentials to access your AWS account where your CodeCommit repository lives.
+
+Provide the repository name and 40-character SHA-1 of the commit to the api input:
+ aws codecommit get-commit --repository-name <repository-name> --commit-id <c2c67acfe...> 
+
+
+The output should contain both Author and Committer information, and you should be able to validate the author and committer are as you expect. More information on 'get-commit' can be found on the get-commit cli documentation page: https://docs.aws.amazon.com/cli/latest/reference/codecommit/get-commit.html
+
+I have also filed an issue internally to display both Author and Committer values through the AWS Console page when the values differ. Thanks for your feedback!"
+AWS CodeCommit	"Re: Commit has the wrong Author
+Hi David,
+
+Thank you for your reply.
+The API has returned the same user for Author and Committer: the user that initialized the EB CLI and the local git repository.
+
+The thing that I was confused about is the following:
+the commit had been pushed using the Git Credentials of another user which has the ""AWS CodeCommit Managed Policy"", which I thought would make this user to show as Committer in CodeCommit.
+
+Could you please provide some links or information on how to have two committers (IAM users) in AWS cloud9 environment? So eventually in CodeCommit, we will see the two IAM users show, each one for his own commits."
+AWS CodeCommit	"Re: Commit has the wrong Author
+For future inquirers, CodeCommit console does show the author of the commit.
+If more than one developer are committing to the repository, the author of a commit can be set in a convenient way while committing like the following:
+
+git commit --author=""NAME <EMAIL>"" -m ""commit label"""
+AWS CodeCommit	"Slow clone speed using CodeBuild
+Hi, we've recently started using CodeBuild and the `DOWNLOAD_SOURCE` step which clones from CodeCommit is very slow.
+
+For a branch that has not been built before it can take between 4 and 6 minutes to clone the repository, which is a huge proportion of the total build time. Building the same branch repeatedly speed things up, and after 10 builds it can be down to ~45 seconds. Pushing a single commit will reset things back up to the 5 minute mark.
+
+Our repository is ~600mb, with a ~250mb .git folder, and we are using a clone depth of 1.
+
+Generally we find all git operations are slow with CodeCommit - 45 second pull / push times for a commit are common, which is significantly slower than any other git hosting service."
+AWS CodeCommit	"Re: Slow clone speed using CodeBuild
+Hi dig412
+
+Would you be able to Private Message me the project/repository name of your repository and the build Ids of the builds that were slow?"
+AWS CodeCommit	"Re: Slow clone speed using CodeBuild
+Hello yilun@AWS,
+
+We're encountering the same issue. 
+Clone a CodeCommit repository from CodeBuild takes a very long time: about ~15min for 700 Mo, which is unusable.
+I can give you a build Id.
+
+Thank you in advance,
+Mathieu"
+AWS CodeCommit	"New UI broke more then fixed
+Here is a list of thinks which got broken due to new UI.
+
+1. It is not possible to get link to the line of code in file
+2. Triggers are unavailable in new UI
+3. (SNS) Notifications are messed up(it would be much better to forward JSON to sns rather than text) 4. URL in notifications points to the OLD UI! 
+https://us-east-1.console.aws.amazon.com/codecommit/home?region=us-east-1#/repository/..
+
+ instead of NEW which broke my integrations
+https://us-east-1.console.aws.amazon.com/codesuite/codecommit/repositories/
+
+
+Edited by: jan-1oglop1-gazda on Jan 30, 2019 9:08 AM"
+AWS CodeCommit	"Re: New UI broke more then fixed
+Hi, I'm sorry to hear about your issues with the new UI. I will pass this feedback internally to the right team so that they can address these issues."
+AWS CodeCommit	"Ohh my blob, what the bloomin blobbinstock is blobbin on here?
+""AWS CodeCommit could not find the blob 306516727acee6e6cc626e3cb3bc2cdb3220eee5 in the repository.""
+
+https://imgur.com/a/dsPRf58
+then we get,
+https://imgur.com/a/GFws31C
+
+We're creating a new repo because we think this particular repo might have got blorpinblobbed, but I was wondering if there is a better way to do it that wouldn't destroy commit history >.>
+
+If it helps, the blob 306516727acee6e6cc626e3cb3bc2cdb3220eee5 is a composer ID.
+
+Edited by: mvetbrandon on Jan 28, 2019 6:32 AM"
+AWS CodeCommit	"Re: Ohh my blob, what the bloomin blobbinstock is blobbin on here?
+Hi, I'm sorry to hear about this issue. Let's see if we can figure out what's going on here; agree that it's not a great experience to re-create the repository and lose the commit history. A few questions for you:
+
+1. Can you confirm there weren't any concurrent operations, like a DeleteFile or a GitPush (that deletes the blob), that may have deleted the blob inadvertently?
+2. Has this occurred just once or every time you re-create the repo with the same blob?
+3. If possible, can you try using a different branch and then view the blob?"
+AWS CodeCommit	"PR merge via CodeCommit UI does NOT trigger my Lambda?
+Hi All,
+I've configured my repo to trigger a lambda on ALL repo events and branches. When I push any branch, I can see my Lambda being invoked.
+
+When I create a Pull Request using the UI and then merge it into master, my lambda is NOT invoked. Anyone know why that is?
+
+The only policy work I had to do thus far was to give codecommit permission to execute the lambda - am I missing something, or is this a weakness of CodeCommit itself?
+
+Thanks in advance,
+Scott"
+AWS CodeCommit	"Re: PR merge via CodeCommit UI does NOT trigger my Lambda?
+Hi Scott,
+
+You have found a bug - we are currently not emitting Trigger events on Merge Pull Request. We are working to enable this feature. However, in the meantime, you can consider using Cloudwatch Events (CWE) to enable the expected behavior.
+
+To do this:
+1. Create a CloudWatch Events Rule.
+    Service Name: CodeCommit
+    Event Type: CodeCommit Repository State Change
+
+You can specify ""Any resource by ARN"", or select specific repositories by choosing ""Specific resource(s) by ARN"" and supplying the ARN of your CodeCommit repository(ies).
+2. On your CWE Rule, select the 'Targets'. These are the service(s) which will be notified about the events. In your case, you would likely want to select 'Lambda function'.
+
+You can choose your existing Lambda function - or write a new one. The thing to note is that the payload from CWE about repository events is not the same format as the one used with Triggers, so it won't map 1:1 with your existing function.
+
+This rule will publish CodeCommit repository events (such as referenceCreated, referenceUpdated, referenceDeleted) to your CWE Rule targets. This includes events from Pull Request merges, in addition to reference updates directly from Git pushes.
+
+Here is some documentation on the CodeCommit event type payloads, which should help with modifying/creating a new lambda function: http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#codecommit_event_type"
+AWS CodeCommit	"Re: PR merge via CodeCommit UI does NOT trigger my Lambda?
+Is there any update on this bug, looks like open for long time."
+AWS CodeCommit	"Re: PR merge via CodeCommit UI does NOT trigger my Lambda?
+Use the notifications to trigger the lambda on PRs"
+AWS CodeCommit	"Code Commit Branching Error
+Hello, I hope someone can help, we keep going into AWS Commit Visualiser and there is a big black line going up through the middle (for which i think is the master branch), however we have two branches, branch a seems to generate a new line from the master branch of a different colour and goes back in like we expect, however branch b does not.
+
+Here is the visualiser, it shows branch a working fine however its not showing it on branch b.
+https://pasteboard.co/HXFoUro.png 
+
+Is it something we are doing? Here are our steps:
+
+Change to Branch
+Make Changes
+Commit Changes
+Push To Origin
+Change To Master
+Merge Branch we made the changes on into Master."
+AWS CodeCommit	"Re: Code Commit Branching Error
+Hi,
+If I understood your use case correctly, you have a branch master that look say look like this 
+C2 -> C1 -> C0.
+You create a branch off C1 (lets call this branch B1).
+You create another branch from C1 (lets call this branch B2) and add a commit C4
+Now you create a commit C3 to branch B1 and merge it into master (creating a merge commit C5).  At this time you repo looks like this
+          B2
+           |
+master    C4    
+ |          \ 
+C5 -> C2 -> C1 -> C0
+     \      / 
+        C3 
+        |
+        B1
+
+Now from the graph the history of master branch includes commits C5, C2, C3, C1, C0.  Hence when you visualize the master branch in the commit visualizer you can see commits C3 (which is part of branch B1 and master since we merged it into master).  However we don't see C4 since it's part of branch B2 and was never merged into master.
+
+The black line in the commit visualizer is the color of the current branch that you have selected.  So if you select master, commits C5 C2, C1 and C0 are part of the black line and commit C3 will be of a different color and will come back into master since we merged it.
+
+I hope I understood your use case and this answers your question.
+
+Thanks,
+Aashwin"
+AWS CodeCommit	"Re: Code Commit Branching Error
+I hope this explains better:
+https://imgur.com/a/UubkgOe"
+AWS CodeCommit	"Re: Code Commit Branching Error
+Hi,
+Git does a fast forward merge by default whenever it is possible (https://git-scm.com/docs/git-config#git-config-mergeff).  So when you merged the your first branch to master, since they shared the same parent commit, git did a fast forward merge.  That's the reason you don't see the branching in the graph.
+Now follow the same steps as you did except for a slight difference in step 3
+1. Commit and push to master branch
+2. Create a new branch and commit a file
+3. Change to master and merge using the following command
+git merge --no-ff <branchname>
+
+--no-ff means don't do a fast forward merge which will force to create a new merge commit.
+And then follow the rest of the steps.
+
+Please let me know if that resolved your question.
+
+Thanks,
+Aashwin"
+AWS CodeCommit	"Listing Tags via API
+Hi,
+
+Is there a way to return all git tags from a codecommit repository using the PHP SDK latest version. I've looked through the documentation and can't seem to find the capability to do it. Am I missing something?
+
+Thanks in advance.
+
+Clive"
+AWS CodeCommit	"Re: Listing Tags via API
+Hi Clive,
+
+Currently AWS CodeCommit doesn't support Listing Tags. Thank you for this feature request, your feedback is very much appreciated, and helps us prioritize our future work.
+
+Thanks,
+Diane"
+AWS CodeCommit	"Re: Listing Tags via API
+Diane,
+
+Thanks for getting back to me. Is there somewhere to see the list of features requested and planned or milestones etc?
+
+Kind regards,
+
+Clive"
+AWS CodeCommit	"Re: Listing Tags via API
+Hi Clive
+
+Sorry, that information is not shared publicly. Thank you again for your feedback
+
+Best,
+Diane"
+AWS CodeCommit	"Re: Listing Tags via API
+now its available. use 
+git ls-remote --tags 
+This shows tags from remote branch.
+For local use
+git tag"
+AWS CodeCommit	"Re: Listing Tags via API
+Those are the git cli commands, this question relates to the AWS PHP SDK specifically."
+AWS CodeCommit	"Re: Listing Tags via API
+We would also like to see this feature,  +1
+Also would be very beneficial to add a tag via the CodeCommit API"
+AWS CodeCommit	"Git Clients that support PR's in code commit
+Hello, 
+Is anyone aware of any Git clients that support PR's with CodeCommit? 
+
+Thanks"
+AWS CodeCommit	"Re: Git Clients that support PR's in code commit
+Hi,
+
+I think currently as a client, AWS CLI(https://docs.aws.amazon.com/cli/latest/reference/codecommit/index.html) can support PR in codecommit. 
+
+Thank you for this feature request, I have passed it to the team for further review and consideration. Your feedback is very much appreciated."
+AWS CodeCommit	"CodeCommit support for git-lfs
+Is there a way to have CodeCommit work with git-lfs?
+
+Ideally I think I want my code files (text) in my git repo and then the large files somewhere like S3.
+
+My Unreal Engine 4 umap files are over 2GB and I haven't found a simple solution.
+
+I am sorry if this is a noob question. I have googled and failed."
+AWS CodeCommit	"Re: CodeCommit support for git-lfs
+Hello Zachary,
+
+We do recognize the benefits of storing large files as references. We have documented your feature request and will consider it in our planning.   
+
+Thank you for reaching out. Your feedback enables us to prioritize the right features for our customers. Please continue to watch this space or http://aws.amazon.com/new/ for further updates.
+
+Thanks
+Ankur"
+AWS CodeCommit	"Re: CodeCommit support for git-lfs
+Hi,
+
+There is some news about GIT LFS support with AWS CodeCommit ?
+
+Thx !"
+AWS CodeCommit	"Re: CodeCommit support for git-lfs
+I've just done a test and I cannot push with LFS. We know we don't use codecommit now."
+AWS CodeCommit	"Re: CodeCommit support for git-lfs
+I would love to have git-lfs support in code commit, for several reasons:
+() consolidation of storage and revision control on a single platform, 
+() (hopefully) consistent pricing between GIT-LFS and S3
+() the possibility of transitioning old versions of large blobs to glacier storage, etc.
+
+Imho GIT-LFS is one of the areas in which AWS could obtain a clear lead with respect to other established GIT services providers.
+
+Thanks
+Stefano"
+AWS CodeCommit	"Re: CodeCommit support for git-lfs
+agree with others here that adding support for git-lfs as a standard part of AWS code commit with objects stored in S3 would be perfect.
+
+There is already some people creating ways of doing this if you host your own git lfs server so people can probably roll their own (e.g .https://github.com/meltingice/git-lfs-s3 ) but isnt this what AWS is all about - providing not only building blocks (like s3 and code commit) but also saving others the effort of creating things they need (and things they dont know they need until they start using them) ?"
+AWS CodeCommit	"Re: CodeCommit support for git-lfs
+Please consider to speed up the integration of this feature! Bigger projects can't be really hosted on CodeCommit now."
+AWS CodeCommit	"Re: CodeCommit support for git-lfs
+It would be really helpful to have support to git LFS in AWS code pipeline indeed.
+Such a great feature from git, and is supported by a lot of CI systems. It is a pity it is not supported here yet."
+AWS CodeCommit	"Codecommit sns trigger problem
+Hey folks, 
+
+Having a bit of a headscratcher. I have a repository with a trigger set to post all events from all branches to an SNS topic which gets funneled to SQS where a Jenkins plugin picks up the changes.
+
+The issue I am having is when I use the 'Test Trigger' button when setting up the trigger everything works just fine. However when one of the devs, commits using their tools it does not appear that the trigger fires. I can see nothing propagating to SQS. 
+
+I know the repo itself works, I have a different trigger that calls a Lambda function that does get triggered. So it appears to be an issue with SNS to SQS specifically. 
+
+Attempts to remedy:
+1. I have removed the trigger and added it again.
+2. I have changed the SNS policy to allow any user, even though they were all set up by the same user. 
+3. I have verified that all components are in the same region. 
+4. I added my mobile as a subscriber to the topic, and it is getting the triggered.
+
+It is just strange that the 'Test Trigger' button does work as expected, but the real commit events do not.
+
+Any thoughts or direction to try would be appreciated.
+
+Edited by: humansimulator on Nov 27, 2018 7:48 AM"
+AWS CodeCommit	"Re: Codecommit sns trigger problem
+Hi humansimulator,
+
+Your SQS queue policy needs to allow SNS to do SQS:SendMessage on it. Something like this:
+{
+  ""Version"": ""2012-10-17"",
+  ""Id"": ""..."",
+  ""Statement"": [
+    {
+      ""Sid"": ""..."",
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""Service"": ""sns.amazonaws.com""
+      },
+      ""Action"": ""SQS:SendMessage"",
+      ""Resource"": ""arn:aws:sqs:<REGION>:<ACCOUNT>:<QUEUE_NAME>""
+    }
+  ]
+}"
+AWS CodeCommit	"Re: Codecommit sns trigger problem
+I appreciate the feedback. I think I identified the issue. It is a bug in the SQS Codecommit Jenkins plugin when using Pipelines. The plugin receives the message from SQS, but is not detecting changes and therefore will not trigger a build."
+AWS CodeCommit	"No GitClone event in CloudTrail?
+Does anyone have any insight as to why there are CloudTrail events for GitPull and GitPush, but not GitClone?
+
+Given the purpose of CloudTrail, it feels like an oversight that a user can perform a clone of a CodeCommit repo without it being recorded in a trail.....?"
+AWS CodeCommit	"Re: No GitClone event in CloudTrail?
+Hi,
+
+Git clones are fundamentally the same as Git pulls, except that the data transferred to the client includes the full git repository history. In CodeCommit, the action governing clones (and pulls and fetches) is GitPull. Your clones will show up in CloudTrail as GitPull actions, and will indicate that pack data was transferred to the client.
+
+For more reading, check out https://stackoverflow.com/questions/3620633/what-is-the-difference-between-pull-and-clone-in-git"
+AWS CodeCommit	"Permission denied (publickey).
+I am having trouble getting this cygwin instance to connect to codecommit. I already set up another cygwin instance successfully, not sure why this one is misbehaving.
+$ ls -alF ~/.ssh
+total 65
+drwx------+ 1 Mike Slinn None     0 Aug  3 11:10 ./ 
+drwxr-xr-x+ 1 Mike Slinn None     0 Jun 27 10:49 ../ 
+-rw-------  1 Mike Slinn None  2372 Oct 14  2004 authorized_keys
+-rw-------  1 Mike Slinn None   459 Jul 28  2003 authorized_keys2
+-rw-------  1 Mike Slinn None  1679 Aug  2 20:07 codecommit_rsa
+-rw-------  1 Mike Slinn None   394 Aug  2 20:07 codecommit_rsa.pub
+-rw-------  1 Mike Slinn None   915 Aug  3 11:10 config
+-rw-------  1 Mike Slinn None   887 Nov  2  2002 id_rsa
+-rw-------  1 Mike Slinn None   847 Nov 20  2004 id_rsa.ppk
+-rw-------  1 Mike Slinn None   229 Oct 31  2003 id_rsa.pub
+-rw-------  1 Mike Slinn None   536 May 26  2001 identity
+-rw-------  1 Mike Slinn None   340 May 26  2001 identity.pub
+-rw-------  1 Mike Slinn None 12115 Aug  3 11:09 known_hosts
+ 
+$ tail -n 1 known_hosts
+git-codecommit.us-east-1.amazonaws.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdut7aOM5Zh16OJ+GOP75O7x5oyHKAiA1ieuySetj/hAq4VrAuZV5R2TypZJcKBaripOtTc/Sr0FOU4YvxUla40PPH8N1lbDp6Pnc4BexKsrt2kz++TqIKx5FHmUQV3mit16kxRwHey3dv030+qXBDo3WPQjm2+JLoq0XcadpnCAMCd3ChaBnDRM+51GZbuEFilpZsxUchUzl0gseC+shYOBd7TqxTlIhj/56d/YF1kq7RMZYrwBnyYdVhpLeUJCeYjyx/O6FPSezNTLiinz5jjioWZATgn+G8feL/hIsk8g+7JoIcb2muUlymdxs+8l2lS+8MXqT0q9ohT+Knhb2j
+ 
+$ cat ~/.ssh/config
+ForwardX11 = yes
+ForwardX11Trusted = yes
+Compression = yes
+CompressionLevel = 6
+ 
+Host git-codecommit.*.amazonaws.com
+  User BLAHBLAHBLAH
+  IdentityFile ~/.ssh/codecommit_rsa
+ 
+$ ssh -vv git-codecommit.us-east-1.amazonaws.com
+OpenSSH_6.2p2, OpenSSL 1.0.1e 11 Feb 2013
+debug1: Reading configuration data /home/Mike Slinn/.ssh/config
+debug1: /home/Mike Slinn/.ssh/config line 6: Applying options for git-codecommit.*.amazonaws.com
+debug2: ssh_connect: needpriv 0
+debug1: Connecting to git-codecommit.us-east-1.amazonaws.com [54.239.20.155] port 22.
+debug1: Connection established.
+debug1: identity file /home/Mike Slinn/.ssh/codecommit_rsa type 1
+debug1: identity file /home/Mike Slinn/.ssh/codecommit_rsa-cert type -1
+debug1: Enabling compatibility mode for protocol 2.0
+debug1: Local version string SSH-2.0-OpenSSH_6.2
+debug1: Remote protocol version 2.0, remote software version AWSCodeCommit TW9uLCAwMyBBdWcgMjAxNSAxODoxMjowMyArMDAwMLLmIS4AjBVyv58oKbREQehh7D8ZB9Y/wvJY9ptlL9obnU
+debug1: no match: AWSCodeCommit TW9uLCAwMyBBdWcgMjAxNSAxODoxMjowMyArMDAwMLLmIS4AjBVyv58oKbREQehh7D8ZB9Y/wvJY9ptlL9obnUZtS2E2YWJrY1FJU2dUYW14Q0EzSEw4a3lvWjFNNlREK1JuMGxSdnZnSmM9
+debug2: fd 3 setting O_NONBLOCK
+debug1: SSH2_MSG_KEXINIT sent
+debug1: SSH2_MSG_KEXINIT received
+debug2: kex_parse_kexinit: ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1
+debug2: kex_parse_kexinit: ssh-rsa-cert-v01@openssh.com,ssh-rsa-cert-v00@openssh.com,ssh-rsa,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-dss-cert-v01@openssh.com,ssh-dss-cert-v00@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-dss
+debug2: kex_parse_kexinit: aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour,rijndael-cbc@lysator.liu.se
+debug2: kex_parse_kexinit: aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour,rijndael-cbc@lysator.liu.se
+debug2: kex_parse_kexinit: hmac-md5-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-ripemd160-etm@openssh.com,hmac-sha1-96-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-md5,hmac-sha1,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-ripemd160,hmac-ripemd160@openssh.com,hmac-sha1-96,hmac-md5-96
+debug2: kex_parse_kexinit: hmac-md5-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-ripemd160-etm@openssh.com,hmac-sha1-96-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-md5,hmac-sha1,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-ripemd160,hmac-ripemd160@openssh.com,hmac-sha1-96,hmac-md5-96
+debug2: kex_parse_kexinit: zlib@openssh.com,zlib,none
+debug2: kex_parse_kexinit: zlib@openssh.com,zlib,none
+debug2: kex_parse_kexinit:
+debug2: kex_parse_kexinit:
+debug2: kex_parse_kexinit: first_kex_follows 0
+debug2: kex_parse_kexinit: reserved 0
+debug2: kex_parse_kexinit: diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha256
+debug2: kex_parse_kexinit: ssh-rsa
+debug2: kex_parse_kexinit: aes128-ctr,aes256-ctr
+debug2: kex_parse_kexinit: aes128-ctr,aes256-ctr
+debug2: kex_parse_kexinit: hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: kex_parse_kexinit: hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: kex_parse_kexinit: none
+debug2: kex_parse_kexinit: none
+debug2: kex_parse_kexinit:
+debug2: kex_parse_kexinit:
+debug2: kex_parse_kexinit: first_kex_follows 0
+debug2: kex_parse_kexinit: reserved 0
+debug2: mac_setup: found hmac-sha1
+debug1: kex: server->client aes128-ctr hmac-sha1 none
+debug2: mac_setup: found hmac-sha1
+debug1: kex: client->server aes128-ctr hmac-sha1 none
+debug1: SSH2_MSG_KEX_DH_GEX_REQUEST(1024<2048<8192) sent
+debug1: expecting SSH2_MSG_KEX_DH_GEX_GROUP
+debug2: dh_gen_key: priv key bits set: 165/320
+debug2: bits set: 1052/2048
+debug1: SSH2_MSG_KEX_DH_GEX_INIT sent
+debug1: expecting SSH2_MSG_KEX_DH_GEX_REPLY
+debug1: Server host key: RSA a6:9c:7d:bc:35:f5:d4:5f:8b:ba:6f:c8:bc:d4:83:84
+debug1: Host 'git-codecommit.us-east-1.amazonaws.com' is known and matches the RSA host key.
+debug1: Found key in /home/Mike Slinn/.ssh/known_hosts:35
+debug2: bits set: 1026/2048
+debug1: ssh_rsa_verify: signature correct
+debug2: kex_derive_keys
+debug2: set_newkeys: mode 1
+debug1: SSH2_MSG_NEWKEYS sent
+debug1: expecting SSH2_MSG_NEWKEYS
+debug2: set_newkeys: mode 0
+debug1: SSH2_MSG_NEWKEYS received
+debug1: Roaming not allowed by server
+debug1: SSH2_MSG_SERVICE_REQUEST sent
+debug2: service_accept: ssh-userauth
+debug1: SSH2_MSG_SERVICE_ACCEPT received
+debug2: key: /home/Mike Slinn/.ssh/codecommit_rsa (0x80061c60), explicit
+debug1: Authentications that can continue: publickey
+debug1: Next authentication method: publickey
+debug1: Offering RSA public key: /home/Mike Slinn/.ssh/codecommit_rsa
+debug2: we sent a publickey packet, wait for reply
+debug1: Server accepts key: pkalg ssh-rsa blen 279
+debug2: input_userauth_pk_ok: fp c5:6b:e2:75:86:35:2e:2b:d4:6b:06:51:ef:11:0f:8e
+debug1: read PEM private key done: type RSA
+debug1: Authentications that can continue: publickey
+debug2: we did not send a packet, disable method
+debug1: No more authentication methods to try.
+Permission denied (publickey).
+
+
+Edited by: Michael Slinn on Aug 3, 2015 11:18 AM"
+AWS CodeCommit	"Re: Permission denied (publickey).
+Hi,
+Sorry you are having trouble connecting to CodeCommit.  I see from your ssh config that the user name is ""BLAHBLAHBLAH""
+Host git-codecommit.*.amazonaws.com
+  User BLAHBLAHBLAH
+  IdentityFile ~/.ssh/codecommit_rsa
+
+To authenticate to CodeCommit the username must be the ssh key id associated with the public key uploaded to the IAM (You can find the information here http://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-credentials-ssh.html)."
+AWS CodeCommit	"Re: Permission denied (publickey).
+Setting the username to be the ssh key id that IAM creates for the uploaded public key fixed it for me! Thanks, @aashwink@AWS"
+AWS CodeCommit	"Composer with CodeCommit
+Hi,
+
+There is a mode to use composer for CodeCommit via credentials?"
+AWS CodeCommit	"Re: Composer with CodeCommit
+Are you referring to composer the PHP dependency management system? https://getcomposer.org/doc/05-repositories.md ?
+
+It seems like you would need to generate a pair of public private SSH key pair.
+
+Create an IAM User with CodeCommit permissions. Read only is probably enough if you never need to write from composer.
+
+Upload your public key to your IAM user's CodeCommit SSH Keys.
+
+Record your SSH Key ID for your public key (starts with APKA)
+
+Make sure your private and public key is registered with composer.
+
+Configure composer's private repository URL to:
+
+""url"":  ""<SSH KEY ID STARTS WITH APKA>@git-codecommit.<region>.amazonaws.com/v1/repos/<repository_name>"""
+AWS CodeCommit	"Re: Composer with CodeCommit
+@yilun, thank you, I didn't need any SSH key. I achieved it with the composer auth.json file and storing the username/password for the repo (previously created via IAM)"
+AWS CodeCommit	"Feature Request: LDAP / Active Directory integration with CodeCommit
+I'd like to be able to authenticate codecommit users using their AD credentials when connecting to git via https.
+
+AD access may be present via the AD connector; or via the AWS Microsoft AD managed service; or via an AD domain controller running on an EC2 instance.
+
+This would be similar to authentication options available with GitHub Enterprise or Bitbucket Server (both on-prem server deployment options)."
+AWS CodeCommit	"Re: Feature Request: LDAP / Active Directory integration with CodeCommit
+Hi,
+Thank you for this feature request, I have passed it to the team for further review and consideration. Your feedback is very much appreciated. 
+
+Thanks,
+Aashwin"
+AWS CodeCommit	"Re: Feature Request: LDAP / Active Directory integration with CodeCommit
+any updates?"
+AWS CodeCommit	"Slow CodeCommit Source Stage
+I have a CodePipeline using CodeCommit as its source. The source stage usually takes between 5 and 6 minutes.
+
+Yesterday, the source stage took over 60 minutes and failed. The repository is small, less than 50mb.
+
+What may have caused this? Please advice what I can do to prevent this from happening again. Thanks."
+AWS CodeCommit	"Re: Slow CodeCommit Source Stage
+Hi there,
+
+We are sorry you had this poor experience with your CodePipeline source stage. We have identified that there was a problem on the CodeCommit side at this time which prevented your upload from completing successfully. While we haven't pinned down exactly why this happened, we know it is a rare occurrence and are prepared to gather more information if is occurs again. Please let us know if you have any further information for us, and of course if the issue recurs, we definitely want to hear about it.
+
+Thanks for your understanding,
+David"
+AWS CodeCommit	"Cross Account CodeCommit Repo Access
+Hello,
+
+I have 2 accounts. One primary account which contains all my IAM users, but nothing more. I have secondary account for development which I'd like to contain a CodeCommit repository or two. I currently switch into this account via Role Switching, which works great. What's the best way to gain access to CodeCommit repositories in the secondary account?
+
+Can I generate Git credentials for the IAM users in the primary account and use them for a repository in the secondary at all? And if so, how would one go about doing that?
+
+Thanks in advance."
+AWS CodeCommit	"Re: Cross Account CodeCommit Repo Access
+Hi there!
+
+We have a user guide on setting up cross-account access for your CodeCommit repositories. Here is the link: https://docs.aws.amazon.com/codecommit/latest/userguide/cross-account.html
+
+Can I generate Git credentials for the IAM users in the primary account and use them for a repository in the secondary at all? 
+
+Unfortunately, you cannot use Git Credentials or SSH keys to access a CodeCommit repository in another account (You would have to configure the Credential Helper). For the simplest configuration, we recommend creating an IAM user in your secondary account, generate Git Credentials for that user, and use that for accessing your repository. However, by following the link above, there are instructions for setting up the x-account user configuration via credential helper authentication.
+
+Hope that helps!"
+AWS CodeCommit	"Vs 2017 toolkit and bad credentials
+I was trying to access a repository through the aws toolkit for vs2017 and I typed the password incorrect and get the 403 forbidden error when trying to access. It doesn't let me try the credentials again so now I can't access the repository at all.
+
+I tried uninstalling the toolkit, disabling, reinstalling it and nothing. 
+
+Any help here?"
+AWS CodeCommit	"Re: Vs 2017 toolkit and bad credentials
+Hi there,
+
+Sorry to hear you're having trouble. It might be possible that your operating system is caching the credentials you first provided.
+
+Are you on Windows? If so you might check to see if Windows is storing the credentials in the Windows Credential Manager.
+
+Go to: Control Panel\User Accounts\Credential Manager
+Under ""Windows Credentials"", see if there are any git-related credentials under ""Generic Credentials"". If so, deleting them should require vs to re-prompt you for your credentials again.
+
+If that doesn't work, I would check to see if you have other credential managers configured for visual studio's git instance. It's likely the credential may be cached there."
+AWS CodeCommit	"CodeCommit is so slow
+I saw a comment from AWS that performance improvements were a focus, but that was back in 2017.
+
+I have developers complaining and wanting to move to another provider for git repo hosting as it is simply orders of magnitude slower to use codecommit than other options.
+
+Are there any tricks to speeding it up? (e.g. keeping it warm via lambda?)
+
+Or can the codecommit service team confirm that we should expect some improvements soon?"
+AWS CodeCommit	"Re: CodeCommit is so slow
+Hi philsw,
+Sorry to hear your developers have slow experience when using codecommit.  It would be great if we have more knowledge about the slow repository, such as the branch number, delta length, repository size etc.  In general, less branch number and shorter delta chain length will speed up the repository.  Thanks for providing the feedback.  CodeCommit is continually working on improving the performance and will have better performance.  However I cannot provide ETA at the moment."
+AWS CodeCommit	"Re: CodeCommit is so slow
+My team has the same issue. I can clone a massive repository with years of history and 1500+ contributors, 5000+ commits, with many branches from GitHub in seconds (Ex: helm/charts). Yet I pull a tiny repository from CodeCommit, with 6 months of history by 6 devs, no branches, consisting of roughly 40 small bash scripts and it takes minutes just to pull recent changes. I don't get it."
+AWS CodeCommit	"Feature Request: Show more when expanding existing code in pull request
+When viewing a pull request, say there were changes made around line 10, and then there were change on line 80.  CodeCommit would hide changes between lines 15 and 75 (ish.)  If I want to give myself a little more context to the changes on line 15, I can hit the ellipse on the left to expand the visible code.  However, this only expands the ten lines of code above line 75, but nothing below line 15, meaning I have to hid the ellipse six times to get the added context that I want.  
+
+This is not such a big deal if there are only 70 lines of code between the two changes, but, embarrassingly enough, we have some classes that are 2000+ lines long (we're working on fixing that), and sometimes I find myself clicking for two solid minutes just to see three additional lines of code, or just switching back to IntelliJ to hunt down the original code.  
+
+I would like to be able to click that ellipse and see maybe 10 lines of code both above and below."
+AWS CodeCommit	"Re: Feature Request: Show more when expanding existing code in pull request
+Hi,
+Thank you for this feature request, I have passed it to the team for further review and consideration. Your feedback is very much appreciated!"
+AWS CodeCommit	"getDifferences alternates before/after blob ID locations inconveniently
+Short Story:
+My life would be easier if getDifferences responses always placed the blobID (of the version of interest) immediately adjacent to the changeType.  Today it does this for Adds and Deletes, but not for Modifications, which include the pre-modified blobID between the current blobID and the changeType. This forces me to make multiple match attempts, rather than testing the response with a single pattern, to get the info I need. 
+
+Background:
+I'm working on a Python language lambda function in which I use .getDifferences to figure out which files changed between two commits.  I used the list to build or delete files in an S3 bucket, so that the S3 bucket is kept up-to-date with the repository.
+
+The problem I had was this:  
+File Adds and file Deletes listed in the .getDifferences response placed the desired blob ID in the blob data field immediately preceding the changeType field (which indicate D,A,M, etc..).  The response, though, for Modified files includes both beforeBlob and afterBlob, but places the blob of interest (afterBlob) in the first position, meaning another blobID exists between the desired blobID and the changeType field.  
+
+I can't just look for the afterBlob ID (which was my first thought) because deletes require the beforeBlob. 
+
+In order to make my regex work it would have to be twice as complex, if it can even be done (not saying it can't, I just haven't figured it out).  The alternative, that I went with, was to just run two tests, one for the Add/Delete pattern and then another for the Modification pattern.  Here is the final result:
+
+def handle_repo_blob(repoName,commitData):
+    #
+    # receives: string,string
+    # returns: n/a
+    #
+    # Copy or delete a file to/from S3 based on repo history
+    #
+    
+    # Process file deletes
+    p = re.compile("".+?beforeBlob.+?blobId':\\s*'(.+?)'.+?'path':\\s*'(.+?)'.+?'changeType':\\s*'D'"", re.I)
+    matches = p.finditer(commitData)
+    for match in matches:
+        blobIDnum = match.group(1)
+        fileName = match.group(2)
+        print (""Delete file "" + fileName)
+        delete_from_S3(fileName)
+            
+    # Process file copies
+    p = re.compile("".+?afterBlob.+?blobId':\\s*'(.+?)'.+?'path':\\s*'(.+?)'.+?'changeType':\\s*'[^D]'"", re.I)
+    matches = p.finditer(commitData)
+    for match in matches:
+        blobIDnum = match.group(1)
+        fileName = match.group(2)
+        print (""Copy file "" + fileName)
+        sourceBlob = ccClient.get_blob(
+            repositoryName = repoName,
+            blobId = blobIDnum
+            )
+        copy_to_S3(fileName,sourceBlob['content'])"
+AWS CodeCommit	"Re: getDifferences alternates before/after blob ID locations inconveniently
+Hi linklight,
+
+Thanks for the contact.
+
+I see you are having problems with the order in which the getDifferences API returns the data.
+
+I also see that your function seems to be receiving a string to parse. Are you using boto3 SDK or calling the CLI from your python script to call getDifferences?"
+AWS CodeCommit	"Re: getDifferences alternates before/after blob ID locations inconveniently
+Apologies, I'm fairly new to both Python and AWS and didn't realize I was getting a dictionary object for my event.  I recoded without regex and just properly accessed the necessary dictionary entries.  (Originally I had flattened it to a string and searched it for matches) 
+
+So... I retract my earlier complaint.  Thanks for taking a moment to respond, though!"
+AWS CodeCommit	"Pull requests are showing old changes
+We recently ran into an issue with viewing pull requests in CodeCommit.  We were able to get ourselves working again (see below), but we're not sure why the issue came up in the first place, and are nervous it may happen again.  We have several projects in CodeCommit and this was only happening to one of them.
+
+When viewing a pull request in CodeCommit, several files are showing up as having been changed which were not changed by the pull request, even if no changes have been made to the destination branch since creating the source branch.  
+
+Steps to reproduce:
+
+1. git clone <url>
+2. cd <project_directory>
+3. git co dev
+4. git pull
+5. git co -b test2
+6. add whitespace character to README file in the base directory
+7. git-gui
+8. Move README to Staged changes
+9. Type commit message
+10. Click commit
+11. Click push
+11a. On the command line, diff dev test2 (shows only whitespace change)
+12. Log into project in CodeCommit
+13. Click Pull requests
+14. Click create pull request
+15. Leave destination as dev
+16. Set Source as test2
+17. Click compare
+18. Scroll down to see 65 files are marked as having been changed.
+19. On the menu on the left in CodeCommit, select Compare
+20. Choose dev as Destination branch
+21. Choose test2 as source branch
+22. Click compare
+23. Scroll down to see that only the whitespace change to README is showing up.
+
+As another test, we created a branch (test3) with no changes to it, and created a pull request from that branch.  CodeCommit correctly showed that there were no changes to merge. 
+
+From the command line, we merged the branch with the whitespace character:
+git checkout dev
+git pull
+git checkout test2
+git pull
+git checkout dev
+git merge --squash test2
+
+Oddly enough, merging the test2 branch caused CodeCommit to auto close the pull request made against test3.  
+
+This last merge fixed the issue and our pull requests started appearing correctly again.  However, if anyone has seen something like this before and knows what may have caused it, it would really help to ease our minds."
+AWS CodeCommit	"Re: Pull requests are showing old changes
+Hi, Is this reproducible and still happening?  I followed the steps to reproduce at my local, but seems I cannot reproduce it at the moment.  Can you provide the git graph to help us better understand the context?"
+AWS CodeCommit	"Re: Pull requests are showing old changes
+Unfortunately, it is not at all reproducible.  We did a merge with an whitespace change, and that somehow reset whatever was causing this inconsistency to happen, and we haven't had problems since.  Before that reset, though, the steps I listed out were very consistent and reproducible, but only on that repository.  We have several other repositories under the same account, and this was not happening to any of the other repositories.  
+
+As a developer, I know how incredibly unhelpful that is to hear, and there's probably not much you can do about it, but, at the time, we needed to get our checkins back on track, so we did what we could.  I tried creating a support ticket, but, after being on hold for an hour, I sort of gave up.  Mostly, I posted this to see if anyone else had experienced this and if they were able to figure out what they'd done wrong so we could prevent it in the future, and, so that, if it started happening repeatedly, it might raise the priority of the issue.  For now, though, I think we can consider this as a one off and hope it doesn't happen again.
+
+Though, I am curious as to why the Compare and Create Pull Request screens were showing different results.  To me, they seem like almost identical functionality.  And, if it helps, we tried doing the step where you create a pull request from the compare screen, and the pull request created still showed the extra files, where the compare screen did not.
+
+Edited by: KatieR on Oct 8, 2018 7:25 AM"
+AWS CodeCommit	"Re: Pull requests are showing old changes
+Hi KatieR,
+
+Thanks for the feedback.  It's valuable for us to improve.  We do recently have a change relate to that area deployed.  It might be caused by that.  Please let us know if you have ran into any similar issue and we will be happy to resolve.
+
+Regarding the Compare and Create Pull Request screens showing different results, it's a feature we are going to work on currently.  However, I cannot provide ETA at the moment.  Your interest helps us prioritize our work."
+AWS CodeCommit	"Re: Pull requests are showing old changes
+This happens a lot with me. Sometimes happens when we reset the branches to have only one commit before the PR. Sometimes is because the page was not refreshed others I don't know. It's too random and is a major problem for me to manage the changes. Usually I don't trust AWS and use the GitExtensions to see what I'm going to merge."
+AWS CodeCommit	"No support of recursive merger for PullRequests - unnecessary conflicts
+Hi,
+one of the reasons I really do not like working with code commit is that reports false merge conflicts while all other major git repositories including local git can do it.
+
+We work on a code base which contains files for configuration management and IAS. 
+And multiple people develop multiple parts of a system which do not rely on each other but code needs to be in one repository - this is very typical use-case
+
+So we create multiple branches where branch_A does not contain files from branch_B and then 2 PRs are created PR_A, PR_B. 
+When PR_A  is merged CodeCommit uses fast-forward strategy, but then CodeCommit reports that PR_B cannot be merged due existing merge conflicts. 
+The only conflict is that PR_B does not contains files from a master branch.
+This is typically resolved using recursive merge strategy, however now I need to manually update from master branch_B and push again to update PR_B.
+
+It would be nice if CodeCommit could do it as all other git services can (github, gitlab, bitbucket..).
+
+In the meantime is there any workaround apart from updating manually and re-pushing?
+
+How to reproduce:
+
+example:
+
+1) Master -> Create files a, b | push origin master
+echo ""a"" > a; echo ""b"" > b
+git add .
+git commit -am ""Add files a and b""
+git push origin master
+
+
+2) checkout A -> create file 'aa` | push origin A
+git checkout -b A
+echo ""aa"" > aa
+git add .
+git commit -am ""Add aa""
+git push origin A
+
+
+3) chekcout B -> create file `bb` | push origin B
+git checkout -b B
+echo ""bb"" > bb
+git add .
+git commit -am ""Add bb""
+git push origin B
+
+4) Go to CodeCommit
+5) Create PR_A for A 
+6) Create PR_B for B 
+7)  Merge PR_A into master
+8) Try to merge PR_B to master -> CodeCommit says it's merge conflict but it's not"
+AWS CodeCommit	"Re: No support of recursive merger for PullRequests - unnecessary conflicts
+Hi,
+
+Thanks for your feedback and complete explanation!
+
+We are aware of this limitation and we are working to improve the merge experience of CodeCommit to make those use cases simpler."
+AWS CodeCommit	"Re: No support of recursive merger for PullRequests - unnecessary conflicts
+I have the same problem too. I already asked the company to not choose CodeCommit as the Version Control system and one of the reasons is this ""bug""."
+AWS CodeCommit	"Love the new UI!
+So far everything is working really great guys!  I like that, when I post comments, the Save button is on the left and that, when a pull request has multiple pages, the option to go to the next page is at the bottom of the screen.  It's also nice to have all of our devops tools managed in one menu.  I can't wait to keep playing around!"
+AWS CodeCommit	"Re: Love the new UI!
+Very glad to hear that. Thanks for the feedback."
+AWS CodeCommit	"Bug when viewing pull request with collapsed code.
+In viewing a pull request, there was an area of untouched code which had been collapsed.  It looks like this was maybe an edge case where the collapse threshold had just been reached, see original.png attached, and notice that the same if block is displayed twice, with the line numbers repeated.
+
+If we expand that area in the pull request, we see the same if block repeated (see expanded.png attached.)  
+
+If we expand other areas of the code within the same file, but not necessarily near the if block, the if block is repeated once for each time an area of code was expanded (see otherareaexpanded.png.)  In each case, the line numbers appear correctly, but it makes it look as though untouched code is repeated over and over again.  
+
+Although this is the only spot in the pull request that we have found this to happen, it is very reproducable within this pull request.  We see the same thing on different machines and after refreshing.  Unfortunately, my whole team dismissed the option to view the old console, and I'm unable to switch back, so I couldn't tell you if the problem is only in the new console, or if this was a pre-existing bug."
+AWS CodeCommit	"Unpack Error
+I started getting the following error today when trying to push to CodeCommit:
+
+remote: processing .
+error: remote unpack failed: internal error"
+AWS CodeCommit	"Re: Unpack Error
+There was an AWS event in us-east-2 during this time:
+
+https://status.aws.amazon.com/
+
+This issue has been resolved, let us know if you are still seeing push failures"
+AWS CodeCommit	"Repeat of ""AWS console bug preventing access to the repositories list""
+The behavior reported in this forum entry, https://forums.aws.amazon.com/thread.jspa?threadID=244313
+is happening again.  I'm using Firefox, not Chrome, but otherwise the description is the same thing happening to me.  I was able to access the CodeCommit console on Sept 7, when I created a repository, but I cannot access it today. 
+Is there some browser setting that could be responsible for this behavior?"
+AWS CodeCommit	"Re: Repeat of ""AWS console bug preventing access to the repositories list""
+Hi, I'm sorry to hear about this issue. Can you clarify which region you're experiencing this problem in? I'd like to try reproducing it."
+AWS CodeCommit	"Re: Repeat of ""AWS console bug preventing access to the repositories list""
+It turns out that I was logged in as ""US West - Oregon"", which was not what I intended.  When I switched to ""US East - N. Virginia"", it works as expected.  So thanks for pointing me in that direction; I can work OK now.
+That said, I don't know if the behavior I reported is a bug or a feature.  Given that it's so confusing to the user, I would say ""bug"", and that it needs an error message of some sort.  
+I'm going to mark this as ""answered"", but if you want to work with me to diagnose it further, I'm available."
+AWS CodeCommit	"Re: Repeat of ""AWS console bug preventing access to the repositories list""
+Hi BobLangford,
+
+Thanks for explaining what the confusion was. I think we can do better when it comes to visually showing that your repositories are located in a particular region, and that you may have more repositories in other regions.
+
+I'm passing this feedback along to our Product Manager. Thanks again!"
+AWS CodeCommit	"Cross account access
+Hello,
+
+I've followed the instructions at https://docs.aws.amazon.com/codecommit/latest/userguide/cross-account.html and can perform 'aws codecommit list-repositories --profile codecommit' from the IAM user account that is accessing the cross-account repository.
+
+When I try and clone it I get prompted for a username and password. I added them via the console (HTTPS credentials) but then get ""fatal: repository 'https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/bigdata/' not found"". Notice I don't get a 403 error so I assume the credentials are fine.
+
+My config file looks like this:
+
+https://forums.aws.amazon.com/
+region=eu-west-1
+
+https://forums.aws.amazon.com/
+region=eu-west-1
+source_profile = default
+role_arn = arn:aws:iam::<account A>:role/<cross account role in account A>
+
+My credentials file looks like:
+
+https://forums.aws.amazon.com/
+region = eu-west-1
+aws_access_key_id = 
+aws_secret_access_key = 
+
+And the .gitconfig file is:
+
+https://forums.aws.amazon.com/
+	helper = !aws codecommit credential-helper --profile codecommit $@
+	UseHttpPath = true
+https://forums.aws.amazon.com/
+	name = <user>
+	email = <email>
+
+Any thoughts please?
+
+Thanks
+Neil"
+AWS CodeCommit	"Re: Cross account access
+When I try and clone it I get prompted for a username and password. I added them via the console (HTTPS credentials) but then get ""fatal: repository 'https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/bigdata/' not found"". Notice I don't get a 403 error so I assume the credentials are fine.
+
+Lets assume that you own account B and want to access an repository in account A. The HTTP credentials that you have are attached to an IAM user in account B. These HTTP credentials are scoped only to codecommit operations and repositories in account B. Hence when you are doing a clone, you are seeing that the repository is not found.
+
+looks like your profile names have been replaced with markup.
+
+Can you confirm that you have this profile name in your aws config?
+
+[profile codecommit]
+region=eu-west-1
+source_profile = default
+role_arn = arn:aws:iam::<account A>:role/<cross account role in account A>"
+AWS CodeCommit	"Re: Cross account access
+Thanks for the reply.
+
+Yup, that's how it's set up. I've attached versions of the key files.
+
+I guess the fact that I can list the repositories with ""aws codecommit list-repositories --profile codecommit"" makes it sound like the profile is not being used when I run Git clone?"
+AWS CodeCommit	"Re: Cross account access
+can you run:
+
+GIT_CURL_VERBOSE=1 git ls-remote https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/bigdata
+
+and private message me the output?"
+AWS CodeCommit	"Re: Cross account access
+Hi Yilan,
+
+To close this one off for others, it was resolved by running 'pip install awscli --upgrade'.
+
+Thanks for your assistance."
+AWS CodeCommit	"Cannot Reconnect to Github in CodeBuild Project
+I had my Github account successfully connected in a CodeBuild project. I then proceeded to logout from Github and disconnect from Github within the CodeBuild project so I could connect a different account. Now when I attempt to connect any Github account a popup displays which prompts for the Github username/password, entering username/password and clicking login succeeds, but nothing happens within the CodeBuild project i.e. the ""Connect to GitHub"" button still displays, there is not a dropdown to select a repository, there is not an error message.
+
+It seems like a possible OAuth bug w/i CodeBuild. Any ideas on things to try so I can connect a Github account again?"
+AWS CodeCommit	"Re: Cannot Reconnect to Github in CodeBuild Project
+Thank you for notifying us of this. We have resolved the issue and you should be able to connect your GitHub account now."
+AWS CodeCommit	"Using git archive remote with CodeCommit
+Is it possible to use git archive --remote with AWS CodeCommit repositories?
+
+I've been trying to use it to retrieve a single file from a repo without cloning, like this:
+
+git archive  --remote=ssh://git-codecommit.us-east-1.amazonaws.com/v1/repos/Test_repo HEAD lala.txt
+You have successfully authenticated over SSH. You can use Git to interact with AWS CodeCommit.
+Write failed: Broken pipe
+fatal: The remote end hung up unexpectedly
+
+
+My SSH is setup correctly and cloning works fine. 
+Is this feature not available for CodeCommit repos?
+
+Any help would be appreciated.
+
+Thanks,
+Roy"
+AWS CodeCommit	"Re: Using git archive remote with CodeCommit
+Hi,
+Supporting git archive is in our roadmap however we are unable to give eta on the feature.
+Thanks,
+Aashwin"
+AWS CodeCommit	"Re: Using git archive remote with CodeCommit
+Is there any update on this or are there any workarounds, for example can I GET codecommited files over https?
+
+I note that uploading and editing single files by API is possible:  https://docs.aws.amazon.com/codecommit/latest/userguide/how-to-create-file.html#how-to-create-file-cli
+
+However of the usual core functionality for any data store, only two of five seem to be supported:
+
+
+Create a single file - aws codecommit put-file
+List files - Not supported
+Read a single file - Not supported
+Update a single file - aws codecommit put-file
+Delete a single file - Not supported
+
+
+A consistent and thorough API would be great!   A workaround is to do a git shallow copy, but that get all the files, just so that I can read one - hardly efficient, slow and might not always fit inside the lambda function.  Update: Just tested and it took 7 seconds to clone when the time budget for the entire function is under 100 milliseconds, so far too slow.  It really does need `get-file` as a very minimum.  The fact that you have a code browser indicates that you have this functionality internally, it is just a matter of exposing it to us hungry developers for consumption.
+
+Edited by: bd on Aug 19, 2018 9:44 AM"
+AWS CodeCommit	"Integration of code commit with Jira
+Hello,
+
+We are using Jira as a task management, so when we push code to codecommit by giving some tags, will it be able to update jira task/issue status?
+
+Please let me know if it is possible now.
+
+Cheers,
+Namrata"
+AWS CodeCommit	"Re: Integration of code commit with Jira
+Hi Namrata,
+
+Currently Jira integration are not available in AWS CodeCommit. 
+
+Thanks
+Diane"
+AWS CodeCommit	"Feature Request: Help Prevent Empty Pull Requests
+I feel like I've started to become a nag on the forums for you guys, so I will preface this with a disclaimer saying that, of all of my feature requests, this one is lowest on the totem pole so far.  However, we did just have a developer create an empty pull request just before leaving on vacation, leaving the rest of us scratching our heads.  
+
+I understand that scrolling down and confirming your changes before creating a pull request is not only an easy thing to do, it's something that SHOULD be done before creating a pull request, but, if it's not too hard to either prevent empty pull requests from getting created, or to pop up a warning modal after the user clicks the button to create the pull request would be a ""nice to have."""
+AWS CodeCommit	"Re: Feature Request: Help Prevent Empty Pull Requests
+Hi, 
+
+Thank you for this feature request, we have alert treatment for same source/destination commit. I've attached a screenshot. We might increase the severity of this alert in the future. Your feedback is very much appreciated."
+AWS CodeCommit	"Feature Request: Squash and Merge
+Is it possible to do a squash during a pull request from the console?  It can be very difficult to track down where changes were made when there are so many commits to many different branches."
+AWS CodeCommit	"Re: Feature Request: Squash and Merge
+Hi,
+
+Currently Squash and Merge are not available in AWS CodeCommit. We only support Merge PullRequestByFastForward now. 
+
+Thank you for this feature request, I have passed it to the team for further review and consideration. Your feedback is very much appreciated, and helps us prioritize our future work.
+
+Diane"
+AWS CodeCommit	"Pull request merging to the wrong branch
+A pull request was merged on July 23rd to our develop branch with a change to fileA.html.  We just saw last night, though, that not only are the changes NOT in the develop branch, but they ARE in our stage branch.  On the stage branch, the file was changed on July 23rd.  On the develop branch, the file hasn't changed since July 11th.  We contacted AWS support, but he was unable to figure out what was going on either.  Has anyone else experienced this?
+
+We have the following console logs (slightly modified to conceal private information) after I re-cloned the repository just to make absolutely sure there wasn't anything lingering on my machine that would cause unexpected outputs:
+
+...\src\main\resources\templates> git co develop
+Already on 'develop'
+Your branch is up-to-date with 'origin/develop'.
+...\src\main\resources\templates> git pull
+Already up-to-date.
+...\src\main\resources\templates> git branch
+
+develop
+
+...\src\main\resources\templates> git co stage
+Switched to a new branch 'stage'
+Branch stage set up to track remote branch stage from origin.
+...\src\main\resources\templates> git pull
+Already up-to-date.
+...\src\main\resources\templates> git branch
+  develop
+
+stage
+
+...\resources\templates> git log stage -- .\fileA.html
+commit 50a29fdd59fe3bd9d2a3435ae9fd1eb82f3d035a
+Author: AuthorA <AuthorA@test.com>
+Date:   Mon Jul 23 16:23:23 2018 -0500
+
+    Commit Message A
+
+commit d5ccf4835addb202dfef21d1ddb830ca17afe773
+Author: AuthorA <AuthorA@test.com>
+Date:   Fri Jul 20 14:04:39 2018 -0500
+
+    Commit Message B
+
+commit 6c7179310f096b1ea5ea04b95e799126ca3b59dd
+Merge: 50e4fd4 35af4b9
+Author: AuthorB <AuthorB@test.com>
+Date:   Wed Jul 11 13:21:17 2018 -0500
+
+    Merge branch 'develop' into featureBranchA
+
+commit 0da33daea0bde171ed30f51e18b0832283196691
+Author: AuthorB <AuthorB@test.com>
+Date:   Mon Jul 9 10:05:08 2018 -0500
+
+    Commit Message C
+
+commit 6317870715a881b4bedac4acd2f2cc6ffb56eb66
+Author: AuthorB <AuthorB@test.com>
+Date:   Mon Jul 9 10:03:23 2018 -0500
+
+    Commit Message D
+
+commit 085e4f62860709c0b515f215a5e0bb6b296cd69e
+Author: AuthorB <AuthorB@test.com>
+Date:   Mon Jul 9 08:46:29 2018 -0500
+
+    Commit Message E
+
+commit 0a712e4e38b7d7125ca9b79b7ed3ee68cb50401a
+Author: AuthorA <AuthorA@test.com>
+Date:   Tue Jul 3 11:02:47 2018 -0500
+
+    Commit Message F
+
+commit 57e605c16d7b68dfee642925991c6b0de18ce9f6
+Author: AuthorA <AuthorA@test.com>
+Date:   Thu Jun 21 12:41:26 2018 -0500
+
+    Commit Message G
+
+commit 41dead63281ee9a6c34293c222741ad283ae7ec6
+Author: AuthorA <AuthorA@test.com>
+Date:   Tue Jun 5 15:13:48 2018 -0500
+
+    create page fragments to be used for report customization
+...\src\main\resources\templates> git log develop -- .\fileA.html
+commit 6c7179310f096b1ea5ea04b95e799126ca3b59dd
+Merge: 50e4fd4 35af4b9
+Author: AuthorB <AuthorB@test.com>
+Date:   Wed Jul 11 13:21:17 2018 -0500
+
+    Merge branch 'develop' into featureBranchA
+
+commit 0da33daea0bde171ed30f51e18b0832283196691
+Author: AuthorB <AuthorB@test.com>
+Date:   Mon Jul 9 10:05:08 2018 -0500
+
+    Commit Message C
+
+commit 6317870715a881b4bedac4acd2f2cc6ffb56eb66
+Author: AuthorB <AuthorB@test.com>
+Date:   Mon Jul 9 10:03:23 2018 -0500
+
+    Commit Message D
+
+commit 085e4f62860709c0b515f215a5e0bb6b296cd69e
+Author: AuthorB <AuthorB@test.com>
+Date:   Mon Jul 9 08:46:29 2018 -0500
+
+    Commit Message E
+
+commit 0a712e4e38b7d7125ca9b79b7ed3ee68cb50401a
+Author: AuthorA <AuthorA@test.com>
+Date:   Tue Jul 3 11:02:47 2018 -0500
+
+    Commit Message F
+
+commit 57e605c16d7b68dfee642925991c6b0de18ce9f6
+Author: AuthorA <AuthorA@test.com>
+Date:   Thu Jun 21 12:41:26 2018 -0500
+
+    Commit Message G
+
+commit 41dead63281ee9a6c34293c222741ad283ae7ec6
+Author: AuthorA <AuthorA@test.com>
+Date:   Tue Jun 5 15:13:48 2018 -0500
+
+    Commit Message H
+
+Edited by: KatieR on Aug 1, 2018 9:23 AM"
+AWS CodeCommit	"Re: Pull request merging to the wrong branch
+Hi,
+
+We would like to help you uncover what went wrong with the Pull Request Merge. Your description does have some good information on it, but we will need a bit more information to try to track what happened.
+
+For our benefit (just to rule out that the pull request wasn't accidentally created to merge to destination branch 'stage', can you navigate to the Pull Request page for which this request was Merged (You may need to filter for 'All Pull Requests')? From this page, underneath the title there should be a line that looks like:
+
+Destination <branchName> <-- Source <branchName>
+
+
+Can you provide the two branch names in the pull request?
+
+Another option for debugging what happened would be to check your CloudTrail logging (if you have this enabled, which many accounts do by default now IIRC). If you look for the entries for CreatePullRequest and MergePullRequestByFastForward api calls with the associated 'pullRequestId', you can check the 'pullRequestTargets' to make sure the source and destination were configured correctly."
+AWS CodeCommit	"Re: Pull request merging to the wrong branch
+Sorry for the delay.  I was at the AWS Summit and didn't check my email much  The issue was actually caused by a conflict in a feature branch giving a partial pull.  Then when the pull request was made, the files reverted because of the partial pull were missed because the UI shows all files that have been changed in the source branch since the pull request was created, so files outside of what the developer changed are ignored.  
+
+We've since changed our merging strategy to have a merge master who will do a squash to make debugging issues like this easier until CodeCommit is able to handle it in the UI.  We know it's coming soon   We're excitedly and patiently waiting!"
+AWS CodeCommit	"Clone repo: RPC failed curl 52 Empty reply from server
+Hi,
+
+I have a repo with essentially the linux kernel in it. I've been using it for months without issue.
+
+Today I pushed a new branch with 1 commit and now when I try to clone the repo via HTTPS I am getting the following error:
+
+error: RPC failed; curl 52 Empty reply from server
+fatal: The remote end hung up unexpectedly
+
+To be more specific I am using the ""repo"" tool to sync a manifest file. It is only giving me an error on this one repo.
+
+I have tried using SSH, but in this case I run into other issues when combined with the repo tool (the first set of connections all timeout and fail, then the rest work).
+
+I am looking for any suggestions, thanks.
+
+Edited by: sirloins on Aug 2, 2018 10:31 PM"
+AWS CodeCommit	"Re: Clone repo: RPC failed curl 52 Empty reply from server
+To me, it really seems AWS Code Commit is unable to handle these larger repos. This same repo is working fine with other services like bitbucket or gitlab.
+
+For small in-house projects, it is adequate, but anything large like the linux kernel, or even a lot of the Android AOSP repos are painful to use with CodeCommit.
+
+A lot of time we use the public repo, until we need to make changes and then we need a mirror within CodeCommit. Probably half of the repos used with AOSP are unable to be pushed into code commit due to limits on tags/branches. The only option seems to be stripping the tags and/or only pushing our specific branch.
+
+Using the bulk uploader example python script has only ever worked once or twice for me, most of the time it just hangs forever and eventually fails.
+
+I think until these limitations are removed from CodeCommit we will be looking elsewhere to host our git repositories."
+AWS CodeCommit	"Pull Request with ""false positive"" conflicts need manual update
+In our project, we are creating pull request before merging anything to master.
+
+However, whenever a pull request's branch is behind the master, it's in a unmergeable state. It says ""resolve conflicts"". The solution for this is to do ""git pull origin master"" locally and publish the branch again.
+
+I understand that if the merge ca not be done, it needs to be fixed locally, but 99% of times, there is no real conflict. 
+Github and other repositories don't have this issue. They will update the branch and merge it automatically.
+
+Can it be configured someway?"
+AWS CodeCommit	"Re: Pull Request with ""false positive"" conflicts need manual update
+Hi,
+
+CodeCommit only support MergePullRequestsByFastForward now. Such a feature does not exist, at least yet. But I have passed your feature request to the team for further review and consideration. Your feedback is very much appreciated.
+
+Thanks,
+Diane"
+AWS CodeCommit	"Re: Pull Request with ""false positive"" conflicts need manual update
+I'm not sure if there's a way to vote for this, but I'd like to!  This has been really hard for us and we're considering switching to Github simply because the pull requests are getting so difficult to deal with."
+AWS CodeCommit	"Re: Pull Request with ""false positive"" conflicts need manual update
+We migrated from BitBucket to CodeCommit last month and this feature is a little bit boring, my team is complaining a lot (unfortunately), would be awesome feature implement another merge methods."
+AWS CodeCommit	"Visual Studio Git CodeCommit Integration
+Hello I set git and codecommit following the guide http://docs.aws.amazon.com/codecommit/latest/userguide/getting-started.html, and I can clone, commit, push, etc.
+
+Next, I'm trying to work with visual studio 2013, but when I clone the repository, visual studio ask me for the user credentials, I don't know what to set there! I think that VS doesn't use the credential section of the .gitconfig file. After that I got:
+
+An error occurred. Detailed message: An error was raised by libgit2. Category = Net (Error).
+Response status code does not indicate success: 403 (Forbidden).
+
+Could you help me? 
+
+Thank you"
+AWS CodeCommit	"Re: Visual Studio Git CodeCommit Integration
+Hello,
+Unfortunately I don't believe the default built-in git in Visual Studio 2013 can authenticate to CodeCommit. As far as I know, it does not support configuring credential helpers, and it does not support SSH.  You have a couple of options:
+
+1) Use command-line git (like Git Bash) to interact with CodeCommit. See details here:
+https://msdn.microsoft.com/en-us/library/dd286572.aspx 
+2) Build libgit2 with libssh2 support, and use that with Visual Studio to authenticate to CodeCommit over SSH.  See details here:
+https://connect.microsoft.com/VisualStudio/feedback/details/861515/add-libssh2-optional-dependency-for-libgit2-to-enable-ssh-on-git-tools-for-vs-2013
+
+Hope that helps!"
+AWS CodeCommit	"Re: Visual Studio Git CodeCommit Integration
+Does Visual Studio 2015 support CodeCommit natively?  I don't want to have to install 3rd party command line tools or do extra work to connect to a repository.  I can connect to Visual Studio Online and use their TFS repository with a click of a button.  As a developer I want to spend my time writing code, not maintaining and configuring the tools to store it."
+AWS CodeCommit	"Re: Visual Studio Git CodeCommit Integration
+The built-in git support in Visual Studio 2015 still does not support SSH or git credential helpers, so it cannot be used to connect to CodeCommit.  Unfortunately, you still need to re-compile the VS git plugin with SSH support to access CodeCommit within VS 2015."
+AWS CodeCommit	"Re: Visual Studio Git CodeCommit Integration
+Do you have updated links?  The two links in the previous message don't appear to be valid anymore.
+
+It would be nice to see support included in the Toolkit for Visual Studio if Microsoft isn't going to include support."
+AWS CodeCommit	"Re: Visual Studio Git CodeCommit Integration
+Hi Daniel, 
+I found a blog post here that explains how to build libssh2 into libgit2 for Visual Studio 2015.
+
+Thanks,
+Wade"
+AWS CodeCommit	"Re: Visual Studio Git CodeCommit Integration
+I built the git2.dll, I configured the ssh according to http://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-ssh-windows.html
+
+The file is attached here, it is buit on windows 7 x64
+https://drive.google.com/file/d/0BzIl2uMSrwuQdzlnVzFiS0pKQzg/view?usp=sharing
+
+I tried to fetch from the remote repository, but I got: 
+
+""Error encountered while fetching: Failed to start SSH session: Unable to exchange encryption keys.""
+
+In the vs repository settings ""Remote"" I set:
+
+ ssh://A***sshkeyid*****A@git-codecommit.us-east-1.amazonaws.com/v1/repos/TestGit
+
+or 
+
+ ssh://myIamUsername:myIamUserpassword@git-codecommit.us-east-1.amazonaws.com/v1/repos/TestGit
+
+But I got the same error.
+
+I tested ssh on command prompt and I got: 
+
+plink.exe -ssh A***sshkeyid*****A@git-codecommit.us-east-1
+.amazonaws.com
+Using username ""A***sshkeyid*****A"".
+You have successfully authenticated over SSH. You can use Git to interact with A
+WS CodeCommit. 
+
+I tested with tortoise git and after set the putty key in the remote config, tortoise worked fine.
+
+What am I doing wrong?
+
+My last thought about it, it's better to use VS git pluging for local commit, and tortoise git https for push and pull."
+AWS CodeCommit	"Re: Visual Studio Git CodeCommit Integration
+I'm sorry to hear you're still having trouble getting Visual Studio to connect.  One point of clarification is that you cannot use an IAM username and password to connect with our SSH endpoint, only an SSH key with the SSH key ID as the user name.  So your example of ""ssh://A***sshkeyid*****A@git-codecommit.us-east-1.amazonaws.com/v1/repos/TestGit"" as a repository URL is correct, but ""ssh://myIamUsername:myIamUserpassword@git-codecommit.us-east-1.amazonaws.com/v1/repos/TestGit"" is not.
+
+It seems like the error you saw (""Unable to exchange encryption keys."") happens when Visual Studio isn't sending the correct public key (or any public key) to the server.  This blog post recommends using a plugin so that Visual Studio uses TortoiseGit to connect instead of its own git support.  Since TortoiseGit seems to be working for you, that might be one option to try.  Using TortoiseGit directly for push and pull would also be another option."
+AWS CodeCommit	"Re: Visual Studio Git CodeCommit Integration
+For anyone still looking for a solution on this thread, users can now natively connect Visual Studio to CodeCommit using the Git Credentials (essentially username/password) method. IDE setup instructions can be found here: http://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-ide.html.
+
+Instructions for creating these Git Credentials with IAM can be found here (see step 3): http://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html#setting-up-gc-iam
+
+Cheers!"
+AWS CodeCommit	"Re: Visual Studio Git CodeCommit Integration
+I have Visual Studio 2015 and installed the AWS Toolkit for Visual Studio. I have an IAM user with appropriate permissions and Git credentials. When I connect to Codecommit using the profile, it gives me the Clone, Create, and Sign out options. But when I click on Clone, it does not do anything. The same with the create button. I have Git for Windows installed and am able to clone the repo using it. Is the anything else I have to do the clone the repo using Visual Studio?
+
+Thanks"
+AWS CodeCommit	"Re: Visual Studio Git CodeCommit Integration
+I've managed to repro this in VS2015, VS2017 seems to be working as expected.
+
+While I investigate, can you verify that you setup and registered (with the toolkit) the HTTPS credentials that it needs as discussed in this blog post - https://aws.amazon.com/blogs/developer/using-aws-codecommit-with-visual-studio-team-explorer/ ?"
+AWS CodeCommit	"Re: Visual Studio Git CodeCommit Integration
+We traced the problem to an issue in the installer (it did not lay down the awssdk.codecommit.dll assembly properly). A fixed installer was released 7/20.
+
+Please uninstall then download the fixed msi from https://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi (will yield a file called AWSToolsAndSDKForNet_sdk-3.3.322.0_ps-3.3.313.0_tk-1.14.4.0.msi as of today) and reinstall. 
+
+Let us know if you still encounter issues."
+AWS CodeCommit	"Re: Visual Studio Git CodeCommit Integration
+Thanks for the update Steve. I have VS2015. I uninstalled the older version and installed the fixed version. I am able to connect to Codecommit now."
+AWS CodeCommit	"CodeBuild Logs streams empty - Logs are not available for this build.
+Hello, 
+
+I'm using Cloudformation to deploy a CI/CD pipeline via CodeCommit, CodePipeline and CodeBuild. 
+
+The CodeBuild role as all right on logs : 
+ 
+ - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: ""arn:aws:logs:*:*:*""
+
+
+But on the console I have this message : 
+""Logs are not available for this build.""
+And my cloud watch streams are empty. 
+
+If someone could explain to me how I can retrieve my CodeBuild logs. 
+
+Thanks you"
+AWS CodeCommit	"Re: CodeBuild Logs streams empty - Logs are not available for this build.
+RESOLVED 
+
+In fact my private VPC didn't have a NATGW... Cloudformation coud create the logs streams but CodeBuild was unable to push it to it, even if it had permissions..."
+AWS CodeCommit	"IAM User with Read Only permissions cannot see specified allowed repo
+I have a few codecommit repos. I need to allow a potential contractor access to read only just one of the repos.
+
+Your guidelines say:
+""You might want to modify this policy to apply to a specific AWS CodeCommit repository, instead of all resources (""*""). You can then attach a modified version of this policy to IAM users or groups for more precise control of your AWS CodeCommit resources. For examples, see Action and Resource Syntax later in this topic.""
+http://docs.aws.amazon.com/codecommit/latest/userguide/access-permissions.html
+
+This is not working. When i add the specific ARN for the specific repo to the ReadOnly policy, i get this error:
+User: arn:aws:iam::<accountID>:user/<UserName> is not authorized to perform: codecommit:ListRepositories
+
+This is not true, since the policy looks like this:
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": [
+                ""codecommit:BatchGetRepositories"",
+                ""codecommit:Get*"",
+                ""codecommit:GitPull"",
+                ""codecommit:List*""
+            ],
+            ""Resource"": ""arn:aws:codecommit:us-east-1:<accountID>:<repo_name>""
+        }
+    ]
+}
+
+Also, found this thread which contradicts your guidelines as well:
+""However, CodeCommit only supports CodeCommit:ListRepositories when one has permission to all repositories (in the IAM policy the 'Resource' should be '*').""
+https://forums.aws.amazon.com/thread.jspa?threadID=246874&tstart=0
+
+Help?
+Thanks!
+Andy"
+AWS CodeCommit	"Re: IAM User with Read Only permissions cannot see specified allowed repo
+Having the same / very similar issue.
+
+This seems to work (only tested for read only access so far):
+In my case I wanted access to list of repos, and only allow Power User on certain repos.
+
+So in the dashboard a user can view all available repo names.  But can only view code on the ones listed in the 2nd policy statement.  Seems that when list repo's it fails are the first one that doesn't have list permissions on.
+
+If you attempt to view a repo not in the 2nd statement you get a ""unspecified error occurred contacting the service""
+
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Sid"": ""Stmt1490539021001"",
+            ""Effect"": ""Allow"",
+            ""Action"": [
+                ""codecommit:List*"",
+                ""codecommit:BatchGetRepositories""
+            ],
+            ""Resource"": [
+                ""*""
+            ]
+        },
+        {
+            ""Sid"": ""Stmt1490539021000"",
+            ""Effect"": ""Allow"",
+            ""Action"": [
+                ""codecommit:CreateBranch"",
+                ""codecommit:Get*"",
+                ""codecommit:Put*"",
+                ""codecommit:Test*"",
+                ""codecommit:Update*"",
+                ""codecommit:GitPull"",
+                ""codecommit:GitPush""
+            ],
+            ""Resource"": [
+                ""arn:aws:codecommit:us-east-1:<account>:<repos>*""
+            ]
+        }
+    ]
+}"
+AWS CodeCommit	"Re: IAM User with Read Only permissions cannot see specified allowed repo
+Hi folks,
+
+First, I’m sorry you are experiencing issues with setting up your IAM policies for CodeCommit. Regarding the codecommit:ListRepositories issue, you should be able to resolve this by creating a policy which has codecommit:ListRepositories permission on resource “*”.  ListRepositories is not a repository-specific API, so having this permission on any resource other than “*” won’t work, it needs to be “*”. 
+
+A sample policy for your Read Only use case might look like:
+{
+    ""Version"": ""2012-10-17"",
+    ""Statement"": [
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": [
+                ""codecommit:ListRepositories""
+            ],
+            ""Resource"": ""*""
+        },
+        {
+            ""Effect"": ""Allow"",
+            ""Action"": [
+                ""codecommit:BatchGetRepositories"",
+                ""codecommit:Get*"",
+                ""codecommit:GitPull"",
+                ""codecommit:List*""
+            ],
+            ""Resource"": ""arn:aws:codecommit:<region>:<account-id>:<repo-name>”
+        }
+    ]
+}
+
+Note that in the console, the users will be able to see that other repositories exist in your account, but clicking on them will show an error rather than allowing them to browse or pull the code.
+
+As for the documentation, I believe you are correct and that the statement about scoping the policy to a specific repository does not explain the ListRepositories action very well, and I will work with our documentation writers to improve this for clarity. Thanks for pointing this out, we do appreciate it!
+
+As for the ""unspecified error occurred contacting the service"" issue, this is masking an AccessDeniedException because the user does not have access to view that repository. I have opened an issue internally so that we can make this error message more clear. Thanks for pointing this out!"
+AWS CodeCommit	"Re: IAM User with Read Only permissions cannot see specified allowed repo
+DavidJ@AWS 
+
+What about the requirement to keep the names of specific repositories secret?
+
+I want to only allow specific repositories to be listable.
+
+AWS looks to be forcing us to list everything with '*'
+
+I realize other users cannot go inside the actual repository, but they can s"
+AWS CodeCommit	"Pipeline triggered with every merge to CodeCommit
+Right now, in our pipeline, as soon as code is merged to a branch associated with a pipeline, that pipeline is kicked off.  Initially, in order to prevent the code from being deployed to ElasticBeanstalk, we disabled transition step just after CodeCommit, and, then, when we wanted to deploy, we had to re-enable the step, and when the deploy was done, we disabled it.  We ran into issues, though, because we'd forget to disable the step again.  Additionally, whenever that step was re-enabled, the flow continued from the previous execution, which caused a lot of confusion.  So, we added an approval step in addition to disabling.  This is also not working for us because we're struggling to figure out which execution we're rejecting.  So now, the solution is to enable and reject while periodically refreshing every few minutes.  Overall, it's not ideal.  Is there a way to not have the pipeline execute at all until someone manually hits the Release Change button?"
+AWS CodeCommit	"Re: Pipeline triggered with every merge to CodeCommit
+Yes, this is possible!
+
+There's a parameter on most source actions called PollForSourceChanges: https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#w207aac36b9b9c15b3
+
+More info: https://docs.aws.amazon.com/codepipeline/latest/userguide/run-automatically-polling.html
+
+The behaviour of this parameter can be hard to understand (it's documented here: https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-about-starting.html#change-detection-methods ), so I'll explain here:
+
+A pipeline is either started by polling for changes in CodeCommit (PollForSourceChanges = true) or through a Cloudwatch Event.
+
+If you're using CloudWatch events to trigger your pipeline, you can simply remove the cloudwatch event, and the pipeline will stop triggering automatically. Basically, you want to undo the change described here: https://docs.aws.amazon.com/codepipeline/latest/userguide/triggering.html
+
+Then, make sure PollForSourceChanges is set to false. For example, your source action configuration will look like this:
+
+{
+    ""PollForSourceChanges"": false,
+    ""RepositoryName"": ""my-repo"",
+    ""BranchName"": ""my-branch""
+}
+
+
+If you're using polling to detect source changes, then you just need to set PollForSourceChanges to false and it'll stop detecting changes.
+
+If you're used to configuring your pipeline via the console, you can find this setting under the source action's configuration named ""Change detection options"". Choose the ""Use Amazon CloudWatch Events to automatically start my pipeline when a change occurs (recommended)"" and then make sure that the Cloudwatch event is deleted in the Cloudwatch console."
+AWS CodeCommit	"Better format notification emails
+I would like to provide more useful information in the notification emails sent when pull requests are created, commented on, and merged.  I am trying to use the input transformer in CloudWatch, but I'm unable to find the right variables for what I need.  
+
+When a pull request is created, I'd like to get a notification that says 
+     ""A pull request was created by <creator> with the title: <title>.  View the pull request here: <url>""
+
+When a pull request is commented on, I'd like to get a notification that says 
+     ""<commentor> has made a comment on pull request with id: <id> and title <title>.  The comment is: <comment>.  View the pull request here: <url>""
+
+'When a pull request is merged, I'd like to get a notification that says
+     ""<merger> has merged pull request with id <id> and title <title>.""
+
+Is this possible?  Or, is any of it possible?  The message provided is so wordy it may as well just be a link so you can figure out what it's talking about."
+AWS CodeCommit	"Re: Better format notification emails
+Hi KatieR,
+
+We appreciate your feedback on our notifications, I will discuss with our team to try to address the wordiness with our notifications.
+
+One of the reasons that we chose to not include the comment in the notification was because we assume that comments in your code reviews could contain snippets of code and thus your intellectual property and should be treated with care. We encrypt all comments at rest and no one is able to decrypt, and read comments without an authenticated and authorized request to CodeCommit with AWS Credentials.
+
+Since email does not have authorization or authentication, we want to make sure only people who are authorized to read comments can have access to them. In addition, there is no way to revoke access to these comments once we send them through email. This is why we provide a link to the AWS console by default, instead of delivering the comment directly in the email.
+
+All this being said, if you want to customize the email notification, you can build a lambda function that formats the email to your liking, including having HTML formatted emails if you send emails through SES.
+
+You can use the following APIs within the lambda function to enrich the emails:
+
+https://docs.aws.amazon.com/codecommit/latest/APIReference/API_GetComment.html
+https://docs.aws.amazon.com/codecommit/latest/APIReference/API_GetPullRequest.html
+https://docs.aws.amazon.com/codecommit/latest/APIReference/API_GetDifferences.html"
+AWS CodeCommit	"Re: Better format notification emails
+This was good and helpful feedback.  We were looking into using lambdas with our pull requests anyway, since we're looking for a workaround to having to update the branches on other pull requests after one has been merged.  
+
+However, even without the comments themselves, it would be helpful to know how to access the other variables listed, such as the person who performed the action, the title of the pull request, the url to access the pull request, and the pull request id.  All of those variables except for the pull request title are in the current message, just not in a very readable format."
+AWS CodeCommit	"Re: Better format notification emails
+The cloudwatch event notification will have the PullRequestId or the CommentId associated with the notification.
+
+If you pass that into GetPullRequest or GetComment, you will be able to get the ""authorArn"" which is the IAM identity ARN that represents the person that created the pull request or commented.
+
+If you are looking for the IAM username, from that ARN, it is the last portion in that arn string.
+e.g. arn:aws:iam::111111111111:user/<iam-user-name>
+
+The console URL for comments within a pull request is:
+
+https:{REGION}.console.aws.amazon.com/codecommit/home?region={REGION}#/repository/{REPOSITORY_NAME}/pull-request/{PULL_REQUEST_ID}/activity#{COMMENT_ID}
+
+For the pull request itself its:
+
+https:{REGION}.console.aws.amazon.com/codecommit/home?region={REGION}#/repository/{REPOSITORY_NAME}/pull-request/{PULL_REQUEST_ID}/activity
+
+Though we could change these at any time."
+AWS CodeCommit	"Code commit and Jira Integration
+Hi,
+
+We are using jira for task/issue management, Is AWS Code commit has integration with jira so that when we push/commit code to codecommit by providing some tags, will it be updating jira task/issue status?  
+We have implemented earlier GITLab with JIRA  (as explained in the link https://docs.gitlab.com/ce/user/project/integrations/jira.html). 
+
+Is there anything similar to above code commit and jira integration?
+
+Thanks,
+Suresh"
+AWS CodeCommit	"Re: Code commit and Jira Integration
+Hello,
+
+Currently Jira integration are not available in AWS CodeCommit. 
+Thanks"
+AWS CodeCommit	"Re: Code commit and Jira Integration
+Jira does have a CodeCommit plugin: https://bigbrassband.com/integration-guide/jira-aws-codecommit.html, but the plugin doesn't appear to offer what you're looking for.  We had the same issue where we were able to update the status of a story in Jira when we merged the story in GitHub.  We're looking for something similar to this with Jira and CodeCommit, but haven't found a good solution yet.  
+
+This looks promising, but we haven't had the time in our schedule to really look into it."
+AWS CodeCommit	"IP Address Ranges for CodeCommit
+Hi CodeCommit support team,
+
+May I know if there's a IP address ranges for AWS CodeCommit? We are using CodeCommit to store source codes belonging to the Company. It's a intellectual property and we want to secure it by preventing public internet access.
+
+Unfortunately, the services listed in https://ip-ranges.amazonaws.com/ip-ranges.json do not consist of CodeCommit.
+
+I hope the team can assist me on this issue."
+AWS CodeCommit	"Re: IP Address Ranges for CodeCommit
+Hi tiantsyhloo
+
+If you are looking for the IP ranges for codecommit's git endpoints in ap-southeast-1 (based on our previous correspondence) they are:
+
+54.240.226.213	
+54.240.226.221	
+54.240.227.194
+
+Though if you want to restrict access for your source code from the public internet, I would imagine that you would want to apply an IP policy on your IAM user/role to make sure your repository cannot be retrieved from IP outside of your specified IP range that your company owns.
+
+Let me know if I've misunderstood your use case."
+AWS CodeCommit	"Re: IP Address Ranges for CodeCommit
+Hi yilun
+
+Thanks. The use case that you had described is correct."
+AWS CodeCommit	"CodeCommit dashboard broken: last update date no longer updated July 13
+On https://eu-west-1.console.aws.amazon.com/codecommit/home?region=eu-west-1#/repository/list you will get a list of repositories. This list is in column format and contains column ""Last Updated"".
+
+Starting July 13, the Last Updated column never updates. When you open a repository, you will see commits committed after the Last Updated column value. This is down for several days, so time zone offset will probably not be the case.
+
+With approximately 100 repositories and a hard limit on the number of associated AWS Lambda, it has gotten harder to see without calling APIs what repositories have had commits.
+
+Would be helpful when the last update date would be available again. Otherwise, please remove it since it confuses users."
+AWS CodeCommit	"Re: CodeCommit dashboard broken: last update date no longer updated July 13
+Thank you for the finding, we can reproduce the issue you've found.  We will prioritize this work. Your feedback is very much appreciated."
+AWS CodeCommit	"Re: CodeCommit dashboard broken: last update date no longer updated July 13
++1
+
+I've spotted this too. Last update for us is June 15th, despite several repositories of ours having had commits made to them since that date.
+
+Silly, minor issues like this make it harder to convince me to go all-in on the AWS ecosystem. The console these days seems to be erratically unstable in places. It's very clear that different people are responsible for different parts of the console. The vast array of designs makes this pretty obvious (there's some Engrish error messages dotted around too).
+
+Please, co-ordinate your teams, get the console into a decent state, get a QA team involved in the release process, and please...be consistent"
+AWS CodeCommit	"Re: CodeCommit dashboard broken: last update date no longer updated July 13
+Thanks, I will await a solution."
+AWS CodeCommit	"Re: CodeCommit dashboard broken: last update date no longer updated July 13
+We have fixed the bug and now it start to deploy.  It should reach to all regions pretty soon.  I will let you know once the deployment is done.
+
+Edited by: HBaochenAWS on Jun 26, 2018 2:36 PM"
+AWS CodeCommit	"Re: CodeCommit dashboard broken: last update date no longer updated July 13
+Any news on this? It hasn't reached London as of 29th June @ 1pm UK time."
+AWS CodeCommit	"Re: CodeCommit dashboard broken: last update date no longer updated July 13
+The bugfix has been deployed to all public CodeCommit regions. Note that this won't backfill the last-modified-date for previous changes, but future changes should update the last-modified-date correctly.
+
+Please let us know if you are still experiencing this issue after today. Thanks!"
+AWS CodeCommit	"Re: CodeCommit dashboard broken: last update date no longer updated July 13
+Thanks, is available and works again."
+AWS CodeCommit	"Restricting Outbound connection to AWS Code Commit
+Hello Guru's,
+
+I am building an AWS Code Pipeline which will allow EC2 instance to pull code from AWS Code commit. To make this working i have enabled outbound https connection to 0.0.0.0/0, I tried doing nslookup to get ip range but after setting it up, The Deployment fails with timeout error.
+
+ nslookup git-codecommit.ap-southeast-1.amazonaws.com
+Server:         172.20.0.2
+Address:        172.20.0.2#53
+
+Non-authoritative answer:
+Name:   git-codecommit.ap-southeast-1.amazonaws.com
+Address: 54.240.226.213
+
+
+Tried 54.240.0.0/16 - No Luck
+Tried 54.0.0.0/8 - No Luck
+
+
+Edited by: BijithNair007 on Jun 28, 2018 8:23 PM
+
+Edited by: BijithNair007 on Jun 28, 2018 8:24 PM"
+AWS CodeCommit	"Re: Restricting Outbound connection to AWS Code Commit
+Hi BijithNair007
+
+If you set up a CodePipeline pipeline with CodeCommit as a source action, you do not to explicitly clone your repository from CodeCommit with your EC2 instance. CodePipelines does not clone your repository either. When you specify a deployment step which deploys to EC2 instances, CodePipeline will deliver a compressed artifact bundle consisting of the tip of your pipeline tracking branch to each of your instances. This artifact bundle is downloaded from an S3 bucket in your account.
+
+If you need to clone your repository from your EC2 instances, to get previous repository history, the following IP's are CodeCommit's git frontend IPs in ap-southeast-1:
+
+54.240.226.213	
+54.240.226.221	
+54.240.227.194
+
+They may be subjected to change at a later date. If you think that VPC endpoints for CodeCommit would be a better solution for you, let us know so we can prioritize accordingly."
+AWS CodeCommit	"Initial push to CodeCommit repo fails with unpack error/unknown commit
+I am unable to push existing commits to a newly created CodeCommit repository.  The scenario is a newly created CodeCommit repository that is empty.  An attempt to push an existing repository to this new CodeCommit repository fails.  The failure indicates that there is an unknown commit and that the unpack failed.
+
+A push from a companion repository to a newly-created CodeCommit repository for that companion repository works from the same host.
+
+The version of the git client pushing is:  2.14.3, but this also fails for 1.9.1.
+
+The repository is very small as shown by this output:
+git count-objects -Hv
+18:36:21.320327 git.c:340               trace: built-in: git 'count-objects' '-Hv'
+count: 0
+size: 0 bytes
+in-pack: 145
+packs: 1
+size-pack: 25.86 KiB
+prune-packable: 0
+garbage: 0
+size-garbage: 0 bytes
+
+Here is the debug output from the push.
+git push -v codecommit $BITBUCKET_BRANCH
+18:36:21.327133 git.c:340               trace: built-in: git 'push' '-v' 'codecommit' 'master'
+Pushing to ssh://git-codecommit.us-east-2.amazonaws.com/v1/repos/XXXXXX
+18:36:21.327622 run-command.c:626       trace: run_command: 'ssh' 'git-codecommit.us-east-2.amazonaws.com' 'git-receive-pack '\''/v1/repos/XXXXXX'\'''
+18:36:21.733414 pkt-line.c:80           packet:         push< 0000000000000000000000000000000000000000 capabilities^{}\0side-band-64k report-status delete-refs thin-pack
+18:36:21.733440 pkt-line.c:80           packet:         push< 0000
+18:36:21.733541 pkt-line.c:80           packet:         push> shallow fa461dfd52ba65cf2f9cbb2cfab910e8ebfeb21f
+18:36:21.733555 pkt-line.c:80           packet:         push> 0000000000000000000000000000000000000000 ef1659466d930f281d4304aaae7c8866c158beec refs/heads/master\0 report-status side-band-64k
+18:36:21.733567 pkt-line.c:80           packet:         push> 0000
+18:36:21.733639 run-command.c:626       trace: run_command: 'pack-objects' '--all-progress-implied' '--revs' '--stdout' '--thin' '-q' '--shallow'
+18:36:21.738605 git.c:340               trace: built-in: git 'pack-objects' '--all-progress-implied' '--revs' '--stdout' '--thin' '-q' '--shallow'
+18:36:22.990347 pkt-line.c:80           packet:     sideband< \2
+remote: 
+18:36:23.042372 pkt-line.c:80           packet:     sideband< \2Unknown commit 8ae1bbb28c3bb0c10ceb9f00ce43c1f300689aff
+18:36:23.042390 pkt-line.c:80           packet:     sideband< \10043unpack Unknown commit 8ae1bbb28c3bb0c10ceb9f00ce43c1f300689aff
+18:36:23.042402 pkt-line.c:80           packet:     sideband< \10028ng refs/heads/master unpacker error
+18:36:23.042408 pkt-line.c:80           packet:     sideband< \10000
+18:36:23.042411 pkt-line.c:80           packet:     sideband< 0000
+remote: Unknown commit 8ae1bbb28c3bb0c10ceb9f00ce43c1f300689aff
+18:36:23.042426 pkt-line.c:80           packet:         push< unpack Unknown commit 8ae1bbb28c3bb0c10ceb9f00ce43c1f300689aff
+error: remote unpack failed: Unknown commit 8ae1bbb28c3bb0c10ceb9f00ce43c1f300689aff
+18:36:23.042480 pkt-line.c:80           packet:         push< ng refs/heads/master unpacker error
+18:36:23.042490 pkt-line.c:80           packet:         push< 0000
+To ssh://git-codecommit.us-east-2.amazonaws.com/v1/repos/XXXXXX
+ ! [remote rejected] master -> master (unpacker error)
+error: failed to push some refs to 'ssh://git-codecommit.us-east-2.amazonaws.com/v1/repos/XXXXXX'
+
+Edited by: tiwula on Mar 21, 2018 1:03 PM
+
+Edited by: tiwula on Mar 21, 2018 1:17 PM"
+AWS CodeCommit	"Re: Initial push to CodeCommit repo fails with unpack error/unknown commit
+Hi,
+Is the existing repository a shallow repository by any chance? (cloned using shallow clone?).  If so can you try cloning a fresh full copy from your existing repository and then push that to CodeCommit? 
+Thanks,
+Aashwin"
+AWS CodeCommit	"Re: Initial push to CodeCommit repo fails with unpack error/unknown commit
+I just ran into this same issue and as stated above, the existing repository was shallow cloned so it only pulled down the last 50 commits. Using a full clone resolved the issue."

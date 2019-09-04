@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+      body {
+        position: fixed;
+        background: #FAFAFA;
+        width: 100vw;
+        height: 100vh;
+      }
+        /* Safari */
+        @-webkit-keyframes dots {
+          50% {
+            opacity: 0;
+            transform: scale(0.7) translateY(10px);
+          }
+        }
+
+        @keyframes dots {
+          50% {
+            opacity: 0;
+            transform: scale(0.7) translateY(20px) translateX(2px);
+          }
+        }
+
+        .loading {
+
+          margin-top: 40vh;
+          margin-left: 50vw;
+          position: absolute;
+          left: -30px;
+          top: -30px;
+        }
+
+        .loading span {
+          width: 20px;
+          height: 20px;
+          background-color: #ffd957;
+          border-radius: 50%;
+          display: inline-block;
+          animation-name: dots;
+          animation-duration: 2s;
+          animation-iteration-count: infinite;
+          animation-timing-function: ease;
+        }
+
+        .loading span:nth-child(2) {
+          background-color: #57ffa0;
+          animation-delay: 0.4s;
+        }
+
+        .loading span:nth-child(3) {
+          background-color: #ff8b57;
+          animation-delay: 0.8s;
+        }
+
+    </style>
+  </head>
+
+  <body>
+    <button id="btn" onclick="validate()" style="visibility:hidden">Fetch New Data</button>
+    <div class="loading">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <script type="text/javascript">
+      document.getElementById("btn").click();
+
+      function validate() {
+        document.location.href = "summary"
+      }
+
+    </script>
+
+  </body>
+</html>

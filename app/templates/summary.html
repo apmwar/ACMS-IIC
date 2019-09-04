@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>Training Summary</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed'>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js'></script>
+  <script src='static/js/Chart.min.js'></script>
+
+  <style>
+
+    *{
+  		-webkit-box-sizing: border-box;
+  		-moz-box-sizing: border-box;
+  		box-sizing: border-box;
+  	}
+
+  	body {
+  		position: absolute;
+  		left: 0;
+  		top: 0;
+  		width: 100vw;
+  		min-height: 98vh;
+      overflow-x: hidden;
+
+  	}
+
+  	.btn-hover {
+  		width: 200px;
+  		font-size: 16px;
+  		font-weight: 600;
+  		color: #fff;
+  		cursor: pointer;
+  		margin: 20px;
+  		height: 50px;
+  		text-align:center;
+  		border: none;
+  		background-size: 300% 100%;
+  		border-radius: 50px;
+  		moz-transition: all .4s ease-in-out;
+  		-o-transition: all .4s ease-in-out;
+  		-webkit-transition: all .4s ease-in-out;
+  		transition: all .4s ease-in-out;
+  	}
+
+  	.btn-hover:hover {
+  		background-position: 100% 0;
+  		moz-transition: all .4s ease-in-out;
+  		-o-transition: all .4s ease-in-out;
+  		-webkit-transition: all .4s ease-in-out;
+  		transition: all .4s ease-in-out;
+  	}
+
+  	.btn-hover:focus {
+  		outline: none;
+  	}
+
+    .mb-1{
+      margin-bottom: 1em;
+    }
+
+    .row {
+      margin-bottom: 20px;
+    }
+
+    .btn-hover.color-5 {
+  		background-image: linear-gradient(to right, #0ba360, #3cba92, #30dd8a, #2bb673);
+  		box-shadow: 0 4px 15px 0 rgba(23, 168, 108, 0.75);
+  	}
+
+    .sidebar {
+      background-color: #FAFAFA;
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 70px;
+    }
+
+    .btn1 {
+      margin: 15px;
+      width: 40px;
+      height: 40px;
+      background: url('/static/res/class.png') no-repeat;
+      background-size: 40px 40px;
+      outline: none;
+      border: none;
+    }
+
+    .btn2 {
+      margin: 15px;
+      width: 40px;
+      height: 40px;
+      background: url('/static/res/stat.png') no-repeat;
+      background-size: 40px 40px;
+      outline: none;
+      border: none;
+    }
+
+    .btn3 {
+      margin: 15px;
+      width: 40px;
+      height: 40px;
+      background: url('/static/res/gear.png') no-repeat;
+      background-size: 40px 40px;
+      outline: none;
+      border: none;
+    }
+
+    .btn4 {
+      margin: 15px;
+      width: 40px;
+      height: 40px;
+      background: url('/static/res/paper.png') no-repeat;
+      background-size: 40px 40px;
+      outline: none;
+      border: none;
+    }
+
+    .box1 {
+      padding-left: 50px;
+      padding-right: 50px;
+      height: auto;
+      font-size: 25px;
+    }
+
+  </style>
+
+
+</head>
+
+<body>
+  <div class = "container" style="position: absolute; left: 0; top: 0; width: 100vw; min-height: 100vh">
+    <div class="row" style="position: absolute; width: inherit; height: inherit">
+      <div class="sidebar">
+        <button class="btn1" onclick="home()"></button>
+        <button class="btn btn2" onclick="update()"></button>
+        <button class="btn3" onclick="github()"></button>
+        <button class="btn4" onclick="drive()"></button>
+      </div>
+
+      <div style="position: absolute; width: inherit; height: inherit; margin-left: 70px;">
+        <div class="jumbotron" style="background-color: #FFF">
+            <h1><b><i>Summary</i></b> of training</h1>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 box1">Fetched <b><i>{{ len }} new threads</i></b></div>
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 box1">Across <b><i>8 products</i></b></div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 box1">
+            <canvas id="chart-area" style="max-width: 500px;"></canvas>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 box1">
+            SVM accuracy is <b><i>{{'%0.2f'| format(accuracy[0]*100|float)}}%</i></b><br>
+            Logistic Regression accuracy is <b><i>{{'%0.2f'| format(accuracy[1]*100|float)}}%</i></b><br>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 box1" style="width: 500px; height: 500px;"><b><i>SVM Confusion Matrix</i></b><br>
+            <img src = 'static/res/svm_confusion.PNG' style="width: 600px;">
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 box1"><b><i>LogReg Confusion Matrix</i></b><br>
+            <img src = 'static/res/logreg_confusion.PNG' style="width: 600px;">
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js'></script>
+
+
+  <script type="text/javascript">
+
+    function home() {
+      document.location.href = "/";
+    }
+
+    function update() {
+      document.location.href = "update";
+    }
+
+    function github() {
+      document.location.href = "https://github.com/apmwar/ACMS-IID";
+    }
+
+    function drive() {
+      document.location.href = "https://drive.google.com";
+    }
+
+    window.onload = function() {
+
+
+			window.chartColors = {
+				red: 'rgb(255, 99, 132)',
+				orange: 'rgb(255, 159, 64)',
+				yellow: 'rgb(255, 205, 86)',
+				green: 'rgb(75, 192, 192)',
+				blue: 'rgb(54, 162, 235)',
+				purple: 'rgb(153, 102, 255)',
+				grey: 'rgb(201, 203, 207)',
+        black: 'rgb(0,0,0)'
+			};
+
+			var config = {
+				type: 'doughnut',
+				data: {
+					datasets: [{
+						data: [{{ values[0] }},
+            {{ values[1] }},
+            {{ values[2] }},
+            {{ values[3] }},
+            {{ values[4] }},
+            {{ values[5] }},
+            {{ values[6] }},
+            {{ values[7] }}],
+
+						backgroundColor: [ window.chartColors.red,
+							window.chartColors.blue,
+							window.chartColors.green,
+							window.chartColors.yellow,
+							window.chartColors.purple,
+              window.chartColors.grey,
+              window.chartColors.orange,
+              window.chartColors.black,
+						],
+					}],
+					labels: ['{{ values.index[0] }}',
+								'{{ values.index[1] }}',
+								'{{ values.index[2] }}',
+								'{{ values.index[3] }}',
+								'{{ values.index[4] }}',
+                '{{ values.index[5] }}',
+      					'{{ values.index[6] }}',
+      					'{{ values.index[7] }}',
+							]
+				},
+				options: {
+					responsive: true,
+					legend: {
+						position: 'top',
+					},
+					title: {
+						display: true,
+						text: 'Validation data size split across 8 AWS products'
+					},
+					animation: {
+						animateScale: true,
+						animateRotate: true
+					}
+				}
+			};
+
+			var ctx = document.getElementById('chart-area').getContext('2d');
+			var top = new Chart(ctx, config);
+		};
+
+
+
+  </script>
+
+</body>
+
+</html>

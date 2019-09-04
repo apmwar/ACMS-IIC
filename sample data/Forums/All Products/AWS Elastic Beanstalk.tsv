@@ -1,0 +1,2435 @@
+label	description
+AWS Elastic Beanstalk	"eb deploy returns ERROR: FileNotFoundError
+I have a Node app that I deploy with the EB CLI.
+After building my project I execute `eb deploy` and I get the following output:
+2019-02-20 11:44:59,448 (INFO) eb : FileNotFoundError - [Errno 2] No such file or directory: '/home/franciscohanna92/Proyectos/minexus/admin-app/node_modules/terser-webpack-plugin/node_modules/acorn-dynamic-import/node_modules/.bin/acorn'
+
+
+The full debug output is the following:
+2019-02-20 11:44:58,877 (DEBUG) cement.core.foundation : laying cement for the 'eb' application
+2019-02-20 11:44:58,877 (DEBUG) cement.core.hook : defining hook 'pre_setup'
+2019-02-20 11:44:58,877 (DEBUG) cement.core.hook : defining hook 'post_setup'
+2019-02-20 11:44:58,877 (DEBUG) cement.core.hook : defining hook 'pre_run'
+2019-02-20 11:44:58,877 (DEBUG) cement.core.hook : defining hook 'post_run'
+2019-02-20 11:44:58,877 (DEBUG) cement.core.hook : defining hook 'pre_argument_parsing'
+2019-02-20 11:44:58,877 (DEBUG) cement.core.hook : defining hook 'post_argument_parsing'
+2019-02-20 11:44:58,877 (DEBUG) cement.core.hook : defining hook 'pre_close'
+2019-02-20 11:44:58,878 (DEBUG) cement.core.hook : defining hook 'post_close'
+2019-02-20 11:44:58,878 (DEBUG) cement.core.hook : defining hook 'signal'
+2019-02-20 11:44:58,878 (DEBUG) cement.core.hook : defining hook 'pre_render'
+2019-02-20 11:44:58,878 (DEBUG) cement.core.hook : defining hook 'post_render'
+2019-02-20 11:44:58,878 (DEBUG) cement.core.hook : registering hook 'add_handler_override_options' from cement.core.foundation into hooks['post_setup']
+2019-02-20 11:44:58,878 (DEBUG) cement.core.hook : registering hook 'handler_override' from cement.core.foundation into hooks['post_argument_parsing']
+2019-02-20 11:44:58,878 (DEBUG) cement.core.handler : defining handler type 'extension' (IExtension)
+2019-02-20 11:44:58,878 (DEBUG) cement.core.handler : defining handler type 'log' (ILog)
+2019-02-20 11:44:58,878 (DEBUG) cement.core.handler : defining handler type 'config' (IConfig)
+2019-02-20 11:44:58,878 (DEBUG) cement.core.handler : defining handler type 'mail' (IMail)
+2019-02-20 11:44:58,878 (DEBUG) cement.core.handler : defining handler type 'plugin' (IPlugin)
+2019-02-20 11:44:58,878 (DEBUG) cement.core.handler : defining handler type 'output' (IOutput)
+2019-02-20 11:44:58,878 (DEBUG) cement.core.handler : defining handler type 'argument' (IArgument)
+2019-02-20 11:44:58,878 (DEBUG) cement.core.handler : defining handler type 'controller' (IController)
+2019-02-20 11:44:58,879 (DEBUG) cement.core.handler : defining handler type 'cache' (ICache)
+2019-02-20 11:44:58,879 (DEBUG) cement.core.handler : registering handler '<class 'cement.core.extension.CementExtensionHandler'>' into handlers['extension']['cement']
+2019-02-20 11:44:58,887 (DEBUG) cement.ext.ext_plugin : plugin config dir /etc/eb/plugins.d does not exist.
+2019-02-20 11:44:58,887 (DEBUG) cement.ext.ext_plugin : plugin config dir /home/franciscohanna92/.eb/plugins.d does not exist.
+2019-02-20 11:44:58,895 (DEBUG) ebcli.core.hooks : -- EBCLI Version: 3.14.11
+2019-02-20 11:44:58,895 (DEBUG) ebcli.core.hooks : -- Python Version: 3.5.2 (default, Nov 12 2018, 13:43:14) 
+[GCC 5.4.0 20160609]
+2019-02-20 11:44:58,896 (DEBUG) ebcli.core.fileoperations : Project root found at: /home/franciscohanna92/Proyectos/minexus/admin-app
+2019-02-20 11:44:58,899 (DEBUG) ebcli.objects.sourcecontrol : Getting current branch name by performing `git rev-parse --abbrev-ref HEAD`
+2019-02-20 11:44:58,903 (DEBUG) ebcli.objects.sourcecontrol : develop
+2019-02-20 11:44:58,912 (DEBUG) ebcli.objects.sourcecontrol : Getting current branch name by performing `git rev-parse --abbrev-ref HEAD`
+2019-02-20 11:44:58,914 (DEBUG) ebcli.objects.sourcecontrol : develop
+2019-02-20 11:44:58,931 (DEBUG) ebcli.objects.sourcecontrol : Getting current branch name by performing `git rev-parse --abbrev-ref HEAD`
+2019-02-20 11:44:58,935 (DEBUG) ebcli.objects.sourcecontrol : develop
+2019-02-20 11:44:58,942 (INFO) eb : Deploying code to minexus-admin-dev in region us-west-1
+2019-02-20 11:44:58,946 (DEBUG) ebcli.objects.sourcecontrol : Getting current branch name by performing `git rev-parse --abbrev-ref HEAD`
+2019-02-20 11:44:58,954 (DEBUG) ebcli.objects.sourcecontrol : develop
+2019-02-20 11:44:58,965 (DEBUG) ebcli.operations.gitops : Branch not found
+2019-02-20 11:44:58,974 (DEBUG) ebcli.objects.sourcecontrol : Result of `git diff --numstat`: 8 18      package.json
+5       6       server/api/companies/companies.js
+3       4       server/api/select/select.js
+1       1       server/middleware/check-token.js
+1       1       src/components/affected-entities/views/AffectedEntitiesList.vue
+1       1       src/components/affected-entities/views/AffectedEntityRequirementsList.vue
+3       3       src/components/common/dynamic-form/DynamicRequirementsForm.vue
+2       2       src/components/companies/ui/CompaniesDataForm.vue
+2       2       src/components/companies/views/CompaniesList.vue
+1       1       src/components/contracts/ui/ContractSectionsSummary.vue
+2       2       src/components/contracts/ui/ContractsDataForm.vue
+2       2       src/components/contracts/views/ContractsList.vue
+1       1       src/components/contracts/views/ContractsView.vue
+2       2       src/components/entrances/Entrances.vue
+2       2       src/components/machinery/views/MachineryList.vue
+2       2       src/components/providers/legal-info/Affidavit.vue
+2       2       src/components/providers/legal-info/AfipRegistration.vue
+2       2       src/components/providers/legal-info/Payment.vue
+2       2       src/components/providers/legal-info/Roster.vue
+2       2       src/components/providers/views/ProvidersLegalInfo.vue
+2       2       src/components/providers/views/ProvidersList.vue
+2       2       src/components/providers/views/ProvidersView.vue
+2       2       src/components/sections/views/SectionRequirementsList.vue
+1       1       src/components/staff/documents/AutonomoRegistration.vue
+1       1       src/components/staff/documents/EmployeeRegistration.vue
+1       1       src/components/staff/documents/Paycheck.vue
+2       2       src/components/staff/views/StaffList.vue
+1       1       src/components/staff/views/StaffView.vue
+5       5       src/components/users/ui/UsersDataForm.vue
+2       2       src/components/users/views/UsersList.vue
+1       1       src/components/vehicles/documents/GreenCard.vue
+1       1       src/components/vehicles/documents/Ruta.vue
+1       1       src/components/vehicles/documents/Vtv.vue
+2       2       src/components/vehicles/views/VehiclesList.vue
+1       1       src/components/vehicles/views/VehiclesView.vue
+4       31      src/main.js
+1       1       src/router.js
+2       2       vue.config.js
+ 
+2019-02-20 11:44:58,974 (INFO) eb : Getting version label from git with git-describe
+2019-02-20 11:44:58,985 (DEBUG) ebcli.lib.elasticbeanstalk : Inside get_application_versions api wrapper
+2019-02-20 11:44:58,986 (DEBUG) ebcli.lib.aws : Creating new Botocore Session
+2019-02-20 11:44:58,986 (DEBUG) ebcli.lib.aws : Botocore version: 1.12.86
+2019-02-20 11:44:58,999 (DEBUG) ebcli.lib.aws : Creating new Botocore Client for elasticbeanstalk
+2019-02-20 11:44:59,024 (DEBUG) ebcli.lib.aws : Successfully created session for elasticbeanstalk
+2019-02-20 11:44:59,025 (DEBUG) ebcli.lib.aws : Making api call: (elasticbeanstalk, describe_application_versions) to region: us-west-1 with args:{'VersionLabels': ['app-79d9-190220_114458'], 'ApplicationName': 'Minexus Admin'}
+2019-02-20 11:44:59,370 (DEBUG) ebcli.lib.aws : API call finished, status = 200
+2019-02-20 11:44:59,370 (DEBUG) ebcli.lib.aws : Response: {'ApplicationVersions': [], 'ResponseMetadata': {'HTTPStatusCode': 200, 'RequestId': '4745d424-8e05-478d-8488-a68bcefc9bf0', 'RetryAttempts': 0, 'date': 'Wed, 20 Feb 2019 18:44:58 GMT'}}
+Creating application version archive ""app-79d9-190220_114458"".
+2019-02-20 11:44:59,448 (INFO) eb : Traceback (most recent call last):
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/ebcli/core/ebrun.py"", line 62, in run_app
+    app.run()
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/cement/core/foundation.py"", line 797, in run
+    return_val = self.controller._dispatch()
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/cement/core/controller.py"", line 472, in _dispatch
+    return func()
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/cement/core/controller.py"", line 478, in _dispatch
+    return func()
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/ebcli/core/abstractcontroller.py"", line 94, in default
+    self.do_command()
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/ebcli/controllers/deploy.py"", line 78, in do_command
+    staged=self.staged, timeout=self.timeout, source=self.source)
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/ebcli/operations/deployops.py"", line 59, in deploy
+    build_config=build_config
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/ebcli/operations/commonops.py"", line 522, in create_app_version
+    version_label, source_control, staged=staged)
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/ebcli/operations/commonops.py"", line 711, in _zip_up_project
+    ignore_files = fileoperations.get_ebignore_list()
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/ebcli/core/fileoperations.py"", line 848, in get_ebignore_list
+    ignore_list = [f for f in spec.match_tree(get_project_root())]
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/ebcli/core/fileoperations.py"", line 848, in <listcomp>
+    ignore_list = [f for f in spec.match_tree(get_project_root())]
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/pathspec/pathspec.py"", line 107, in match_files
+    file_map = util.normalize_files(files, separators=separators)
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/pathspec/util.py"", line 178, in normalize_files
+    for path in files:
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/pathspec/util.py"", line 39, in iter_tree
+    for file_rel in _iter_tree_next(os.path.abspath(root), '', {}):
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/pathspec/util.py"", line 74, in _iter_tree_next
+    for file_rel in _iter_tree_next(root_full, node_rel, memo):
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/pathspec/util.py"", line 74, in _iter_tree_next
+    for file_rel in _iter_tree_next(root_full, node_rel, memo):
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/pathspec/util.py"", line 74, in _iter_tree_next
+    for file_rel in _iter_tree_next(root_full, node_rel, memo):
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/pathspec/util.py"", line 74, in _iter_tree_next
+    for file_rel in _iter_tree_next(root_full, node_rel, memo):
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/pathspec/util.py"", line 74, in _iter_tree_next
+    for file_rel in _iter_tree_next(root_full, node_rel, memo):
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/pathspec/util.py"", line 74, in _iter_tree_next
+    for file_rel in _iter_tree_next(root_full, node_rel, memo):
+  File ""/home/franciscohanna92/.local/lib/python3.5/site-packages/pathspec/util.py"", line 69, in _iter_tree_next
+    node_stat = os.stat(node_full)
+FileNotFoundError: [Errno 2] No such file or directory: '/home/franciscohanna92/Proyectos/minexus/admin-app/node_modules/terser-webpack-plugin/node_modules/acorn-dynamic-import/node_modules/.bin/acorn'
+ 
+2019-02-20 11:44:59,448 (INFO) eb : FileNotFoundError - [Errno 2] No such file or directory: '/home/franciscohanna92/Proyectos/minexus/admin-app/node_modules/terser-webpack-plugin/node_modules/acorn-dynamic-import/node_modules/.bin/acorn'"
+AWS Elastic Beanstalk	"Re: eb deploy returns ERROR: FileNotFoundError
+Hi minexus,
+
+Sorry you are unable to deploy with eb deploy.
+
+It's hard to tell what the problem is, however, can you tell me what kind of a file /home/franciscohanna92/Proyectos/minexus/admin-app/ node_modules/terser-webpack-plugin/node_modules/acorn-dynamic-import/node_modules/.bin/acorn is?
+
+Is it a symlink, and if so, does it point to anything?
+
+Thanks,
+Rahul."
+AWS Elastic Beanstalk	"Re: eb deploy returns ERROR: FileNotFoundError
+Hi minexus,
+
+Please let me know if the upgrade to 3.14.13 fixes your problem.
+
+Thanks,
+Rahul."
+AWS Elastic Beanstalk	"Re: eb deploy returns ERROR: FileNotFoundError
+Likely a dangling symlinks error fixed by upgrade of dependency (pathspec)"
+AWS Elastic Beanstalk	"Files Lost on Reboot
+Hello. I am relatively new to AWS but have a couple of EC2 instances deployed with Elastic Beanstalk running Wordpress where I have installed the MySQL database on a RDS instance. The problem I am having is every time I have to reboot the instance for some reason it seems to revert to old versions of files and/or I lose some files entirely. I am forced to upload files from a local backup to get my site back online with the current content. 
+
+So my question is: is this normal behavior? I am wondering with EB if it is redeploying the Running Version image I last uploaded by default on reboot or if there is something else going on. If it is the latter, how can I go about finding the files that are either missing or have been replaced by old versions?
+
+Thank you."
+AWS Elastic Beanstalk	"""eb deploy"" does not consider environment variables since 3.14.11
+Hi everyone!
+
+We got problems with our continuous deployment and it seems to be related to the new release. We got the following output:
+
+$ eb use XXX
+WARNING: Git is in a detached head state. Using branch ""default"".
+WARNING: Git is in a detached head state. Using branch ""default"".
+ERROR: CredentialsError - Operation Denied. You appear to have no credentials
+
+
+The build was running with environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY set.
+
+These variables are expected to override any configuration as documented here:
+https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
+
+Seems to be a bug, doesn't it?
+
+Cheers,
+
+Christopher"
+AWS Elastic Beanstalk	"Re: ""eb deploy"" does not consider environment variables since 3.14.11
+Hi christopher-cp ,
+
+I am curious to know if you are continuing to see the problem. I am unable to reproduce the problem. Specifically, I have been able to verify that:
+1. The `--profile` argument takes precedence over everything else
+2. The environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` take precedence over everything else except `--profile` (that is, eb use --profile PROFILE` will disregard the env. vars.)
+
+I am curious to know what `eb use --debugboto` shows you? Which profile exactly do you see requests being attempted with? You can determine this through a find operation inside the terminal on the substring ""AKIA"".
+
+Thanks,
+Rahul."
+AWS Elastic Beanstalk	"Re: ""eb deploy"" does not consider environment variables since 3.14.11
+Hi Rahul,
+
+thanks for your message!
+
+Let me show you our deploy script (we use Gitlab-CI) first:
+
+    - pip install awsebcli
+    - mkdir -p ~/.aws
+    - echo '[profile eb-cli]' >> ~/.aws/config
+    # bug start: due to a bug introduced in awsebcli 3.14.11
+    - echo ""aws_access_key_id = $AWS_ACCESS_KEY_ID"" >> ~/.aws/config
+    - echo ""aws_secret_access_key = $AWS_SECRET_ACCESS_KEY"" >> ~/.aws/config
+    # bug end
+    - eb use XXX
+    - eb deploy
+
+
+As you can see we don't use the ""--profile"" flag. But: there is a profile name in "".elasticbeanstalk/config.yml"" (key: ""global.profile""). I guess this must also be the reason why we need to create a "".aws/config"". Does the property have the highest priority? Is it handled like ""--profile""?
+
+Cheers,
+
+Christopher"
+AWS Elastic Beanstalk	"Re: ""eb deploy"" does not consider environment variables since 3.14.11
+Thanks for your response, and for sharing further details with me, Christopher.
+
+1. The bug you are experiencing introduced in 3.14.11 was unintended. We were trying to fix another credential-related problem (where the `--profile` argument wasn't respected in the presence of env. vars.). I apologize that it has caused your CI system to fail.
+
+2. The EBCLI's behaviour is to use the value for `profile` present in .elasticbeanstalk/config.yml even if environment variables for the same are available. During (and only during) `eb init`, this gets set to `eb-cli` by the EBCLI if a `--profile` is not explicitly passed. This subsequently gets set in .elasticbeanstalk/config.yml as the global profile for subsequent use (for instance, during `eb use`).
+
+3. The fix for the bug should be that the EBCLI not create a `eb-cli` credential pair when env. vars. for the access ID and secret key are available during `eb init`. This change shouldn't be a problem, however, it needs to be thought through before being committed to and made.
+
+4. Notwithstanding 3., for the time being, if you intend on using EBCLI 3.14.11, you can bypass the bug by setting the value for profile in .elasticbeanstalk/config.yml to `null` after `eb init`. Is `eb init` something you need to perform time and again on Gitlab-CI? If not, the manual change to .elasticbeanstalk/config.yml should be a one-time thing and hence feasible, even though I wish you didn't have to do it.
+
+Thanks,
+Rahul."
+AWS Elastic Beanstalk	"Re: ""eb deploy"" does not consider environment variables since 3.14.11
+Thanks Rahul for looking into this!"
+AWS Elastic Beanstalk	"Re: ""eb deploy"" does not consider environment variables since 3.14.11
+Hi Christopher,
+
+We've released the fix in 3.14.13. Let me know if the upgrade works.
+
+Thanks,
+Rahul."
+AWS Elastic Beanstalk	"Random deployment failures with source_bundle_final.zip missing.
+We have a web application written in .NET Core 2.1 and deployed on Windows Server 2016 x64 (c5.large) through CodePipeline. We are experiencing random errors like this;
+
+System.IO.FileNotFoundException: Could not find file 'C:\cfn\ebdata\source_bundle_final.zip'
+
+
+ This is the relevant part of the AWSDeployment.log;
+
+2019-02-26 13:00:08,983 INFO 1 AWSBeanstalkCfnDeployApp.DeployApp - Reading configuration from c:\Program Files\Amazon\ElasticBeanstalk\config\containerconfiguration
+2019-02-26 13:00:09,275 ERROR 1 AWSBeanstalkCfnDeploy.DeploymentUtils - Exception during deployment.
+Microsoft.Web.Deployment.DeploymentDetailedException: Object of type 'package' and path 'C:\cfn\ebdata\source_bundle_final.zip' cannot be created.  Learn more at: http://go.microsoft.com/fwlink/?LinkId=221672#ERROR_EXCEPTION_WHILE_CREATING_OBJECT. ---> Microsoft.Web.Deployment.DeploymentException: The Zip package 'C:\cfn\ebdata\source_bundle_final.zip' could not be loaded. ---> System.IO.FileNotFoundException: Could not find file 'C:\cfn\ebdata\source_bundle_final.zip'.
+   at Microsoft.Web.Deployment.NativeMethods.RaiseIOExceptionFromErrorCode(Win32ErrorCode errorCode, String maybeFullPath)
+   at Microsoft.Web.Deployment.FileStreamEx.CreateInstance(String path, FileMode fileMode, FileAccess fileAccess, FileShare fileShare, Nullable`1 fileLength)
+   at Microsoft.Web.Deployment.ZipFile.Load()
+   at Microsoft.Web.Deployment.ZipPackageProvider..ctor(DeploymentProviderContext providerContext, DeploymentBaseContext baseContext, String path)
+   --- End of inner exception stack trace ---
+   at Microsoft.Web.Deployment.ZipPackageProvider.GetAttributes(DeploymentAddAttributeContext addContext)
+   at Microsoft.Web.Deployment.DeploymentObject.EnsureValidAttributes()
+   --- End of inner exception stack trace ---
+   at Microsoft.Web.Deployment.DeploymentManager.CreateObjectPrivate(DeploymentProviderContext providerContext, DeploymentBaseOptions baseOptions, DeploymentObject sourceObject, String serverVersion)
+   at Microsoft.Web.Deployment.DeploymentManager.CreateObject(DeploymentProviderOptions providerOptions, DeploymentBaseOptions baseOptions)
+   at Microsoft.Web.Deployment.DeploymentManager.CreateObject(String provider, String path, DeploymentBaseOptions baseOptions)
+   at AWSBeanstalkCfnDeploy.DeploymentUtils.deployPackage(Container container, Boolean sync) in d:\Jenkins\jobs\build-EBDPT-IISCore-V1\workspace\AWSBeanstalkCfnDeploy\DeploymentUtils.cs:line 106
+   at AWSBeanstalkCfnDeploy.DeploymentUtils.UpdateApplicationVersion(Container container, Boolean sync) in d:\Jenkins\jobs\build-EBDPT-IISCore-V1\workspace\AWSBeanstalkCfnDeploy\DeploymentUtils.cs:line 56
+2019-02-26 13:00:09,343 ERROR 1 AWSBeanstalkCfnDeploy.DeploymentUtils - Unexpected Exception: System.Exception: Exception during deployment. ---> Microsoft.Web.Deployment.DeploymentDetailedException: Object of type 'package' and path 'C:\cfn\ebdata\source_bundle_final.zip' cannot be created.  Learn more at: http://go.microsoft.com/fwlink/?LinkId=221672#ERROR_EXCEPTION_WHILE_CREATING_OBJECT. ---> Microsoft.Web.Deployment.DeploymentException: The Zip package 'C:\cfn\ebdata\source_bundle_final.zip' could not be loaded. ---> System.IO.FileNotFoundException: Could not find file 'C:\cfn\ebdata\source_bundle_final.zip'.
+   at Microsoft.Web.Deployment.NativeMethods.RaiseIOExceptionFromErrorCode(Win32ErrorCode errorCode, String maybeFullPath)
+   at Microsoft.Web.Deployment.FileStreamEx.CreateInstance(String path, FileMode fileMode, FileAccess fileAccess, FileShare fileShare, Nullable`1 fileLength)
+   at Microsoft.Web.Deployment.ZipFile.Load()
+   at Microsoft.Web.Deployment.ZipPackageProvider..ctor(DeploymentProviderContext providerContext, DeploymentBaseContext baseContext, String path)
+   --- End of inner exception stack trace ---
+   at Microsoft.Web.Deployment.ZipPackageProvider.GetAttributes(DeploymentAddAttributeContext addContext)
+   at Microsoft.Web.Deployment.DeploymentObject.EnsureValidAttributes()
+   --- End of inner exception stack trace ---
+   at Microsoft.Web.Deployment.DeploymentManager.CreateObjectPrivate(DeploymentProviderContext providerContext, DeploymentBaseOptions baseOptions, DeploymentObject sourceObject, String serverVersion)
+   at Microsoft.Web.Deployment.DeploymentManager.CreateObject(DeploymentProviderOptions providerOptions, DeploymentBaseOptions baseOptions)
+   at Microsoft.Web.Deployment.DeploymentManager.CreateObject(String provider, String path, DeploymentBaseOptions baseOptions)
+   at AWSBeanstalkCfnDeploy.DeploymentUtils.deployPackage(Container container, Boolean sync) in d:\Jenkins\jobs\build-EBDPT-IISCore-V1\workspace\AWSBeanstalkCfnDeploy\DeploymentUtils.cs:line 106
+   at AWSBeanstalkCfnDeploy.DeploymentUtils.UpdateApplicationVersion(Container container, Boolean sync) in d:\Jenkins\jobs\build-EBDPT-IISCore-V1\workspace\AWSBeanstalkCfnDeploy\DeploymentUtils.cs:line 56
+   --- End of inner exception stack trace ---
+   at AWSBeanstalkCfnDeploy.DeploymentUtils.UpdateApplicationVersion(Container container, Boolean sync) in d:\Jenkins\jobs\build-EBDPT-IISCore-V1\workspace\AWSBeanstalkCfnDeploy\DeploymentUtils.cs:line 71
+2019-02-26 13:00:09,344 ERROR 1 AWSBeanstalkCfnDeployApp.DeployApp - Deployment failed: Unexpected Exception
+2019-02-26 13:00:09,345 INFO 1 AWSBeanstalkCfnDeployApp.DeployApp - Event [INFO]: Started Application Update
+2019-02-26 13:00:09,345 INFO 1 AWSBeanstalkCfnDeployApp.DeployApp - Event [ERROR]: Deployment Failed: Unexpected Exception
+
+
+A retried deployment would normally succeed.
+
+This is our aws-windows-deployment-manifest.json;
+
+{
+    ""manifestVersion"": 1,
+    ""deployments"": {
+  
+      ""aspNetCoreWeb"": [
+        {
+          ""name"": ""app"",
+          ""parameters"": {
+            ""appBundle"": ""."",
+            ""iisPath"": ""/"",
+            ""iisWebSite"": ""Default Web Site""
+          }
+        }
+      ]
+    }
+  }"
+AWS Elastic Beanstalk	"Elastic Beanstalk is auto-generating insecure (open SSH) Security Groups
+TLDR: Elastic Beanstalk is auto-generating insecure Security Groups that accept SSH requests from all IPs. This happens every time I create an environment within a VPC, despite the VPCs security group that limits ssh access.
+
+I currently have a single subnet VPC (see ""Scenario 1: VPC with a Public Subnet Only"") created with a custom security group attached that locks down the inbound SSH requests to only accept my IP address. It looks like:
+
+SSH | TCP | 22 | 12.34.56.78/32
+
+
+When I create a new environment with my VPC, or when I rebuild an existing environment in Elastic Beanstalk it appears that a new Security Group is created specifically for this environment. Question 1:: Why is this happening? What is the purpose of this environment-specific Security Group?
+
+Since my VPC already has a security group, all instances appear to now have two security groups. One from the VPC and the auto-generated environment security group. Attempting to remove the auto-generated environment security group in Elastic Beanstalk seems to have no-effect - it just re-adds itself.
+
+Now the real kicker is the auto-generated environment security group has the following inbound rules:
+
+SSH | TCP | 22 | 0.0.0.0/0
+HTTP | TCP | 80 | 0.0.0.0/0
+
+
+This nullifies all the SSH and HTTP rules I added to the VPCs security group, opening up my instance to everyone. It appears I can edit this auto-generated security group to remove this inbound rules, but every time I create a new environment, or rebuild an existing one a new auto-generated environment security group is created with these rules again. This make securing my environment a very difficult game of whack-a-mole. Surely I'm missing something?
+
+Question 2: Is this expected behavior? Is this a bug? What's the purpose? How do I set secure firewall rules without having to rewrite them every time I create or rebuild a new environment?
+
+Thanks,
+David
+
+Edited by: David on Apr 28, 2014 12:02 PM"
+AWS Elastic Beanstalk	"Re: Elastic Beanstalk is auto-generating insecure (open SSH) Security Groups
+NOTE: this has now been superceeded by the option setting SSHSourceRestriction from here:
+http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options.html
+
+Hello there,
+
+To answer your questions:
+1.  This is a feature in Elastic Beanstalk. If you specify a SSH keypair in your Beanstalk environment, the security group you are referring to will be generated.
+
+2.  The solution to suppress this behaviour is to:
+Set up your elasticbeanstalk envionment without setting the SSH key in the web console, this will prevent the security group in question from being created with the default rule allowing SSH from 0.0.0.0/0, which is of special concern on EC2 based environments as it exposes SSH to the entire Internet.
+
+Then the SSH setup can be done using ebextensions. The ebextensions config file to do this is:
+
+option_settings:
+  - namespace: aws:cloudformation:template:resource:property
+    resource_name: AWSEBAutoScalingLaunchConfiguration
+    option_name: KeyName
+    value: Name of the SSH key
+
+
+Just replace ""Name of the SSH key"" with the name of the SSH key.
+
+For more information on .ebextensions config files, please see:
+http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customize-containers-ec2.html
+
+Edited by: BillyK@AWS on Apr 30, 2014 11:15 AM
+
+Edited by: BillyK@AWS on Apr 30, 2014 11:16 AM
+
+Edited by: Iain@AWS on Oct 21, 2014 4:07 PM
+
+Edited by: Iain@AWS on Oct 21, 2014 4:08 PM"
+AWS Elastic Beanstalk	"Re: Elastic Beanstalk is auto-generating insecure (open SSH) Security Groups
+Perfect, thanks!"
+AWS Elastic Beanstalk	"Re: Elastic Beanstalk is auto-generating insecure (open SSH) Security Groups
+For the SSH part I recommend this:
+setting {
+    namespace = ""aws:autoscaling:launchconfiguration""
+    name      = ""SSHSourceRestriction""
+    value     = ""tcp, 22, 22, ${var.bastion_sg_id}""
+}
+
+But what about the port 80? Still totally open...
+Any suggestion?
+
+Edited by: Felipe on Feb 14, 2018 8:33 AM"
+AWS Elastic Beanstalk	"Re: Elastic Beanstalk is auto-generating insecure (open SSH) Security Groups
+Is there a way to call the Keyname value through EBS setting? That way, it will allow us to move the build around to different region for a different project.
+
+Is there a way to call the Keyname value through EBS setting? That way, it will allow us to move the build around to different region for a different project.
+Edited by: rycardo on Jun 13, 2018 12:15 PM"
+AWS Elastic Beanstalk	"Re: Elastic Beanstalk is auto-generating insecure (open SSH) Security Groups
+while we now have the SSHSourceRestriction the sec groups seems to always get created no matter if an SSH key is spec'ed or not.
+
+and the problem persists that the other ports are unrestricted and there is no (or i have not found them) means to limit them w/o 
+ - diving into mod'ing the beanstalk cloudformation scripts OR
+ - putting restriction on the SGs in a post process
+
+modding via CF works like so: 
+# contents of file file .ebextensions/10-limit-sg.config
+Resources:
+  AWSEBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: adapted by tom
+      SecurityGroupIngress:
+      - SourceSecurityGroupId: sg-02fb3c75aea871cf8 
+        IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+      - SourceSecurityGroupId: sg-02fb3c75aea871cf8 
+        IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+      SecurityGroupEgress:
+      - DestinationSecurityGroupId: sg-02fb3c75aea871cf8 
+        IpProtocol: -1
+        FromPort: -1
+        ToPort: -1
+
+
+note 
+1. that the SG i used here has no in/out bound rules, so basically is a no-op as i do all the config in my own created managed SGs that i add to the EB ENV anyhow
+2. u must redefine the rules for the ports with smth., you cant remove or set either of the rule lists to empty []
+
+Edited by: tom-at-mdm-project on Feb 26, 2019 7:11 AM"
+AWS Elastic Beanstalk	"Please add ssl support for single instances (without load balancer)
+AWS Team, you are creating really amazing stuff with all that little services. It's really awesome, but, why are you not able to manage ssl protected single instances for elastic beanstalk? It cannot be that hard for you guys.
+
+There are so many devs which only want to host a prototype or a small project which probably will never have the need to use a load balancer. Most people just add it to have easy ssl support. Thats the reason for extra 20$ per month... per APP(!). Thats not worth it. The majority of my costs is just that not needed load balancer.
+
+There are some ""solutions"" with .ebextensions but it's very dirty and did not work and it's not the aws way to add ssl.
+
+I will move my current beanstalk infrastructure to a small cheap vserver, which supports letsencrypt out of the box until there is a way to get affortable ssl for small beanstalk projects.
+
+Thanks for reading,  Alex"
+AWS Elastic Beanstalk	"Re: Please add ssl support for single instances (without load balancer)
+Hey Alex,
+
+what do you mean with 
+
+lefieber wrote:
+There are some ""solutions"" with .ebextensions but it's very dirty and did not work and it's not the aws way to add ssl.
+
+This is exactly the way you should do it and how many others (like me) do it (in case you have a single instance). For such cases there is a .ebextensions folder. If you move your current beanstalk infrastructure to a small cheap vserver, you have to do it the same way? :P"
+AWS Elastic Beanstalk	"Re: Please add ssl support for single instances (without load balancer)
+What I mean is, that a lot of people use AWS because it's easy. You just deploy your app and its running, without having to configure a server. To do it with .ebextensions is not the easy way I like to have, when I am using a service like Elastic Beanstalk.
+You can have ssl by just clicking around, but with extra cost of 20/25$ per month. Why not without the load balancer?
+
+No I dont have to do the ""same"". There is Plesk and I just can add an SSL by one click and it's done. And the VServer costs me 3$ per month."
+AWS Elastic Beanstalk	"Elastic Beanstalk Single Instance Keep IP Adress
+Hello,
+
+I have an Elastic Beanstalk single instance running without using a load balancer. The EC2 instance is automatically assigned an Elastic IP. I need the IP for my customers and therefore it must remain permanently.
+
+1. Is it possible to keep the IP even if I rebuild the environment.
+
+2. Is it possible to switch the IP to other Elastic Beanstalk instances?
+
+3. Is it possible to switch the IP later also in front of a network load balancer?
+
+I am grateful for any help"
+AWS Elastic Beanstalk	"Re: Elastic Beanstalk Single Instance Keep IP Adress
+Nobody?"
+AWS Elastic Beanstalk	"Elastic Beanstalk capacity rules created are always ""insufficent_data""
+I've got a health check URL configured in configuration > load balancer > process
+
+I want instances that fail this check to be removed from my environment.
+
+My configuration > auto scaling group is set to load balanced, min 1, max 2.
+
+I've got a scale trigger of unHealthyHostCount (max, count, period 1, duration 2, upper 0, scale up 1, lower 1, scale down -1).
+
+Per https://forums.aws.amazon.com/thread.jspa?messageID=873866#873866 I have set the health check type to 'ELB' e.g. find the ELB on https://eu-west-1.console.aws.amazon.com/ec2/autoscaling/home and change type to ""ELB""
+
+This creates a rule (that I can see via the cloudwatch console) that is always INSUFFICIENT_DATA no matter if the health check passes or fails 
+If I edit this rule by choosing the target group and load balencer manually (to match those created by Elastic Beanstalk) then everything works correctly.
+
+I must have missed something, because this seems a fairly nasty bug otherwise ?"
+AWS Elastic Beanstalk	"Define S3 Bucket for LoadbalancerV2 in .ebextensions
+Hi,
+
+try to create an S3 Bucket for the logfiles of an LoadbalancerV2 by a Cloudformation Template in the .ebextensions Folder, deployed with the EB CLI.
+
+I have following files:
+alb_listener.config which is defining the balancer rules:
+option_settings:
+  aws:elasticbeanstalk:environment:
+    LoadBalancerType: application
+  aws:elbv2:listener:80:
+    DefaultProcess: http
+    ListenerEnabled: 'true'
+    Protocol: HTTP
+    Rules: socket
+  aws:elasticbeanstalk:environment:process:http:
+    Port: '80'
+    Protocol: HTTP
+  aws:elbv2:listenerrule:socket:
+    PathPatterns: /ws/*
+    Priority: 1
+    Process: admin
+  aws:elasticbeanstalk:environment:process:admin:
+    Port: '5000'
+    Protocol: HTTP
+ 
+
+Also I have the following file ""logbucket.config"" for defining the s3 bucket and the link from the balancer to the bucket:
+Resources:
+  AWSEBV2LoadBalancer:
+    Properties:
+      LoadBalancerAttributes:
+        - Key: 'idle_timeout.timeout_seconds'
+          Value: 60
+        - Key: 'access_logs.s3.enabled'
+          Value: 'true'
+        - Key: 'access_logs.s3.bucket'
+          Value: {Ref: elbLogBucket}
+    Type: ""AWS::ElasticLoadBalancingV2::LoadBalancer""
+ 
+  LogsBucketPolicy:
+    Type: ""AWS::S3::BucketPolicy""
+    Properties:
+      Bucket:
+        Ref: ""elbLogBucket""
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:PutObject
+              - s3:PutObjectAcl
+            Effect: Allow
+            Principal: ""*""
+            Resource:
+              Fn::Join:
+                - """"
+                - - ""arn:aws:s3:::""
+                  - Ref: ""elbLogBucket""
+                  - /*
+
+  elbLogBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Join:
+          - ""-""
+          - - Fn::GetOptionSetting:
+               OptionName: log_bucket_name
+            - Fn::GetOptionSetting:
+                OptionName: AWS_IDENTIFIER
+
+
+Defining the following Principal: ""*"" is a problem, because, this will create a public bucket.
+So I tried to create a service role with the policy for the load balancer, to access the bucket:
+Resources:
+  AWSEBV2LoadBalancer:
+    Properties:
+      LoadBalancerAttributes:
+        - Key: 'idle_timeout.timeout_seconds'
+          Value: 60
+        - Key: 'access_logs.s3.enabled'
+          Value: 'true'
+        - Key: 'access_logs.s3.bucket'
+          Value: {Ref: elbLogBucket}
+    Type: ""AWS::ElasticLoadBalancingV2::LoadBalancer""
+ 
+  LogsBucketRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: logBucketRole
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS:
+                { Ref: AWSEBV2LoadBalancer }
+            Action:
+              - sts:AssumeRole
+      Path: ""/""
+  LogsBucketPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: allow-access-to-s3-load-balancer-log-bucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+            - s3:PutObject
+            - s3:PutObjectAcl
+            Resource: {Ref: elbLogBucket}
+      Roles:
+        - { Ref: LogsBucketRole}
+  LogsBucketProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: ""/""
+      Roles:
+        - {Ref: LogsBucketRole}
+      InstanceProfileName: logBucketProfile
+ 
+ 
+  elbLogBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Join:
+          - ""-""
+          - - Fn::GetOptionSetting:
+               OptionName: log_bucket_name
+            - Fn::GetOptionSetting:
+                OptionName: AWS_IDENTIFIER
+
+
+That ends in following error:
+2019-02-25 10:51:54    ERROR   Service:AmazonCloudFormation, Message:Requires capabilities : [CAPABILITY_NAMED_IAM]
+
+
+I tried to find a way, to enable role creation for eb deploy command, but there is not an argument for that.
+How can I restrict the access rights of the bucket with a policy, by using the eb cli?"
+AWS Elastic Beanstalk	"Possible to use HTTP health check with Network Load Balancer?
+When I create an NLB manually from EC2 console, I can use an HTTP health check.
+
+But when Beanstalk creates an NLB, it only seems to allow TCP health check... which means I can't use a /health endpoint"
+AWS Elastic Beanstalk	"install SSL certificate on AWS elastic beanstalk nginx node.js webserver
+Hi,
+
+I have a EC2 Linux server which I setup with Elastic Beanstalk. It is configured to run node.js on an nginx webserver. I'm trying to install an SSL certificate so I can run it with https. I'm using certbot to install a certificate from let's encrypt. I keep getting this error:
+ - The following errors were reported by the server:
+
+   Domain: www.ccss.cf
+   Type:   unauthorized
+   Detail: Invalid response from
+http://www.ccss.cf/.well-known/acme-challenge/YX7cun6t05WcoJlMXTRBUGUm5Ul3nYajnm6C4RXLRMI
+http://35.177.35.18: ""<!DOCTYPE html>\n<html lang=\""en\"">\n<head>\n<meta
+   charset=\""utf-8\"">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot
+   GET /.well-known/""
+
+   To fix these errors, please make sure that your domain name was
+   entered correctly and the DNS A/AAAA record(s) for that domain
+   contain(s) the right IP address.
+
+Could someone help. Where am I going wrong?"
+AWS Elastic Beanstalk	"Elastic Beanstalk immutable deployments are impacting service uptime
+Hello. I am working with a number of Node JS applications on the Elastic Beanstalk platform. We have been using immutable deployments to ensure that the uptime of the services are not impacted. It has been my understanding based on the documentation available that this is the best way to do zero downtime deployments on the Elastic Beanstalk platform. In practice however we have noticed that services dependent on the service being deployed will sometimes receive 500 codes for brief periods while the deployment is happening. I'm basing my understanding of immutable deployments on the documentation  here: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environmentmgmt-updates-immutable.html. Is there anywhere else I can go to read more about immutable deployments? I understand that one option here is to switch to Blue/Green deployments via DNS switching but for starters I would really like to just understand what the problem is with immutable deployments. And as there are not automated ways to do Blue/Green deployments out of the box with EB, I am trying to avoid the development time associated with switching to that strategy if possible."
+AWS Elastic Beanstalk	"Beanstalk Auto Scaling Group terminating healthy instance during deployment
+Hello,
+
+We are running several Elastic Beanstalk apps doing immutable deploys, currently with just one instance in each environment (auto scaling group set to min: 1, max: 1). Just in the past week, we've suddenly started having unexpected downtime during our deploys, and it appears to be because the EB permanent auto scaling group is terminating the new instances as soon as they become healthy and are attached. This happens about the same time as the old healthy instance is terminated, which results in downtime. The auto scaling group sees that there are 0 instances running in the group, and finally starts up another instance which ends the downtime when it becomes healthy.
+
+It looks like the auto scaling group is terminating instances in an attempt to balance across AZs or to react to our Cloudwatch Alarms. Is there any way to have it ignore these triggers during Beanstalk deployments, or at least wait to take any actions until the deployment has completed? We pretty much never want the autoscaling group to do anything other than handle the immutable deploy while a new version is being applied.
+
+These are the sort of logs we're seeing from EB and the auto scaling groups:
+
+Beanstalk:
+2019-02-21 15:54:52 UTC-0500	INFO	Added instance [i-05d15284f80fa99b4] to your environment.
+...
+2019-02-21 15:56:10 UTC-0500	INFO	Adding new instance(s) (i-05d15284f80fa99b4) to the load balancer.
+2019-02-21 15:56:10 UTC-0500	INFO	Waiting for instance(s) (i-05d15284f80fa99b4) to pass health checks.
+...
+2019-02-21 16:05:13 UTC-0500	INFO	Detached new instance(s) from temporary auto scaling group awseb-e-iutxnnjwpw-immutable-stack-AWSEBAutoScalingGroup-1X43Z0Q5MYS7D.
+2019-02-21 16:05:17 UTC-0500	INFO	Attached new instance(s) to the permanent auto scaling group awseb-e-iutxnnjwpw-stack-AWSEBAutoScalingGroup-WD1Z7UVFT698.
+2019-02-21 16:05:44 UTC-0500	INFO	Starting post-deployment configuration on new instances.
+2019-02-21 16:05:52 UTC-0500	INFO	Waiting for post-deployment configuration to complete.
+2019-02-21 16:07:51 UTC-0500	INFO	Added instance [i-094e0d15cd54b45af] to your environment.
+2019-02-21 16:09:51 UTC-0500	INFO	Removed instance [i-05d15284f80fa99b4] from your environment.
+2019-02-21 16:10:19 UTC-0500	INFO	Deployment succeeded. Terminating old instances and temporary Auto Scaling group.
+2019-02-21 16:11:51 UTC-0500	INFO	Removed instance [i-0715ffc6eb20c22b8] from your environment.
+2019-02-21 16:14:51 UTC-0500	INFO	Removed instance [i-094e0d15cd54b45af] from your environment.
+2019-02-21 16:14:51 UTC-0500	INFO	Added instance [i-0adcfc3436bcd6a3d] to your environment.
+
+Auto Scaling Group:
+Description: Attaching an existing EC2 instance: i-05d15284f80fa99b4
+Cause: At 2019-02-21T21:05:17Z an instance was added in response to user request. Keeping the capacity at the new 1.
+
+Description: Terminating EC2 instance: i-05d15284f80fa99b4
+Cause: At 2019-02-21T21:06:42Z instances were launched to balance instances in zones us-west-2a with other zones resulting in more than desired number of instances in the group. At 2019-02-21T21:07:42Z an instance was taken out of service in response to a difference between desired and actual capacity, shrinking the capacity from 3 to 2. At 2019-02-21T21:07:42Z instance i-05d15284f80fa99b4 was selected for termination.
+
+Description: Terminating EC2 instance: i-0715ffc6eb20c22b8
+Cause: At 2019-02-21T21:10:19Z instance i-0715ffc6eb20c22b8 was taken out of service in response to a user request.
+
+Description: Terminating EC2 instance: i-094e0d15cd54b45af
+Cause: At 2019-02-21T21:13:21Z instance i-094e0d15cd54b45af was taken out of service in response to a user request.
+
+Here is another case where healthy instances were being killed during deployment:
+
+Auto Scaling Group:
+Description: Attaching an existing EC2 instance: i-0f2d908f2cd5d6a8d
+Cause: At 2019-02-21T21:05:40Z an instance was added in response to user request. Keeping the capacity at the new 1.
+
+Description: Terminating EC2 instance: i-0f2d908f2cd5d6a8d
+Cause: At 2019-02-21T21:08:46Z a monitor alarm awseb-e-2j83azz6xs-stack-AWSEBCloudwatchAlarmLow-XDUY7PKQ0RDS in state ALARM triggered policy awseb-e-2j83azz6xs-stack-AWSEBAutoScalingScaleDownPolicy-Q2EAHA9M5UIH changing the desired capacity from 2 to 1. At 2019-02-21T21:08:51Z an instance was taken out of service in response to a difference between desired and actual capacity, shrinking the capacity from 2 to 1. At 2019-02-21T21:08:51Z instance i-0f2d908f2cd5d6a8d was selected for termination.
+
+Thanks a bunch!
+-Jeff"
+AWS Elastic Beanstalk	"How to Deploy EBS Internally at Amazon!!!
+Hi Everyone,
+
+I work at Amazon Consumer, in the Finance Department. I am trying to deploy a Flask app internally at Amazon. As I am not a developer, the standard tools of deploying apps, looks really really hard. I hosted demo sites on EBS before, and really love the service.
+
+How can I get started using EBS at Amazon, and control access via LDAP?"
+AWS Elastic Beanstalk	"EB creates a Security Group with ports 80, 22 open; is it needed?
+Whenever I create a new Environment of a single-instance (not load balanced) multiple-container Docker type, EB creates a security group with the same name as the environment, which allows inbound traffic to ports 80 and 22 from 0.0.0.0. This is in addition to the custom security group I specify during environment setup.
+
+If I try to remove the SG from the instances configuration screen (leaving only my custom SG), the update succeeds but the autogenerated SG is not actually removed.
+
+This is a private service and I want its SG to allow access only from select IPs (i.e. from other SGs). So every time I create a new environment, I have to edit this autogenerated security group. And there's a security risk in forgetting to do this someday.
+
+Is there a way to make EB not create this SG? Is it needed for any EB functionality, or is it just a default setup? Can anything stop working because I disable these rules?"
+AWS Elastic Beanstalk	"Re: EB creates a Security Group with ports 80, 22 open; is it needed?
+Hi,
+
+I just had a quick look at this and it seems this is the default setup for when launching with EB:
+
+http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.ec2.html
+
+Search for ""security Group"" and you will see this entry:
+
+Elastic Beanstalk creates a default security group for you. If you are using a legacy container, the security group is elasticbeanstalk-default. If you are using a non-legacy container, then Elastic Beanstalk dynamically creates a security group. You can view the security group name in the EC2 security group box.
+
+Note:
+If you are running your application using a legacy container type, make sure port 80 (HTTP) is accessible from 0.0.0.0/0 as the source CIDR range if you want to enable health checks for your application. For more information about health checks, see Health Checks. To check if you are using a legacy container type, see Why are some container types marked legacy?.
+
+Cheers,
+
+Stooby..."
+AWS Elastic Beanstalk	"Re: EB creates a Security Group with ports 80, 22 open; is it needed?
+I had the same question. My understanding is that if you specify an EC2 key pair in the environment setup, then the auto generated security group has the port 22 open."
+AWS Elastic Beanstalk	"Re: EB creates a Security Group with ports 80, 22 open; is it needed?
+AWS support showed me that the elastic beanstalk extensions also allow the load balancer security group to be specified explicitly, which will replace the TCP:80 0.0.0.0/0 and TCP:443 0.0.0.0/0 rules. 
+
+In a .config file inside .ebextensions you can include
+ - namespace: aws:autoscaling:launchconfiguration
+    option_name: SSHSourceRestriction
+    value: tcp,22,22,127.0.0.1/32
+  - namespace: aws:elbv2:loadbalancer
+    option_name: ManagedSecurityGroup
+    value: sg-12345
+  - namespace: aws:elbv2:loadbalancer
+    option_name: SecurityGroups
+    value: sg-12345,sg-67890
+
+
+Where sg-12345 is the id of the security group you'd like to both attach to the load balancer, and have the autoscaled EC2 instances point to as a security group source. The above options allow for KeyPair to be associated with the EC2 instances if desired. Included also is the option to overrule the TCP:22 0.0.0.0/0 security rule added to each EC2 instance."
+AWS Elastic Beanstalk	"Re: EB creates a Security Group with ports 80, 22 open; is it needed?
+Hi,
+
+I understand you would like to replace default security group with your pre-defined security group for environment. If I misunderstand, please correct me.
+
+Removing the default security group is not possible in Elastic Beanstalk. This is an expected behavior so as to allow SSH access (if selected during environment creation) and HTTP access to the instances.
+
+However, you can always adding additional security groups from the console and using option settings to the Auto Scaling group of your environment. Please reference to these documents[1][2] for more detail. 
+
+Also, even though removing default security group is not allowed, it still can be modified. You can reach this either by modify security group in EC2 console or .ebextensions. You can check out these document for more detail.
+
+Hope above helps you. If you have any further question, please feel free to let me know.
+
+[1] aws:autoscaling:launchconfiguration - https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html#command-options-general-autoscalinglaunchconfiguration
+[2] Configuring Your Environment's EC2 Instances - https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.ec2.html#using-features.managing.ec2.console
+[3] https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customize-containers-format-resources-eb.html
+[4] .ebextensions - https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/ebextensions.html"
+AWS Elastic Beanstalk	"Re: EB creates a Security Group with ports 80, 22 open; is it needed?
+But it raises a new problem:
+
+if the environment need to be finished/rebuilt it get stuck on gray state because the operation tries to delete the attached SG and if these SG are attached to another service/instance/environment will raise the issue."
+AWS Elastic Beanstalk	"How to restore a eb environment that is stuck in grey health
+we have an environment that is stuck in grey health mode. The instance has dependency on rds/security groups. Any operation such as change of environment configuration or application version change is ineffective. The rds instance cannot be deleted, since it is being used by another prod environment.
+
+what can we do to fix this?"
+AWS Elastic Beanstalk	"Re: How to restore a eb environment that is stuck in grey health
+https://forums.aws.amazon.com/thread.jspa?messageID=872639&#872639 about attached SG.
+
+Go to autoscaling configuration, select the autoscaling for your environment and check if there is any instance attached in tab instances. If there is one, select it and in actions menu select the option ""Set to inService"" and wait. If all is OK you can proceed to update environment SG to rebuild or let it in green status."
+AWS Elastic Beanstalk	"Stream logs from each containers to CloudWatch
+Hi. I have Beanstalk Multiple-Docker application.
+I want to stream logs from each containers to separeate CloudWatch groups.  
+
+How I can set up commands for it in Dockerrun.aws.json v2. As far as i know commands docker looks something like this. 
+
+ docker run --log-driver=awslogs \
+             --log-opt awslogs-region=us-east-1 \
+             --log-opt awslogs-group=myLogGroup
+
+
+My Dockerrun.aws.json:
+{
+ ""AWSEBDockerrunVersion"": ""2"",
+ ""containerDefinitions"": [
+   {
+     ""name"": ""web"",
+     ""image"": ""image_url:latest"",
+     ""memory"": 1500,
+     ""essential"": true,
+     ""portMappings"": [
+       {
+         ""hostPort"": 80,
+         ""containerPort"": 3000
+       }
+     ],
+     ""command"": [
+       ""./docker/start.sh""
+     ],
+     ""links"": [
+       ""redis""
+     ]
+   },
+   {
+     ""name"": ""redis"",
+     ""image"": ""redis:5.0.3"",
+     ""portMappings"": [
+       {
+         ""hostPort"": 6379,
+         ""containerPort"": 6379
+       }
+     ],
+     ""memory"": 500
+   },
+   {
+     ""name"": ""sidekiq"",
+     ""image"": ""image_url:latest"",
+     ""essential"": true,
+     ""links"": [
+       ""redis"",
+       ""web""
+     ],
+     ""command"": [
+       ""bundle"",
+       ""exec"",
+       ""sidekiq""
+     ],
+     ""memory"": 300
+   }
+ ]
+}
+
+
+Or may be exist another way to make it?
+
+Edited by: HannaKolesa on Feb 21, 2019 1:49 AM"
+AWS Elastic Beanstalk	"customized wsgi.conf is wiped out if we update any environment variables
+We are using a customized Apache wsgi.conf for a Python/Elastic Beanstalk app. The customizations are necessary because we want to make changes to the VirtualHost containing the WSGI app, such as access control, rewrite rules, etc., and there doesn't appear to be another way to accomplish this.
+
+Following the example of many others here, we use a container command to modify wsgi.conf in the ondeck directory. The command runs during an app deployment and modifies the file; subsequent phases of the deployment copy the file into place and restart apache.
+
+The problem comes if we update the environment configuration via the EB console -- for instance, to change the value of an environment variable. In this case, the change triggers a config deployment, which regenerates wsgi.conf using the new settings, but which does not run any container commands or otherwise provide an obvious way to preserve our changes. We wind up with a vanilla config that does not include any of our customizations. Our only option seems to be to only update configuration variables on a standby environment, and always follow up with an app deployment before swapping URLs, in order to re-customize the apache config.
+
+It would be great if there were a way around this -- e.g., having a way to customize the APACHE_TEMPLATE variable defined in the EB hook configuration, or being able to specify commands to run for a configdeploy, or if the VirtualHost contained an Include directive for loading customer maintained files from a specific directory. Is there a better way to handle this today, or is this just a sign that I finally need to make the leap to OpsWorks or another chef- or puppet-based solution?"
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+mrmaggsy,
+
+are you using .ebextensions to make your changes?
+
+--David"
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+David
+
+Yes, we are using a config file in .ebextensions. The modification step is part of container_commands. The command runs a script, included in our unpacked source bundle, that modifies ""../wsgi.conf"" in place.
+
+container_commands:
+  01_update_apache_config:
+    command: ""scripts/edit-wsgi-config.py""
+
+
+Steven"
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+Hi mrmaggsy,
+Currently when you deploy a new config, your eb-extensions do not run. You'll need to move your option settings into eb-extensions and then do new application deploys to ensure that your customizations always take hold. More details on how to pass option settings in eb-extensions can be found here - http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environment-resources.html
+
+Thanks,
+Dhanvi"
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+Hi DhanviK@AWS,
+
+Is this going to be fixed eventually? I'm running into the same issue. I have the following container command which copies a custom wsgi.conf during deployment:
+
+04_wsgiconf:
+    command: 'cp .ebextensions/wsgi.conf ../wsgi.conf'
+
+
+If I update the environment variables, the custom wsgi.conf is overwritten. To me this seems like a bug since a configuration change shouldn't need a new deployment. This breaks our HTTP to HTTPS redirection which can have serious consequences.
+
+Thanks,
+Amir"
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+Bump!"
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+DhanviK@AWS wrote:
+Hi mrmaggsy,
+Currently when you deploy a new config, your eb-extensions do not run. You'll need to move your option settings into eb-extensions and then do new application deploys to ensure that your customizations always take hold. More details on how to pass option settings in eb-extensions can be found here - http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environment-resources.html
+
+
+We ran into this issue and this is not a workable solution. We use environment variables to pass credentials to the app. Committing these credentials to our source repository where eb-extensions config files are, is huge no-no.
+
+Please fix,
+--Carlos"
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+Is there any hope of resolution to this issue? Is there a more appropriate way to configure WSGI in EB?  The default configuration prevents basic web application functionality, like authorization using the Authorization header. Requiring a redeploy following any configuration change means significant downtime where functionality is broken, and is error prone. Please provide a way to properly configure WSGI in a way that's consistent and reliable."
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+A better solution is to add a new file like ""/etc/httpd/conf.d/wsgi_custom.conf"" that will also be included in the Apache configs. That file will not get wiped when changing settings.
+
+We have this in our .ebextensions
+
+files:
+  ""/etc/httpd/conf.d/wsgi_custom.conf"":
+    mode: ""000644""
+    owner: root
+    group: root
+    content: |
+      WSGIPassAuthorization On"
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+This isn't all that helpful either because the virtual host beanstalk creates automatically is what needs to be updated in many cases (like for HTTPS redirection). Unless I'm wrong, the additional file is processed separately and not inside that VirtualHost context."
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+https://gist.github.com/djshen-ponddy/0c44a5d835aad7746518d90c360a1297
+
+I created a script to add a hook to the config update operation.
+This script will be executed after /opt/elasticbeanstalk/hooks/configdeploy/pre/01generate.py
+and will modify the staging wsgi.conf
+
+We can directly modify wsgi.conf in this script, or use apache IncludeOptional to include a directory
+and put our configs in that directory."
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+This is working great for me: https://rickchristianson.wordpress.com/2013/11/02/updating-wsgi-automatically-in-amazon-aws/
+
+Here's the gist in case the URL ever breaks:
+
+container_commands:
+  01_wsgireplace:
+      command: 'cp wsgi.conf ../wsgi.conf'
+
+
+So, you just put your custom wsgi in your root directory (or anywhere you want and modify the cp) and copy it up one level which will be /opt/python/ondeck. When the flip command executes it will copy yours instead of the generated one."
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+Having the same issue with tomcat/apach in ELB. Either env update or app server reboot will wipe any customized settings from the .ebtensions . Very annoying but do not have good solution."
+AWS Elastic Beanstalk	"Re: customized wsgi.conf is wiped out if we update any environment variables
+This one is a tough nut to crack; I had the same problem and set out to solve it.  Part of the problem is that if you try to do it with container_commands, your commands run too late in some cases, and as many have discovered, even when this works (on the second and subsequent deploys), it doesn't help with configuration deployments.
+
+My solution was to use 'files' to install a python script based on the EB's own config hook to /opt/elasticbeanstalk/local/ (you might prefer a different location), and 'commands' (not 'container_commands') to install that python script as a pre-hook to the appdeploy and configdeploy activities, which runs after the stock configuration pre-hook.  These directives are found in an .ebextensions config file.  Here's an example; put whatever you want in wsgi.conf inside MY_APACHE_TEMPLATE:
+
+files:
+  ""/opt/elasticbeanstalk/local/override_wsgi_conf.py"":
+    mode: ""000755""
+    owner: root
+    group: root
+    content: |
+      #!/usr/bin/env python
+      import os
+      import sys
+      sys.path.append(os.path.dirname(
+          os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+      import config
+ 
+      MY_APACHE_TEMPLATE = r'''
+      # Customized wsgi.conf.  If you're seeing this, good!
+ 
+      LoadModule wsgi_module modules/mod_wsgi.so
+      WSGIPythonHome /opt/python/run/baselinenv
+      WSGISocketPrefix run/wsgi
+      WSGIRestrictEmbedded On
+      WSGIPassAuthorization On
+ 
+      <VirtualHost *:80>
+      WSGIScriptAlias / /opt/python/current/app/application.py
+ 
+      <Directory /opt/python/current/app/>
+        Require all granted
+      </Directory>
+ 
+      WSGIDaemonProcess wsgi processes=3 threads=20 display-name=%{GROUP} \
+        python-path=/opt/python/current/app:/opt/python/run/venv/lib64/python2.7/site-packages:/opt/python/run/venv/lib/python2.7/site-packages user=wsgi group=wsgi \
+        home=/opt/python/current/app
+      WSGIProcessGroup wsgi
+      </VirtualHost>
+ 
+      LogFormat ""%h (%{X-Forwarded-For}i) %l %u %t \""%r\"" %>s %b \""%{Referer}i\"" \""%{User-Agent}i\"""" combined
+      '''
+ 
+ 
+      def main():
+          try:
+              WSGI_STAGING_CONFIG = config.get_container_config('wsgi_staging_config')
+              print 'Overriding WSGI configuration in %s' % WSGI_STAGING_CONFIG
+              open(WSGI_STAGING_CONFIG, 'w').write(MY_APACHE_TEMPLATE)
+          except Exception, e:
+              config.emit_error_event(config.USER_ERROR_MESSAGES['badappconfig'])
+              config.diagnostic(""Error generating config during configdeploy/pre: %s""
+                                % str(e))
+              sys.exit(1)
+ 
+ 
+      if __name__ == '__main__':
+          config.configure_stdout_logger()
+          main()
+ 
+commands:
+ 
+  5_app_deploy_dir:
+    command: ""mkdir -p /opt/elasticbeanstalk/hooks/appdeploy/pre""
+  5_config_deploy_dir:
+    command: ""mkdir -p /opt/elasticbeanstalk/hooks/configdeploy/pre""
+ 
+  10_app_deploy_file:
+    command: ""cp -p /opt/elasticbeanstalk/local/override_wsgi_conf.py /opt/elasticbeanstalk/hooks/appdeploy/pre/90_override_wsgi_conf.py""
+ 
+  20_config_deploy_file:
+    command: ""cp -p /opt/elasticbeanstalk/local/override_wsgi_conf.py /opt/elasticbeanstalk/hooks/configdeploy/pre/90_override_wsgi_conf.py""
+
+
+There might be more-elegant ways yet of doing it than what I did here, but this method achieves what I set out to do."
+AWS Elastic Beanstalk	"Server status bouncing between OK and severe constantly
+I've had my Elastic Beanstalk app running for many many months without issue however lately have been seeing some problems without changing anything with regard to app or configuration etc.
+
+Would anyone have any idea what the problem might be?
+
+2019-02-18 16:44:33 UTC+0000 	WARN 	Environment health has transitioned from Ok to Degraded. 20.0 % of the requests are failing with HTTP 5xx.
+2019-02-18 16:38:34 UTC+0000 	INFO 	Environment health has transitioned from Severe to Ok.
+2019-02-18 16:36:34 UTC+0000 	WARN 	Environment health has transitioned from Ok to Severe. 86.2 % of the requests are erroring with HTTP 4xx.
+2019-02-18 03:01:55 UTC+0000 	INFO 	Environment health has transitioned from Severe to Ok.
+2019-02-18 02:59:55 UTC+0000 	WARN 	Environment health has transitioned from Ok to Severe. 89.2 % of the requests are erroring with HTTP 4xx.
+2019-02-18 02:41:56 UTC+0000 	INFO 	Environment health has transitioned from Severe to Ok. 77.8 % of the requests are erroring with HTTP 4xx. Insufficient request rate (108.0 requests/min) to determine application health.
+2019-02-18 02:39:56 UTC+0000 	WARN 	Environment health has transitioned from Ok to Severe. 80.0 % of the requests are erroring with HTTP 4xx.
+2019-02-17 04:12:20 UTC+0000 	INFO 	Environment health has transitioned from Severe to Ok.
+2019-02-17 04:10:20 UTC+0000 	WARN 	Environment health has transitioned from Ok to Severe. 90.2 % of the requests are erroring with HTTP 4xx.
+2019-02-17 03:39:22 UTC+0000 	INFO 	Environment health has transitioned from Severe to Ok.
+2019-02-17 03:37:23 UTC+0000 	WARN 	Environment health has transitioned from Ok to Severe. 87.2 % of the requests are erroring with HTTP 4xx."
+AWS Elastic Beanstalk	"Re: Server status bouncing between OK and severe constantly
+I have this too but my server appears functional. The best answer I think is this one I found on reddit.
+
+https://www.reddit.com/r/aws/comments/8ljyug/aws_elasticbeanstalk_app_health_checks/
+
+from vallejooo
+
+This is common for applications which are public but don't have a lot of ""real"" traffic. Random bots out there scanning AWS's IP space for vulnerable wordpress installations etc. causing lots of 404s, the EB host sees those in its nginx proxy logs and flags the environment health. It doesn't take the node out of service or anything (if you're using autoscaling), it's just annoying. You can work around it with an .ebextension that essentially changes the error logging on the EB host to record the 4xx's as 200, but IMO better to just leave it and know that once you start getting real traffic, the % of requests which are false will be low enough to not trigger the warning. I do wish AWS provided a nice check-box option for disabling this kind of check."
+AWS Elastic Beanstalk	"Elastic Beanstalk terminates instance when deploying new website version
+Hi
+
+I am not sure but it seems that the AWS Elastic Beanstalk is terminating old and starting a new EC2 instance for deployment of my ASP.NET Core website. I deploy the website from Visual Studio directly. This seems to happen only if I log into the instance via remote desktop and install additional software (like notepad++ for reading logs, chrome browser and SQLite Studio to view the database). 
+
+The SQLite is a problem as each time the instance is terminated I loose the database file.
+
+Any hints why this is happening and how to stop this?
+
+Thanks."
+AWS Elastic Beanstalk	"environment specific config
+I have a nodejs application. I'm setting environment variables, e.g. NODE_ENV, via .ebextensions -> option_settings. I'd like to setup a development and production environment. How can I set different environment variables via .ebextensions.  It seems this config applies globally to the application.
+
+I found similar questions in the forum, but the answers were kinda lame. This seems like a pretty important requirement.
+
+I believe the following is a workaround, but I'm not in love with it.
+1. Only set globally applicable environment variables via .ebextensions.
+2. Set environment specific environment variables after deployment via the management console. I don't think a subsequent deployment will delete the custom variables.
+
+Thanks for any advice.
+
+Edited by: BizyMark on Mar 11, 2014 11:10 AM"
+AWS Elastic Beanstalk	"Re: environment specific config
+Hello,
+
+Thank you for posting.
+
+For your information, ebextensions apply at the environment level so you can have a different config file per environment.
+
+http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customize-containers-ec2.html
+
+Regards,
+
+Marcin"
+AWS Elastic Beanstalk	"Re: environment specific config
+Hi Marcin,
+
+Thanks for your response.
+
+I've looked at the link you provided a number of times and I'm not certain how to accomplish what you're suggesting. This doc also refers to the .ebextensions format: http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customize-containers.html
+
+My setup is as follows:
+My Beanstalk Application
+
+development environment
+production environment
+
+
+I have one git repository for both environments and a single .ebextensions/ directory with various configurations e.g. 10.whatever.config, 20.somethingelse.config. This is all working fine, but the .config files seem to get applied to both environments.
+
+If you could provide more details that would be awesome. Thanks,
+
+Mark"
+AWS Elastic Beanstalk	"Re: environment specific config
+Hello Mark. 
+
+You are right. If you deploy the same code base (including the same config file) to both environments, then the same variables will be passed to both environments. 
+
+I'm not aware of any conditional logic that is present within the .ebextensions config files but I'll be happy to research this for you. 
+
+In the meantime, you can always create two code bases for the different environments (with different config files within each). This is actually the way that I would proceed, but if you want to keep everything unified then I can research the issue a bit for you.
+
+Thanks.
+Brandon"
+AWS Elastic Beanstalk	"Re: environment specific config
+I've got a script to deploy new environments.  In the deploy script, I write out a file to .ebextensions with the deploy-specific settings before calling git aws.push to launch the new environment.  Maybe something like that will work for you.
+
+Jon"
+AWS Elastic Beanstalk	"Re: environment specific config
+Conditional logic is something we absolutely need inside .ebextensions file. Actually, when creating multiple environmenets, you actually push the same code. For instance, when using the new worker tier, you often push exactly the same code, and being able to add specific things using conditionals would be handy (I'm thinking here about adding cron task only for the worker tier for instance)."
+AWS Elastic Beanstalk	"Re: environment specific config
+Thanks Brandon,
+
+We use git so development is the develop branch and production is the master branch, having to create more than one repository/codebase for each environment doesn't makes sense and certainly goes against most SCM and deployment pipeline philosophies.
+
+I do think environment specific .ebextensions would be really helpful. Something like 
+.ebextensions/10.shared.config
+.ebextensions/productionEnv/10.justforprod.config
+.ebextensions/development/10.justfordev.config
+
+I believe it's possible to use a combination of .ebextensions and .elasticbeanstalk/optionssettings.production to set some environment specific variables. A Ruby on Rails app seems to support using vars like, RAILS_ENV/RACK_ENV in the hard-coded list of environment variables. For Node, I'm limited to PARAM1-5. It feels really weird to have code like this,
+ 
+if (process.env.PARAM1) { 
+    process.env.NODE_ENV = process.env.PARAM1;
+}
+
+
+There are certainly workarounds, but it feels like this should absolutely be supported in a more native fashion. Thanks."
+AWS Elastic Beanstalk	"Re: environment specific config
+Hello,
+
+You're not really limited to param1-5. You can add whatever environment variables you like via .ebextensions or the management console.
+
+What I'd be interested in is how you would determine if the environment were prod or test. Even in our sample code, we expect that NODE_ENV is changed from production to development or something to change the workflow of your code. 
+
+Also, I'd like to know what you have in the dev/test specific configs. If you do set environment variables, and you're running commands/container_commands, you can always use the test function built into those two things. However, that's really the only conditional logic we have in there. All configs are supposed to run every time with the current design of everything.
+
+Hubert"
+AWS Elastic Beanstalk	"Re: environment specific config
+Thanks for the response Hubert,
+
+You're right, I should probably be setting NODE_ENV external to the .ebextensions config, especially given that there's no easy way to target .ebextensions to a specific environment. Currently, I'm doing this via .elasticbeanstalk/optionsettings.env-name, but I have to do so via PARAM1, since in this context I am limited to PARAM1-5, I realize I have greater flexibility using .ebextensions option_settings. Then, in my server code I'm looking for process.env.PARAM1 and setting NODE_ENV accordingly. Alternatively I might be able to do something like, NODE_ENV=development node server, via the container options, Node Command. I might also try that. I think that I could also just set NODE_ENV via the console and remove it from .ebextensions/option_settings and it will remain unaffected so a console only solution would also work, but that seems like a manual task that I'd forget to do again at some point in the future.
+
+I understand that you don't really want to commit something like NODE_ENV into source control, since it changes based on environment. That being said, if you did support environment specific .ebextensions it would facilitate easier sharing of environment configuration between team members.
+
+Also, I'm doing some nginx configuration overrides by copying files into /etc/nginx/conf.d, using the Files feature of .ebextensions. This works great, but again, I had to work around an issue where I wanted to enact slightly different overrides between development/production, env specific .ebextensions would have been easier.
+
+Regardless, I've managed to work around all of my issues for the time being. Thanks for the help."
+AWS Elastic Beanstalk	"Re: environment specific config
+Logic isn't required IMO, what if we just had the whole config file namespaced based on the EB environment name, and a fall-through for everything that should be done across all environments?
+
+Here's an example:
+
+(Currently we're limited to this)
+packages:
+  yum:
+    git: []
+    gcc: []
+    make: []
+    openssl-devel: []
+  rpm:
+    gm: ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/linux/GraphicsMagick-1.3.19-1.src.rpm
+
+
+But we could be doing this:
+
+development-env:
+  packages:
+    yum:
+      staging-only-package: []
+staging-env,production-env:
+  packages:
+    yum:
+      production-package: []
+default:
+  packages:
+    yum:
+      git: []
+      gcc: []
+      make: []
+      openssl-devel: []
+    rpm:
+      gm: ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/linux/GraphicsMagick-1.3.19-1.src.rpm
+
+
+Edited by: lwansbrough on Jun 10, 2014 2:20 PM"
+AWS Elastic Beanstalk	"Re: environment specific config
+That would definitely be awesome!!"
+AWS Elastic Beanstalk	"Re: environment specific config
+Any news on this? Now that we have cron tasks this can of thing becomes vital!"
+AWS Elastic Beanstalk	"Re: environment specific config
+Also, I'd like to know what you have in the dev/test specific configs. If you do set environment variables, and you're running commands/container_commands, you can always use the test function built into those two things. However, that's really the only conditional logic we have in there. All configs are supposed to run every time with the current design of everything.
+
+Hubert
+
+
+Please give an example.
+How  can I do it for different environments?
+   container_commands:
+      04copyEnv:
+        command: ""wget --no-check-certificate https://s3-us-west-1.amazonaws.com/bellybuds/config/env-$filename -O /var/app/ondeck/.env""
+        env:
+          filename: stage or prod - HOW??"
+AWS Elastic Beanstalk	"Re: environment specific config
++1 I'm interested in this as well. I'd like to use the ebextension 'files' directive to pull in a file from different buckets based upon the EB environment, or even an env variable. Since the 'files' command won't interpolate a url based upon the environments variables, I'd need some way to define EB environment specific ebextension files, or namespaces.
+
+Thanks!
+
+Edited by: richbliss on Oct 2, 2015 2:29 PM"
+AWS Elastic Beanstalk	"Re: environment specific config
+If its possible to get the elasticbeanstalk:environment-name tag value or the environment name then I guess it would be possible to base the choice of environment based on say the presence of ""prod"" or ""dev"" in the environment name.
+
+Then we you create the environment you just need to name it accordingly."
+AWS Elastic Beanstalk	"Re: environment specific config
+This is a huge missing feature."
+AWS Elastic Beanstalk	"Re: environment specific config
+Hi everyone,
+
+I'm starting using AWS beanstalk and came naturally to the same need : having different config for my environments (dev, staging and production).
+After some search and test here is finally what I'm going to do :
+
+I've created my production environment using eb command line and set up all my environment variables via the console the first time.
+
+Once all is ok, I've saved my environment config
+eb config save
+
+Running this command will generate a file under .elasticbeanstalk/saved-configs directory. AND it will also save this file in your beanstalk S3 bucket.
+
+Looking closer at my .gitignore file, I can see that my saved-configs directory will be ignored. Which suit me well because I don't want to store environment variables values in my SCM.
+
+And here I am. I can do the same for my development and staging environments.
+
+One thing that we need to remind is that we need to update our environment config files as soon as we change something : environment, setting, version upgrade,...
+
+But this way of doing things seems to me a good way :
+
+I can define and save specific environment files
+These files are not commited to my SCM
+
+
+Hope this can help somebody."
+AWS Elastic Beanstalk	"Re: environment specific config
+This seems like a solution to your issue: 
+https://blogs.aws.amazon.com/application-management/post/Tx1YHAJ5EELY54J/Using-the-Elastic-Beanstalk-EB-CLI-to-create-manage-and-share-environment-config"
+AWS Elastic Beanstalk	"Re: environment specific config
+hi brandon, have you found a solution for us regarding this? is there a way to conditionally put option_settings in our ebextensions .configs ?
+
+maybe something like 
+test: ''
+
+that we already can use in container_commands after we set environment variables?
+
+Edited by: whallz on Jun 26, 2018 3:43 AM"
+AWS Elastic Beanstalk	"Re: environment specific config
+Running into this issue now.    Surprised there isn't a great solution.   HEre's what I'm doing:
+
+.ebextensions/99-myconfig.yaml.dev
+.ebextensions/99-myconfig.yaml.prod
+
+I have a Makefile with the targets:
+deploy-dev:
+    cp .ebextensions/99-myconfig.yaml.dev .ebextensions/99-myconfig.yaml
+    eb deploy dev-env
+
+deploy-prod:
+    cp .ebextensions/99-myconfig.yaml.prod .ebextensions/99-myconfig.yaml
+    eb deploy prod-env
+
+and in .gitignore:
+.ebextensions/99-myconfig.yaml"
+AWS Elastic Beanstalk	"Re: environment specific config
+hubert@AWS wrote:
+Also, I'd like to know what you have in the dev/test specific configs.
+
+In my case, we're trying to migrate a massive Drupal multisite--170 sites with 170 domains and 170 databases running on a single codebase--from Acquia hosting to AWS.  We also have a number of sites hosted on Pantheon.  Pantheon and Acquia are hosting platforms targeted at Drupal specifically.
+
+Both Acquia and Pantheon provide a three-environment deployment pipeline: dev->test->prod.  Each environment has its own distinct set of databases and CMS-managed media files.  Fresh commits to the master branch in version control automatically deploy to the dev environment.  Then a dashboard button or command line command ships the same code ""forward"" to the test environment and production environment.
+
+In our AWS pilot, we have an RDS instance for databases and an EFS share for the CMS-managed media files.. the Dev & Test environments share an RDS and EFS instance, and production is to have its own distinct RDS and EFS instances.  We're using CodePipeline to implement the deployment pipeline.
+
+I'm using .ebextensions to set up security group ingress rules and to mount the EFS file share to the EC2 containers.  Since the different environments have different EFS filesystems and security groups and so on, I need my .ebextensions configurations to be ""environmentally aware"", so to speak.
+
+We want to use Elastic Beanstalk for the autoscaling functionality and for the managed OS-level updates and so on--to achieve feature-parity with what Acquia/Pantheon are providing us currently (at the cost of roughly 1 full time developer's salary, so there's obvious savings here if we can migrate to AWS).
+
+Our AWS contact is currently researching how to achieve this ""environmental awareness"" and will get back to us next week, but we have to have to decide whether we're going to pay Acquia for another year of hosting by mid-November so... ....
+
+Thanks for listening, Brandon & Hubert  (I know this is 4 years now after this thread was active)"
+AWS Elastic Beanstalk	"Re: environment specific config
+Hi Brian,
+
+What was the answer from your AWS contact?
+What did you decide in the end?
+
+Thanks."
+AWS Elastic Beanstalk	"Re: environment specific config
+Ultimately, the solutions we found were going to be considerably more complicated than the functionality we've been asking about in this thread.
+
+We ended up solving the problem without the desired dynamic .ebextensions functionality, using a combination of solutions:
+a) 'Saved configurations' -- we created one per environment which could then be used to re-apply that environment's settings.  Most notably here were environment variables including an 'EB_ENVIRONMENT' variable which I wrote application code to consider.  I would want to verify that auto-scaling behaved as desired with this approach, but we never got to that point.
+b) We used common security groups to obviate the need for some firewall rules.
+c) We configured a post-deployment shell command which utilized the 'aws' command line utility to deploy a folder from an S3 bucket.  This folder contained per-site-environment include files with configuration including database credentials.  The application code then determined which of these files to include based on the EB_ENVIRONMENT variable and other factors.
+
+This was a stopgap approach we pursued in the interest of time in lieu of a more-proper solution.  We emerged with something that worked, but my group ultimately decided not to go through with the migration due to the amount of work it would take to cut over all of our sites before the deadline with proper verification of success and viable rollback plan, so we didn't further investigate a proper solution.
+
+I think some combination of CloudFormation and/or an off-the-shelf configuration management system like Ansible, Puppet, or Chef would have been the way to solve this properly.
+
+.ebextensions does provide these functions for dynamically referencing AWS resources and attributes: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/ebextensions-functions.html
+These may have been able to ultimately get us where we needed to go, but knowing the right syntax and identifiers to use seemed like it was going to take a lot of time, trial, and error.
+
+Here's a few links I had saved which I thought may be relevant to the Ref/GetAtt functions I linked above. I don't know which of these is truly relevant to that approach:
+https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html
+https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environment-resources.html
+https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/ebextensions-otherkeys.html
+
+Edited by: BrianW on Dec 4, 2018 5:30 AM
+formatting, moved tl;dr summary to the top"
+AWS Elastic Beanstalk	"Re: environment specific config
+Has anyone managed to find a good solution for this?  We are running into this problem where we want to add custom Outputs to some Beanstalk Environments (specifically the AutoScalingGroupName and LoadBalancerFullName) so we can import them in a CloudFormation stack that manages our CloudWatch alarms.  
+
+We need this for LoadBalancerFullName as we have the same code base being deployed to both the app and worker tier environments, and the worker env is single instance.  Because the worker env does not have a load balancer, deployment is failing because Fn::GetAtt is returning undefined.
+
+Would love to find a way to make the load balancer output conditional only when a load balancer exists, or anything to stop the worker env deployment from trying to retrieve a resource that doesn't exist."
+AWS Elastic Beanstalk	"[Critical] Problems Deploying any application version
+Hi guys,
+
+We are hitting a critical problem with one of our main Applications running on top of Elastic Beanstalk on SA Region.
+
+As soon as a new deploy finishes and the new instances gets the ""OK"" state, they immediately switch to ""Severe"" state and deploy start to fail.
+
+On the debugging process, we first suspected of this being a connection issue against a Redis on ElastiCache, one of the first connections our app does. But then we realized we couldn't connect by ssh to the instances, although they continue to write logs on CloudWatch Logs.
+
+The issue happens when running a Managed Update, or a new deploy. We suspect there is some kind of deployment-id limit or so. We had no issues adding more instances to the environment by manually changing AutoScaling Group parameters (changing the ""desired"" from 8 to 16 instances), confirming that it's not a connection limit issue with other components of the system.
+
+Can you help us debugging this issue? Is critical as we cannot make code changes on our application due to this problem.
+
+Please keep us posted.
+Thanks!"
+AWS Elastic Beanstalk	"EC2 Public DNS has changed automatically
+Hello,
+
+I just started exploring AWS for almost two months now. I created/deleted Elastic Beanstalk several times in order for me to familiarize the console and AWS services to build my own webserver. When I finally understood/learned how to manage some of AWS services for my project and was able to upload (using Filezilla) my scripts/application and PuTTY as my CLI as well as the database, I encountered a weird problem while setting up the databases.  The PUBLIC DNS of EC2 has changed without my knowledge. In short, I couldn't connect to EC2 using PuTTy and Filezilla but the EB is healthy=).  When I check my aws environment, the following disappeared/deleted in their directories:
+1. all my php applications/script files [/var/app/current] - deleted
+2. ssl config I added in httpd [/etc/httpd/] - reset and my virtualhost gone!
+3. IP associated to EC2 DNS changed - with new IP
+
+Below are AWS services I have for my project:
+1. Elastic Beanstalk (with PHP & MYSQL)
+2. Classic Elastic Load Balancer
+3. I did not use Route53. I used my own domain name and was configured with my domainname host provider (e.g. https://secure8.mydomainname.com) I configured my thirdparty and existing wildcard SSL certificate in my AWS platform via httpd of EC2
+
+I have searched ""all"" the AWS documentation as well as AWS forum but I couldn't find any similar problem I encountered.
+
+Please help me understand why my aws application's configuration just changed without my knowledge?
+
+Thank you."
+AWS Elastic Beanstalk	"Re: EC2 Public DNS has changed automatically
+I figured it out. 
+
+I need only an Elastic IP and assign to my ELB.
+
+Thanks but no thanks =)"
+AWS Elastic Beanstalk	"Nginx Reverse Proxy .conf Ebextension Not Working
+I have a blog that I am hosting on a separate server from from my application and I would like to configure my applications nginx server to reverse proxy the blog server when the user accesses the url https://www.example.com/blog
+. I am aware that in order to do this, I need to add a location block within my server block, but after successfully uploading the .conf file, and checking to see that the files were located in /etc/nginx/conf.d
+, I tried to navigate to https://www.example.com/blog and it loaded a 404 from the IP address of my applications server, rather than the blogs IP. What could be causing this issue? Is it something in my configuration? Is it due to the fact that the blog IP is coming from http rather than https?
+
+Here is the location
+ block I'm trying to use to redirect requests to all /blog to the blogs server:
+
+location /blog {
+            proxy_pass http://xxx.xxx.xxx.xxx;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+
+Here is my ebextension:
+files:
+  ""/etc/nginx/conf.d/03_blog_proxy.conf"":
+    mode: ""000644""
+    owner: root
+    group: root
+    content: |
+      client_max_body_size 10M;
+ 
+  ""/etc/nginx/conf.d/02_app_server.conf"":
+    mode: ""000644""
+    owner: root
+    group: root
+    content: |
+      # The content of this file is based on the content of /etc/nginx/conf.d/webapp_healthd.conf
+ 
+      # Change the name of the upstream because it can't have the same name
+      # as the one defined by default in /etc/nginx/conf.d/webapp_healthd.conf
+      upstream new_upstream_name {
+        server unix:///var/run/puma/my_app.sock;
+      }
+ 
+      # Change the name of the log_format because it can't have the same name
+      # as the one defined by default in /etc/nginx/conf.d/webapp_healthd.conf
+      log_format new_log_name_healthd '$msec""$uri""'
+                      '$status""$request_time""$upstream_response_time""'
+                      '$http_x_forwarded_for';
+ 
+      server {
+        listen 80;
+        server_name _ localhost; # need to listen to localhost for worker tier
+ 
+        if ($time_iso8601 ~ ""^(\d{4})-(\d{2})-(\d{2})T(\d{2})"") {
+          set $year $1;
+          set $month $2;
+          set $day $3;
+          set $hour $4;
+        }
+ 
+        access_log  /var/log/nginx/access.log  main;
+        # Match the name of log_format directive which is defined above
+        access_log /var/log/nginx/healthd/application.log.$year-$month-$day-$hour new_log_name_healthd;
+ 
+        location / {
+          # Match the name of upstream directive which is defined above
+          proxy_pass http://new_upstream_name;
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+ 
+        location /assets {
+          alias /var/app/current/public/assets;
+          gzip_static on;
+          gzip on;
+          expires max;
+          add_header Cache-Control public;
+        }
+ 
+        location /public {
+          alias /var/app/current/public;
+          gzip_static on;
+          gzip on;
+          expires max;
+          add_header Cache-Control public;
+        }
+        
+        location /blog {
+            proxy_pass http://xxx.xxx.xxx.xxx;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+      }
+ 
+container_commands:
+  01_reload_nginx:
+    command: ""sudo service nginx reload""
+
+
+Edited by: cdphills on Feb 19, 2019 3:56 AM"
+AWS Elastic Beanstalk	"can't terminate/delete environment, environment is not in a valid state
+i set up an environment to preview a few things, but i seem to be having trouble terminating/deleting it as i'd like to redeploy a different version
+
+http://hospitalk-env-6ckeyfa9qz.elasticbeanstalk.com
+
+its status is grey, and if i run 'eb delete' i get the following error:
+
+InvalidParameterValue. Cannot describe the configuration settings for environment 'hospitalk-env' since that environment is not in a valid state
+
+is there anything i'm missing?"
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+Hello, 
+
+I am going to engage the engineers to have a look at this. 
+
+James N"
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+Looking at this for you now.
+
+Shawn"
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+Hello,
+  The reason you cannot terminate the environment is because of an orphaned ec2 instance. 
+
+i-b72b34ff 
+
+This instance was created by an autoscaling group that was part of this environment.  When the autoscaling group was deleted, for some reason the instance was not terminated (I see that you do not have termination protection on).  We have engaged the dependent teams to identify the source of this problem.
+
+A quick fix for you will be to go to the EC2 console and terminate this instance.  Then terminate the environment again.
+
+Shawn"
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+Thanks - i thought i had tried that but i think i terminated an instance running in a different region.."
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+*Elastic beanstalk environments hang*- 
+ I have created elastic beanstalk, two environments, while try to swap url, both environments hanged, I am unable to delete or perform any operation. Because of the environments state is still not ready, I am unable to delete the application. I tired deleting the EC2 instances and Load balancer, still the environment is in hang state.
+
+Edited by: silicaminds on Oct 3, 2012 8:42 PM"
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+After posting in this form, fortunately the state came to RED for both environments, so I have deleted both environments. But dont know the reason."
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+I have the same problem. My EB worker environment is in a grey state, and even aborting has hung. I now cannot terminate the environment or do anything. AWS, can you please terminate my EB worker environment since it's hung and I cannot take any action?"
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+Hi ronron33 ,
+
+Sorry for the inconvenience you experienced. Could you PM your environment name and region so that I can take a look and terminate the environment for you.
+
+Thanks,
+Bo"
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+Hello, 
+I'm experiencing the same exact problem. My environment is in a grey state where I can't do anything. Who can I contact to have it terminated?
+
+Thanks in advance,
+B."
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+Elastic Beanstalk Environments are in Grey State. When I try to terminate them, I get this error: ''Deleting RDS database named: aa1v7zeoho0wkew failed Reason: DBInstance aa1v7zeoho0wkew not found. (Service: AmazonRDS; Status Code: 404; Error Code: DBInstanceNotFound; Request ID: b175be2a-cb84-42e0-8a34-b215d287b7b8).''
+Can this be terminated?"
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+Hi,
+
+The environment is failing to terminate because the RDS instance which was part of Beanstalk environment was terminated out-of-band.
+
+To successfully terminate the environment, delete the corresponding CloudFormation Stack from the CloudFormation console. Once the stack is marked as DELETE_COMPLETE, terminate the environment form Beanstalk console.
+
+Also, please do not make changes to Beanstalk resources out-of-band as it might result in unexpected behavior. Best practices about Managing Environments can be found here - https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.html
+
+Have a great day!"
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+Not able to delete the cloudformation for the same reason. 
+
+ DELETE_FAILED AWS::CloudFormation::Stack awseb-e-zjim98n4fd-stack  
+The following resource(s) failed to delete:  AWSEBRDSDatabase
+
+Edited by: Perry_n on Aug 13, 2018 8:39 AM"
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+Same here, I cannot terminate my environment at http://production-ingress.eu-west-1.elasticbeanstalk.com/. There are no more servers, no security groups, no whatsoever, but still the environment shows up and cannot be terminated.
+
+Recent Events
+2018-12-27 00:59:39 UTC+0800 	INFO 	terminateEnvironment is starting.
+2018-12-17 23:06:38 UTC+0800 	INFO 	terminateEnvironment is starting.
+2018-12-10 19:07:08 UTC+0800 	INFO 	terminateEnvironment is starting.
+2018-12-09 03:20:20 UTC+0800 	INFO 	terminateEnvironment is starting."
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+Hi,
+
+Since we do not have enough information regarding the environment like Account Id, Region and Beanstalk Environment ID, we may not be able to have a look at what caused this issue. 
+
+An easy workaround to delete the underlying CloudFormation stack of Elastic Beanstalk environment and terminating the environment. 
+
+If you face difficulty in deleting the CloudFormation stack, delete it by retaining the resource in DELETE_FAILED state and then terminate the environment.
+
+Below are the steps which you might need to perform:
+
+1. Navigate to CloudFormation console and select stack corresponding CFN stack for 'test beanstalk app'
+2. Click on Actions --> Delete Stack
+3. Select the check boxes for the displayed resources and retain them, click on delete.
+4. Once the stack state changes to DELETE_COMPLETE, navigate to Beanstalk console and terminate the environment.
+5. Clean up the resources that you retained, if they are not required."
+AWS Elastic Beanstalk	"Re: can't terminate/delete environment, environment is not in a valid state
+I'm also having problems removing stack and EB application. 
+2019-02-15 09:24:13    ERROR   Deleting security group named: sg-2b3e1153 failed Reason: resource sg-2b3e1153 has a dependent object (Service: AmazonEC2; Status Code: 400; Error Code: DependencyViolation; Request ID: 2c5c19f5-f6af-4170-92b9-860d6ab970c2)
+2019-02-15 09:24:14    ERROR   Stack deletion failed: The following resource(s) failed to delete: https://forums.aws.amazon.com/.
+
+nevermind, I have deleted all the dependencies manually and I was able to remove Cloud Formation stack then terminate the app.
+
+Edited by: zzart on Feb 18, 2019 3:12 AM"
+AWS Elastic Beanstalk	"Elastic Beanstalk Alarms are not working
+Hello all,
+
+I'm trying to create an alarm to notify me of unhealthy host; however, the alarm is never fired, even if it meets the threshold.
+
+I have used the fllowing setup:
+
+Period: 15 minutes
+Threshold: Average UnHealthyHostCount >= 1
+Change State After: 15 minutes
+Notify: some SNS
+Notify when state changest to: OK, Alarm
+
+
+When in edit mode, I can see the data, chart, and threshold. However, on the previous screen, the one that lists all the alarams, it always says not enough data.
+
+How can I fix this?
+
+Edited by: Amazon Customer on Feb 9, 2019 11:41 AM"
+AWS Elastic Beanstalk	"Re: Elastic Beanstalk Alarms are not working
+bump"
+AWS Elastic Beanstalk	"Status of ""No data received from the instance"". Cannot SSH or FTP
+I have a WordPress install on Beanstalk with EC2 and RDS. I'm very new to AWS. Yesterday the site became unresponsive and had a status of 'No data received from the instance'. When I try to request full logs it times out. I can't FTP or SSH into the instance because it also times out. The only thing I view is the System Log but I didn't see anything that jumped out at me. 
+Looking at Events, it seems the problem started with 4xx errors that turned into 5xx errors.
+Here are the entries:
+2019-02-14 12:10:55 UTC-0500	WARN	Environment health has transitioned from Ok to Severe. None of the instances are sending data.
+2019-02-12 22:54:41 UTC-0500	INFO	Environment health has transitioned from Warning to Ok.
+2019-02-12 22:53:41 UTC-0500	WARN	Environment health has transitioned from Ok to Warning. 100.0 % of the requests are failing with HTTP 5xx.
+2019-02-12 22:45:42 UTC-0500	INFO	Environment health has transitioned from Warning to Ok.
+2019-02-12 22:44:42 UTC-0500	WARN	Environment health has transitioned from Ok to Warning. 100.0 % of the requests are failing with HTTP 5xx.
+2019-02-12 14:21:19 UTC-0500	INFO	Environment health has transitioned from Severe to Ok.
+2019-02-12 14:20:19 UTC-0500	WARN	Environment health has transitioned from Ok to Severe. None of the instances are sending data.
+2019-02-12 10:31:36 UTC-0500	INFO	Environment health has transitioned from Severe to Ok.
+2019-02-12 10:30:36 UTC-0500	WARN	Environment health has transitioned from Ok to Severe. 97.2 % of the requests are erroring with HTTP 4xx.
+
+I can't figure out what is the underlying problem. Any help or guidance would be appreciated.
+
+Edited by: mdailey77 on Feb 15, 2019 10:14 AM"
+AWS Elastic Beanstalk	"Bug with describe-configuration-settings and SSHSourceRestriction
+When I set SSHSourceRestriction (in aws:autoscaling:launchconfiguration) to some value like ""tcp, 22, 22, sg-44d4e131"" and later use aws elasticbeanstalk describe-configuration-settings --application-name my-app --environment-name my-env --profile someProfile
+, I get output which does not contain the SG Id that I set:
+
+{
+    ....
+                {
+                    ""OptionName"": ""SSHSourceRestriction"",
+                    ""Namespace"": ""aws:autoscaling:launchconfiguration"",
+                    ""Value"": ""tcp,22,22,null""
+                },
+    ....
+}
+
+
+Is this a known bug?
+
+Thank you"
+AWS Elastic Beanstalk	"Re: Bug with describe-configuration-settings and SSHSourceRestriction
+Thank you for posting this issue on AWS Forum. As discussed with you on a support case, this is indeed a known bug which has already been reported by few of our customers. The Elastic Beanstalk service team is currently working to resolve this issue. I have also successfully replicated this behaviour and can see that the value that is being returned by AWS CLI describe command is not correct. 
+
+I have added your voice on this issue as well as my findings to our internal Elastic Beanstalk team. However, we can't provide you an ETA when this issue will be fixed. Please keep an eye on AWS ""What's New"" [1] and Elastic Beanstalk release notes [2]. When this issue will be fixed you will find an update there.
+
+Based on my testing the workaround which I would suggest is to create Elastic Beanstalk environment in default VPC and use the below ebextension config file to set 'SSHSourceRestriction' option_settings:
+
+option_settings:
+  - namespace:  aws:autoscaling:launchconfiguration
+    option_name:  SSHSourceRestriction
+    value:  ""tcp, 22, 22, my-security-group""
+
+
+The environments which you create in default VPC only accepts security group name instead of ID as defined in the above configuration - i.e.. 'my-security-group'. After applying this option_settings when you describe the environment settings you will get the response like below:
+
+        {
+            ""OptionName"": ""SSHSourceRestriction"",
+            ""Namespace"": ""aws:autoscaling:launchconfiguration"",
+            ""Value"": ""tcp,22,22,my-security-group""
+        },
+
+
+Replace the name 'my-security-group' in the provided configuration and try on your Elastic Beanstalk environment that is created in default VPC. I hope this helps.
+
+References:
+[1] https://aws.amazon.com/new/
+[2] https://aws.amazon.com/releasenotes/?tag=releasenotes%23keywords%23aws-elastic-beanstalk"
+AWS Elastic Beanstalk	"Re: Bug with describe-configuration-settings and SSHSourceRestriction
+I see that the issue still remains and it has been over a year. Please provide an ETA on the fix."
+AWS Elastic Beanstalk	"CPU utilisation stuck at 50% in EC2 instance hosted in Elastic Beanstalk
+Hello,
+
+PFB issues with my elastic beanstalk environment:
+
+1. CPU utilization got stuck at 50% on the running ec2 instance and instance got unresponsive.
+2. As per auto scaling policy i have max instance as 5 so 4 new instances got created but traffic keeps on hitting the unresponsive instance. 
+
+Auto scaling policy. 
+1. create 1 instance if cpu is greater than 48% for 1 min
+2. delete 1 instance if cpu is less than 5% for 1 min. 
+
+If anybody is aware or can help, please reply over this thread, 
+
+Thanks."
+AWS Elastic Beanstalk	"Beanstalk app version in ap-southeast-1 with source bundle in us-west-2
+I have my source bundles uploaded to an S3 bucket in us-west-2 region, and am trying to deploy that to a beanstalk application in ap-southeast-1 region using the ""aws elasticbeanstalk create-application-version"" command line with --region as ""ap-southeast-1"". But I get the following error -
+
+An error occurred (InvalidParameterCombination) when calling the CreateApplicationVersion operation: Unable to download from S3 location (Bucket: XXX  Key: YYY). Reason: The bucket is in this region: us-west-2. Please use this region to retry the request
+
+Looking up documentation, it seems like the S3 bucket for the source bundle has to be in the same region as the beanstalk environment. Is that right? Am confused about this because I used the same us-west-2 S3 bucket to deploy to a beanstalk environment in us-east-1 and that works just fine..
+
+What am I missing here? How do I get ap-southeast-1 beanstalk environment to work with a us-west-2 s3 source bundle? I understand last resort I could copy the source bundle to a bucket in ap-southeast-1 and that may work, but I would prefer not duplicating the source bundles.."
+AWS Elastic Beanstalk	"Environment named xxxxxx is in an invalid state for this operation.
+I try to update an Elastic Beanstalk environment which currently is OK but each time I try to update any configuration I get the following error:
+**Environment named xxxxxx is in an invalid state for this operation. Must be Ready.**
+Today Elastic Beanstalk has a very bad performance in everything."
+AWS Elastic Beanstalk	"Re: Environment named xxxxxx is in an invalid state for this operation.
+I have found this issue is because some Elastic Beanstalk scheduled actions: A scheduled action set the environment without instances. This is ok. The second one scheduled action set the environment with the default autoscaling policy (1 instance running, 1-4 required instances). This last one has been failing on rebuild environment or update environment.
+
+If I configure it into the autoscaling group, will work all except rebuild environment where I have to delete the scheduled actions in order to rebuild the environment.
+
+Shouldn't EB allow or recreate the scheduled actions on rebuild environment?"
+AWS Elastic Beanstalk	"Environment health has transitioned from Ok to Warning.
+Hello,
+I am running one PHP Web application with EBS environment where EC2 instance type is t2.micro.
+I am facing this ""Warning"" notification many times. How can I determine the reason for this error? I have checked instance CPU USAGE in a CloudWatch but it was set maximum 78.8% during warning notification time. I also checked other metrics in a CloudWatch. All looks good except CPU Usage as I mentioned above. The average CUP Usage is running below at instance BASE Performance Level.
+
+I don't know what I am missing. I can't check EC2 health with EB CLI because environment state automatically changes to Ok from Warning within a minute.
+Any kind of any help will be greatly appreciated.
+
+Thanks"
+AWS Elastic Beanstalk	"Environment health has transitioned from Ok to Warning.
+Hello,
+I have an EB which runs a php application which provides a JSON webservice.
+It happens that I receive several notifications about the environment transitioning from ok to warning, and then back to ok again after a while.
+
+I'm also receiving notifications like this:
+Environment health has transitioned from Degraded to Warning. 0.8 % of the requests to the ELB are failing with HTTP 5xx (6 minutes ago). 2 out of 2 instances are impacted. See instance health for details.
+
+I also tried to upgrade the EC2 instances behind the ELB (t2.micro -> t2.small) but still having the same issue.
+
+How do I troubleshoot such issues?
+
+Thanks"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+comcas,
+
+This is coming from the new health monitoring system which monitors the Apache logs. 
+
+To get more visibility into the details, I would monitor the environment using the EB CLI which has an option to see the details with the ""EB Health"" command (""EB Health --refresh"" to see a continuous view) and pull the logs either via the console or the EB CLI with ""EB Logs"" and look at the Apache logs to see the root cause of the server errors (http 500's). This is most likely a problem with your application.
+
+The health system is telling you that a small percentage of the http requests to your site are failing between the apache web server and your application, so this could be something like a lack of PIOPs on a Dynamo DB table should you be using something like that.
+
+--David"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+Hi David,
+thanks for your quick reply.
+
+I'm trying to do what you suggested, but having troubles into getting eb cli to work.
+""eb init"" went ok, but when I try to run ""eb health"" it just raises an exception:
+
+File ""/usr/local/lib/python2.7/dist-packages/ebcli/health/data_poller.py"", line 85, in _poll_for_health_data
+raise e
+ValueError: time data 'Thu, 15 Oct 2015 15:36:12 GMT' does not match format '%a, %d %b %Y %H:%M:%S %Z'
+
+My python version is 2.7.6, and EB CLI 3.5.4 (Python 2.7.6)
+
+Is this a known issue?"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+Had figured out by myself what the issue with ""eb cli"" was: I had to set LC_ALL environment variable to ""en_US.UTF-8"" and the error gone away.
+
+I'm currently monitoring my environment and everything seems to be ok until now as all requests are fullfilled correctly. The only weird thing I found on my logs is the following:
+
+Thu Oct 15 15:01:05.257586 2015 log_config:warn pid 16112 (32)Broken pipe: client 172.31.19.8:39309 AH00646: Error writing to |/usr/sbin/rotatelogs /var/log/httpd/healthd/application.log.%Y-%m-%d
+-%H 3600
+Thu Oct 15 15:01:05.350912 2015 log_config:warn pid 15991 (32)Broken pipe: client 172.31.34.45:7591 AH00646: Error writing to |/usr/sbin/rotatelogs /var/log/httpd/healthd/application.log.%Y-%m-%d
+-%H 3600
+
+There are no HTTP 500 errors in error_log of both instances.
+
+Could this be an issue?"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+comcas,
+
+0.8 % of the requests to the ELB are failing with HTTP 5xx (6 minutes ago).
+
+
+Refers to 5xx error codes generated by ELB. ELB returns 5xx responses e.g. when the request rate exceeds the capacity of the instances. See explanation for HTTPCode_ELB_5XX at http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/elb-cloudwatch-metrics.html for details.
+
+As David mentioned the new health monitoring system also monitors the Apache logs but in this case the warning is referring to the ELB failing to route the traffic to the instances for a small percentage of the requests.
+
+The broken pipe errors in the Apache error logs where likely just some transient issues. If you see them continuously please let us know.
+
+Anssi"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+Hi,
+thanks again for your replies.
+
+My instances are usually receiving several requests and during the day there can be peaks.
+I just scaled my application to use 3 t2.micro instances instead of 2 (one per AZ in ireland).
+
+How can I get an idea of how many concurrent requests can handle a single instance?
+
+I'm providing a webservice to my users so I need to make sure that no request is lost and I'd like to let my environmento to scale automatically up and down depending on request count. Can you provide a suggestion on how to properly configure the scaling trigger? Currently I set it up to scale depending on cpu utilization, but doesn't seem to be working properly.
+
+Thanks."
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+comcas,
+
+Application performance tuning is a pretty big subject  But I can give you a couple of suggestions.
+
+If you believe you are in fact CPU bound and not constrained on some other resource, then using the EB CLI --refresh you can see the request rate that each instance is handling and the percentage of CPU that that request rate consumes on the instance. From that you can extrapolate the total number of requests the instance can handle when maxed out at say 90% CPU.
+
+The other thing to do is clone your current environment with an instance count of 1 and drive test traffic to it while monitoring with the EB CLI. EB Scale 1 will lock it at one instance. You can then drive it until it breaks to see where that breaking point actually is and your http 500's start.
+
+If your traffic is spiky it may not be exceeding the scale up threshold long enough to trigger an autoscaling scale up, so maybe take a look at how you have that configured.
+
+You can also go into the monitoring section of the Beanstalk console to see the historical metrics of items like CPU%. If you need more visibility into more granular metrics, then you can go to the configuration >> Health section in the console and turn on any other metrics that you require for insight. Note there is a very small charge for any incremental metrics you may turn on.
+
+--David"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+Hello!
+Where we need to set the locale environment variable: LC_ALL to ""en_US.UTF-8""?
+Thank you,
+Ivan"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+Just execute:
+$ LC_ALL=""en_US.UTF-8"" eb health
+
+Regards"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+It worked!
+But I have to do every request ""b health"" or I can set somewhere?
+Grateful,
+Ivan"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+You could create a wrapper script such as ""myeb""
+#!/bin/bash
+LC_ALL=""en_US.UTF-8"" /path/to/eb $@
+
+or maybe just a command alias could work (put it on your bash_profile or bashrc)
+$ alias eb='LC_ALL=""en_US.UTF-8"" /path/to/eb'
+
+and then use EB cli as usual.
+
+Regards"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+Hi comcas, have you solved the problem about the instances transitioning from ok to warning several times? I have the same issue :/
+
+thanks"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+racsoeu,
+
+In what region?
+
+David"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+Hi, we have now the same issue. When we check the logs we can find this so continuously:
+
+Thu May 12 14:25:04.675545 2016 log_config:warn pid 2417 (32)Broken pipe: client 172.16.11.165:16016 AH00646: Error writing to |/usr/sbin/rotatelogs /var/log/httpd/healthd/application.log.%Y-%m-%d-%H 3600, referer: https://www.google.com.co/+
+Thu May 12 14:25:05.471275 2016 log_config:warn pid 2396 (32)Broken pipe: client 172.16.11.203:48007 AH00646: Error writing to |/usr/sbin/rotatelogs /var/log/httpd/healthd/application.log.%Y-%m-%d-%H 3600
++Thu May 12 14:25:17.362899 2016 log_config:warn pid 1938 (32)Broken pipe: client 172.16.11.203:48009 AH00646: Error writing to |/usr/sbin/rotatelogs /var/log/httpd/healthd/application.log.%Y-%m-%d-%H 3600, referer: https://www.google.com.co/"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+Hi
+Can you please send me your account ID, region and the environment you are seeing this issue on in a private message? Also can you include the full logs for your environment in the private message. Here's how to to bundle the full logs: http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.logging.html
+
+Also when your environment goes into Warning state you can see the detailed health for your environment and instances with causes in the health console: http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced-console.html
+
+Looking at the error message in your log snippet it seems something is not right on the instance. So looking at the full logs will be very useful to dig to the root cause.
+
+Thanks
+Rohit"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+We are also facing same problem in Asia Pacific (Mumbai) region.
+
+What is the solution to this?"
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+Hi,
+
+We are facing the same issue for around 2 years. We are not sure why this is happening. The environment state keeps on changing between Ok to Warning and then back to OK. Please help us with this.
+
+Please refer the attached screenshot."
+AWS Elastic Beanstalk	"Re: Environment health has transitioned from Ok to Warning.
+Hello,
+I am also facing this ""Warning"" notification many times. How can I determine the reason for this error? I have checked instance CPU USAGE in a CloudWatch but it was set maximum 58.9% during warning notification time. I also checked other metrics in a CloudWatch. All looks good except CPU Usage as I mentioned above. The average CUP Usage is running below at instance BASE Performance Level.
+I am using a t2.micro instance type. 
+I don't know what's going behind this instance. Any kind of any help will be greatly appreciated.
+
+Thanks"
+AWS Elastic Beanstalk	"S3_MALFORMED_POLICY - Beanstalk doesn't build any new environment
+Hi there,
+
+We are facing this problem since today's afternoon.
+This error will appear every time we create a any new environment.
+
+Screenshot below:
+
+https://s3.amazonaws.com/app.audiencerate.com/beanstalk.png
+
+Edited by: enry on Feb 9, 2019 4:05 AM"
+AWS Elastic Beanstalk	"Re: S3_MALFORMED_POLICY - Beanstalk doesn't build any new environment
+The issue was related to an invalid bucket policy applied on beanstalk default bucket."
+AWS Elastic Beanstalk	"Elastic Beanstalk scripts should set a user-agent when querying metadata
+Hi!
+
+I made a tool designed to enhance the security of EC2 servers by restricting what services can call the EC2 metadata service. This is to prevent e.g. RCE exploits from stealing EC2 credentials. Currently it lets requests through based on a whitelist of user-agents, but the elastic beanstalk scripts do not set their own user-agent, and thus uses quite a few different ones depending on what script is executing. It would be easier to whitelist these scripts in my tool if all EB scripts used consistent user-agents.
+
+Here's my project for more information: https://github.com/stefansundin/ec2-metadata-filter
+
+Here are two examples of blocked requests:
+
+2019/02/10 04:30:05 Blocked request to /latest/meta-data/instance-id from User-Agent: Python-urllib/2.7
+2019/02/10 04:41:57 Blocked request to /latest/meta-data/network/interfaces/macs/06:75:26:5b:6d:08/local-ipv4s from User-Agent: curl/7.53.1
+
+
+I know that this will require a lot of different changes in a lot of different places, but I think it would be worth it in the end.
+
+Thank you!
+
+Regards, Stefan"
+AWS Elastic Beanstalk	"Adjusting the ciphers accepted by a Tomcat server running in Beanstalk
+We've got our Tomcat application running in a load-balanced Beanstalk environment, and we've got HTTPS up and running. But I've found that if I try to connect to web services hosted by that application, from an AS/400 running V6R1, I can only use HTTP -- if I try to use HTTPS, I get
+
+SSL Handshake: (GSKit) No compatible cipher suite
+
+I've just determined that this slightly out-of-date AS/400 can handle
+RSA_AES_128_CBC_SHA       
+RSA_RC4_128_SHA           
+RSA_RC4_128_MD5           
+RSA_AES_256_CBC_SHA       
+RSA_3DES_EDE_CBC_SHA      
+RSA_DES_CBC_SHA           
+RSA_EXPORT_RC4_40_MD5     
+RSA_EXPORT_RC2_CBC_40_MD5 
+RSA_NULL_SHA              
+RSA_NULL_MD5              
+
+But how do I adjust what our AWS environment will accept?
+
+Edited by: Touchtonecorp on Feb 7, 2019 1:19 PM"
+AWS Elastic Beanstalk	"Re: Adjusting the ciphers accepted by a Tomcat server running in Beanstalk
+With no answers forthcoming here or on ServerFault, I found time for a bit of digging myself,  and found this: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html.  It seems that the HTTPS is handled by the load balancer, and they have a security policy specific to the case of needing to support legacy clients. Just go into your HTTPS listener on your load balancer, and switch to the ""ELBSecurityPolicy-TLS-1-0-2015-04"" security policy, and acknowledge the warning (you can change back to a more restrictive security policy when you aren't having to connect from a legacy client), and click the ""Update"" button."
+AWS Elastic Beanstalk	"Removed instance from your environment.
+The EC2 instances keep automatically terminating and launching. It is causing a pretty bad experience to my users. Can you please point me to the right direction on how to debug this ?
+
+Thanks."
+AWS Elastic Beanstalk	"Removed instance '' from your environment. (Reason: Instance is i
+Hi
+
+it seems that every night one of our instances is terminated and a new one is spun up. 
+We are unsure why this would happen, can anyone shed some light on this?
+
+The instance is not added to an Auto scaling group, yet I see it gets added as such.
+
+2016-05-03 11:06:08 UTC+0200	INFO	Environment health has transitioned from RED to GREEN
+2016-05-03 11:06:08 UTC+0200	INFO	Adding instance 'i-3ed788b6' to your environment.
+2016-05-03 11:06:08 UTC+0200	INFO	Added EC2 instance 'i-3ed788b6' to Auto Scaling Group 'awseb-e-vriwt3muxq-stack-AWSEBAutoScalingGroup-10LKXLGET02CY'.
+2016-05-03 11:06:08 UTC+0200	INFO	Removed instance 'i-550956dd' from your environment. (Reason: Instance is in 'terminated' state)"
+AWS Elastic Beanstalk	"Re: Removed instance '' from your environment. (Reason: Instance is i
+Hello,
+
+I am able to confirm that you are utilizing AutoScaling in the eu-west-1 region. The reason why your EC2 instances are automatically terminating and launching new ones is due to an issue with the EC2 instances failing their EC2 health check. Upon reviewing the system log of the EC2 instances that were terminated recently(i-3ed788b6), it appears the EC2 instance/s are experiencing an OOM - Out of memory related issue. The specific error I am seeing can be seen below:
+
+http://95134678.966750 Out of memory: Kill process 15428 (httpd) score 15 or sacrifice child
+http://95134678.966761 Killed process 15428 (httpd) total-vm:752944kB, anon-rss:29756kB, file-rss:29172kB
+
+You will need to address the memory issue that is being experienced. One way to do this is to upgrade the instance-type to something that has a larger memory allocation.
+
+I hope this is helpful.
+
+Regards,
+Mohsin"
+AWS Elastic Beanstalk	"Re: Removed instance '' from your environment. (Reason: Instance is i
+Hi Mohsin,
+
+I 'm having similar issues. The EC2 instances keep automatically terminating and launching. It is causing a pretty bad experience to my users. Can you please point me to the right direction on how to debug this ?
+
+Thanks."
+AWS Elastic Beanstalk	"BeanStalk Application Load Balancer causes Red Health - EC2 Targets Healthy
+I am a long term user - I wanted to create a new environment of our fully working classically load balanced application that used application load balancers. I tried several times to get the app to show anything other than red however it always shows red health even though in EC2 all the Target Groups are saying the instances are healthy. I started with a 2-6 instance t2.large group and tried for several hours to get it to go green however it just sits red even though the environment url works perfectly, renders the app and also can fully see the health check url.
+
+I terminated this environment and built a smaller one with different scaling rules on a 1-6  t1.micro setup and exactly the same thing, code works, heath-check reports fine in EC2 target groups but the Hard RED check on the ElasticBeanStalk dashboard.  There is no ability to click the causes button - it is disabled - there is nothing in the Event list other then:
+2018-06-21 16:13:32 UTC+0800	WARN	Environment health has been set to RED
+2018-06-21 16:11:09 UTC+0800	INFO	Successfully launched environment: XXXXXXX
+2018-06-21 16:09:19 UTC+0800	INFO	UpdateAppVersion Completed
+
+Which states correct deployment and just Red health.
+EnvID:  e-8nm36pnfv3"
+AWS Elastic Beanstalk	"Re: BeanStalk Application Load Balancer causes Red Health - EC2 Targets Healthy
+We are facing this exact issue as well.
+
+I spun up a .net environment with an application load balancer using the default example .net application built in to Elastic Beanstalk.
+
+Environment ID: e-24dsnamm3t
+
+Environment launched red and never goes green. In the logs, it shows the health checks succeeding and the environment endpoint is accessible without issue.
+
+I tried terminating the instance to see if autoscale would spin up a new instance and automatically resolve the red state, but no luck. Stays red and no new instance spun up."
+AWS Elastic Beanstalk	"Re: BeanStalk Application Load Balancer causes Red Health - EC2 Targets Healthy
+I am experiencing the same issues.  No indications that I have seen as to why the status was changed to ""Red"".  The application is reachable over the beanstalk CNAME and via Route53 custom domain aliased to beanstalk CNAME.
+
+I do have two listeners defined for the beanstalk stack.  One HTTP, the other HTTPS.  I am curious if there is a beanstalk health check which is trying to access the HTTPS listener and getting a DNS name mismatch on the certificate (it matches the Route53 name, but not the subdomain URL of the beanstalk CNAME).  If I try to browse to https:<beanstalkURL>, the app does come up... but first I have to accept the warning that the DNS of URL does not match that of the certificate (of course it does not).
+
+This is an application load balancer.
+
+Using the CLI to describe-environments... it shows Status of ""Ready"" and Health of ""Red""
+
+My next step was going to be to add a rule to the HTTP listener and have it redirect all traffic to the HTTPS listener... but first trying to figure out why the stack is RED.  Plenty of posts about this... but have not found a solution yet.  Still looking, but would appreciate any help if someone has seen and solved something like this."
+AWS Elastic Beanstalk	"Elastic Beanstalk application fails to deploy from CloudFormation
+I have an Elastic Beanstalk application that I deploy through CloudFormation. Lately, when I push a change through my pipeline, it re-deploys the application (even if I didn't make changes to the anything related in the CloudFormation template), and the deployment always fails. I consistently get this in the Elastic Beanstalk events:
+[Instance: i-001aeaa8311652246] Command failed on instance. Return code: 1 Output: (TRUNCATED)...l last): File ""/usr/bin/aws"", line 19, in <module> import awscli.clidriver File ""/usr/lib/python2.7/dist-packages/awscli/clidriver.py"", line 19, in <module> from botocore.hooks import AliasedEventEmitter ImportError: cannot import name AliasedEventEmitter. command 03 in .ebextensions/log-stream.config failed. For more detail, check /var/log/eb-activity.log using console or EB CLI.
+
+
+The config it's referring to sets up log streaming for a custom application log. Strangely though, if I go the Elastic Beanstalk console and rebuild the environment from there, it deploys correctly and I don't get any errors from that config. This happens every time my CloudFormation stack deploys and I don't want to have to manually rebuild the environment because of these strange failures. Any advice is appreciated. Thanks!"
+AWS Elastic Beanstalk	"Please explain the PHP Lifecycle on AWS Elastic Beanstalk
+Hi,
+
+I'm a Linux Sysadmin and used to run PHP applications via apache+mod_fcgid or apache/nginx+PHP-FPM.
+
+When running PHP via apache mod_fcgid I can control the Lifecycle of the PHP processes.
+
+For example I can set the following options inside Apache:
+
+  FcgidMinProcessesPerClass 3
+  FcgidMaxProcessesPerClass 25
+  FcgidMaxProcesses 100
+  FcgidIdleTimeout 60
+  FcgidMaxRequestsPerProcess 50000
+  FcgidProcessLifeTime 21600
+
+Documentation: https://httpd.apache.org/mod_fcgid/mod/mod_fcgid.html
+
+This will instruct Apache to run
+
+-> at minimum 3 PHP processes per class/<Virtualhost>
+-> at maximum 25 PHP processes per class/<Virtualhost>
+-> at maximum 100 PHP processes in total
+-> kill a PHP process (and start a new one if needed)
+---> when the PHP process was idle for more than 60 seconds or
+---> when the PHP process did handle 50000 requests or
+---> when the PHP process was started more than 6 hours (21600s) ago
+
+This way I can make sure not to overload the server via limiting the amount of PHP processes allowed to run in parallel to a sane amount. To combat possible memory leaks in PHP itself FcgidMaxRequestsPerProcess and FcgidProcessLifeTime are used.
+
+A colleague of mine did migrate a PHP app - formerly running with the above configuration inside a hosted VM - to AWS Beanstalk.
+
+They had autoscaling set to a maximum of only 1 instance. (This is surely not optimal but doesn't matter in this scenario). After two days uptime the instances did crash/became unresponsive because 100% of RAM was used (so they told me).
+
+Of course they could have prevented this scenario with upscaling the number of instances handling the load but since I didn't find any info regarding PHP process lifecycle and support only gave ""your app seems to have a memory leak, please let the devs fix this"" as an explanation I want to understand how AWS is handling the PHP process lifecycle.
+
+For example:
+
+With my config from above my single server would only run 100 PHP processes in parallel, never more. When a visitor peak would occur and let's say 500 parallel requests were going to PHP then 100 would run in parallel and 400 requests would have to wait until some PHP processes have finished their job. This way it's not possible to serve more than 100 parallel PHP requests but the server would not get overloaded. Additionally, if there were a memory leak inside PHP or one of it's loaded extensions this would not be a big problem because mod_fcgid would kill each PHP process after a certain time or amount of requests served.
+
+With AWS Elastic Beanstalk on the other hand it seems once started PHP processes are never terminated. So they will run a long time (days/weeks) and a memory leak will cause these long running processes to allocate more and more RAM.
+
+My questions are:
+
+1. Does AWS EB limit the amount of PHP processes running in parallel in one instance at all? E.G. will 500 parallel requests http://example.com/index.php result in 500 PHP processes running in the instance (let's assume ASG limit is still set to 1 server) or does AWS limit the amount of PHP processes somehow according to instance type?
+
+2. Does AWS EB terminate PHP processes at all?
+
+3. If ASG is configured to spin up more instances when load is rising there still will be a delay since upscaling isn't instant. Until the newly launched instances are up and added to the Load Balancer the remaining instances are still potentially brought to a halt if only enough requests are made in parallel so the instances are running many, many PHP processes in parallel, eventually exhausting all RAM and overloading the instance. is this correct?
+
+I'm just trying to wrap my head around this.
+
+Thanks a lot!"
+AWS Elastic Beanstalk	"Instances stopped sending data
+Hi, I'm trying to deploy a microservice on the Elastic Beanstalk but I'm experiencing a very strange case where everything works ok locally but seems to break when I actually deploy it. I test my container with eb local run
+ and everything is fine, then I do {eb create} to deploy it, and it takes really long, usually I get this:
+ERROR: TimeoutError - The EB CLI timed out after 10 minute(s). The operation might still be running. To keep viewing events, run 'eb events -f'. To set timeout duration, use '--timeout MINUTES'.
+
+Eventually I can see it's deployed but it changes status from Ok, to Warning, to Severe, and then occasionally back to Ok etc.
+My code is downloading a ~200MB file on init, and it seems to be the problem because the logs show it's doing it over and over again, like it's stuck in a loop or something. Here is the code that downloads a file:
+s3client = boto3.client('s3', region_name=_aws_default_region, aws_access_key_id=_aws_key, aws_secret_access_key=_aws_secret)
+            
+size = float(s3client.head_object(Bucket=_aws_s3_bucket, Key=_aws_s3_bucket_path)['ContentLength'])
+            
+down_progress = progressbar.progressbar.ProgressBar(maxval=size)
+down_progress.start()
+ 
+def download_progress(chunk):
+    down_progress.update(down_progress.currval + chunk)
+ 
+try:
+    s3client.download_file(_aws_s3_bucket, _aws_s3_bucket_path, 'tutti_im_inc_v1.h5', Callback=download_progress)
+except botocore.exceptions.ClientError as e:
+    if e.response['Error']['Code'] == ""404"":
+        print(""The object does not exist."")
+    else:
+        raise
+ 
+down_progress.finish()
+
+I attache the log file so you can see how the file seems to be downloaded multiple times.
+As I mentioned, everything works ok when run locally, but when deployed on the Beanstalk the instances stop sending data seconds after the deployment, and I can't even get the logs from the dashboard (it times out), only from the command line tool. Any help appreciated.
+
+Edited by: lawicko on Feb 6, 2019 11:58 AM"
+AWS Elastic Beanstalk	"How does the elastic beanstalk app exposes its EC2 instance's internal IP?
+Hey everyone,
+
+I've deployed a python/django app on elastic beanstalk. When I check logs, I see that kind of a web crawler scans my domain to find some php files vulnerable which is totally normal. But here is a problem here; only actual domain is allowed on django configuration. It gives an error when receives a request except from actual domain. The interesting thing is, some of these requests to elastic beanstalk app are comes from client to 172.31.**.** IP. This is internal IP of running EC2 instance. I'm not sure how is this happening. I've posted some part of the logs.
+
+Sincerely,
+Emir
+
+-------------------------------------
+/var/log/httpd/error_log
+-------------------------------------
+[Tue Feb 05 16:10:23.731048 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '172.31.**.**'. You may need to add '172.31.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:10:23.763976 2019] [:error] [pid 3577] Bad Request: / 
+[Tue Feb 05 16:10:38.480009 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '172.31.**.**'. You may need to add '172.31.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:10:38.513008 2019] [:error] [pid 3577] Bad Request: / 
+[Tue Feb 05 16:10:38.734245 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '172.31.**.**'. You may need to add '172.31.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:10:38.767665 2019] [:error] [pid 3577] Bad Request: / 
+[Tue Feb 05 16:10:39.983825 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '34.231.**.**'. You may need to add '34.231.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:10:40.017716 2019] [:error] [pid 3577] Bad Request: /shell.php
+[Tue Feb 05 16:10:45.922014 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '34.231.**.**'. You may need to add '34.231.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:10:45.955443 2019] [:error] [pid 3577] Bad Request: /desktop.ini.php
+[Tue Feb 05 16:10:47.298056 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '34.231.**.**'. You may need to add '34.231.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:10:47.331523 2019] [:error] [pid 3577] Bad Request: /z.php
+[Tue Feb 05 16:10:51.161003 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '34.231.**.**'. You may need to add '34.231.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:10:51.195127 2019] [:error] [pid 3577] Bad Request: /lala.php
+[Tue Feb 05 16:10:53.483332 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '172.31.**.**'. You may need to add '172.31.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:10:53.517073 2019] [:error] [pid 3577] Bad Request: / 
+[Tue Feb 05 16:10:53.750235 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '172.31.**.**'. You may need to add '172.31.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:10:53.783717 2019] [:error] [pid 3577] Bad Request: / 
+[Tue Feb 05 16:11:08.496055 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '172.31.**.**'. You may need to add '172.31.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:11:08.529767 2019] [:error] [pid 3577] Bad Request: / 
+[Tue Feb 05 16:11:08.766256 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '172.31.**.**'. You may need to add '172.31.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:11:08.799578 2019] [:error] [pid 3577] Bad Request: / 
+[Tue Feb 05 16:11:09.500872 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '34.231.**.**'. You may need to add '34.231.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:11:09.534857 2019] [:error] [pid 3577] Bad Request: /lala-dpr.php
+[Tue Feb 05 16:11:13.426683 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '34.231.**.**'. You may need to add '34.231.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:11:13.459713 2019] [:error] [pid 3577] Bad Request: /wpc.php
+[Tue Feb 05 16:11:18.306744 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '34.231.**.**'. You may need to add '34.231.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:11:18.339985 2019] [:error] [pid 3577] Bad Request: /text.php
+[Tue Feb 05 16:11:20.645859 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '34.231.**.**'. You may need to add '34.231.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:11:20.679391 2019] [:error] [pid 3577] Bad Request: /wp-config.php
+[Tue Feb 05 16:11:22.486042 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '34.231.**.**'. You may need to add '34.231.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:11:22.519862 2019] [:error] [pid 3577] Bad Request: /muhstik.php
+[Tue Feb 05 16:11:23.503969 2019] [:error] [pid 3577] Invalid HTTP_HOST header: '172.31.**.**'. You may need to add '172.31.**.**' to ALLOWED_HOSTS.
+[Tue Feb 05 16:11:23.537760 2019] [:error] [pid 3577] Bad Request: /"
+AWS Elastic Beanstalk	"Rails: How to get puma 3.11 for AWS Elasticbeanstalk application?
+I am trying to deploy a Rails app on a new EC2 instance. EB is using puma 2.16.0 (which is 2 years old) instead of the version (3.11.0) I have defined in Gemfile.lock. This is a problem for me because the old puma version depends on an older version of rack gem. But one of my new dependency requires the latest version of rack gem
+
+Current platform of EB: Puma with Ruby 2.3 running on 64bit Amazon Linux/2.4.4
+
+So EB automatically uses the older puma and older rack version resulting in a conflict with my latest gems:
+
+/opt/rubies/ruby-2.3.4/lib/ruby/gems/2.3.0/gems/bundler-1.15.0/lib/bundler/runtime.rb:317:in check_for_activated_spec!: You have already activated rack 1.6.8, but your Gemfile requires rack 2.0.5. Prepending bundle exec to your command may solve this. (Gem::LoadError)
+
+Is there a way to use our own version of puma?
+
+Current platform of EB: Puma with Ruby 2.3 running on 64bit Amazon Linux/2.4.4"
+AWS Elastic Beanstalk	"Re: Rails: How to get puma 3.11 for AWS Elasticbeanstalk application?
+Almost a year later, and no update to this question?  I'm having a similar issue as the original poster, I'm switching the build environment from macOS to Ubuntu, and now the 2.16 Puma gem won't build - native extension is failing. It looks like the problem is a dependency on an earlier OpenSSL version, but this raises another question, namely how many old security vulnerabilities are lurking here due to the failure to update to the latest version of Puma?
+
+Is there some technical reason why Puma and Passenger aren't being updated in the Elastic Beanstalk images. Why bother updating the Ruby version if you aren't going to update the gems?
+
+Edited by: dfjacobs on Feb 4, 2019 7:26 PM"
+AWS Elastic Beanstalk	"Exceptionally long SDK calls to IoT and Kinesis in EB Node.js Application
+Hi there,
+
+One of our main projects is an Elastic Beanstalk (single instance) server running Node.js 8 which regularly (4 times per second):
+
+Polls kinesis
+Performs application logic to determine response
+Posts response to MQTT via the IoT SDK
+
+
+We have noticed that, occasionally, the SDk calls to IoT and/or Kinesis take an unbelievable amount of time (up to 7000ms compared to the standard ~20ms). This problem is most important for Kinesis as that is the entry point to the logic so this delayed call blocks the entire cycle.
+
+Even more strangely, Kinesis reports through Cloudwatch/its own monitoring do not show these delays in any way.
+
+Has anybody else experienced something similar? 
+Is there a way to ""kill"" the SDK call after 1000ms if the call is taking too long?
+
+Many thanks,
+Josh"
+AWS Elastic Beanstalk	"'eb use' returning error: Environment ""APPServer-env"" not Found
+I am executing 'eb' commands from GitLab yml script:
+
+- eb use APPServer-env -v  --region us-east-2 --debug
+
+Environment name is correct, region is correct.
+Params AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are set correctly.
+
+Getting error:
+
+Making api call: (elasticbeanstalk, describe_environments) to region: us-east-2 with args:{'IncludeDeleted': False, 'EnvironmentNames': }
+2019-02-03 17:57:38,052 (DEBUG) ebcli.lib.aws : API call finished, status = 200
+2019-02-03 17:57:38,053 (DEBUG) ebcli.lib.aws : Response: {'Environments': [], 'ResponseMetadata': {'RequestId': 'f3a3877f-0c87-4a22-8c2f-76fec40437cd', 'HTTPStatusCode': 200, 'date': 'Sun, 03 Feb 2019 17:57:37 GMT', 'RetryAttempts': 0}}
+INFO: Traceback (most recent call last):
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/core/ebrun.py"", line 62, in run_app
+    app.run()
+  File ""/usr/local/lib/python3.7/site-packages/cement/core/foundation.py"", line 797, in run
+    return_val = self.controller._dispatch()
+  File ""/usr/local/lib/python3.7/site-packages/cement/core/controller.py"", line 472, in _dispatch
+    return func()
+  File ""/usr/local/lib/python3.7/site-packages/cement/core/controller.py"", line 478, in _dispatch
+    return func()
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/core/abstractcontroller.py"", line 94, in default
+    self.do_command()
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/controllers/use.py"", line 45, in do_command
+    useops.switch_default_environment(env_name)
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/operations/useops.py"", line 19, in switch_default_environment
+    __verify_environment_exists(env_name)
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/operations/useops.py"", line 32, in __verify_environment_exists
+    elasticbeanstalk.get_environment(env_name=env_name)
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/lib/elasticbeanstalk.py"", line 526, in get_environment
+    raise NotFoundError('Environment ""' + env_str + '"" not Found.')
+ebcli.objects.exceptions.NotFoundError: Environment ""APPServer-env"" not Found."
+AWS Elastic Beanstalk	"Re: 'eb use' returning error: Environment ""APPServer-env"" not Found
+Hi yevsht ,
+
+If you are indeed sure that the environment exists, this might be a credentials problem. Can you rerun as follows?
+
+eb use APPServer-env -v  --region us-east-2 --debug --debugboto
+
+
+In the logs, you should find a reference to your actual access ID. Can you verify that the correct profile is being used? Specifically, you look for the substring ""Credential="" in the logs, whose value will be the access ID.
+
+Also, is it not feasible for you to store the credentials in a ~/.aws/credentials file?
+
+Thanks,
+Rahul.
+
+Edited by: Rahul-AWS on Feb 4, 2019 11:25 AM"
+AWS Elastic Beanstalk	"Error while deploying on EB since one week ago.
+Hi, Since one week ago I'm trying to deploy a new version of my app working on python 3.6, x64bit amazon linux/2.8.0 using Django and PostgreSQL through AWS CLI and I always have the following error:
+01-02-2019 08:58:05 UTC+0100	ERROR	During an aborted deployment, some instances may have deployed the new application version. To ensure all instances are running the same version, re-deploy the appropriate application version.
+01-02-2019 08:58:05 UTC+0100	ERROR	Failed to deploy application.
+01-02-2019 08:58:05 UTC+0100	ERROR	Unsuccessful command execution on instance id(s) 'i-0650c00c35225ab08'. Aborting the operation.
+
+I have to add that the deployment process it takes 10 min before it crashes.
+I tried to:
+
+Reload the lastest working instance. Got the same problem.
+Load the last working env configuration I saved. Got the same problem.
+Reload the server. The server still crashed, and when I tried to redeploy, I had the same problem.
+Reconstruct the environment. It loads the last working instance, but when I tried to deploy the new one I had the same problem.
+
+
+I do not touched any of the .elasticbeanstalk configurations on my project nor the working .ebextensions config files, and my project is working without any problems on my local machine."
+AWS Elastic Beanstalk	"Re: Error while deploying on EB since one week ago.
+I tried to create a new environment with the latest saved configuration and the last instance updated (the one that was not working on the other environment) and it worked fine, so the problem is not anything on my project configuration.
+Then I tried to pull a new version to git and gave me the same error. Here I add the error plus the latest information message and the following warning.
+
+04-02-2019 09:54:29 UTC+0100	WARN	Environment health has transitioned from Info to Degraded. Incorrect application version found on all instances. Expected version ""app-081e-190116_165835"" (deployment 1). Application update is aborting (running for 15 minutes).
+04-02-2019 09:53:33 UTC+0100	ERROR	During an aborted deployment, some instances may have deployed the new application version. To ensure all instances are running the same version, re-deploy the appropriate application version.
+04-02-2019 09:53:33 UTC+0100	ERROR	Failed to deploy application.
+04-02-2019 09:53:33 UTC+0100	ERROR	Unsuccessful command execution on instance id(s) 'i-09eee55e6422cff54'. Aborting the operation.
+04-02-2019 09:53:32 UTC+0100	INFO	Command execution completed on all instances. Summary: [Successful: 0, TimedOut: 1].
+
+When I try to retrieve the logs through EB CLI, I have the following Timeout error message:
+eb logs
+Retrieving logs...
+ERROR: TimeoutError - The EB CLI timed out after 2 minute(s). The operation might still be running. To keep viewing events, run 'eb events -f'. To set timeout duration, use '--timeout MINUTES'.
+
+The 'eb deploy' command gave me also a timeout error after 10 minutes.
+
+Please I need to solve this, I'm issuing this problem for more than a week ago.  If you need any extra information please ask for it.
+
+Edited by: polfg on Feb 4, 2019 12:14 PM"
+AWS Elastic Beanstalk	"Basic troubleshooting for Route53 and Elastic Beanstalk
+I want to set up a simple site (that might eventually become a Django site or similar) on EB. I have a domain name from another registrar, so I followed the instructions here: 
+
+https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customdomains.html?icmpid=docs_elasticbeanstalk_console
+
+and (hopefully) here: 
+
+https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/rrsets-working-with.html
+
+I now have four records in my Route 53 record set: 
+
+domain name followed by a period, A, alias
+domain name followed by a period, NS, the four domains given in the docs
+domain name followed by a period, SOA, `ns-1332.awsdns-38.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400`
+www dot the domain name followed by a period, A, another alias. (I added this just in case I needed a third-level domain.)
+
+
+But when I access the domain in a browser, nothing happens. Is there just a basic document for troubleshooting what's going wrong?"
+AWS Elastic Beanstalk	"Re: Basic troubleshooting for Route53 and Elastic Beanstalk
+I found that the targets for my alias records were wrong, so I fixed those. However, it's still not working.
+I also found the troubleshooting guide here:
+https://aws.amazon.com/premiumsupport/knowledge-center/route-53-dns-website-unreachable/ 
+and followed it to here: 
+https://aws.amazon.com/premiumsupport/knowledge-center/route-53-reachable-resource-record-sets/ 
+
+I don't have an MX record at the moment (which is fine), but digwebinterface.com returns the following:
+`preed.us.		899	IN	SOA	ns-1332.awsdns-38.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400`
+which looks to me like it's making it to AWS, so I don't understand why it won't forward to my Elastic Beanstalk site."
+AWS Elastic Beanstalk	"Re: Basic troubleshooting for Route53 and Elastic Beanstalk
+Looks like the problem was that I'd put https: in the alias records and it had gotten munged into some weird encoding with a lot of backslashes. Could have sworn I tried both with and without that, but anyway removing it seems to have fixed things. 
+
+I'd still appreciate any pointers to troubleshooting materials."
+AWS Elastic Beanstalk	"HTTPS for NodeJS and Angular 6
+Hello,
+I am trying to access nodejs API with https from angular. I have done ELB settings for my instance and angular code is running with https, but I am not able to connect to nodejs API calls with https. 
+
+How do I use code,
+http.createServer or https.createServer in my nodejs code?
+
+Because https.createServer requires a certificate to be read from the file system and I would like to use ACM to create the certificate."
+AWS Elastic Beanstalk	"Could not connect to the endpoint URL error when running eb use command
+Hi,
+
+I am trying to deploy my app (from GitLab) to Elastic Beanstalk,  environment with docker platform was created.
+
+running this command:
+eb use  APPServer-env -v  --region us-east-2 --debug
+
+getting error:
+INFO: EndpointConnectionError - Could not connect to the endpoint URL: ""https://elasticbeanstalk.us-east-2.amazonaws.com/""
+
+Note:
+I didn't run eb init  (should I? if yes with what options?)
+
+I believe it might be related to a proxy, in that case, how can I set up proxy for 'eb'?
+
+Full log:
+
+EB CLI 3.14.10 (Python 3.7.2)
+$ eb use  APPServer-env -v  --region us-east-2 --debug
+2019-02-03 16:40:27,991 (DEBUG) cement.core.foundation : laying cement for the 'eb' application
+2019-02-03 16:40:27,992 (DEBUG) cement.core.hook : defining hook 'pre_setup'
+2019-02-03 16:40:27,992 (DEBUG) cement.core.hook : defining hook 'post_setup'
+2019-02-03 16:40:27,992 (DEBUG) cement.core.hook : defining hook 'pre_run'
+2019-02-03 16:40:27,992 (DEBUG) cement.core.hook : defining hook 'post_run'
+2019-02-03 16:40:27,992 (DEBUG) cement.core.hook : defining hook 'pre_argument_parsing'
+2019-02-03 16:40:27,992 (DEBUG) cement.core.hook : defining hook 'post_argument_parsing'
+2019-02-03 16:40:27,992 (DEBUG) cement.core.hook : defining hook 'pre_close'
+2019-02-03 16:40:27,992 (DEBUG) cement.core.hook : defining hook 'post_close'
+2019-02-03 16:40:27,992 (DEBUG) cement.core.hook : defining hook 'signal'
+2019-02-03 16:40:27,992 (DEBUG) cement.core.hook : defining hook 'pre_render'
+2019-02-03 16:40:27,993 (DEBUG) cement.core.hook : defining hook 'post_render'
+2019-02-03 16:40:27,993 (DEBUG) cement.core.hook : registering hook 'add_handler_override_options' from cement.core.foundation into hooks
+2019-02-03 16:40:27,993 (DEBUG) cement.core.hook : registering hook 'handler_override' from cement.core.foundation into hooks
+2019-02-03 16:40:27,993 (DEBUG) cement.core.handler : defining handler type 'extension' (IExtension)
+2019-02-03 16:40:27,993 (DEBUG) cement.core.handler : defining handler type 'log' (ILog)
+2019-02-03 16:40:27,993 (DEBUG) cement.core.handler : defining handler type 'config' (IConfig)
+2019-02-03 16:40:27,993 (DEBUG) cement.core.handler : defining handler type 'mail' (IMail)
+2019-02-03 16:40:27,993 (DEBUG) cement.core.handler : defining handler type 'plugin' (IPlugin)
+2019-02-03 16:40:27,993 (DEBUG) cement.core.handler : defining handler type 'output' (IOutput)
+2019-02-03 16:40:27,993 (DEBUG) cement.core.handler : defining handler type 'argument' (IArgument)
+2019-02-03 16:40:27,993 (DEBUG) cement.core.handler : defining handler type 'controller' (IController)
+2019-02-03 16:40:27,994 (DEBUG) cement.core.handler : defining handler type 'cache' (ICache)
+2019-02-03 16:40:27,994 (DEBUG) cement.core.handler : registering handler '<class 'cement.core.extension.CementExtensionHandler'>' into handlers
+2019-02-03 16:40:28,011 (DEBUG) cement.ext.ext_plugin : plugin config dir /etc/eb/plugins.d does not exist.
+2019-02-03 16:40:28,011 (DEBUG) cement.ext.ext_plugin : plugin config dir /root/.eb/plugins.d does not exist.
+2019-02-03 16:40:28,024 (DEBUG) ebcli.core.hooks : -- EBCLI Version: 3.14.10
+2019-02-03 16:40:28,024 (DEBUG) ebcli.core.hooks : -- Python Version: 3.7.2 (default, Jan 30 2019, 23:45:31) 
+http://GCC 6.4.0
+2019-02-03 16:40:28,024 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413/0/USER1/grafana_json_server  -Going up a level
+2019-02-03 16:40:28,024 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413/0/USER1  -Going up a level
+2019-02-03 16:40:28,025 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413/0  -Going up a level
+2019-02-03 16:40:28,025 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413  -Going up a level
+2019-02-03 16:40:28,025 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir  -Going up a level
+2019-02-03 16:40:28,025 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /  -Going up a level
+2019-02-03 16:40:28,025 (DEBUG) ebcli.core.fileoperations : Still at the same directory /
+2019-02-03 16:40:28,025 (DEBUG) ebcli.operations.commonops : Git is not installed returning None for setting: %s
+2019-02-03 16:40:28,025 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413/0/USER1/grafana_json_server  -Going up a level
+2019-02-03 16:40:28,025 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413/0/USER1  -Going up a level
+2019-02-03 16:40:28,026 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413/0  -Going up a level
+2019-02-03 16:40:28,026 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413  -Going up a level
+2019-02-03 16:40:28,026 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir  -Going up a level
+2019-02-03 16:40:28,026 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /  -Going up a level
+2019-02-03 16:40:28,026 (DEBUG) ebcli.core.fileoperations : Still at the same directory /
+2019-02-03 16:40:28,026 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413/0/USER1/grafana_json_server  -Going up a level
+2019-02-03 16:40:28,026 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413/0/USER1  -Going up a level
+2019-02-03 16:40:28,026 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413/0  -Going up a level
+2019-02-03 16:40:28,026 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413  -Going up a level
+2019-02-03 16:40:28,027 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir  -Going up a level
+2019-02-03 16:40:28,027 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /  -Going up a level
+2019-02-03 16:40:28,027 (DEBUG) ebcli.core.fileoperations : Still at the same directory /
+2019-02-03 16:40:28,027 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413/0/USER1/grafana_json_server  -Going up a level
+2019-02-03 16:40:28,027 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413/0/USER1  -Going up a level
+2019-02-03 16:40:28,027 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413/0  -Going up a level
+2019-02-03 16:40:28,027 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir/0c303413  -Going up a level
+2019-02-03 16:40:28,027 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /builds_dir  -Going up a level
+2019-02-03 16:40:28,027 (DEBUG) ebcli.core.fileoperations : beanstalk directory not found in /  -Going up a level
+2019-02-03 16:40:28,027 (DEBUG) ebcli.core.fileoperations : Still at the same directory /
+2019-02-03 16:40:28,028 (DEBUG) ebcli.lib.elasticbeanstalk : Inside get_environment api wrapper
+2019-02-03 16:40:28,028 (DEBUG) ebcli.lib.aws : Creating new Botocore Session
+2019-02-03 16:40:28,028 (DEBUG) ebcli.lib.aws : Botocore version: 1.12.86
+2019-02-03 16:40:28,042 (DEBUG) ebcli.lib.aws : Creating new Botocore Client for elasticbeanstalk
+2019-02-03 16:40:28,060 (DEBUG) ebcli.lib.aws : Successfully created session for elasticbeanstalk
+2019-02-03 16:40:28,061 (DEBUG) ebcli.lib.aws : Making api call: (elasticbeanstalk, describe_environments) to region: us-east-2 with args:{'IncludeDeleted': False, 'EnvironmentNames': }
+2019-02-03 16:41:22,707 (ERROR) ebcli.lib.aws : Botocore Error
+INFO: Traceback (most recent call last):
+  File ""/usr/local/lib/python3.7/site-packages/urllib3/connection.py"", line 159, in _new_conn
+    (self._dns_host, self.port), self.timeout, **extra_kw)
+  File ""/usr/local/lib/python3.7/site-packages/urllib3/util/connection.py"", line 80, in create_connection
+    raise err
+  File ""/usr/local/lib/python3.7/site-packages/urllib3/util/connection.py"", line 70, in create_connection
+    sock.connect(sa)
+TimeoutError: https://forums.aws.amazon.com/ Operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File ""/usr/local/lib/python3.7/site-packages/botocore/httpsession.py"", line 258, in send
+    decode_content=False,
+  File ""/usr/local/lib/python3.7/site-packages/urllib3/connectionpool.py"", line 638, in urlopen
+    _stacktrace=sys.exc_info()[2])
+  File ""/usr/local/lib/python3.7/site-packages/urllib3/util/retry.py"", line 343, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File ""/usr/local/lib/python3.7/site-packages/urllib3/packages/six.py"", line 686, in reraise
+    raise value
+  File ""/usr/local/lib/python3.7/site-packages/urllib3/connectionpool.py"", line 600, in urlopen
+    chunked=chunked)
+  File ""/usr/local/lib/python3.7/site-packages/urllib3/connectionpool.py"", line 343, in _make_request
+    self._validate_conn(conn)
+  File ""/usr/local/lib/python3.7/site-packages/urllib3/connectionpool.py"", line 839, in _validate_conn
+    conn.connect()
+  File ""/usr/local/lib/python3.7/site-packages/urllib3/connection.py"", line 301, in connect
+    conn = self._new_conn()
+  File ""/usr/local/lib/python3.7/site-packages/urllib3/connection.py"", line 168, in _new_conn
+    self, ""Failed to establish a new connection: %s"" % e)
+urllib3.exceptions.NewConnectionError: <botocore.awsrequest.AWSHTTPSConnection object at 0x7f142a036160>: Failed to establish a new connection: https://forums.aws.amazon.com/ Operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/core/ebrun.py"", line 62, in run_app
+    app.run()
+  File ""/usr/local/lib/python3.7/site-packages/cement/core/foundation.py"", line 797, in run
+    return_val = self.controller._dispatch()
+  File ""/usr/local/lib/python3.7/site-packages/cement/core/controller.py"", line 472, in _dispatch
+    return func()
+  File ""/usr/local/lib/python3.7/site-packages/cement/core/controller.py"", line 478, in _dispatch
+    return func()
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/core/abstractcontroller.py"", line 94, in default
+    self.do_command()
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/controllers/use.py"", line 45, in do_command
+    useops.switch_default_environment(env_name)
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/operations/useops.py"", line 19, in switch_default_environment
+    __verify_environment_exists(env_name)
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/operations/useops.py"", line 32, in __verify_environment_exists
+    elasticbeanstalk.get_environment(env_name=env_name)
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/lib/elasticbeanstalk.py"", line 521, in get_environment
+    **kwargs)
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/lib/elasticbeanstalk.py"", line 39, in _make_api_call
+    **operation_options)
+  File ""/usr/local/lib/python3.7/site-packages/ebcli/lib/aws.py"", line 212, in make_api_call
+    response_data = operation(**operation_options)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/client.py"", line 357, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/client.py"", line 648, in _make_api_call
+    operation_model, request_dict, request_context)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/client.py"", line 667, in _make_request
+    return self._endpoint.make_request(operation_model, request_dict)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/endpoint.py"", line 102, in make_request
+    return self._send_request(request_dict, operation_model)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/endpoint.py"", line 137, in _send_request
+    success_response, exception):
+  File ""/usr/local/lib/python3.7/site-packages/botocore/endpoint.py"", line 231, in _needs_retry
+    caught_exception=caught_exception, request_dict=request_dict)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/hooks.py"", line 356, in emit
+    return self._emitter.emit(aliased_event_name, **kwargs)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/hooks.py"", line 228, in emit
+    return self._emit(event_name, kwargs)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/hooks.py"", line 211, in _emit
+    response = handler(**kwargs)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/retryhandler.py"", line 183, in __call__
+    if self._checker(attempts, response, caught_exception):
+  File ""/usr/local/lib/python3.7/site-packages/botocore/retryhandler.py"", line 251, in __call__
+    caught_exception)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/retryhandler.py"", line 277, in _should_retry
+    return self._checker(attempt_number, response, caught_exception)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/retryhandler.py"", line 317, in __call__
+    caught_exception)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/retryhandler.py"", line 223, in __call__
+    attempt_number, caught_exception)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/retryhandler.py"", line 359, in _check_caught_exception
+    raise caught_exception
+  File ""/usr/local/lib/python3.7/site-packages/botocore/endpoint.py"", line 200, in _do_get_response
+    http_response = self._send(request)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/endpoint.py"", line 244, in _send
+    return self.http_session.send(request)
+  File ""/usr/local/lib/python3.7/site-packages/botocore/httpsession.py"", line 278, in send
+    raise EndpointConnectionError(endpoint_url=request.url, error=e)
+botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: ""https://elasticbeanstalk.us-east-2.amazonaws.com/""
+
+INFO: EndpointConnectionError - Could not connect to the endpoint URL: ""https://elasticbeanstalk.us-east-2.amazonaws.com/"""

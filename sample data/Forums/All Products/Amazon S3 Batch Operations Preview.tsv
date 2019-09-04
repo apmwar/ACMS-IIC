@@ -1,0 +1,216 @@
+label	description
+
+Amazon S3 Batch Operations Preview	"Large batch operation gets stuck in Active state, near completion
+Hi there, this concerns job 6733ac65-50c2-4332-a273-915e096b94c0 which I created on 7th February.
+
+This job was still in the Active status until I manually update it with update-job-status.
+
+You can see below that it was just 12 tasks away from completion – I'm not sure how long it had been at that level of completion, but a while. It's not that the job was about to complete – it was seemingly stalled at this point.
+
+It's not a huge problem for us because we can manually cancel jobs or use priorities carefully, but is this expected behaviour?
+
+  {
+    ""Status"": ""Active"",
+    ""ProgressSummary"": {
+      ""NumberOfTasksFailed"": 0,
+      ""TotalNumberOfTasks"": 230073882,
+      ""NumberOfTasksSucceeded"": 230073870
+    },
+    ""Description"": ""user_inactive_6_months vangogh-composites"",
+    ""CreationTime"": ""2019-02-07T00:29:13.488Z"",
+    ""JobId"": ""6733ac65-50c2-4332-a273-915e096b94c0"",
+    ""Priority"": 42,
+    ""Operation"": ""S3PutObjectTagging""
+  }"
+
+Amazon S3 Batch Operations Preview	"Re: Large batch operation gets stuck in Active state, near completion
+We'll take a look and get back to you."
+
+Amazon S3 Batch Operations Preview	"Re: Large batch operation gets stuck in Active state, near completion
+While it looks like the job has now been cancelled, we are doing further investigation to see why our retry logic was delayed in picking up the remaining objects in this job."
+
+Amazon S3 Batch Operations Preview	"""Task target couldn't be URL decoded"" for CSV manifest
+Hi there, this concerns jobs e622ad8d-44d1-4460-af06-afea56a35bba and 6aaefb2a-237b-4167-b341-f724eb65fae2.
+
+After creating the jobs, they fall into the Failed status, with this error:
+
+        ""FailureReasons"": [
+            {
+                ""FailureCode"": ""InvalidManifestContent"",
+                ""FailureReason"": ""Failed to parse task from Manifest teespring-object-cleanup/usercontent.to-archive.csv at byte offset 139264. ErrorMessage: Task target couldn't be URL decoded""
+            }
+        ],
+
+
+I don't see any problems with the manifest at the given location:
+$ head -c 139280 usercontent.to-archive.csv| tail
+teespring-usercontent,uk8jnb-uploads
+teespring-usercontent,ae1d50-uploads
+teespring-usercontent,e42b5u-uploads
+teespring-usercontent,xxn5je-uploads
+teespring-usercontent,6m5trx-uploads
+teespring-usercontent,71le05-uploads
+teespring-usercontent,4gktyu-uploads
+teespring-usercontent,nr4hbl-uploads
+teespring-usercontent,gczt0c-uploads
+teespring-userconten⏎ 
+
+
+Neither are there any blank lines (which might be a problem according to https://forums.aws.amazon.com/thread.jspa?threadID=295717&tstart=0).
+
+$ grep -c '^$' usercontent.to-archive.csv
+0
+
+
+As the manifest file is quite large, I've emailed a link to the file to s3batchoperationspreview@amazon.com rather than attached it here."
+
+Amazon S3 Batch Operations Preview	"Re: ""Task target couldn't be URL decoded"" for CSV manifest
+Thanks for reaching out. We suspect the error is due to the manifest containing some rows where the bucket field is populated but the object key is blank. This was observed in the copy of the manifest you shared via email. 
+
+We are also looking into the byte offset you shared from the error message and will continue to work to improve our error messages and make them more targeted during the course of the preview."
+
+Amazon S3 Batch Operations Preview	"65% success rate when applying a tag via a batch operation
+As a test, I added a tag to 28 objects in a large S3 bucket via a batch operation.
+
+In the report CSV, there is a 200, Successful status for all 28 objects.
+
+However, when I query the taggings for those 28 objects, only 18 of the 28 have had the tag successfully applied.
+
+The job ID is f2851b2d-07c1-400b-9392-37eb2244c6dc.
+
+An example object which was tagged correctly is s3://vangogh-composites/aEcBjLIY-0nQgm1V0QBtPawF64I.
+
+An example object which was not tagged correctly is s3://vangogh-composites/RSiNYxIZQQHeFKiufECOiBCc5mc."
+
+Amazon S3 Batch Operations Preview	"Re: 65% success rate when applying a tag via a batch operation
+You may observe this behavior if objects are overwritten or new versions are added to the bucket after the tagging job is complete. The Batch Operations job acts only on the objects specified in the manifest at the time the job is run, later updates will not be tagged. 
+
+For an unversioned bucket, this means that any overwritten objects to the same key after the tagging job is completed will not have object tags (unless added through another means).
+
+For a versioned bucket, you can choose to specify or not specify version IDs in your manifest. When version IDs are specified, the job acts on the object versions specified. If no version ID is given, Batch Operations acts on the object version that is the current version when the job is executed."
+
+Amazon S3 Batch Operations Preview	"Re: 65% success rate when applying a tag via a batch operation
+I see, that makes sense – let me double check with some objects I'm 100% sure won't be updated: I'll mark this as answered if that goes smoothly.
+
+Thanks!"
+
+Amazon S3 Batch Operations Preview	"Cost of a batch operation?
+I can't find any information about the price of performing batch operations.
+
+E.g. do prices vary by job size? Operation type?"
+
+Amazon S3 Batch Operations Preview	"Re: Cost of a batch operation?
+During the Preview, S3 Batch Operations jobs and objects will be free. Although, you will still be charged for S3 Batch Operation requests (List Jobs and Update Job Priority are Tier 1 requests, and Describe Job is a Tier 2 request) and any charges associated with the operation that S3 Batch Operations performs on your behalf, including data transfer, requests, and other charges. For example, adding object tags to one million objects you would pay $5.00 ($0.005 per 1000 requests in us-east-1) for the PUT object tag requests.
+
+When the product launches, the pricing will be $0.25 per job and $1.00 per 1 million object operations performed by S3 Batch Operations."
+
+Amazon S3 Batch Operations Preview	"""aws: error: argument command: Invalid choice"" when creating a batch job
+Hi all, I'm trying to create my first batch operation job, following these instructions: https://docs.aws.amazon.com/AmazonS3/latest/dev/batch-ops-operations.html
+
+1a) and 1b) went fine, but when I attempt 2), I get this error:
+
+aws s3control create-job \
+        --region us-east-1 \
+        --account-id 476385240457 \
+        --operation '{""S3PutObjectTagging"": { ""TagSet"": [{""Key"":""keyOne"", ""Value"":""ValueOne""}] }}' \
+        --manifest '{""Spec"":{""Format"":""S3BatchOperations_CSV_20180820"",""Fields"":[""Bucket"",""Key""]},""Location"":{""ObjectArn"":""arn:aws:s3:::I_PUT_A_FILE_HERE"",""ETag"":""fef589dde810e57129e5b4370f26439e""}}' \
+        --report '{""Bucket"":""arn:aws:s3:::I_PUT_A_BUCKET_HERE"",""Prefix"":""final-reports"", ""Format"":""Report_CSV_20180820"",""Enabled"":true,""ReportScope"":""AllTasks""}' \
+        --priority 42 \
+        --role-arn S3BatchJobRole \
+        --client-request-token (uuidgen) \
+        --description ""Testing 0"" \
+        --no-confirmation-required
+ 
+usage: aws [options] <command> <subcommand> [<subcommand> ...] [parameters]
+To see help text, you can run:
+ 
+  aws help
+  aws <command> help
+  aws <command> <subcommand> help
+aws: error: argument command: Invalid choice, valid choices are:
+ 
+... lots of options, none of which are s3control ...
+
+
+I was only recently granted access to the batch operations preview – do I need to wait a while before it's usable? Or do something with my aws CLI to enable it?
+
+Thanks!"
+
+Amazon S3 Batch Operations Preview	"Re: ""aws: error: argument command: Invalid choice"" when creating a batch job
+Did you use the instructions here to add S3 Batch Operations functionality to the AWS CLI? (https://s3-us-west-2.amazonaws.com/s3batchoperationspreview/SDK+Download+Links.pdf)
+
+As we are still in Preview, the feature is not yet part of the public release of the CLI.
+
+Rob"
+
+Amazon S3 Batch Operations Preview	"Re: ""aws: error: argument command: Invalid choice"" when creating a batch job
+I had not seen that, no! That's great, s3control works now.
+
+The next problem I ran into is my user/policy/role isn't working as expected to enable me to create the job – but I'll either figure that out myself or create a separate thread for that separate issue.
+
+Thanks again!"
+
+Amazon S3 Batch Operations Preview	"Empty line in input CSV causes parsing failure
+If the CSV file used as input (manifest object) ends with a blank line, the operation fails with this error:
+
+Failed to parse task from Manifest <mybucket>/incoming/list1.csv at offset 441. ErrorMessage: Unexpected parsing error
+
+I'd consider that a bug."
+
+Amazon S3 Batch Operations Preview	"Re: Empty line in input CSV causes parsing failure
+Thank you for your feedback!  We will take a look into this and determine a path forward."
+
+Amazon S3 Batch Operations Preview	"Re: Empty line in input CSV causes parsing failure
+Thanks for the feedback. Would you be able to send the CSV file you used, or just the ending  portion of it, to s3batchoperationspreview@amazon.com?
+
+Feel free to redact or change any key names/bucket names if you want to use generic terms for them."
+
+Amazon S3 Batch Operations Preview	"Re: Empty line in input CSV causes parsing failure
+Emailed the file a few moments ago."
+
+Amazon S3 Batch Operations Preview	"Java SDK Support
+When will S3 Batch support for the Java SDK be released?"
+
+Amazon S3 Batch Operations Preview	"Re: Java SDK Support
+In the Preview welcome email there was a link to instructions for each SDK, as well as downloads.  Here is the link to the PDF: https://s3-us-west-2.amazonaws.com/s3batchoperationspreview/SDK+Download+Links.pdf
+
+Also, this is the link to our Java SDK: https://s3-us-west-2.amazonaws.com/s3batchoperationspreview/AWSS3ControlJavaClient-1.11.x.jar"
+
+Amazon S3 Batch Operations Preview	"Re: Java SDK Support
+I guess the API is pretty obtuse.  Any better instruction on how to use the SDK?"
+
+Amazon S3 Batch Operations Preview	"Re: Java SDK Support
+Were you able to get the jar file installed so that S3 Batch Operations functionality is part of the Java SDK?
+
+If you have, are you looking for us to add Java SDK examples to our documentation? This work is underway and those examples should be added soon."
+
+Amazon S3 Batch Operations Preview	"Can a PUT Copy be used to copy into a deeper path?
+I am looking at using the PUT Copy option to effectively backup a set of objects into a different bucket under a deeper path. It seems that this is not currently possible. Ideally what I would like to use this batch feature to copy a list of objects from one bucket into another bucket with a predefined path prefix. Also, it would be great if the current ACL and storage class of each object is copied with it.
+
+Robert"
+
+Amazon S3 Batch Operations Preview	"Re: Can a PUT Copy be used to copy into a deeper path?
+Thanks for the feedback. We will look into offering the ability to copy data into a destination prefix.
+
+Today, copy through S3 Batch Operations writes all the copied objects with the storage class and object ACL specified during job creation. I'll document a feature request for the ability to preserve the object ACL and storage class of the object as it is copied."
+
+Amazon S3 Batch Operations Preview	"Remove all tags
+Feature request.
+
+Batch operation should allow the removal of all tags.
+
+With the current setup, removing existing tags is not possible..."
+
+Amazon S3 Batch Operations Preview	"Re: Remove all tags
+It sounds like you would like to see Delete object tagging (https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectDELETEtagging.html) as a supported operation in Batch Operations, is that correct? 
+
+Would you expect this to be a recurring workload or a one time deletion of tags? On this question, we're mainly just trying to gather additional insights into the most common Batch Operations usage."
+
+Amazon S3 Batch Operations Preview	"Re: Remove all tags
+Yes, correct.
+
+For me this would be a one off. I'm currently testing large ingests, so it'd be nice to be able to add and remove tags in batches."
+
+Amazon S3 Batch Operations Preview	"Re: Remove all tags
+Thanks, I'll save your feature request for the new operation type."
+
